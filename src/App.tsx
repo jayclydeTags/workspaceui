@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
-import { ThemeProvider } from "next-themes"
 
 import { Header } from "@/components/header"
 import { DocsLayout } from "@/layouts/docs-layout"
@@ -12,32 +11,30 @@ import { BlocksPage } from "@/pages/docs/blocks"
 
 export function App() {
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <BrowserRouter>
-        <Header />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route element={<DocsLayout />}>
-            <Route
-              path="/docs/getting-started/introduction"
-              element={<IntroductionPage />}
-            />
-            <Route
-              path="/docs/getting-started/installation"
-              element={<InstallationPage />}
-            />
-            <Route
-              path="/docs/components/workspace-tabs"
-              element={<WorkspaceTabsPage />}
-            />
-            <Route
-              path="/docs/components/workspace"
-              element={<WorkspacePage />}
-            />
-            <Route path="/docs/blocks" element={<BlocksPage />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </ThemeProvider>
+    <BrowserRouter>
+      <Header />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route element={<DocsLayout />}>
+          <Route
+            path="/docs/getting-started/introduction"
+            element={<IntroductionPage />}
+          />
+          <Route
+            path="/docs/getting-started/installation"
+            element={<InstallationPage />}
+          />
+          <Route
+            path="/docs/components/workspace-tabs"
+            element={<WorkspaceTabsPage />}
+          />
+          <Route
+            path="/docs/components/workspace"
+            element={<WorkspacePage />}
+          />
+          <Route path="/docs/blocks" element={<BlocksPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   )
 }

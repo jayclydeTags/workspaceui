@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom"
 
 // react-resizable-panels uses ResizeObserver; jsdom does not ship it.
-global.ResizeObserver = class ResizeObserver {
+window.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
   disconnect() {}

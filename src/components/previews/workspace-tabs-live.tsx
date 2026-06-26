@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { LayoutDashboard, FileText, Settings, Inbox } from "lucide-react"
 
-import { WorkspaceTabs, type WorkspaceTab } from "@/registry/ui/workspace-tabs"
+import { WorkspaceTabs, type WorkspaceTab } from "@/components/workspaceui/workspace-tabs"
 
 const INITIAL_TABS: WorkspaceTab[] = [
   {

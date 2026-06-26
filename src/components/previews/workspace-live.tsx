@@ -1,6 +1,6 @@
 import { LayoutDashboard, FileText, Settings } from "lucide-react"
 
-import { Workspace } from "@/registry/ui/workspace"
+import { Workspace } from "@/components/workspaceui/workspace"
 
 const INITIAL_PANES = [
   {

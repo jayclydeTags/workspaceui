@@ -4,15 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-### Dev / build (root delegates to docs)
 ```bash
-pnpm dev              # start docs site (delegates to pnpm --filter docs dev)
-pnpm build            # build docs site (delegates to pnpm --filter docs build)
-pnpm preview          # serve docs dist/
-```
-
-### Tests & tooling (run from root)
-```bash
+pnpm dev              # start docs site
+pnpm build            # build docs site (tsc + vite build → dist/)
+pnpm preview          # serve dist/
 pnpm lint             # ESLint
 pnpm format           # Prettier (writes in place)
 pnpm typecheck        # tsc --noEmit
@@ -23,49 +18,66 @@ pnpm test:coverage    # vitest run --coverage
 
 ### Running a single test file
 ```bash
-pnpm vitest run registry/ui/__tests__/workspace-tabs.test.tsx
+pnpm vitest run src/components/workspaceui/__tests__/workspace-tabs.test.tsx
 ```
 
-## Monorepo structure
+## Project structure
 
 ```
 workspaceui/
-├── registry/ui/          # Source-of-truth for distributable components
-│   ├── workspace-tabs.tsx
-│   ├── workspace.tsx
-│   └── __tests__/
-├── src/                  # Root demo app (Vite + React)
-│   ├── App.tsx           # Demo workspace with multiple panes/tabs
-│   ├── components/ui/    # shadcn UI primitives
-│   ├── pages/            # Demo page components (Dashboard, Inbox, etc.)
-│   ├── hooks/
-│   ├── lib/utils.ts      # cn() helper
-│   └── test/setup.ts     # Vitest setup (ResizeObserver polyfill, pointer capture mocks)
-└── docs/                 # Separate pnpm package — docs site (Vite SPA)
-    └── src/              # React Router v7 app
+├── registry.json             # shadcn registry manifest (points to src/components/workspaceui/)
+├── src/
+│   ├── app.tsx               # BrowserRouter + routes (docs site entry)
+│   ├── main.tsx
+│   ├── index.css             # Tailwind v4 + theme tokens
+│   ├── components/
+│   │   ├── workspaceui/      # Distributable components (source of truth)
+│   │   │   ├── workspace-tabs.tsx
+│   │   │   ├── workspace.tsx
+│   │   │   └── __tests__/
+│   │   ├── ui/               # shadcn UI primitives
+│   │   ├── header.tsx        # Docs site header
+│   │   ├── sidebar-nav.tsx
+│   │   ├── code-block.tsx    # Shiki syntax highlighting
+│   │   ├── component-preview.tsx
+│   │   ├── component-preview-shell.tsx
+│   │   ├── copy-button.tsx
+│   │   ├── props-table.tsx
+│   │   ├── theme-toggle.tsx
+│   │   └── previews/         # Live demo components
+│   ├── layouts/
+│   │   └── docs-layout.tsx   # Sidebar + main layout
+│   ├── lib/
+│   │   ├── utils.ts          # cn() helper
+│   │   ├── nav.ts            # Sidebar navigation config
+│   │   └── use-document-title.ts
+│   ├── pages/
+│   │   ├── home.tsx          # Landing page
+│   │   └── docs/
+│   │       ├── blocks.tsx
+│   │       ├── getting-started/
+│   │       └── components/
+│   └── test/setup.ts         # Vitest setup (ResizeObserver polyfill, pointer capture mocks)
 ```
 
 ## Registry distribution model
 
-Components live in `registry/ui/` and are distributed via the shadcn GitHub registry shorthand:
+Components live in `src/components/workspaceui/` and are distributed via the shadcn GitHub registry shorthand:
 
 ```bash
 npx shadcn@latest add jayclydeTags/workspaceui/workspace-tabs
 npx shadcn@latest add jayclydeTags/workspaceui/workspace
 ```
 
-The shadcn CLI resolves this directly from `registry.json` at the repo root — no build step, no Vercel endpoint. The docs site is for documentation only; it imports components via `@/registry/*` (alias to root `registry/ui/`).
+The shadcn CLI resolves this directly from `registry.json` at the repo root — no build step, no Vercel endpoint.
 
 ## Path aliases
-
-Both the root app and the docs site use the same two aliases:
 
 | Alias | Resolves to |
 |---|---|
 | `@/*` | `./src/*` |
-| `@/registry/*` | `./registry/*` |
 
-The `@/registry/*` alias is intentional: preview components import registry files using the same path that shadcn rewrites on install (`@/components/ui/workspace-tabs`), keeping demos realistic.
+Components import each other via `@/components/workspaceui/...`.
 
 ## Component architecture
 
@@ -91,7 +103,7 @@ Vitest with jsdom. `src/test/setup.ts` provides:
 - `ResizeObserver` polyfill (required by `react-resizable-panels`)
 - `setPointerCapture`/`releasePointerCapture` mocks (required by drag handlers)
 
-Tests live in `registry/ui/__tests__/` alongside the components they cover.
+Tests live in `src/components/workspaceui/__tests__/`.
 
 ## Tooling
 

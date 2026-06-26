@@ -12,7 +12,7 @@
       "registryDependencies": ["utils"],
       "files": [
         {
-          "path": "registry/ui/workspace-tabs.tsx",
+          "path": "src/components/workspaceui/workspace-tabs.tsx",
           "type": "registry:ui"
         }
       ]
@@ -26,7 +26,7 @@
       "registryDependencies": ["resizable", "workspace-tabs", "utils"],
       "files": [
         {
-          "path": "registry/ui/workspace.tsx",
+          "path": "src/components/workspaceui/workspace.tsx",
           "type": "registry:ui"
         }
       ]

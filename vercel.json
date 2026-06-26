@@ -1,0 +1,5 @@
+{
+  "buildCommand": "pnpm --filter docs build",
+  "outputDirectory": "docs/dist",
+  "rewrites": [{ "source": "/((?!assets/).*)", "destination": "/index.html" }]
+}

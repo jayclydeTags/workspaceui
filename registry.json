@@ -1,0 +1,34 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "workspaceui",
+  "homepage": "https://github.com/jayclydeTags/workspaceui",
+  "items": [
+    {
+      "name": "workspace-tabs",
+      "type": "registry:ui",
+      "title": "Workspace Tabs",
+      "description": "Chrome-style scrollable tab strip with closeable tabs, unread badges, overflow fade, and macOS-style curved active-tab connectors.",
+      "dependencies": ["lucide-react"],
+      "files": [
+        {
+          "path": "registry/ui/workspace-tabs.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "workspace",
+      "type": "registry:ui",
+      "title": "Workspace",
+      "description": "Self-contained workspace with tab-based panels: closing a panel's last tab collapses the panel; closing all panels reveals a configurable fallback. Exposes useWorkspace context and a WorkspaceHandle ref for programmatic control.",
+      "dependencies": ["react-resizable-panels", "lucide-react"],
+      "registryDependencies": ["resizable", "workspace-tabs"],
+      "files": [
+        {
+          "path": "registry/ui/workspace.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    }
+  ]
+}

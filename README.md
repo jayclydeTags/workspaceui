@@ -1,21 +1,94 @@
-# React + TypeScript + Vite + shadcn/ui
+# workspaceui
 
-This is a template for a new Vite project with React, TypeScript, and shadcn/ui.
+A shadcn-compatible component registry with workspace UI primitives.
 
-## Adding components
+## Components
 
-To add components to your app, run the following command:
+| Name | Description |
+|---|---|
+| `workspace-tabs` | Chrome-style scrollable tab strip with closeable tabs, unread badges, overflow fade, and macOS-style curved active-tab connectors. |
+| `workspace` | Self-contained workspace with tab-based panels: closing a panel's last tab collapses the panel; closing all panels reveals a configurable fallback. Exposes `useWorkspace` context and a `WorkspaceHandle` ref for programmatic control. |
+
+## Installation
+
+Components are installed individually via the shadcn CLI pointing at this registry.
+
+### `workspace-tabs`
+
+```bash
+npx shadcn@latest add https://workspaceui.vercel.app/r/workspace-tabs.json
+```
+
+### `workspace`
+
+```bash
+npx shadcn@latest add https://workspaceui.vercel.app/r/workspace.json
+```
+
+> `workspace` depends on `workspace-tabs` and the shadcn `resizable` component — the CLI installs them automatically.
+
+## Usage
+
+### WorkspaceTabs
+
+```tsx
+import { WorkspaceTabs } from "@/components/ui/workspace-tabs"
+
+const [activeId, setActiveId] = React.useState("tab-1")
+const [tabs, setTabs] = React.useState([
+  { id: "tab-1", title: "index.tsx" },
+  { id: "tab-2", title: "App.tsx" },
+])
+
+<WorkspaceTabs
+  tabs={tabs}
+  activeTabId={activeId}
+  onTabChange={setActiveId}
+  onTabClose={(id) => setTabs((prev) => prev.filter((t) => t.id !== id))}
+  onAddTab={() => { /* open new tab */ }}
+>
+  {/* panel content for the active tab */}
+</WorkspaceTabs>
+```
+
+### Workspace
+
+```tsx
+import { Workspace, type WorkspacePaneDef } from "@/components/ui/workspace"
+
+const panes: WorkspacePaneDef[] = [
+  {
+    id: "pane-1",
+    tabs: [
+      { id: "tab-1", title: "Dashboard" },
+      { id: "tab-2", title: "Settings" },
+    ],
+  },
+  {
+    id: "pane-2",
+    tabs: [{ id: "tab-3", title: "Terminal", pinned: true }],
+  },
+]
+
+<Workspace
+  panes={panes}
+  renderTab={(paneId, tabId) => <div>Content for {tabId}</div>}
+  fallback={<div>Open a file to get started.</div>}
+/>
+```
+
+## Development
+
+```bash
+pnpm install
+pnpm dev          # start the Vite dev server
+pnpm registry:build  # compile registry output to /public/r
+```
+
+## Adding shadcn components
 
 ```bash
 npx shadcn@latest add button
 ```
 
-This will place the ui components in the `src/components` directory.
-
-## Using components
-
-To use the components in your app, import them as follows:
-
-```tsx
-import { Button } from "@/components/ui/button"
-```
+This places UI components in `src/components/ui/`.

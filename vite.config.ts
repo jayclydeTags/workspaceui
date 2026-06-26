@@ -7,8 +7,11 @@ import { defineConfig } from "vite"
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
+    alias: [
+      // @/registry/* resolves to the registry source folder so the demo app
+      // uses the same import paths that shadcn rewrites on consumer install.
+      { find: /^@\/registry(.*)$/, replacement: path.resolve(__dirname, "./registry") + "$1" },
+      { find: "@", replacement: path.resolve(__dirname, "./src") },
+    ],
   },
 })

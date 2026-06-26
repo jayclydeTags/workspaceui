@@ -1,12 +1,21 @@
 import { Moon, Sun } from "lucide-react"
-import { useTheme } from "next-themes"
+import { useState } from "react"
 
 export function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme()
+  const [isDark, setIsDark] = useState(() =>
+    document.documentElement.classList.contains("dark")
+  )
+
+  function toggle() {
+    const next = !isDark
+    document.documentElement.classList.toggle("dark", next)
+    localStorage.setItem("theme", next ? "dark" : "light")
+    setIsDark(next)
+  }
 
   return (
     <button
-      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+      onClick={toggle}
       className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
       aria-label="Toggle theme"
     >

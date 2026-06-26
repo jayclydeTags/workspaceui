@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 
 import { NavMain, type NavItem } from "@/components/nav-main"

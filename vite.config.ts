@@ -14,4 +14,13 @@ export default defineConfig({
       { find: "@", replacement: path.resolve(__dirname, "./src") },
     ],
   },
+  test: {
+    environment: "jsdom",
+    globals: true,
+    setupFiles: ["./src/test/setup.ts"],
+    alias: [
+      { find: /^@\/registry(.*)$/, replacement: path.resolve(__dirname, "./registry") + "$1" },
+      { find: "@", replacement: path.resolve(__dirname, "./src") },
+    ],
+  },
 })

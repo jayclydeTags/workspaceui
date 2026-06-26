@@ -2,6 +2,9 @@ import * as React from "react"
 import { Plus, X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
@@ -37,7 +40,7 @@ export interface WorkspaceTabsProps {
 // shape, creating the macOS-style smooth curve where the tab meets the strip.
 // The bg must match the active tab bg exactly.
 
-const CONNECTOR_BG_CLASS = "bg-[#F8F8F8E6] dark:bg-card"
+const CONNECTOR_BG_CLASS = "bg-card"
 
 function LeftConnector() {
   return (
@@ -131,7 +134,7 @@ function WorkspaceTabs({
 
                 {/* Separator between non-adjacent inactive tabs */}
                 {showSeparator && (
-                  <div className="mb-2 h-4 w-px shrink-0 self-center bg-[#23232314] dark:bg-foreground/8" />
+                  <Separator orientation="vertical" className="mb-2 h-4 bg-foreground/10" />
                 )}
 
                 <button
@@ -158,7 +161,7 @@ function WorkspaceTabs({
                       "text-foreground/60 hover:bg-foreground/5 hover:text-foreground/80",
                     // Active: overlap tab strip bottom border by 1px
                     isActive &&
-                      "z-10 mb-[-1px] bg-[#F8F8F8E6] text-foreground dark:bg-card",
+                      "z-10 mb-[-1px] bg-card text-foreground",
                   )}
                 >
                   {/* Left curve connector (active tab only) */}
@@ -187,9 +190,9 @@ function WorkspaceTabs({
 
                   {/* Unread badge */}
                   {tab.badge != null && tab.badge > 0 && (
-                    <span className="flex h-4 min-w-4 shrink-0 items-center justify-center rounded-full bg-primary px-1 text-[10px] text-primary-foreground">
+                    <Badge className="h-4 min-w-4 shrink-0 rounded-full px-1 text-[10px]">
                       {tab.badge > 99 ? "99+" : tab.badge}
-                    </span>
+                    </Badge>
                   )}
 
                   {/* Close button — hidden for pinned tabs */}
@@ -212,7 +215,7 @@ function WorkspaceTabs({
                         }
                       }}
                       className={cn(
-                        "flex h-4 w-4 shrink-0 items-center justify-center rounded",
+                        "flex size-4 shrink-0 items-center justify-center rounded",
                         "text-foreground/40 hover:bg-foreground/10 hover:text-foreground",
                         "opacity-0 transition-all group-hover:opacity-100",
                         isActive && "opacity-50 group-hover:opacity-100",
@@ -234,13 +237,15 @@ function WorkspaceTabs({
 
         {/* Add-tab button (32×32) */}
         {onAddTab != null && (
-          <button
+          <Button
+            variant="ghost"
+            size="icon-sm"
             aria-label="New tab"
             onClick={onAddTab}
-            className="mx-1 mb-1.5 flex h-8 w-8 shrink-0 items-center justify-center rounded text-foreground/50 transition-colors hover:bg-foreground/10 hover:text-foreground"
+            className="mx-1 mb-1.5 shrink-0 text-foreground/50"
           >
-            <Plus className="size-4" />
-          </button>
+            <Plus />
+          </Button>
         )}
       </div>
 

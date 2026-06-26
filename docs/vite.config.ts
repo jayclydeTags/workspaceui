@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: [
-      { find: /^@\/registry(.*)$/, replacement: path.resolve(__dirname, "./registry") + "$1" },
+      { find: /^@\/registry(.*)$/, replacement: path.resolve(__dirname, "../registry") + "$1" },
       { find: "@", replacement: path.resolve(__dirname, "./src") },
     ],
   },

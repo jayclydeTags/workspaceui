@@ -1,12 +1,11 @@
 /**
- * Phase 1: Copies registry source files from the parent registry/ui/ directory
- *   into docs/registry/ui/ for live component previews.
+ * Generates static JSON files in docs/public/r/ that serve the registry data
+ * at /r/*.json. These are served as static assets by Vite dev server and
+ * copied into dist/ on build.
  *
- * Phase 2: Generates static JSON files in docs/public/r/ that serve the same
- *   data the old /r/[name] API route did. These are served as static assets
- *   by Vite dev server and copied into dist/ on build.
+ * Reads component source directly from the root registry/ui/ — no local copy needed.
  */
-import { cpSync, readFileSync, mkdirSync, writeFileSync } from "fs"
+import { readFileSync, mkdirSync, writeFileSync } from "fs"
 import { join, dirname } from "path"
 import { fileURLToPath } from "url"
 
@@ -14,15 +13,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const docsRoot = join(__dirname, "..")
 const repoRoot = join(__dirname, "..", "..")
 
-// Phase 1: sync source files
-const src = join(repoRoot, "registry", "ui")
-const dest = join(docsRoot, "registry", "ui")
-cpSync(src, dest, { recursive: true })
-console.log("Registry source files synced to docs/registry/ui/")
-
-// Phase 2: generate static JSON for /r/* endpoint
 function readRegistryFile(filename) {
-  return readFileSync(join(dest, filename), "utf-8")
+  return readFileSync(join(repoRoot, "registry", "ui", filename), "utf-8")
 }
 
 const SCHEMA = "https://ui.shadcn.com/schema/registry-item.json"

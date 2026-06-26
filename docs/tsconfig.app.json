@@ -18,10 +18,10 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@/registry/*": ["./registry/*"],
+      "@/registry/*": ["../registry/*"],
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "registry"],
-  "exclude": ["registry/ui/__tests__"]
+  "include": ["src", "../registry"],
+  "exclude": ["../registry/ui/__tests__"]
 }

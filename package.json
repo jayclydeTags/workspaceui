@@ -10,8 +10,7 @@
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
-    "registry:build": "shadcn build",
-    "test": "vitest run",
+"test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
   },

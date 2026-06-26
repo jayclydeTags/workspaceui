@@ -11,18 +11,18 @@ A shadcn-compatible component registry with workspace UI primitives.
 
 ## Installation
 
-Components are installed individually via the shadcn CLI pointing at this registry.
+Components are installed individually via the shadcn CLI using the GitHub registry shorthand.
 
 ### `workspace-tabs`
 
 ```bash
-npx shadcn@latest add https://raw.githubusercontent.com/jayclydeTags/workspaceui/main/public/r/workspace-tabs.json
+npx shadcn@latest add jayclydeTags/workspaceui/workspace-tabs
 ```
 
 ### `workspace`
 
 ```bash
-npx shadcn@latest add https://raw.githubusercontent.com/jayclydeTags/workspaceui/main/public/r/workspace.json
+npx shadcn@latest add jayclydeTags/workspaceui/workspace
 ```
 
 > `workspace` depends on `workspace-tabs` and the shadcn `resizable` component — the CLI installs them automatically.
@@ -81,8 +81,7 @@ const panes: WorkspacePaneDef[] = [
 
 ```bash
 pnpm install
-pnpm dev          # start the Vite dev server
-pnpm registry:build  # compile registry output to /public/r
+pnpm dev    # start the Vite dev server
 ```
 
 ## Adding shadcn components

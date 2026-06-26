@@ -95,6 +95,7 @@ export interface WorkspaceContextValue {
 
 const WorkspaceContext = React.createContext<WorkspaceContextValue | null>(null)
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useWorkspace(): WorkspaceContextValue {
   const ctx = React.useContext(WorkspaceContext)
   if (ctx == null) throw new Error("useWorkspace must be used inside <Workspace>")
@@ -179,11 +180,18 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
       [layout],
     )
 
+    // Resolve the last-active pane: fall back to the first pane if the active one was closed.
+    const resolvedLastActivePaneId = panes.some((p) => p.id === lastActivePaneId)
+      ? lastActivePaneId
+      : (panes[0]?.id ?? null)
+
     // ── Drag state ─────────────────────────────────────────────────────────
 
     const dragSession = React.useRef<DragSession | null>(null)
+    const dragAbortController = React.useRef<AbortController | null>(null)
     const [isDragging, setIsDragging] = React.useState(false)
     const [ghostPos, setGhostPos] = React.useState<{ x: number; y: number } | null>(null)
+    const [ghostTitle, setGhostTitle] = React.useState<string | null>(null)
     const [snapState, setSnapState] = React.useState<SnapState | null>(null)
     const snapStateRef = React.useRef<SnapState | null>(null)
     const [tabDropTarget, setTabDropTarget] = React.useState<TabDropTarget | null>(null)
@@ -333,13 +341,6 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
       },
       [],
     )
-
-    // If the last-active pane was closed, fall back to the first remaining pane.
-    React.useEffect(() => {
-      if (lastActivePaneId !== null && !panes.some((p) => p.id === lastActivePaneId)) {
-        setLastActivePaneId(panes[0]?.id ?? null)
-      }
-    }, [panes, lastActivePaneId])
 
     // ── Split operation ────────────────────────────────────────────────────
 
@@ -548,10 +549,9 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
       }
     }, [setSnapStateSynced, setTabDropTargetSynced])
 
-    const handlePointerUp = React.useCallback((_e: PointerEvent) => {
-      document.removeEventListener("pointermove", handlePointerMove)
-      document.removeEventListener("pointerup", handlePointerUp)
-      document.removeEventListener("pointercancel", handlePointerCancel)
+    const handlePointerUp = React.useCallback(() => {
+      dragAbortController.current?.abort()
+      dragAbortController.current = null
 
       const session = dragSession.current
       const snap = snapStateRef.current
@@ -559,6 +559,7 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
       dragSession.current = null
       setIsDragging(false)
       setGhostPos(null)
+      setGhostTitle(null)
       setSnapStateSynced(null)
       setTabDropTargetSynced(null)
       document.body.style.cursor = ""
@@ -574,19 +575,19 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
           executeSplit(session.sourcePaneId, session.tabId, snap.targetPaneId, snap.zone)
         }
       }
-    }, [handlePointerMove, executeSplit, reorderTabInPane, moveTabToPane, setSnapStateSynced, setTabDropTargetSynced])
+    }, [executeSplit, reorderTabInPane, moveTabToPane, setSnapStateSynced, setTabDropTargetSynced])
 
-    const handlePointerCancel = React.useCallback((_e: PointerEvent) => {
-      document.removeEventListener("pointermove", handlePointerMove)
-      document.removeEventListener("pointerup", handlePointerUp)
-      document.removeEventListener("pointercancel", handlePointerCancel)
+    const handlePointerCancel = React.useCallback(() => {
+      dragAbortController.current?.abort()
+      dragAbortController.current = null
       dragSession.current = null
       setIsDragging(false)
       setGhostPos(null)
+      setGhostTitle(null)
       setSnapStateSynced(null)
       setTabDropTargetSynced(null)
       document.body.style.cursor = ""
-    }, [handlePointerMove, handlePointerUp, setSnapStateSynced, setTabDropTargetSynced])
+    }, [setSnapStateSynced, setTabDropTargetSynced])
 
     const startDrag = React.useCallback(
       (sourcePaneId: string, tabId: string, tabTitle: string, pointerId: number, x: number, y: number) => {
@@ -600,10 +601,13 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
           didThreshold: false,
         }
         setIsDragging(true)
+        setGhostTitle(tabTitle)
         document.body.style.cursor = "grabbing"
-        document.addEventListener("pointermove", handlePointerMove)
-        document.addEventListener("pointerup", handlePointerUp)
-        document.addEventListener("pointercancel", handlePointerCancel)
+        const ac = new AbortController()
+        dragAbortController.current = ac
+        document.addEventListener("pointermove", handlePointerMove, { signal: ac.signal })
+        document.addEventListener("pointerup", handlePointerUp, { signal: ac.signal })
+        document.addEventListener("pointercancel", handlePointerCancel, { signal: ac.signal })
       },
       [handlePointerMove, handlePointerUp, handlePointerCancel],
     )
@@ -621,7 +625,7 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
     React.useImperativeHandle(
       ref,
       () => ({
-        lastActivePaneId,
+        lastActivePaneId: resolvedLastActivePaneId,
         openTabInPane,
         closeTab,
         activateTab,
@@ -629,7 +633,7 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
         openPane,
         closePane,
       }),
-      [lastActivePaneId, openTabInPane, closeTab, activateTab, updateTab, openPane, closePane],
+      [resolvedLastActivePaneId, openTabInPane, closeTab, activateTab, updateTab, openPane, closePane],
     )
 
     // ── Contexts ───────────────────────────────────────────────────────────
@@ -640,7 +644,7 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
       () => ({
         panes,
         isShowingFallback,
-        lastActivePaneId,
+        lastActivePaneId: resolvedLastActivePaneId,
         openTabInPane,
         closeTab,
         activateTab,
@@ -648,7 +652,7 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
         openPane,
         closePane,
       }),
-      [panes, isShowingFallback, lastActivePaneId, openTabInPane, closeTab, activateTab, updateTab, openPane, closePane],
+      [panes, isShowingFallback, resolvedLastActivePaneId, openTabInPane, closeTab, activateTab, updateTab, openPane, closePane],
     )
 
     const dragCtx = React.useMemo<WorkspaceDragContextValue>(
@@ -677,9 +681,9 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
                 renderTabContent={renderTabContent}
               />
             )}
-            {ghostPos && dragSession.current && (
+            {ghostPos && ghostTitle && (
               <DragGhost
-                title={dragSession.current.tabTitle}
+                title={ghostTitle}
                 x={ghostPos.x}
                 y={ghostPos.y}
               />
@@ -989,7 +993,6 @@ function DragGhost({ title, x, y }: { title: string; x: number; y: number }) {
     >
       <div className="flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1.5 shadow-md">
         <span className="text-[12px] font-medium text-foreground">{title}</span>
-        <span className="text-[13px] leading-none">✋</span>
       </div>
     </div>
   )

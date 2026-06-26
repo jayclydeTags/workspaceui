@@ -4,10 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-### Root app (component registry + demo)
+### Dev / build (root delegates to docs)
 ```bash
-pnpm dev              # start Vite dev server
-pnpm build            # tsc -b && vite build
+pnpm dev              # start docs site (delegates to pnpm --filter docs dev)
+pnpm build            # build docs site (delegates to pnpm --filter docs build)
+pnpm preview          # serve docs dist/
+```
+
+### Tests & tooling (run from root)
+```bash
 pnpm lint             # ESLint
 pnpm format           # Prettier (writes in place)
 pnpm typecheck        # tsc --noEmit
@@ -19,13 +24,6 @@ pnpm test:coverage    # vitest run --coverage
 ### Running a single test file
 ```bash
 pnpm vitest run registry/ui/__tests__/workspace-tabs.test.tsx
-```
-
-### Docs site
-```bash
-pnpm --filter docs dev      # runs gen-registry.mjs then vite dev
-pnpm --filter docs build    # runs gen-registry.mjs then tsc -b && vite build
-pnpm --filter docs preview  # serve dist/
 ```
 
 ## Monorepo structure

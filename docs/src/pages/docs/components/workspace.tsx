@@ -122,7 +122,7 @@ export function WorkspacePage() {
 
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">Installation</h2>
-        <InlineCode code="npx shadcn@latest add https://workspaceui.vercel.app/r/workspace.json" />
+        <InlineCode code="npx shadcn@latest add jayclydeTags/workspaceui/workspace" />
       </section>
 
       <section className="space-y-3">

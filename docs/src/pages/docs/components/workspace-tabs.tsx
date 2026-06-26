@@ -89,7 +89,7 @@ export function WorkspaceTabsPage() {
 
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">Installation</h2>
-        <InlineCode code="npx shadcn@latest add https://workspaceui.vercel.app/r/workspace-tabs.json" />
+        <InlineCode code="npx shadcn@latest add jayclydeTags/workspaceui/workspace-tabs" />
       </section>
 
       <section className="space-y-3">

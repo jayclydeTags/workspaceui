@@ -8,10 +8,10 @@ const NEXTJS_SETUP = `# Install shadcn/ui if you haven't already
 npx shadcn@latest init
 
 # Add workspace-tabs
-npx shadcn@latest add https://workspaceui.vercel.app/r/workspace-tabs.json
+npx shadcn@latest add jayclydeTags/workspaceui/workspace-tabs
 
 # Add workspace (includes workspace-tabs)
-npx shadcn@latest add https://workspaceui.vercel.app/r/workspace.json`
+npx shadcn@latest add jayclydeTags/workspaceui/workspace`
 
 export function InstallationPage() {
   useDocumentTitle("Installation")

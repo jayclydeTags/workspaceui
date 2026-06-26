@@ -36,7 +36,7 @@ export function IntroductionPage() {
         <p className="text-muted-foreground">
           Use the shadcn CLI to add any component directly to your project:
         </p>
-        <InlineCode code="npx shadcn@latest add https://workspaceui.vercel.app/r/workspace-tabs.json" />
+        <InlineCode code="npx shadcn@latest add jayclydeTags/workspaceui/workspace-tabs" />
       </section>
 
       <section className="space-y-3">

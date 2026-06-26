@@ -3,9 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "predev": "node scripts/gen-registry.mjs",
     "dev": "vite",
-    "prebuild": "node scripts/gen-registry.mjs",
     "build": "tsc -b && vite build",
     "preview": "vite preview"
   },

@@ -44,23 +44,19 @@ workspaceui/
 │   ├── lib/utils.ts      # cn() helper
 │   └── test/setup.ts     # Vitest setup (ResizeObserver polyfill, pointer capture mocks)
 └── docs/                 # Separate pnpm package — docs site (Vite SPA)
-    ├── src/              # React Router v7 app
-    ├── scripts/gen-registry.mjs
-    └── public/r/         # Generated static JSON served at /r/*.json (do not edit)
+    └── src/              # React Router v7 app
 ```
 
 ## Registry distribution model
 
-Components live in `registry/ui/` and are distributed via the shadcn CLI using GitHub registry shorthand:
+Components live in `registry/ui/` and are distributed via the shadcn GitHub registry shorthand:
 
 ```bash
 npx shadcn@latest add jayclydeTags/workspaceui/workspace-tabs
 npx shadcn@latest add jayclydeTags/workspaceui/workspace
 ```
 
-`docs/scripts/gen-registry.mjs` runs automatically (via `predev`/`prebuild` hooks) and generates `docs/public/r/<name>.json` — static JSON following the shadcn registry schema. The docs site imports components directly from the root `registry/ui/` via the `@/registry/*` alias (no local copy in `docs/`).
-
-**When modifying a registry component**, the metadata in `gen-registry.mjs` (dependencies, registryDependencies, description) must stay in sync with the component source.
+The shadcn CLI resolves this directly from `registry.json` at the repo root — no build step, no Vercel endpoint. The docs site is for documentation only; it imports components via `@/registry/*` (alias to root `registry/ui/`).
 
 ## Path aliases
 

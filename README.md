@@ -16,13 +16,13 @@ Components are installed individually via the shadcn CLI pointing at this regist
 ### `workspace-tabs`
 
 ```bash
-npx shadcn@latest add https://workspaceui.vercel.app/r/workspace-tabs.json
+npx shadcn@latest add https://raw.githubusercontent.com/jayclydeTags/workspaceui/main/public/r/workspace-tabs.json
 ```
 
 ### `workspace`
 
 ```bash
-npx shadcn@latest add https://workspaceui.vercel.app/r/workspace.json
+npx shadcn@latest add https://raw.githubusercontent.com/jayclydeTags/workspaceui/main/public/r/workspace.json
 ```
 
 > `workspace` depends on `workspace-tabs` and the shadcn `resizable` component — the CLI installs them automatically.

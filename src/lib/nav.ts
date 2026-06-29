@@ -9,6 +9,15 @@ export interface NavSection {
   items: NavItem[]
 }
 
+export const blocksNav: NavSection[] = [
+  {
+    title: "Dashboard",
+    items: [
+      { title: "Dashboard 01", href: "/blocks/dashboard-01" },
+    ],
+  },
+]
+
 export const nav: NavSection[] = [
   {
     title: "Getting Started",
@@ -23,13 +32,6 @@ export const nav: NavSection[] = [
       { title: "Workspace Tabs", href: "/docs/components/workspace-tabs" },
       { title: "Workspace Panel", href: "/docs/components/workspace-panel" },
       { title: "Workspace", href: "/docs/components/workspace" },
-    ],
-  },
-  {
-    title: "Blocks",
-    items: [
-      { title: "Overview", href: "/docs/blocks" },
-      { title: "Dashboard 01", href: "/docs/blocks/dashboard-01" },
     ],
   },
 ]

@@ -1,14 +1,14 @@
 import { Link, useLocation } from "react-router-dom"
 
 import { cn } from "@/lib/utils"
-import { nav } from "@/lib/nav"
+import { nav, type NavSection } from "@/lib/nav"
 
-export function SidebarNav() {
+export function SidebarNav({ sections = nav }: { sections?: NavSection[] }) {
   const { pathname } = useLocation()
 
   return (
     <nav className="w-full">
-      {nav.map((section) => (
+      {sections.map((section) => (
         <div key={section.title} className="pb-6">
           <h4 className="mb-1 rounded-md px-2 py-1 text-sm font-semibold">
             {section.title}

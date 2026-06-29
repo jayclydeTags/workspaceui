@@ -137,7 +137,7 @@ export function WorkspacePage() {
                 code="npm install @base-ui/react react-resizable-panels lucide-react"
                 lang="bash"
               />
-              <Step>Add the workspace-tabs component</Step>
+              <Step>Add the workspace-tabs and workspace-context components</Step>
               <CodeBlock
                 code="npx shadcn@latest add jayclydeTags/workspaceui/workspace-tabs"
                 lang="bash"

@@ -63,6 +63,7 @@ const WORKSPACE_TABS_PROPS = [
   { name: "onTabChange", type: "(id: string) => void", required: true, description: "Fired when the user clicks a tab." },
   { name: "onTabClose", type: "(id: string) => void", description: "When provided, each non-pinned tab renders a close button." },
   { name: "onAddTab", type: "() => void", description: 'When provided, a "+" button appears at the end of the strip.' },
+  { name: "paneId", type: "string", description: "Required for drag-and-drop when used inside <Workspace>. Omit when used standalone." },
   { name: "children", type: "React.ReactNode", required: true, description: "Content rendered in the area below the tab strip." },
   { name: "className", type: "string", description: "Additional CSS classes applied to the root element." },
 ]
@@ -95,7 +96,8 @@ export function WorkspaceTabsPage() {
             <Steps>
               <Step>Install dependencies</Step>
               <CodeBlock code="npm install @base-ui/react lucide-react" lang="bash" />
-              <Step>Copy the component into your project</Step>
+              <Step>Copy the components into your project</Step>
+              <ComponentSource name="workspace-context" />
               <ComponentSource name="workspace-tabs" />
             </Steps>
           }
@@ -151,10 +153,10 @@ export function WorkspaceTabsPage() {
           </li>
           <li>
             <strong className="text-foreground">Drag support</strong> —
-            exposes <code className="font-mono text-xs">onTabDragStart</code>{" "}
-            and <code className="font-mono text-xs">tabDropInsertIndex</code>{" "}
-            consumed by <code className="font-mono text-xs">Workspace</code>{" "}
-            for cross-pane drag and drop.
+            pass <code className="font-mono text-xs">paneId</code> when
+            used inside <code className="font-mono text-xs">&lt;Workspace&gt;</code>{" "}
+            to enable cross-pane tab drag and drop. Drag wires up automatically
+            via context — no extra props required.
           </li>
         </ul>
       </section>

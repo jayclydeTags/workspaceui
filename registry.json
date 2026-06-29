@@ -4,15 +4,43 @@
   "homepage": "https://github.com/jayclydeTags/workspaceui",
   "items": [
     {
+      "name": "workspace-context",
+      "type": "registry:ui",
+      "title": "Workspace Context",
+      "description": "Shared drag context for WorkspaceTabs and Workspace. Installed automatically as a dependency — you do not need to add this directly.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "src/components/workspaceui/workspace-context.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "workspace-tabs",
       "type": "registry:ui",
       "title": "Workspace Tabs",
       "description": "Chrome-style scrollable tab strip with closeable tabs, unread badges, overflow fade, and macOS-style curved active-tab connectors.",
       "dependencies": ["@base-ui/react", "lucide-react"],
-      "registryDependencies": ["utils"],
+      "registryDependencies": ["utils", "workspace-context"],
       "files": [
         {
           "path": "src/components/workspaceui/workspace-tabs.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "workspace-panel",
+      "type": "registry:ui",
+      "title": "Workspace Panel",
+      "description": "Standalone panel: wraps one or two WorkspaceTabs with optional vertical resize. No drag-and-drop. Use workspace for full multi-panel layout.",
+      "dependencies": ["@base-ui/react", "lucide-react", "react-resizable-panels"],
+      "registryDependencies": ["workspace-tabs", "resizable", "utils"],
+      "files": [
+        {
+          "path": "src/components/workspaceui/workspace-panel.tsx",
           "type": "registry:ui"
         }
       ]
@@ -23,7 +51,7 @@
       "title": "Workspace",
       "description": "Self-contained workspace with tab-based panels: closing a panel's last tab collapses the panel; closing all panels reveals a configurable fallback. Exposes useWorkspace context and a WorkspaceHandle ref for programmatic control.",
       "dependencies": ["@base-ui/react", "react-resizable-panels", "lucide-react"],
-      "registryDependencies": ["resizable", "workspace-tabs", "utils"],
+      "registryDependencies": ["resizable", "workspace-tabs", "workspace-context", "utils"],
       "files": [
         {
           "path": "src/components/workspaceui/workspace.tsx",

@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { useWorkspaceDragOptional } from "@/components/workspaceui/workspace-context"
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
@@ -25,12 +26,8 @@ export interface WorkspaceTabsProps {
   onTabClose?: (id: string) => void
   /** Omit to hide "+" button */
   onAddTab?: () => void
-  /** Called when the user begins dragging a tab (injected by WorkspacePaneWrapper). */
-  onTabDragStart?: (tabId: string, tabTitle: string, pointerId: number, x: number, y: number) => void
-  /** Ref attached to the tab strip container (injected by WorkspacePaneWrapper). */
-  tabStripRef?: React.Ref<HTMLElement>
-  /** Insert-position indicator shown during a cross-pane drag (injected by WorkspacePaneWrapper). */
-  tabDropInsertIndex?: number | null
+  /** Required for drag-and-drop when used inside <Workspace>. */
+  paneId?: string
   className?: string
   children: React.ReactNode
 }
@@ -91,12 +88,25 @@ function WorkspaceTabs({
   onTabChange,
   onTabClose,
   onAddTab,
-  onTabDragStart,
-  tabStripRef,
-  tabDropInsertIndex,
+  paneId,
   className,
   children,
 }: WorkspaceTabsProps) {
+  const dragCtx = useWorkspaceDragOptional()
+  const registerTabStrip = dragCtx?.registerTabStrip
+
+  const tabStripRef = React.useCallback(
+    (el: HTMLDivElement | null) => {
+      if (paneId != null) registerTabStrip?.(paneId, el)
+    },
+    [paneId, registerTabStrip],
+  )
+
+  const tabDropInsertIndex =
+    paneId != null && dragCtx?.tabDropTarget?.targetPaneId === paneId
+      ? dragCtx.tabDropTarget.insertIndex
+      : null
+
   return (
     <div
       data-slot="workspace-tabs"
@@ -104,7 +114,7 @@ function WorkspaceTabs({
     >
       {/* ── Tab strip ── */}
       <div
-        ref={tabStripRef as React.Ref<HTMLDivElement>}
+        ref={tabStripRef}
         data-slot="workspace-tab-list"
         className="flex shrink-0 items-end border-b border-border bg-muted/30 pl-2"
         style={{
@@ -144,11 +154,11 @@ function WorkspaceTabs({
                   id={`workspace-tab-${tab.id}`}
                   onClick={() => onTabChange(tab.id)}
                   onPointerDown={(e) => {
-                    if (tab.pinned || !onTabDragStart) return
+                    if (tab.pinned || !paneId || !dragCtx) return
                     onTabChange(tab.id)
                     e.currentTarget.setPointerCapture(e.pointerId)
                     e.preventDefault()
-                    onTabDragStart(tab.id, tab.title, e.pointerId, e.clientX, e.clientY)
+                    dragCtx.startDrag(paneId, tab.id, tab.title, e.pointerId, e.clientX, e.clientY)
                   }}
                   className={cn(
                     // Layout & sizing

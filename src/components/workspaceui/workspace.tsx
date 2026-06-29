@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { WorkspaceTabs } from "@/components/workspaceui/workspace-tabs"
+import { WorkspaceDragContext, useWorkspaceDrag } from "@/components/workspaceui/workspace-context"
 import {
   ResizableHandle,
   ResizablePanel,
@@ -103,24 +104,7 @@ export function useWorkspace(): WorkspaceContextValue {
 }
 
 // ── Drag context ───────────────────────────────────────────────────────────
-
-interface WorkspaceDragContextValue {
-  isDragging: boolean
-  snapState: SnapState | null
-  tabDropTarget: TabDropTarget | null
-  registerPane: (paneId: string, el: HTMLElement | null) => void
-  registerTabStrip: (paneId: string, el: HTMLElement | null) => void
-  startDrag: (sourcePaneId: string, tabId: string, tabTitle: string, pointerId: number, x: number, y: number) => void
-  setLastActivePane: (paneId: string) => void
-}
-
-const WorkspaceDragContext = React.createContext<WorkspaceDragContextValue | null>(null)
-
-function useWorkspaceDrag(): WorkspaceDragContextValue {
-  const ctx = React.useContext(WorkspaceDragContext)
-  if (ctx == null) throw new Error("useWorkspaceDrag must be used inside <Workspace>")
-  return ctx
-}
+// WorkspaceDragContext, useWorkspaceDrag defined in workspace-context.tsx
 
 // ── Imperative handle ──────────────────────────────────────────────────────
 
@@ -608,6 +592,9 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
         document.addEventListener("pointermove", handlePointerMove, { signal: ac.signal })
         document.addEventListener("pointerup", handlePointerUp, { signal: ac.signal })
         document.addEventListener("pointercancel", handlePointerCancel, { signal: ac.signal })
+        document.addEventListener("keydown", (e: KeyboardEvent) => {
+          if (e.key === "Escape") handlePointerCancel()
+        }, { signal: ac.signal })
       },
       [handlePointerMove, handlePointerUp, handlePointerCancel],
     )
@@ -838,6 +825,7 @@ function WorkspacePaneGroupFromLayout({
                       onTabChange={(tabId) => onTabChange(col.topPane.id, tabId)}
                       onTabClose={(tabId) => onTabClose(col.topPane.id, tabId)}
                       onAddTab={col.topPane.onAddTab}
+                      paneId={col.topPane.id}
                       className="h-full"
                     >
                       {renderTabContent(col.topPane.id, col.topPane.activeTabId)}
@@ -853,6 +841,7 @@ function WorkspacePaneGroupFromLayout({
                       onTabChange={(tabId) => onTabChange(col.bottomPane!.id, tabId)}
                       onTabClose={(tabId) => onTabClose(col.bottomPane!.id, tabId)}
                       onAddTab={col.bottomPane.onAddTab}
+                      paneId={col.bottomPane.id}
                       className="h-full"
                     >
                       {renderTabContent(col.bottomPane.id, col.bottomPane.activeTabId)}
@@ -868,6 +857,7 @@ function WorkspacePaneGroupFromLayout({
                   onTabChange={(tabId) => onTabChange(col.topPane.id, tabId)}
                   onTabClose={(tabId) => onTabClose(col.topPane.id, tabId)}
                   onAddTab={col.topPane.onAddTab}
+                  paneId={col.topPane.id}
                   className="h-full"
                 >
                   {renderTabContent(col.topPane.id, col.topPane.activeTabId)}
@@ -883,12 +873,6 @@ function WorkspacePaneGroupFromLayout({
 
 // ── WorkspacePaneWrapper ───────────────────────────────────────────────────
 
-type WorkspaceTabsInjectableProps = {
-  onTabDragStart?: (tabId: string, tabTitle: string, pointerId: number, x: number, y: number) => void
-  tabStripRef?: React.Ref<HTMLElement>
-  tabDropInsertIndex?: number | null
-}
-
 function WorkspacePaneWrapper({
   paneId,
   children,
@@ -896,40 +880,16 @@ function WorkspacePaneWrapper({
   paneId: string
   children: React.ReactNode
 }) {
-  const { isDragging, snapState, tabDropTarget, registerPane, registerTabStrip, startDrag, setLastActivePane } = useWorkspaceDrag()
+  const { isDragging, snapState, tabDropTarget, registerPane, setLastActivePane } = useWorkspaceDrag()
 
   const paneRef = React.useCallback(
     (el: HTMLElement | null) => registerPane(paneId, el),
     [paneId, registerPane],
   )
 
-  const tabStripRef = React.useCallback(
-    (el: HTMLElement | null) => registerTabStrip(paneId, el),
-    [paneId, registerTabStrip],
-  )
-
-  const handlePointerDown = React.useCallback(() => {
-    setLastActivePane(paneId)
-  }, [paneId, setLastActivePane])
-
-  const tabDropInsertIndex = tabDropTarget?.targetPaneId === paneId ? tabDropTarget.insertIndex : null
-
-  // Re-clone WorkspaceTabs to inject drag props
-  const childrenWithDrag = React.Children.map(children, (child) => {
-    if (React.isValidElement(child)) {
-      return React.cloneElement(child as React.ReactElement<WorkspaceTabsInjectableProps>, {
-        onTabDragStart: (tabId: string, tabTitle: string, pointerId: number, x: number, y: number) =>
-          startDrag(paneId, tabId, tabTitle, pointerId, x, y),
-        tabStripRef,
-        tabDropInsertIndex,
-      })
-    }
-    return child
-  })
-
   return (
-    <div ref={paneRef} className="relative h-full w-full" onPointerDown={handlePointerDown}>
-      {childrenWithDrag}
+    <div ref={paneRef} className="relative h-full w-full" onPointerDown={() => setLastActivePane(paneId)}>
+      {children}
       {isDragging && tabDropTarget === null && (
         <SnapZoneOverlay
           activeZone={snapState?.targetPaneId === paneId ? snapState.zone : null}

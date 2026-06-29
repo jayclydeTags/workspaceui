@@ -7,83 +7,59 @@ import { CodeTabs } from "@/components/code-tabs"
 import { Steps, Step } from "@/components/steps"
 import { PropsTable } from "@/components/props-table"
 
-const PREVIEW_CODE = `import { useState } from "react"
-import { Home, FileText, Settings } from "lucide-react"
+const PREVIEW_CODE = `import { Home, FileText, Settings } from "lucide-react"
+import { Workspace } from "@/components/ui/workspace"
 import { WorkspacePanel } from "@/components/ui/workspace-panel"
-import { WorkspaceTabs } from "@/components/ui/workspace-tabs"
 
 export function MyPanel() {
-  const [tabs, setTabs] = useState([
-    { id: "home", title: "Home", icon: <Home />, pinned: true },
-    { id: "docs", title: "Documentation", icon: <FileText />, badge: 2 },
-    { id: "settings", title: "Settings", icon: <Settings /> },
-  ])
-  const [activeId, setActiveId] = useState("home")
-
-  function handleClose(id: string) {
-    const next = tabs.filter((t) => t.id !== id)
-    setTabs(next)
-    if (activeId === id) {
-      const idx = tabs.findIndex((t) => t.id === id)
-      setActiveId(next[Math.max(0, idx - 1)]?.id ?? next[0]?.id ?? "")
-    }
-  }
-
   return (
-    <WorkspacePanel>
-      <WorkspaceTabs
-        tabs={tabs}
-        activeTabId={activeId}
-        onTabChange={setActiveId}
-        onTabClose={handleClose}
-      >
-        <div className="flex h-full items-center justify-center">
-          <p className="text-sm text-muted-foreground">
-            {tabs.find((t) => t.id === activeId)?.title}
-          </p>
-        </div>
-      </WorkspaceTabs>
-    </WorkspacePanel>
+    <Workspace
+      initialPanes={[{
+        id: "main",
+        tabs: [
+          { id: "home",     title: "Home",          icon: <Home />,     pinned: true },
+          { id: "docs",     title: "Documentation", icon: <FileText />, badge: 2 },
+          { id: "settings", title: "Settings",      icon: <Settings /> },
+        ],
+      }]}
+      renderTabContent={(_paneId, tabId) => (
+        <WorkspacePanel>
+          <div className="flex h-full items-center justify-center">
+            <p className="text-sm text-muted-foreground">{tabId}</p>
+          </div>
+        </WorkspacePanel>
+      )}
+    />
   )
 }`
 
-const USAGE_IMPORT = `import { WorkspacePanel } from "@/components/ui/workspace-panel"
+const USAGE_IMPORT = `import { Workspace } from "@/components/ui/workspace"
+import { WorkspacePanel } from "@/components/ui/workspace-panel"
 import { WorkspaceTabs } from "@/components/ui/workspace-tabs"`
 
-const USAGE_CODE = `<WorkspacePanel>
-  <WorkspaceTabs tabs={editorTabs} activeTabId={editorId} onTabChange={setEditorId}>
-    {/* editor content */}
-  </WorkspaceTabs>
-  <WorkspaceTabs tabs={terminalTabs} activeTabId={terminalId} onTabChange={setTerminalId}>
-    {/* terminal content */}
-  </WorkspaceTabs>
-</WorkspacePanel>`
+const USAGE_CODE = `<Workspace
+  initialPanes={[{ id: "editor", tabs: [{ id: "main", title: "main.tsx" }] }]}
+  renderTabContent={(_paneId, tabId) => (
+    <WorkspacePanel>
+      <div>{/* editor content for {tabId} */}</div>
+    </WorkspacePanel>
+  )}
+/>`
 
 const SPLIT_CODE = `import { useState } from "react"
 import { FileText, Terminal } from "lucide-react"
+import { Workspace } from "@/components/ui/workspace"
 import { WorkspacePanel } from "@/components/ui/workspace-panel"
 import { WorkspaceTabs } from "@/components/ui/workspace-tabs"
 
-export function MySplitPanel() {
-  const [editorId, setEditorId] = useState("main")
+function EditorWithTerminal({ tabId }: { tabId: string }) {
   const [terminalId, setTerminalId] = useState("bash")
 
   return (
     <WorkspacePanel>
-      <WorkspaceTabs
-        tabs={[
-          { id: "main", title: "main.tsx", icon: <FileText /> },
-          { id: "app",  title: "app.tsx",  icon: <FileText /> },
-        ]}
-        activeTabId={editorId}
-        onTabChange={setEditorId}
-      >
-        <div className="flex h-full items-center justify-center">
-          <p className="text-sm text-muted-foreground">
-            {editorId === "main" ? "// main.tsx" : "// app.tsx"}
-          </p>
-        </div>
-      </WorkspaceTabs>
+      <div className="flex h-full items-center justify-center">
+        <p className="font-mono text-sm text-muted-foreground">{tabId}</p>
+      </div>
       <WorkspaceTabs
         tabs={[
           { id: "bash", title: "bash",        icon: <Terminal />, pinned: true },
@@ -97,6 +73,21 @@ export function MySplitPanel() {
         </div>
       </WorkspaceTabs>
     </WorkspacePanel>
+  )
+}
+
+export function MySplitPanel() {
+  return (
+    <Workspace
+      initialPanes={[{
+        id: "editor",
+        tabs: [
+          { id: "main.tsx", title: "main.tsx", icon: <FileText />, pinned: true },
+          { id: "app.tsx",  title: "app.tsx",  icon: <FileText /> },
+        ],
+      }]}
+      renderTabContent={(_paneId, tabId) => <EditorWithTerminal tabId={tabId} />}
+    />
   )
 }`
 
@@ -125,12 +116,13 @@ export function WorkspacePanelPage() {
         <p className="mb-1 text-sm text-muted-foreground">Components</p>
         <h1 className="mb-3 text-3xl font-bold">Workspace Panel</h1>
         <p className="text-muted-foreground">
-          A standalone panel that wraps one or two{" "}
-          <code className="font-mono text-xs">WorkspaceTabs</code> instances. Two
-          children stack vertically with a drag-to-resize handle between them. No
-          drag-and-drop splitting — use{" "}
-          <code className="font-mono text-xs">Workspace</code> for the full
-          multi-panel layout.
+          A layout component used inside{" "}
+          <code className="font-mono text-xs">&lt;Workspace&gt;</code>'s{" "}
+          <code className="font-mono text-xs">renderTabContent</code> to split a
+          pane's content area vertically. One child fills the pane; two children
+          stack with a drag-to-resize handle between them. Drag-to-reorder and
+          cross-pane transfers work automatically via the parent{" "}
+          <code className="font-mono text-xs">Workspace</code> context.
         </p>
       </div>
 
@@ -163,9 +155,12 @@ export function WorkspacePanelPage() {
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">Split Panel</h2>
         <p className="text-sm text-muted-foreground">
-          Pass two <code className="font-mono text-xs">WorkspaceTabs</code> as
-          children to get a vertically resizable split with a drag handle between
-          them.
+          Pass two children to{" "}
+          <code className="font-mono text-xs">WorkspacePanel</code> to get a
+          vertically resizable split — ideal for an editor above and a terminal
+          strip below. The bottom child is typically a{" "}
+          <code className="font-mono text-xs">WorkspaceTabs</code> for secondary
+          content like terminal sessions or output panels.
         </p>
         <ComponentPreview name="workspace-panel-split" code={SPLIT_CODE} />
       </section>

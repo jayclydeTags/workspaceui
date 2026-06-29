@@ -7,64 +7,63 @@ import { CodeTabs } from "@/components/code-tabs"
 import { Steps, Step } from "@/components/steps"
 import { PropsTable } from "@/components/props-table"
 
-const PREVIEW_CODE = `import { useState } from "react"
+const PREVIEW_CODE = `import { useRef } from "react"
 import { LayoutDashboard, FileText, Settings, Inbox } from "lucide-react"
+import { Workspace, type WorkspaceHandle } from "@/components/ui/workspace"
 import { WorkspacePanel } from "@/components/ui/workspace-panel"
-import { WorkspaceTabs } from "@/components/ui/workspace-tabs"
 
 export function MyTabs() {
-  const [tabs, setTabs] = useState([
-    { id: "dashboard", title: "Dashboard", icon: <LayoutDashboard />, pinned: true },
-    { id: "docs",      title: "Documentation", icon: <FileText />, badge: 3 },
-    { id: "inbox",     title: "Inbox", icon: <Inbox /> },
-    { id: "settings",  title: "Settings", icon: <Settings /> },
-  ])
-  const [activeId, setActiveId] = useState("dashboard")
-
-  function handleClose(id: string) {
-    const next = tabs.filter((t) => t.id !== id)
-    setTabs(next)
-    if (activeId === id) {
-      const idx = tabs.findIndex((t) => t.id === id)
-      setActiveId(next[Math.max(0, idx - 1)]?.id ?? next[0]?.id ?? "")
-    }
-  }
+  const ref = useRef<WorkspaceHandle>(null)
 
   return (
-    <WorkspacePanel>
-      <WorkspaceTabs
-        tabs={tabs}
-        activeTabId={activeId}
-        onTabChange={setActiveId}
-        onTabClose={handleClose}
-        onAddTab={() => {
+    <Workspace
+      ref={ref}
+      initialPanes={[{
+        id: "main",
+        tabs: [
+          { id: "dashboard", title: "Dashboard", icon: <LayoutDashboard />, pinned: true },
+          { id: "docs",      title: "Documentation", icon: <FileText />, badge: 3 },
+          { id: "inbox",     title: "Inbox", icon: <Inbox /> },
+          { id: "settings",  title: "Settings", icon: <Settings /> },
+        ],
+        onAddTab: () => {
           const id = \`tab-\${Date.now()}\`
-          setTabs((prev) => [...prev, { id, title: "New Tab" }])
-          setActiveId(id)
-        }}
-      >
-        <div className="flex h-40 items-center justify-center">
-          <p className="text-sm text-muted-foreground">
-            {tabs.find((t) => t.id === activeId)?.title ?? "No tab selected"}
-          </p>
-        </div>
-      </WorkspaceTabs>
-    </WorkspacePanel>
+          ref.current?.openTabInPane("main", { id, title: "New Tab" })
+        },
+      }]}
+      renderTabContent={(_paneId, tabId) => (
+        <WorkspacePanel>
+          <div className="flex h-full items-center justify-center">
+            <p className="text-sm text-muted-foreground">{tabId}</p>
+          </div>
+        </WorkspacePanel>
+      )}
+    />
   )
 }`
 
-const USAGE_IMPORT = `import { WorkspacePanel } from "@/components/ui/workspace-panel"
+const USAGE_IMPORT = `import { Workspace, type WorkspaceHandle } from "@/components/ui/workspace"
+import { WorkspacePanel } from "@/components/ui/workspace-panel"
 import { WorkspaceTabs } from "@/components/ui/workspace-tabs"`
 
-const USAGE_CODE = `<WorkspacePanel>
-  <WorkspaceTabs
-    tabs={tabs}
-    activeTabId={activeId}
-    onTabChange={(id) => setActiveId(id)}
-  >
-    <div>{/* active tab content */}</div>
-  </WorkspaceTabs>
-</WorkspacePanel>`
+const USAGE_CODE = `// Pane-level tabs are declared in initialPanes — Workspace renders the strip.
+<Workspace
+  initialPanes={[{ id: "pane", tabs: [{ id: "home", title: "Home", pinned: true }] }]}
+  renderTabContent={(_paneId, tabId) => (
+    <WorkspacePanel>
+      <div>{/* tab content */}</div>
+
+      {/* Sub-panel strip — WorkspaceTabs used directly for nested content */}
+      <WorkspaceTabs
+        tabs={terminalTabs}
+        activeTabId={terminalId}
+        onTabChange={setTerminalId}
+      >
+        <div className="p-3 font-mono text-xs">$ _</div>
+      </WorkspaceTabs>
+    </WorkspacePanel>
+  )}
+/>`
 
 const WORKSPACE_TAB_PROPS = [
   { name: "id", type: "string", required: true, description: "Unique identifier for the tab." },
@@ -80,7 +79,7 @@ const WORKSPACE_TABS_PROPS = [
   { name: "onTabChange", type: "(id: string) => void", required: true, description: "Fired when the user clicks a tab." },
   { name: "onTabClose", type: "(id: string) => void", description: "When provided, each non-pinned tab renders a close button." },
   { name: "onAddTab", type: "() => void", description: 'When provided, a "+" button appears at the end of the strip.' },
-  { name: "paneId", type: "string", description: "Required for drag-and-drop when used inside <Workspace>. Omit when used standalone." },
+  { name: "paneId", type: "string", description: "Connects this strip to the parent <Workspace> drag context, enabling tab reordering and cross-pane transfers. Set automatically for pane-level strips; pass explicitly when using WorkspaceTabs as a sub-panel in renderTabContent." },
   { name: "children", type: "React.ReactNode", required: true, description: "Content rendered in the area below the tab strip." },
   { name: "className", type: "string", description: "Additional CSS classes applied to the root element." },
 ]
@@ -97,7 +96,10 @@ export function WorkspaceTabsPage() {
         <h1 className="mb-3 text-3xl font-bold">Workspace Tabs</h1>
         <p className="text-muted-foreground">
           Chrome-style scrollable tab strip with closeable tabs, unread badges,
-          overflow fade, and macOS-style curved active-tab connectors.
+          overflow fade, and macOS-style curved active-tab connectors. Designed
+          to run inside{" "}
+          <code className="font-mono text-xs">&lt;Workspace&gt;</code>, which
+          provides the drag context for tab reordering and cross-pane transfers.
         </p>
       </div>
 
@@ -169,11 +171,12 @@ export function WorkspaceTabsPage() {
             unread counts rendered as pills, capped at 99+.
           </li>
           <li>
-            <strong className="text-foreground">Drag support</strong> —
-            pass <code className="font-mono text-xs">paneId</code> when
-            used inside <code className="font-mono text-xs">&lt;Workspace&gt;</code>{" "}
-            to enable cross-pane tab drag and drop. Drag wires up automatically
-            via context — no extra props required.
+            <strong className="text-foreground">Drag to reorder</strong> —
+            drag tabs within the strip to reorder them. Cross-pane transfers
+            and snap-zone splitting are also supported. All drag behavior is
+            provided by the parent{" "}
+            <code className="font-mono text-xs">&lt;Workspace&gt;</code> context
+            — no extra props required for pane-level tabs.
           </li>
         </ul>
       </section>

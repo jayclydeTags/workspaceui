@@ -35,7 +35,7 @@
       "name": "workspace-panel",
       "type": "registry:ui",
       "title": "Workspace Panel",
-      "description": "Standalone panel: wraps one or two WorkspaceTabs with optional vertical resize. No drag-and-drop. Use workspace for full multi-panel layout.",
+      "description": "Layout component used inside Workspace's renderTabContent to split a pane's content area vertically. One child fills the pane; two children stack with a drag-to-resize handle. Drag-to-reorder works via the parent Workspace context.",
       "dependencies": ["@base-ui/react", "lucide-react", "react-resizable-panels"],
       "registryDependencies": ["workspace-tabs", "resizable", "utils"],
       "files": [

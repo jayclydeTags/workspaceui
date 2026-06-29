@@ -1,23 +1,13 @@
 import { useDocumentTitle } from "@/lib/use-document-title"
-import { CodeBlock, InlineCode } from "@/components/code-block"
-
-const SETUP_CODE = `// 1. Make sure you have a Next.js or Vite project with Tailwind CSS and shadcn/ui initialised.
-// 2. Run the add command for the component you want:`
-
-const NEXTJS_SETUP = `# Install shadcn/ui if you haven't already
-npx shadcn@latest init
-
-# Add workspace-tabs
-npx shadcn@latest add jayclydeTags/workspaceui/workspace-tabs
-
-# Add workspace (includes workspace-tabs)
-npx shadcn@latest add jayclydeTags/workspaceui/workspace`
+import { CodeBlock } from "@/components/code-block"
+import { Steps, Step } from "@/components/steps"
+import { Callout } from "@/components/callout"
 
 export function InstallationPage() {
   useDocumentTitle("Installation")
 
   return (
-    <article className="space-y-6">
+    <article className="space-y-10">
       <div>
         <h1 className="mb-2 text-3xl font-bold">Installation</h1>
         <p className="text-muted-foreground">
@@ -37,26 +27,31 @@ export function InstallationPage() {
         </ul>
       </section>
 
-      <section className="space-y-3">
-        <h2 className="text-xl font-semibold">Add a component</h2>
-        <p className="text-muted-foreground">
-          Use the shadcn CLI to install any component. The CLI handles
-          dependencies automatically.
-        </p>
-        <CodeBlock code={NEXTJS_SETUP} lang="bash" />
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold">Quick start</h2>
+        <Steps>
+          <Step>Initialise shadcn/ui if you haven't already</Step>
+          <CodeBlock code="npx shadcn@latest init" lang="bash" />
+          <Step>Add the component you need</Step>
+          <CodeBlock
+            code={`npx shadcn@latest add jayclydeTags/workspaceui/workspace-tabs\nnpx shadcn@latest add jayclydeTags/workspaceui/workspace`}
+            lang="bash"
+          />
+        </Steps>
+        <Callout>
+          The CLI automatically installs peer dependencies and resolves registry
+          dependencies — <code className="font-mono text-xs">workspace</code>{" "}
+          will pull in <code className="font-mono text-xs">workspace-tabs</code>{" "}
+          automatically.
+        </Callout>
       </section>
 
-      <section className="space-y-3">
+      <section className="space-y-4">
         <h2 className="text-xl font-semibold">Manual installation</h2>
-        <p className="text-muted-foreground">
-          If you prefer to copy files manually, each component page has a Code
-          tab showing the full source. Copy the file into{" "}
-          <code className="font-mono text-xs">
-            your-project/components/ui/
-          </code>{" "}
-          and install the listed dependencies.
+        <p className="text-sm text-muted-foreground">
+          Each component page has a <strong>Manual</strong> tab in the
+          installation section with the full source and dependency list.
         </p>
-        <InlineCode code={SETUP_CODE} />
       </section>
     </article>
   )

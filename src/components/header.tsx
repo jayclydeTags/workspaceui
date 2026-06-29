@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"
 
+import { DocSearch } from "@/components/doc-search"
 import { ThemeToggle } from "@/components/theme-toggle"
 
 function GithubIcon({ className }: { className?: string }) {
@@ -18,7 +19,7 @@ function GithubIcon({ className }: { className?: string }) {
 export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-screen-2xl items-center gap-4 px-4 md:px-6">
+      <div className="flex h-14 w-full items-center gap-4 px-6">
         <Link to="/" className="flex items-center gap-2 font-semibold">
           <span className="text-sm">WorkspaceUI</span>
         </Link>
@@ -44,7 +45,8 @@ export function Header() {
           </Link>
         </nav>
 
-        <div className="ml-auto flex items-center gap-1">
+        <div className="ml-auto flex items-center gap-3">
+          <DocSearch />
           <a
             href="https://github.com/jayclydeTags/workspaceui"
             target="_blank"

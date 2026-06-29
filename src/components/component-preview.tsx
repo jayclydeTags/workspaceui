@@ -3,11 +3,17 @@ import { codeToHtml } from "shiki"
 
 import { ComponentPreviewShell } from "@/components/component-preview-shell"
 import { WorkspaceTabsLiveDemo } from "@/components/previews/workspace-tabs-live"
+import { WorkspaceTabsOverflowDemo } from "@/components/previews/workspace-tabs-overflow"
+import { WorkspaceTabsMinimalDemo } from "@/components/previews/workspace-tabs-minimal"
 import { WorkspaceLiveDemo } from "@/components/previews/workspace-live"
+import { WorkspaceSinglePaneDemo } from "@/components/previews/workspace-single-pane"
 
 const previewComponents: Record<string, React.ReactNode> = {
   "workspace-tabs": <WorkspaceTabsLiveDemo />,
+  "workspace-tabs-overflow": <WorkspaceTabsOverflowDemo />,
+  "workspace-tabs-minimal": <WorkspaceTabsMinimalDemo />,
   workspace: <WorkspaceLiveDemo />,
+  "workspace-single-pane": <WorkspaceSinglePaneDemo />,
 }
 
 interface ComponentPreviewProps {

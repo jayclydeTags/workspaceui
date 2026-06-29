@@ -1,9 +1,13 @@
 import { useDocumentTitle } from "@/lib/use-document-title"
-import { CodeBlock, InlineCode } from "@/components/code-block"
+import { CodeBlock } from "@/components/code-block"
 import { ComponentPreview } from "@/components/component-preview"
+import { ComponentSource } from "@/components/component-source"
+import { ComponentTree } from "@/components/component-tree"
+import { CodeTabs } from "@/components/code-tabs"
+import { Steps, Step } from "@/components/steps"
 import { PropsTable } from "@/components/props-table"
 
-const PREVIEW_CODE = `import { LayoutDashboard, FileText } from "lucide-react"
+const PREVIEW_CODE = `import { LayoutDashboard, FileText, Settings } from "lucide-react"
 import { Workspace } from "@/components/ui/workspace"
 
 export function MyWorkspace() {
@@ -12,16 +16,22 @@ export function MyWorkspace() {
       <Workspace
         initialPanes={[
           {
-            id: "pane-main",
+            id: "pane-a",
             tabs: [
               { id: "dashboard", title: "Dashboard", icon: <LayoutDashboard />, pinned: true },
               { id: "docs", title: "Documentation", icon: <FileText /> },
             ],
+            defaultSize: 60,
+          },
+          {
+            id: "pane-b",
+            tabs: [{ id: "settings", title: "Settings", icon: <Settings />, pinned: true }],
+            defaultSize: 40,
           },
         ]}
         renderTabContent={(_paneId, tabId) => (
-          <div className="flex h-full items-center justify-center p-6">
-            <p className="text-sm text-muted-foreground">{tabId} content</p>
+          <div className="flex h-full items-center justify-center">
+            <p className="text-sm text-muted-foreground">{tabId}</p>
           </div>
         )}
       />
@@ -36,28 +46,18 @@ import { Workspace, useWorkspace, type WorkspaceHandle } from "@/components/ui/w
 function Parent() {
   const ref = useRef<WorkspaceHandle>(null)
 
-  function openNewPane() {
-    ref.current?.openPane({
-      id: "new-pane",
-      tabs: [{ id: "new-tab", title: "New Tab" }],
-    })
-  }
-
   return (
     <div className="h-screen">
-      <button onClick={openNewPane}>Open pane</button>
+      <button onClick={() => ref.current?.openPane({
+        id: "new-pane",
+        tabs: [{ id: "new-tab", title: "New Tab" }],
+      })}>
+        Open pane
+      </button>
       <Workspace
         ref={ref}
-        initialPanes={[
-          {
-            id: "main",
-            tabs: [{ id: "home", title: "Home", pinned: true }],
-            minSize: 30,
-          },
-        ]}
-        renderTabContent={(paneId, tabId) => (
-          <YourPageComponent paneId={paneId} tabId={tabId} />
-        )}
+        initialPanes={[{ id: "main", tabs: [{ id: "home", title: "Home", pinned: true }] }]}
+        renderTabContent={(paneId, tabId) => <YourPage paneId={paneId} tabId={tabId} />}
         fallback={<EmptyState />}
       />
     </div>
@@ -65,7 +65,7 @@ function Parent() {
 }
 
 // Access workspace state from any child
-function YourPageComponent({ paneId }: { paneId: string }) {
+function YourPage({ paneId }: { paneId: string }) {
   const { openTabInPane } = useWorkspace()
 
   return (
@@ -77,7 +77,7 @@ function YourPageComponent({ paneId }: { paneId: string }) {
 
 const WORKSPACE_PROPS = [
   { name: "initialPanes", type: "WorkspacePaneDef[]", default: "[]", description: "Initial pane/tab configuration rendered on mount." },
-  { name: "renderTabContent", type: "(paneId: string, tabId: string) => ReactNode", required: true, description: "Renders content for the active tab in each pane. Called on every render." },
+  { name: "renderTabContent", type: "(paneId: string, tabId: string) => ReactNode", required: true, description: "Renders content for the active tab in each pane. Called on every render — keep it fast." },
   { name: "fallback", type: "ReactNode", description: "Shown when all panes are closed. Defaults to a built-in placeholder." },
   { name: "className", type: "string", description: "Additional CSS classes applied to the root element." },
 ]
@@ -107,10 +107,12 @@ export function WorkspacePage() {
   useDocumentTitle("Workspace")
 
   return (
-    <article className="space-y-10">
+    <article className="space-y-12">
+
+      {/* Title + Description */}
       <div>
         <p className="mb-1 text-sm text-muted-foreground">Components</p>
-        <h1 className="mb-2 text-3xl font-bold">Workspace</h1>
+        <h1 className="mb-3 text-3xl font-bold">Workspace</h1>
         <p className="text-muted-foreground">
           Self-contained multi-pane workspace with tab drag/drop, cross-pane
           transfers, and snap-zone splitting. Exposes a{" "}
@@ -120,47 +122,135 @@ export function WorkspacePage() {
         </p>
       </div>
 
-      <section className="space-y-3">
+      {/* Preview + Code */}
+      <ComponentPreview name="workspace" code={PREVIEW_CODE} />
+
+      {/* Installation */}
+      <section className="space-y-4">
         <h2 className="text-xl font-semibold">Installation</h2>
-        <InlineCode code="npx shadcn@latest add jayclydeTags/workspaceui/workspace" />
+        <CodeTabs
+          cli="npx shadcn@latest add jayclydeTags/workspaceui/workspace"
+          manual={
+            <Steps>
+              <Step>Install dependencies</Step>
+              <CodeBlock
+                code="npm install @base-ui/react react-resizable-panels lucide-react"
+                lang="bash"
+              />
+              <Step>Add the workspace-tabs component</Step>
+              <CodeBlock
+                code="npx shadcn@latest add jayclydeTags/workspaceui/workspace-tabs"
+                lang="bash"
+              />
+              <Step>Copy the workspace component into your project</Step>
+              <ComponentSource name="workspace" />
+            </Steps>
+          }
+        />
       </section>
 
-      <section className="space-y-3">
-        <h2 className="text-xl font-semibold">Preview</h2>
-        <p className="text-sm text-muted-foreground">
-          Try dragging tabs between panes, or drag a tab to the edges to split
-          the layout.
-        </p>
-        <ComponentPreview name="workspace" code={PREVIEW_CODE} />
-      </section>
-
-      <section className="space-y-3">
+      {/* Usage */}
+      <section className="space-y-4">
         <h2 className="text-xl font-semibold">Usage</h2>
+        <CodeBlock code={`import { Workspace, useWorkspace, type WorkspaceHandle } from "@/components/ui/workspace"`} lang="tsx" />
         <CodeBlock code={USAGE_CODE} />
       </section>
 
-      <section className="space-y-3">
-        <h2 className="text-xl font-semibold">WorkspaceProps</h2>
-        <PropsTable props={WORKSPACE_PROPS} />
+      {/* Compositions */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold">Composition</h2>
+        <ComponentTree
+          description="Use the following composition to build a workspace:"
+          root={{
+            name: "Workspace",
+            children: [
+              {
+                name: "WorkspacePaneDef (×n via initialPanes prop)",
+                children: [
+                  {
+                    name: "WorkspaceTabDef (×n via tabs prop)",
+                    children: [
+                      { name: "icon?" },
+                      { name: "badge?" },
+                      { name: "pinned?" },
+                    ],
+                  },
+                ],
+              },
+              { name: "renderTabContent (active tab content)" },
+              { name: "fallback (shown when all panes closed)" },
+            ],
+          }}
+        />
       </section>
 
-      <section className="space-y-3">
-        <h2 className="text-xl font-semibold">WorkspacePaneDef</h2>
-        <p className="text-sm text-muted-foreground">
-          Used in <code className="font-mono text-sm">initialPanes</code> and{" "}
-          <code className="font-mono text-sm">openPane()</code>.
-        </p>
-        <PropsTable props={WORKSPACE_PANE_DEF_PROPS} />
+      {/* Features */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold">Features</h2>
+        <ul className="space-y-2 text-sm text-muted-foreground">
+          <li>
+            <strong className="text-foreground">Cross-pane drag and drop</strong>{" "}
+            — drag a tab from one pane and drop it into another to transfer it.
+          </li>
+          <li>
+            <strong className="text-foreground">Snap-zone splitting</strong>{" "}
+            — drag a tab to the left or right edge of a pane to split it into
+            two columns.
+          </li>
+          <li>
+            <strong className="text-foreground">Resizable panels</strong>{" "}
+            — panel columns are resizable via drag handles, with configurable
+            min sizes.
+          </li>
+          <li>
+            <strong className="text-foreground">Imperative handle</strong>{" "}
+            — attach a{" "}
+            <code className="font-mono text-xs">WorkspaceHandle</code> ref to
+            control panes and tabs programmatically from outside the component.
+          </li>
+          <li>
+            <strong className="text-foreground">Context hook</strong>{" "}
+            — any component rendered inside{" "}
+            <code className="font-mono text-xs">&lt;Workspace&gt;</code> can
+            call <code className="font-mono text-xs">useWorkspace()</code> to
+            read state or open/close panes and tabs.
+          </li>
+          <li>
+            <strong className="text-foreground">Custom fallback</strong>{" "}
+            — configure the view shown when all panes are closed via the{" "}
+            <code className="font-mono text-xs">fallback</code> prop.
+          </li>
+        </ul>
       </section>
 
-      <section className="space-y-3">
-        <h2 className="text-xl font-semibold">useWorkspace()</h2>
-        <p className="text-sm text-muted-foreground">
-          Context hook available to any component rendered inside{" "}
-          <code className="font-mono text-sm">&lt;Workspace&gt;</code>.
-        </p>
-        <PropsTable props={WORKSPACE_CONTEXT_PROPS} />
+      {/* API Reference */}
+      <section className="space-y-8">
+        <h2 className="text-xl font-semibold">API Reference</h2>
+
+        <div className="space-y-3">
+          <h3 className="text-base font-medium">Workspace</h3>
+          <PropsTable props={WORKSPACE_PROPS} />
+        </div>
+
+        <div className="space-y-3">
+          <h3 className="text-base font-medium">WorkspacePaneDef</h3>
+          <p className="text-sm text-muted-foreground">
+            Used in <code className="font-mono text-xs">initialPanes</code> and{" "}
+            <code className="font-mono text-xs">openPane()</code>.
+          </p>
+          <PropsTable props={WORKSPACE_PANE_DEF_PROPS} />
+        </div>
+
+        <div className="space-y-3">
+          <h3 className="text-base font-medium">useWorkspace()</h3>
+          <p className="text-sm text-muted-foreground">
+            Context hook available to any component rendered inside{" "}
+            <code className="font-mono text-xs">&lt;Workspace&gt;</code>.
+          </p>
+          <PropsTable props={WORKSPACE_CONTEXT_PROPS} />
+        </div>
       </section>
+
     </article>
   )
 }

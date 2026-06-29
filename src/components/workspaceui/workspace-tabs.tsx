@@ -4,7 +4,6 @@ import { Plus, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 import { useWorkspaceDragOptional } from "@/components/workspaceui/workspace-context"
 
 // ── Types ─────────────────────────────────────────────────────────────────
@@ -130,22 +129,22 @@ function WorkspaceTabs({
           role="tablist"
           aria-label="Open tabs"
           className="flex min-w-0 items-end overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          onKeyDown={(e) => {
+            if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return
+            const cur = tabs.findIndex((t) => t.id === activeTabId)
+            if (cur === -1) return
+            const next = e.key === "ArrowRight"
+              ? (cur + 1) % tabs.length
+              : (cur - 1 + tabs.length) % tabs.length
+            onTabChange(tabs[next]!.id)
+          }}
         >
           {tabs.map((tab, index) => {
             const isActive = tab.id === activeTabId
-            const prevIsActive =
-              index > 0 && tabs[index - 1]!.id === activeTabId
-            const showSeparator = index > 0 && !isActive && !prevIsActive && tabDropInsertIndex == null
-
             return (
               <React.Fragment key={tab.id}>
                 {/* Drop indicator shown when dragging over this strip position */}
                 {tabDropInsertIndex === index && <TabDropIndicator />}
-
-                {/* Separator between non-adjacent inactive tabs */}
-                {showSeparator && (
-                  <Separator orientation="vertical" className="mb-2 h-4 bg-foreground/10" />
-                )}
 
                 <button
                   role="tab"

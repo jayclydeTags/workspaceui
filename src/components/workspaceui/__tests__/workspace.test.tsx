@@ -1,7 +1,7 @@
 import * as React from "react"
-import { render, screen } from "@testing-library/react"
+import { render, screen, act, fireEvent } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { describe, it, expect } from "vitest"
+import { describe, it, expect, vi, beforeAll, afterAll, afterEach } from "vitest"
 
 import {
   Workspace,
@@ -38,6 +38,32 @@ function renderWorkspace(
       {...extra}
     />,
   )
+}
+
+// ── Drag helpers ───────────────────────────────────────────────────────────
+
+function mockRect(el: Element, r: Partial<Omit<DOMRect, "toJSON">>) {
+  vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
+    left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0, x: 0, y: 0,
+    toJSON: () => {},
+    ...r,
+  } as DOMRect)
+}
+
+function dragStart(tab: HTMLElement, from = { x: 10, y: 20 }) {
+  fireEvent.pointerDown(tab, { pointerId: 1, clientX: from.x, clientY: from.y, bubbles: true })
+}
+
+function dragMove(to: { x: number; y: number }) {
+  document.dispatchEvent(new PointerEvent("pointermove", { clientX: to.x, clientY: to.y, bubbles: true }))
+}
+
+function dragDrop() {
+  document.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }))
+}
+
+function pressEscape() {
+  document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }))
 }
 
 // ── Tests ──────────────────────────────────────────────────────────────────
@@ -266,6 +292,124 @@ describe("Workspace", () => {
         ref.current?.closePane("right")
       })
       expect(screen.getByText("No open panels")).toBeInTheDocument()
+    })
+  })
+
+  describe("drag and drop", () => {
+    // jsdom defaults window.innerWidth/innerHeight to 0, which makes the
+    // snap-zone visible-width calculation produce a negative snapSize and
+    // silently skips all zones.
+    beforeAll(() => {
+      vi.stubGlobal("innerWidth", 1024)
+      vi.stubGlobal("innerHeight", 768)
+    })
+    afterAll(() => vi.unstubAllGlobals())
+    afterEach(() => vi.restoreAllMocks())
+
+    it("TC-TAB-2: reorders tabs within the same pane", async () => {
+      renderWorkspace([pane("p1", ["a", "b", "c"])])
+
+      const tabStrip = document.querySelector('[data-slot="workspace-tab-list"]')!
+      const tabs = screen.getAllByRole("tab")
+
+      mockRect(tabStrip, { left: 0, top: 0, right: 450, bottom: 40 })
+      mockRect(tabs[0]!, { left: 0,   top: 0, right: 150, bottom: 40, width: 150 }) // "a"
+      mockRect(tabs[1]!, { left: 150, top: 0, right: 300, bottom: 40, width: 150 }) // "b"
+      mockRect(tabs[2]!, { left: 300, top: 0, right: 450, bottom: 40, width: 150 }) // "c"
+
+      await act(async () => {
+        dragStart(tabs[0]!)           // grab "a" at x=10
+        dragMove({ x: 15, y: 20 })   // cross 4 px threshold
+        dragMove({ x: 320, y: 20 })  // left of "c" midpoint (375) → insertIndex 2
+        dragDrop()
+      })
+
+      expect(screen.getAllByRole("tab").map((t) => t.textContent)).toEqual(["b", "a", "c"])
+    })
+
+    it("TC-TAB-3: moves a tab from one pane into another pane's tab strip", async () => {
+      renderWorkspace([pane("left", ["a"]), pane("right", ["b"])])
+
+      const tabStrips = document.querySelectorAll('[data-slot="workspace-tab-list"]')
+      const tabs = screen.getAllByRole("tab")
+
+      mockRect(tabStrips[0]!, { left: 0,   top: 0, right: 300, bottom: 40 })
+      mockRect(tabStrips[1]!, { left: 300, top: 0, right: 600, bottom: 40 })
+      mockRect(tabs[1]!, { left: 300, top: 0, right: 500, bottom: 40, width: 200 }) // "b" midpoint=400
+
+      await act(async () => {
+        dragStart(tabs[0]!)           // grab "a" from left pane
+        dragMove({ x: 15, y: 20 })   // cross threshold
+        dragMove({ x: 350, y: 20 })  // inside right strip, left of "b" midpoint → insertIndex 0
+        dragDrop()
+      })
+
+      const after = screen.getAllByRole("tab")
+      expect(after[0]).toHaveTextContent("a")
+      expect(after[1]).toHaveTextContent("b")
+    })
+
+    it("TC-TAB-5: dragging the last tab out of a pane removes that pane", async () => {
+      renderWorkspace([pane("left", ["a"]), pane("right", ["b"])])
+
+      const tabStrips = document.querySelectorAll('[data-slot="workspace-tab-list"]')
+      const tabs = screen.getAllByRole("tab")
+
+      mockRect(tabStrips[0]!, { left: 0,   top: 0, right: 300, bottom: 40 })
+      mockRect(tabStrips[1]!, { left: 300, top: 0, right: 600, bottom: 40 })
+      mockRect(tabs[1]!, { left: 300, top: 0, right: 500, bottom: 40, width: 200 })
+
+      await act(async () => {
+        dragStart(tabs[0]!)
+        dragMove({ x: 15, y: 20 })
+        dragMove({ x: 350, y: 20 })
+        dragDrop()
+      })
+
+      expect(screen.getAllByRole("tablist")).toHaveLength(1)
+    })
+
+    it("TC-TAB-4: dragging to a snap zone creates a new pane", async () => {
+      renderWorkspace([pane("left", ["a", "b"]), pane("right", ["c"])])
+
+      const paneWrappers = document.querySelectorAll('[data-slot="workspace-tabs"]')
+      const rightWrapper = paneWrappers[1]!.parentElement!
+      const tabs = screen.getAllByRole("tab") // "a", "b", "c"
+
+      // Right pane wrapper x 300–600, y 0–600; tab strips stay at default (0,0,0,0)
+      // so y=300 won't match any strip and snap-zone detection runs.
+      mockRect(rightWrapper, { left: 300, top: 0, right: 600, bottom: 600 })
+
+      await act(async () => {
+        dragStart(tabs[0]!)            // grab "a" from left pane
+        dragMove({ x: 15, y: 20 })    // cross threshold
+        // x=305 is 5 px inside right pane's left edge; snapSize=75 → zone "left"
+        dragMove({ x: 305, y: 300 })  // y=300 clears all tab strips (y 0–40)
+        dragDrop()
+      })
+
+      // Three panes: left (["b"]), new pane (["a"]), right (["c"])
+      expect(screen.getAllByRole("tablist")).toHaveLength(3)
+      expect(screen.getByRole("tab", { name: "a" })).toBeInTheDocument()
+      expect(screen.getByRole("tab", { name: "b" })).toBeInTheDocument()
+      expect(screen.getByRole("tab", { name: "c" })).toBeInTheDocument()
+    })
+
+    it("TC-TAB-6: pressing Escape mid-drag cancels without changing the layout", async () => {
+      renderWorkspace([pane("p1", ["a", "b"])])
+
+      const tabs = screen.getAllByRole("tab")
+
+      await act(async () => {
+        dragStart(tabs[0]!)
+        dragMove({ x: 15, y: 20 })
+        pressEscape()
+      })
+
+      const after = screen.getAllByRole("tab")
+      expect(after).toHaveLength(2)
+      expect(after[0]).toHaveTextContent("a")
+      expect(after[1]).toHaveTextContent("b")
     })
   })
 })

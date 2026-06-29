@@ -42,11 +42,19 @@ export function ActivityLog01() {
   const hasFilters = search || actionFilter.size > 0 || statusFilter.size > 0
 
   function toggleAction(a: ActionType) {
-    setActionFilter((prev) => { const n = new Set(prev); n.has(a) ? n.delete(a) : n.add(a); return n })
+    setActionFilter((prev) => {
+      const n = new Set(prev)
+      if (n.has(a)) n.delete(a); else n.add(a)
+      return n
+    })
   }
 
   function toggleStatus(s: StatusType) {
-    setStatusFilter((prev) => { const n = new Set(prev); n.has(s) ? n.delete(s) : n.add(s); return n })
+    setStatusFilter((prev) => {
+      const n = new Set(prev)
+      if (n.has(s)) n.delete(s); else n.add(s)
+      return n
+    })
   }
 
   return (

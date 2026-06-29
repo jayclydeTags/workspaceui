@@ -6,7 +6,7 @@ import type { ActivityEntry, ActionType, StatusType } from "../data"
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-export function formatTime(date: Date): string {
+function formatTime(date: Date): string {
   const mins = Math.floor((Date.now() - date.getTime()) / 60_000)
   if (mins < 60) return `${mins}m ago`
   const hrs = Math.floor(mins / 60)
@@ -14,13 +14,13 @@ export function formatTime(date: Date): string {
   return date.toLocaleDateString()
 }
 
-export const STATUS_VARIANT: Record<StatusType, "default" | "secondary" | "destructive" | "outline"> = {
+const STATUS_VARIANT: Record<StatusType, "default" | "secondary" | "destructive" | "outline"> = {
   success: "default",
   failed:  "destructive",
   pending: "secondary",
 }
 
-export const ACTION_CLASS: Record<ActionType, string> = {
+const ACTION_CLASS: Record<ActionType, string> = {
   created:  "text-emerald-600 dark:text-emerald-400",
   updated:  "text-blue-600 dark:text-blue-400",
   deleted:  "text-red-600 dark:text-red-400",

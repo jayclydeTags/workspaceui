@@ -116,13 +116,6 @@ function WorkspaceTabs({
         ref={tabStripRef}
         data-slot="workspace-tab-list"
         className="flex shrink-0 items-end border-b border-border bg-muted/30 pl-2"
-        style={{
-          // Right-side fade so overflowing tabs dissolve rather than hard-clip
-          maskImage:
-            "linear-gradient(to right, black 0%, black 88%, transparent 100%)",
-          WebkitMaskImage:
-            "linear-gradient(to right, black 0%, black 88%, transparent 100%)",
-        }}
       >
         {/* Scrollable tab row */}
         <div
@@ -186,13 +179,7 @@ function WorkspaceTabs({
                   {/* Label with right-edge fade on overflow */}
                   <span
                     className="min-w-0 flex-1 overflow-hidden text-left"
-                    style={{
-                      WebkitMaskImage:
-                        "linear-gradient(to right, black 0%, black 75%, transparent 100%)",
-                      maskImage:
-                        "linear-gradient(to right, black 0%, black 75%, transparent 100%)",
-                      whiteSpace: "nowrap",
-                    }}
+                    style={{ whiteSpace: "nowrap" }}
                   >
                     {tab.title}
                   </span>

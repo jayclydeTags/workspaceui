@@ -8,7 +8,7 @@
       "type": "registry:ui",
       "title": "Workspace Tabs",
       "description": "Chrome-style scrollable tab strip with closeable tabs, unread badges, overflow fade, and macOS-style curved active-tab connectors.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["@base-ui/react", "lucide-react"],
       "registryDependencies": ["utils"],
       "files": [
         {
@@ -22,7 +22,7 @@
       "type": "registry:ui",
       "title": "Workspace",
       "description": "Self-contained workspace with tab-based panels: closing a panel's last tab collapses the panel; closing all panels reveals a configurable fallback. Exposes useWorkspace context and a WorkspaceHandle ref for programmatic control.",
-      "dependencies": ["react-resizable-panels", "lucide-react"],
+      "dependencies": ["@base-ui/react", "react-resizable-panels", "lucide-react"],
       "registryDependencies": ["resizable", "workspace-tabs", "utils"],
       "files": [
         {

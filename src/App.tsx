@@ -1,14 +1,14 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 
 import { Header } from "@/components/header"
 import { DocsLayout } from "@/layouts/docs-layout"
+import { BlocksLayout } from "@/layouts/blocks-layout"
 import { HomePage } from "@/pages/home"
 import { IntroductionPage } from "@/pages/docs/getting-started/introduction"
 import { InstallationPage } from "@/pages/docs/getting-started/installation"
 import { WorkspaceTabsPage } from "@/pages/docs/components/workspace-tabs"
 import { WorkspacePanelPage } from "@/pages/docs/components/workspace-panel"
 import { WorkspacePage } from "@/pages/docs/components/workspace"
-import { BlocksPage } from "@/pages/docs/blocks"
 import { Dashboard01Page } from "@/pages/docs/blocks/dashboard-01"
 
 export function App() {
@@ -38,13 +38,11 @@ export function App() {
             path="/docs/components/workspace"
             element={<WorkspacePage />}
           />
-          <Route path="/docs/blocks" element={<BlocksPage />} />
         </Route>
-        {/* Block detail pages use full-width layout (no docs sidebar) */}
-        <Route
-          path="/docs/blocks/dashboard-01"
-          element={<Dashboard01Page />}
-        />
+        <Route element={<BlocksLayout />}>
+          <Route path="/blocks" element={<Navigate to="/blocks/dashboard-01" replace />} />
+          <Route path="/blocks/dashboard-01" element={<Dashboard01Page />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   )

@@ -38,7 +38,7 @@ export function Header() {
             Components
           </Link>
           <Link
-            to="/docs/blocks"
+            to="/blocks"
             className="rounded-md px-3 py-1.5 transition-colors hover:text-foreground"
           >
             Blocks

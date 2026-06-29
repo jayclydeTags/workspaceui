@@ -10,6 +10,7 @@ import { WorkspaceTabsPage } from "@/pages/docs/components/workspace-tabs"
 import { WorkspacePanelPage } from "@/pages/docs/components/workspace-panel"
 import { WorkspacePage } from "@/pages/docs/components/workspace"
 import { Dashboard01Page } from "@/pages/docs/blocks/dashboard-01"
+import { ActivityLog01Page } from "@/pages/docs/blocks/activity-log-01"
 
 export function App() {
   return (
@@ -42,6 +43,7 @@ export function App() {
         <Route element={<BlocksLayout />}>
           <Route path="/blocks" element={<Navigate to="/blocks/dashboard-01" replace />} />
           <Route path="/blocks/dashboard-01" element={<Dashboard01Page />} />
+          <Route path="/blocks/activity-log-01" element={<ActivityLog01Page />} />
         </Route>
       </Routes>
     </BrowserRouter>

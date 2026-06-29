@@ -14,6 +14,7 @@ export const blocksNav: NavSection[] = [
     title: "Dashboard",
     items: [
       { title: "Dashboard 01", href: "/blocks/dashboard-01" },
+      { title: "Activity Log 01", href: "/blocks/activity-log-01" },
     ],
   },
 ]

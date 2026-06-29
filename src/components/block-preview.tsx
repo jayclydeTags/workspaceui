@@ -83,7 +83,7 @@ export function BlockPreview({
 
   return (
     // h-14 = header height
-    <div className="flex h-[calc(100svh-3.5rem)] flex-col overflow-hidden">
+    <div className="flex h-full flex-col overflow-hidden">
       {/* ── Toolbar ──────────────────────────────────────────────────────── */}
       <div className="flex shrink-0 flex-wrap items-center gap-3 border-b border-border bg-background px-6 py-3">
         <div className="min-w-0">

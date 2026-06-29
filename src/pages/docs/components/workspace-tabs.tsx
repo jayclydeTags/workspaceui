@@ -9,45 +9,62 @@ import { PropsTable } from "@/components/props-table"
 
 const PREVIEW_CODE = `import { useState } from "react"
 import { LayoutDashboard, FileText, Settings, Inbox } from "lucide-react"
+import { WorkspacePanel } from "@/components/ui/workspace-panel"
 import { WorkspaceTabs } from "@/components/ui/workspace-tabs"
 
 export function MyTabs() {
-  const [activeId, setActiveId] = useState("dashboard")
   const [tabs, setTabs] = useState([
     { id: "dashboard", title: "Dashboard", icon: <LayoutDashboard />, pinned: true },
     { id: "docs",      title: "Documentation", icon: <FileText />, badge: 3 },
     { id: "inbox",     title: "Inbox", icon: <Inbox /> },
     { id: "settings",  title: "Settings", icon: <Settings /> },
   ])
+  const [activeId, setActiveId] = useState("dashboard")
+
+  function handleClose(id: string) {
+    const next = tabs.filter((t) => t.id !== id)
+    setTabs(next)
+    if (activeId === id) {
+      const idx = tabs.findIndex((t) => t.id === id)
+      setActiveId(next[Math.max(0, idx - 1)]?.id ?? next[0]?.id ?? "")
+    }
+  }
 
   return (
-    <WorkspaceTabs
-      tabs={tabs}
-      activeTabId={activeId}
-      onTabChange={setActiveId}
-      onTabClose={(id) => setTabs((t) => t.filter((tab) => tab.id !== id))}
-      onAddTab={() => {
-        const id = \`tab-\${Date.now()}\`
-        setTabs((t) => [...t, { id, title: "New Tab" }])
-        setActiveId(id)
-      }}
-    >
-      <div className="p-4 text-sm text-muted-foreground">
-        {tabs.find((t) => t.id === activeId)?.title} content
-      </div>
-    </WorkspaceTabs>
+    <WorkspacePanel>
+      <WorkspaceTabs
+        tabs={tabs}
+        activeTabId={activeId}
+        onTabChange={setActiveId}
+        onTabClose={handleClose}
+        onAddTab={() => {
+          const id = \`tab-\${Date.now()}\`
+          setTabs((prev) => [...prev, { id, title: "New Tab" }])
+          setActiveId(id)
+        }}
+      >
+        <div className="flex h-40 items-center justify-center">
+          <p className="text-sm text-muted-foreground">
+            {tabs.find((t) => t.id === activeId)?.title ?? "No tab selected"}
+          </p>
+        </div>
+      </WorkspaceTabs>
+    </WorkspacePanel>
   )
 }`
 
-const USAGE_CODE = `import { WorkspaceTabs } from "@/components/ui/workspace-tabs"
+const USAGE_IMPORT = `import { WorkspacePanel } from "@/components/ui/workspace-panel"
+import { WorkspaceTabs } from "@/components/ui/workspace-tabs"`
 
-<WorkspaceTabs
-  tabs={tabs}
-  activeTabId={activeId}
-  onTabChange={(id) => setActiveId(id)}
->
-  <div>{/* active tab content */}</div>
-</WorkspaceTabs>`
+const USAGE_CODE = `<WorkspacePanel>
+  <WorkspaceTabs
+    tabs={tabs}
+    activeTabId={activeId}
+    onTabChange={(id) => setActiveId(id)}
+  >
+    <div>{/* active tab content */}</div>
+  </WorkspaceTabs>
+</WorkspacePanel>`
 
 const WORKSPACE_TAB_PROPS = [
   { name: "id", type: "string", required: true, description: "Unique identifier for the tab." },
@@ -107,7 +124,7 @@ export function WorkspaceTabsPage() {
       {/* Usage */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">Usage</h2>
-        <CodeBlock code={`import { WorkspaceTabs } from "@/components/ui/workspace-tabs"`} lang="tsx" />
+        <CodeBlock code={USAGE_IMPORT} lang="tsx" />
         <CodeBlock code={USAGE_CODE} />
       </section>
 

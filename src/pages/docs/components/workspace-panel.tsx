@@ -13,29 +13,44 @@ import { WorkspacePanel } from "@/components/ui/workspace-panel"
 import { WorkspaceTabs } from "@/components/ui/workspace-tabs"
 
 export function MyPanel() {
+  const [tabs, setTabs] = useState([
+    { id: "home", title: "Home", icon: <Home />, pinned: true },
+    { id: "docs", title: "Documentation", icon: <FileText />, badge: 2 },
+    { id: "settings", title: "Settings", icon: <Settings /> },
+  ])
   const [activeId, setActiveId] = useState("home")
+
+  function handleClose(id: string) {
+    const next = tabs.filter((t) => t.id !== id)
+    setTabs(next)
+    if (activeId === id) {
+      const idx = tabs.findIndex((t) => t.id === id)
+      setActiveId(next[Math.max(0, idx - 1)]?.id ?? next[0]?.id ?? "")
+    }
+  }
 
   return (
     <WorkspacePanel>
       <WorkspaceTabs
-        tabs={[
-          { id: "home", title: "Home", icon: <Home />, pinned: true },
-          { id: "docs", title: "Docs", icon: <FileText />, badge: 2 },
-          { id: "settings", title: "Settings", icon: <Settings /> },
-        ]}
+        tabs={tabs}
         activeTabId={activeId}
         onTabChange={setActiveId}
+        onTabClose={handleClose}
       >
-        <div className="p-4">{activeId} content</div>
+        <div className="flex h-full items-center justify-center">
+          <p className="text-sm text-muted-foreground">
+            {tabs.find((t) => t.id === activeId)?.title}
+          </p>
+        </div>
       </WorkspaceTabs>
     </WorkspacePanel>
   )
 }`
 
-const SPLIT_CODE = `import { WorkspacePanel } from "@/components/ui/workspace-panel"
-import { WorkspaceTabs } from "@/components/ui/workspace-tabs"
+const USAGE_IMPORT = `import { WorkspacePanel } from "@/components/ui/workspace-panel"
+import { WorkspaceTabs } from "@/components/ui/workspace-tabs"`
 
-<WorkspacePanel>
+const USAGE_CODE = `<WorkspacePanel>
   <WorkspaceTabs tabs={editorTabs} activeTabId={editorId} onTabChange={setEditorId}>
     {/* editor content */}
   </WorkspaceTabs>
@@ -43,6 +58,47 @@ import { WorkspaceTabs } from "@/components/ui/workspace-tabs"
     {/* terminal content */}
   </WorkspaceTabs>
 </WorkspacePanel>`
+
+const SPLIT_CODE = `import { useState } from "react"
+import { FileText, Terminal } from "lucide-react"
+import { WorkspacePanel } from "@/components/ui/workspace-panel"
+import { WorkspaceTabs } from "@/components/ui/workspace-tabs"
+
+export function MySplitPanel() {
+  const [editorId, setEditorId] = useState("main")
+  const [terminalId, setTerminalId] = useState("bash")
+
+  return (
+    <WorkspacePanel>
+      <WorkspaceTabs
+        tabs={[
+          { id: "main", title: "main.tsx", icon: <FileText /> },
+          { id: "app",  title: "app.tsx",  icon: <FileText /> },
+        ]}
+        activeTabId={editorId}
+        onTabChange={setEditorId}
+      >
+        <div className="flex h-full items-center justify-center">
+          <p className="text-sm text-muted-foreground">
+            {editorId === "main" ? "// main.tsx" : "// app.tsx"}
+          </p>
+        </div>
+      </WorkspaceTabs>
+      <WorkspaceTabs
+        tabs={[
+          { id: "bash", title: "bash",        icon: <Terminal />, pinned: true },
+          { id: "npm",  title: "npm run dev", icon: <Terminal /> },
+        ]}
+        activeTabId={terminalId}
+        onTabChange={setTerminalId}
+      >
+        <div className="flex h-full items-center justify-center font-mono text-sm text-muted-foreground">
+          {terminalId === "bash" ? "$ _" : "$ pnpm dev"}
+        </div>
+      </WorkspaceTabs>
+    </WorkspacePanel>
+  )
+}`
 
 const PANEL_PROPS = [
   {
@@ -100,11 +156,8 @@ export function WorkspacePanelPage() {
 
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">Usage</h2>
-        <CodeBlock
-          code={`import { WorkspacePanel } from "@/components/ui/workspace-panel"\nimport { WorkspaceTabs } from "@/components/ui/workspace-tabs"`}
-          lang="tsx"
-        />
-        <CodeBlock code={SPLIT_CODE} />
+        <CodeBlock code={USAGE_IMPORT} lang="tsx" />
+        <CodeBlock code={USAGE_CODE} />
       </section>
 
       <section className="space-y-4">

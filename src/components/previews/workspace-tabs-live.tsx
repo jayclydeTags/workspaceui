@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { LayoutDashboard, FileText, Settings, Inbox } from "lucide-react"
 
+import { WorkspacePanel } from "@/components/workspaceui/workspace-panel"
 import { WorkspaceTabs, type WorkspaceTab } from "@/components/workspaceui/workspace-tabs"
 
 const INITIAL_TABS: WorkspaceTab[] = [
@@ -51,19 +52,21 @@ export function WorkspaceTabsLiveDemo() {
 
   return (
     <div className="w-full max-w-2xl overflow-hidden rounded-lg border border-border shadow-sm">
-      <WorkspaceTabs
-        tabs={tabs}
-        activeTabId={activeId}
-        onTabChange={setActiveId}
-        onTabClose={handleClose}
-        onAddTab={handleAdd}
-      >
-        <div className="flex h-40 items-center justify-center">
-          <p className="text-sm text-muted-foreground">
-            {active?.title ?? "No tab selected"}
-          </p>
-        </div>
-      </WorkspaceTabs>
+      <WorkspacePanel>
+        <WorkspaceTabs
+          tabs={tabs}
+          activeTabId={activeId}
+          onTabChange={setActiveId}
+          onTabClose={handleClose}
+          onAddTab={handleAdd}
+        >
+          <div className="flex h-40 items-center justify-center">
+            <p className="text-sm text-muted-foreground">
+              {active?.title ?? "No tab selected"}
+            </p>
+          </div>
+        </WorkspaceTabs>
+      </WorkspacePanel>
     </div>
   )
 }

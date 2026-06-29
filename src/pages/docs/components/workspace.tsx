@@ -12,21 +12,23 @@ import { Workspace } from "@/components/ui/workspace"
 
 export function MyWorkspace() {
   return (
-    <div className="h-[500px]">
+    <div className="h-[400px]">
       <Workspace
         initialPanes={[
           {
             id: "pane-a",
             tabs: [
               { id: "dashboard", title: "Dashboard", icon: <LayoutDashboard />, pinned: true },
-              { id: "docs", title: "Documentation", icon: <FileText /> },
+              { id: "docs",      title: "Documentation", icon: <FileText /> },
             ],
             defaultSize: 60,
+            minSize: 30,
           },
           {
             id: "pane-b",
             tabs: [{ id: "settings", title: "Settings", icon: <Settings />, pinned: true }],
             defaultSize: 40,
+            minSize: 30,
           },
         ]}
         renderTabContent={(_paneId, tabId) => (
@@ -34,46 +36,44 @@ export function MyWorkspace() {
             <p className="text-sm text-muted-foreground">{tabId}</p>
           </div>
         )}
+        fallback={
+          <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+            All panels closed
+          </div>
+        }
       />
     </div>
   )
 }`
 
-const USAGE_CODE = `import { useRef } from "react"
-import { Workspace, useWorkspace, type WorkspaceHandle } from "@/components/ui/workspace"
+const USAGE_IMPORT = `import {
+  Workspace,
+  useWorkspace,
+  type WorkspaceHandle,
+} from "@/components/ui/workspace"
+import { WorkspacePanel } from "@/components/ui/workspace-panel"
+import { WorkspaceTabs } from "@/components/ui/workspace-tabs"`
 
-// Programmatic control via ref
-function Parent() {
-  const ref = useRef<WorkspaceHandle>(null)
-
-  return (
-    <div className="h-screen">
-      <button onClick={() => ref.current?.openPane({
-        id: "new-pane",
-        tabs: [{ id: "new-tab", title: "New Tab" }],
-      })}>
-        Open pane
-      </button>
-      <Workspace
-        ref={ref}
-        initialPanes={[{ id: "main", tabs: [{ id: "home", title: "Home", pinned: true }] }]}
-        renderTabContent={(paneId, tabId) => <YourPage paneId={paneId} tabId={tabId} />}
-        fallback={<EmptyState />}
-      />
-    </div>
-  )
-}
-
-// Access workspace state from any child
-function YourPage({ paneId }: { paneId: string }) {
-  const { openTabInPane } = useWorkspace()
-
-  return (
-    <button onClick={() => openTabInPane(paneId, { id: "docs", title: "Docs" })}>
-      Open docs tab
-    </button>
-  )
-}`
+const USAGE_CODE = `<Workspace
+  initialPanes={[
+    {
+      id: "editor",
+      tabs: [{ id: "home", title: "Home", pinned: true }],
+    },
+  ]}
+  renderTabContent={(_paneId, tabId) => (
+    <WorkspacePanel>
+      <div className="p-4">{tabId} content</div>
+      <WorkspaceTabs
+        tabs={[{ id: "terminal", title: "Terminal" }]}
+        activeTabId="terminal"
+        onTabChange={() => {}}
+      >
+        <div className="p-3 font-mono text-xs">$ _</div>
+      </WorkspaceTabs>
+    </WorkspacePanel>
+  )}
+/>`
 
 const WORKSPACE_PROPS = [
   { name: "initialPanes", type: "WorkspacePaneDef[]", default: "[]", description: "Initial pane/tab configuration rendered on mount." },
@@ -89,6 +89,16 @@ const WORKSPACE_PANE_DEF_PROPS = [
   { name: "defaultSize", type: "number", description: "Percentage width (0–100) for horizontal panel groups." },
   { name: "minSize", type: "number", description: "Minimum percentage size. Defaults to 20." },
   { name: "onAddTab", type: "() => void", description: 'Renders a "+" button in the tab strip when provided.' },
+]
+
+const WORKSPACE_HANDLE_PROPS = [
+  { name: "lastActivePaneId", type: "string | null", description: "ID of the most recently focused pane." },
+  { name: "openTabInPane", type: "(paneId, tab) => void", description: "Opens or focuses a tab in the specified pane." },
+  { name: "closeTab", type: "(paneId, tabId) => void", description: "Closes a tab. Removes the pane if it was the last tab." },
+  { name: "activateTab", type: "(paneId, tabId) => void", description: "Switches the active tab in a pane." },
+  { name: "updateTab", type: "(paneId, tabId, patch) => void", description: "Patches tab properties (e.g. update badge count)." },
+  { name: "openPane", type: "(pane: WorkspacePaneDef) => void", description: "Adds a new pane column. No-op if the pane ID already exists." },
+  { name: "closePane", type: "(paneId) => void", description: "Removes a pane and all its tabs." },
 ]
 
 const WORKSPACE_CONTEXT_PROPS = [
@@ -152,7 +162,7 @@ export function WorkspacePage() {
       {/* Usage */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">Usage</h2>
-        <CodeBlock code={`import { Workspace, useWorkspace, type WorkspaceHandle } from "@/components/ui/workspace"`} lang="tsx" />
+        <CodeBlock code={USAGE_IMPORT} lang="tsx" />
         <CodeBlock code={USAGE_CODE} />
       </section>
 
@@ -177,7 +187,13 @@ export function WorkspacePage() {
                   },
                 ],
               },
-              { name: "renderTabContent (active tab content)" },
+              {
+                name: "renderTabContent → WorkspacePanel (optional vertical split)",
+                children: [
+                  { name: "WorkspaceTabs (top content area)" },
+                  { name: "WorkspaceTabs (bottom content area, optional)" },
+                ],
+              },
               { name: "fallback (shown when all panes closed)" },
             ],
           }}
@@ -194,8 +210,13 @@ export function WorkspacePage() {
           </li>
           <li>
             <strong className="text-foreground">Snap-zone splitting</strong>{" "}
-            — drag a tab to the left or right edge of a pane to split it into
-            two columns.
+            — drag a tab to an edge to split: left/right adds a new column,
+            top/bottom adds a new row within the column.
+          </li>
+          <li>
+            <strong className="text-foreground">Escape to cancel</strong>{" "}
+            — pressing Escape during a drag cancels the operation without
+            committing a drop.
           </li>
           <li>
             <strong className="text-foreground">Resizable panels</strong>{" "}
@@ -248,6 +269,16 @@ export function WorkspacePage() {
             <code className="font-mono text-xs">&lt;Workspace&gt;</code>.
           </p>
           <PropsTable props={WORKSPACE_CONTEXT_PROPS} />
+        </div>
+
+        <div className="space-y-3">
+          <h3 className="text-base font-medium">WorkspaceHandle</h3>
+          <p className="text-sm text-muted-foreground">
+            Imperative ref API. Attach via <code className="font-mono text-xs">ref</code> on{" "}
+            <code className="font-mono text-xs">&lt;Workspace&gt;</code>. Same methods as{" "}
+            <code className="font-mono text-xs">useWorkspace()</code> minus read-only pane state.
+          </p>
+          <PropsTable props={WORKSPACE_HANDLE_PROPS} />
         </div>
       </section>
 

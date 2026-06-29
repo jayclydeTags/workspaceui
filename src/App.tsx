@@ -9,7 +9,7 @@ import { WorkspaceTabsPage } from "@/pages/docs/components/workspace-tabs"
 import { WorkspacePanelPage } from "@/pages/docs/components/workspace-panel"
 import { WorkspacePage } from "@/pages/docs/components/workspace"
 import { BlocksPage } from "@/pages/docs/blocks"
-import { DashboardWithSidebarPage } from "@/pages/docs/blocks/dashboard-with-sidebar"
+import { Dashboard01Page } from "@/pages/docs/blocks/dashboard-01"
 
 export function App() {
   return (
@@ -42,8 +42,8 @@ export function App() {
         </Route>
         {/* Block detail pages use full-width layout (no docs sidebar) */}
         <Route
-          path="/docs/blocks/dashboard-with-sidebar"
-          element={<DashboardWithSidebarPage />}
+          path="/docs/blocks/dashboard-01"
+          element={<Dashboard01Page />}
         />
       </Routes>
     </BrowserRouter>

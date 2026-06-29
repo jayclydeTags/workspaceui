@@ -60,15 +60,15 @@
       ]
     },
     {
-      "name": "dashboard-with-sidebar",
+      "name": "dashboard-01",
       "type": "registry:block",
-      "title": "Dashboard with Sidebar",
+      "title": "Dashboard 01",
       "description": "Collapsible sidebar nav paired with the Workspace component. Sidebar items open tabs; repeat clicks focus the existing tab.",
       "dependencies": ["@base-ui/react", "lucide-react", "react-resizable-panels"],
       "registryDependencies": ["workspace", "sidebar", "utils"],
       "files": [
         {
-          "path": "src/components/workspaceui/blocks/dashboard-with-sidebar.tsx",
+          "path": "src/components/workspaceui/blocks/dashboard-01.tsx",
           "type": "registry:block"
         }
       ]

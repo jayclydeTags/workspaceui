@@ -51,7 +51,7 @@ const TAB_CONTENT: Record<string, React.ReactNode> = {
   settings: <PlaceholderContent Icon={Settings} title="Settings" />,
 }
 
-export function DashboardWithSidebar({ className }: { className?: string }) {
+export function Dashboard01({ className }: { className?: string }) {
   const workspaceRef = React.useRef<WorkspaceHandle>(null)
 
   function openTab(item: (typeof NAV_ITEMS)[number]) {

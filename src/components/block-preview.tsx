@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Code2, Eye, FileText, Monitor, Smartphone, Tablet } from "lucide-react"
 import { codeToHtml } from "shiki"
 
@@ -20,10 +20,10 @@ interface BlockPreviewProps {
 
 type Viewport = "desktop" | "tablet" | "mobile"
 
-const VIEWPORT_WIDTHS: Record<Viewport, string | undefined> = {
-  desktop: undefined,
-  tablet: "768px",
-  mobile: "390px",
+const VIEWPORT_PRESET: Record<Viewport, number> = {
+  desktop: 1440,
+  tablet: 768,
+  mobile: 390,
 }
 
 const VIEWPORT_ICONS = {
@@ -41,8 +41,11 @@ export function BlockPreview({
 }: BlockPreviewProps) {
   const [tab, setTab] = useState<"preview" | "code">("preview")
   const [viewport, setViewport] = useState<Viewport>("desktop")
+  const [previewWidth, setPreviewWidth] = useState(1440)
+  const [isDragging, setIsDragging] = useState(false)
   const [activeFile, setActiveFile] = useState(files[0]?.name ?? "")
   const [codeHtml, setCodeHtml] = useState("")
+  const dragRef = useRef<{ startX: number; startWidth: number } | null>(null)
 
   const activeCode = files.find((f) => f.name === activeFile)?.code ?? ""
 
@@ -54,6 +57,29 @@ export function BlockPreview({
       defaultColor: false,
     }).then(setCodeHtml)
   }, [activeCode])
+
+  function handleViewport(v: Viewport) {
+    setViewport(v)
+    setPreviewWidth(VIEWPORT_PRESET[v])
+  }
+
+  function onResizeStart(e: React.PointerEvent) {
+    e.currentTarget.setPointerCapture(e.pointerId)
+    dragRef.current = { startX: e.clientX, startWidth: previewWidth }
+    setIsDragging(true)
+  }
+
+  function onResizeMove(e: React.PointerEvent) {
+    if (!dragRef.current) return
+    setPreviewWidth(
+      Math.max(320, Math.min(1440, dragRef.current.startWidth + e.clientX - dragRef.current.startX))
+    )
+  }
+
+  function onResizeEnd() {
+    dragRef.current = null
+    setIsDragging(false)
+  }
 
   return (
     // h-14 = header height
@@ -97,7 +123,7 @@ export function BlockPreview({
                 return (
                   <button
                     key={v}
-                    onClick={() => setViewport(v)}
+                    onClick={() => handleViewport(v)}
                     title={v[0]!.toUpperCase() + v.slice(1)}
                     className={cn(
                       "px-2.5 py-1.5 transition-colors",
@@ -123,25 +149,36 @@ export function BlockPreview({
 
       {/* ── Content ──────────────────────────────────────────────────────── */}
       {tab === "preview" ? (
-        <div
-          className={cn(
-            "flex flex-1 overflow-hidden transition-all duration-300",
-            viewport !== "desktop" && "items-start justify-center bg-muted/30 p-6"
-          )}
-        >
-          <div
-            className={cn(
-              "flex-1 translate-x-0 overflow-hidden transition-[width] duration-300",
-              viewport !== "desktop" &&
-                "flex-none rounded-xl border border-border shadow-lg"
-            )}
-            style={
-              VIEWPORT_WIDTHS[viewport]
-                ? { width: VIEWPORT_WIDTHS[viewport], height: "100%" }
-                : undefined
-            }
-          >
-            {children}
+        <div className="flex flex-1 items-start justify-center overflow-hidden bg-muted/30 p-6">
+          {/* left spacer balances the resize handle so the frame stays centered */}
+          <div className="w-4 shrink-0" />
+          <div className="flex h-full min-w-0 items-stretch">
+            {/* Preview frame */}
+            <div
+              className="relative translate-x-0 overflow-hidden rounded-xl border border-border shadow-lg"
+              style={{ width: previewWidth, height: "100%" }}
+            >
+              {children}
+              {isDragging && (
+                <div className="pointer-events-none absolute left-1/2 top-3 -translate-x-1/2 rounded bg-foreground/80 px-2 py-0.5 text-xs text-background">
+                  {previewWidth}px
+                </div>
+              )}
+            </div>
+            {/* Resize handle */}
+            <div
+              className="group flex w-4 shrink-0 cursor-col-resize items-center justify-center select-none touch-none"
+              onPointerDown={onResizeStart}
+              onPointerMove={onResizeMove}
+              onPointerUp={onResizeEnd}
+            >
+              <div
+                className={cn(
+                  "h-10 w-1 rounded-full transition-colors",
+                  isDragging ? "bg-primary" : "bg-border group-hover:bg-muted-foreground/40"
+                )}
+              />
+            </div>
           </div>
         </div>
       ) : (

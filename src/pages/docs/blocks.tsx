@@ -72,7 +72,7 @@ export function BlocksPage() {
         {BLOCKS.map((block) => {
           const href =
             block.id === "dashboard"
-              ? "/docs/blocks/dashboard-with-sidebar"
+              ? "/docs/blocks/dashboard-01"
               : undefined
           const card = (
             <div className={`rounded-xl border border-border p-5${href ? " transition-colors hover:bg-muted/50" : ""}`}>

@@ -29,7 +29,7 @@ export const nav: NavSection[] = [
     title: "Blocks",
     items: [
       { title: "Overview", href: "/docs/blocks" },
-      { title: "Dashboard with Sidebar", href: "/docs/blocks/dashboard-with-sidebar" },
+      { title: "Dashboard 01", href: "/docs/blocks/dashboard-01" },
     ],
   },
 ]

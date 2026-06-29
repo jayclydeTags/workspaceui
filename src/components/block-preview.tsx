@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react"
-import { Code2, Eye, FileText, Monitor, Smartphone, Tablet } from "lucide-react"
+import { ChevronDown, ChevronRight, Code2, Eye, FileText, Folder, FolderOpen, Monitor, Smartphone, Tablet } from "lucide-react"
 import { codeToHtml } from "shiki"
 
 import { cn } from "@/lib/utils"
@@ -7,6 +7,8 @@ import { CopyButton } from "@/components/copy-button"
 
 export interface BlockFile {
   name: string
+  /** Optional display path (e.g. "app/dashboard/page.tsx"). Drives the tree view. */
+  path?: string
   code: string
 }
 
@@ -32,6 +34,115 @@ const VIEWPORT_ICONS = {
   mobile: Smartphone,
 } satisfies Record<Viewport, React.ComponentType<{ className?: string }>>
 
+// ── File tree ──────────────────────────────────────────────────────────────
+
+interface TreeNode {
+  name: string
+  /** Leaf: the file's key (path ?? name). Folder: undefined. */
+  fileKey?: string
+  children?: TreeNode[]
+}
+
+function buildTree(files: BlockFile[]): TreeNode[] {
+  const root: TreeNode[] = []
+
+  for (const file of files) {
+    const key = file.path ?? file.name
+    const parts = key.split("/")
+    let nodes = root
+
+    for (let i = 0; i < parts.length - 1; i++) {
+      let folder = nodes.find((n) => n.name === parts[i] && n.children)
+      if (!folder) {
+        folder = { name: parts[i]!, children: [] }
+        nodes.push(folder)
+      }
+      nodes = folder.children!
+    }
+
+    nodes.push({ name: parts[parts.length - 1]!, fileKey: key })
+  }
+
+  return root
+}
+
+function FileTree({
+  nodes,
+  activeKey,
+  onSelect,
+  depth = 0,
+}: {
+  nodes: TreeNode[]
+  activeKey: string
+  onSelect: (key: string) => void
+  depth?: number
+}) {
+  return (
+    <>
+      {nodes.map((node) =>
+        node.children ? (
+          <FolderNode key={node.name} node={node} activeKey={activeKey} onSelect={onSelect} depth={depth} />
+        ) : (
+          <button
+            key={node.fileKey}
+            onClick={() => onSelect(node.fileKey!)}
+            style={{ paddingLeft: depth * 12 + 8 }}
+            className={cn(
+              "flex w-full items-center gap-1.5 rounded-md py-1.5 pr-2 text-left transition-colors",
+              activeKey === node.fileKey
+                ? "bg-muted text-foreground"
+                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+            )}
+          >
+            <FileText className="size-3.5 shrink-0" />
+            <span className="truncate font-mono text-xs">{node.name}</span>
+          </button>
+        ),
+      )}
+    </>
+  )
+}
+
+function FolderNode({
+  node,
+  activeKey,
+  onSelect,
+  depth,
+}: {
+  node: TreeNode
+  activeKey: string
+  onSelect: (key: string) => void
+  depth: number
+}) {
+  const [open, setOpen] = useState(true)
+  const Icon = open ? FolderOpen : Folder
+  const Chevron = open ? ChevronDown : ChevronRight
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        style={{ paddingLeft: depth * 12 + 8 }}
+        className="flex w-full items-center gap-1.5 rounded-md py-1.5 pr-2 text-left text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
+      >
+        <Chevron className="size-3 shrink-0" />
+        <Icon className="size-3.5 shrink-0" />
+        <span className="truncate font-mono text-xs">{node.name}</span>
+      </button>
+      {open && (
+        <FileTree
+          nodes={node.children!}
+          activeKey={activeKey}
+          onSelect={onSelect}
+          depth={depth + 1}
+        />
+      )}
+    </>
+  )
+}
+
+// ── BlockPreview ───────────────────────────────────────────────────────────
+
 export function BlockPreview({
   title,
   description,
@@ -39,15 +150,17 @@ export function BlockPreview({
   files,
   children,
 }: BlockPreviewProps) {
+  const firstKey = files[0] ? (files[0].path ?? files[0].name) : ""
   const [tab, setTab] = useState<"preview" | "code">("preview")
   const [viewport, setViewport] = useState<Viewport>("desktop")
   const [previewWidth, setPreviewWidth] = useState(1440)
   const [isDragging, setIsDragging] = useState(false)
-  const [activeFile, setActiveFile] = useState(files[0]?.name ?? "")
+  const [activeFile, setActiveFile] = useState(firstKey)
   const [codeHtml, setCodeHtml] = useState("")
   const dragRef = useRef<{ startX: number; startWidth: number } | null>(null)
 
-  const activeCode = files.find((f) => f.name === activeFile)?.code ?? ""
+  const activeCode = files.find((f) => (f.path ?? f.name) === activeFile)?.code ?? ""
+  const tree = buildTree(files)
 
   useEffect(() => {
     if (!activeCode) return
@@ -82,7 +195,6 @@ export function BlockPreview({
   }
 
   return (
-    // h-14 = header height
     <div className="flex h-full flex-col overflow-hidden">
       {/* ── Toolbar ──────────────────────────────────────────────────────── */}
       <div className="flex shrink-0 flex-wrap items-center gap-3 border-b border-border bg-background px-6 py-3">
@@ -184,25 +296,11 @@ export function BlockPreview({
       ) : (
         <div className="flex flex-1 overflow-hidden">
           {/* File tree */}
-          <div className="w-56 shrink-0 overflow-auto border-r border-border bg-muted/20 p-4">
-            <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          <div className="w-56 shrink-0 overflow-auto border-r border-border bg-muted/20 p-2">
+            <p className="mb-2 px-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
               Files
             </p>
-            {files.map((f) => (
-              <button
-                key={f.name}
-                onClick={() => setActiveFile(f.name)}
-                className={cn(
-                  "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left transition-colors",
-                  activeFile === f.name
-                    ? "bg-muted text-foreground"
-                    : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                )}
-              >
-                <FileText className="size-3.5 shrink-0" />
-                <span className="truncate font-mono text-xs">{f.name}</span>
-              </button>
-            ))}
+            <FileTree nodes={tree} activeKey={activeFile} onSelect={setActiveFile} />
           </div>
 
           {/* Code viewer */}

@@ -1,10 +1,16 @@
-import blockSource from "@/components/workspaceui/blocks/activity-log-01.tsx?raw"
+import pageSource from "@/components/workspaceui/blocks/activity-log-01/page.tsx?raw"
+import dataSource from "@/components/workspaceui/blocks/activity-log-01/data.ts?raw"
+import dataTableSource from "@/components/workspaceui/blocks/activity-log-01/components/data-table.tsx?raw"
 
 import { useDocumentTitle } from "@/lib/use-document-title"
 import { BlockPreview } from "@/components/block-preview"
-import { ActivityLog01 } from "@/components/workspaceui/blocks/activity-log-01"
+import { ActivityLog01 } from "@/components/workspaceui/blocks/activity-log-01/page"
 
-const FILES = [{ name: "activity-log-01.tsx", code: blockSource }]
+const FILES = [
+  { name: "page.tsx",       path: "app/activity-log/page.tsx",   code: pageSource      },
+  { name: "data.ts",        path: "app/activity-log/data.ts",    code: dataSource      },
+  { name: "data-table.tsx", path: "components/workspaceui/blocks/activity-log-01/components/data-table.tsx", code: dataTableSource },
+]
 
 export function ActivityLog01Page() {
   useDocumentTitle("Activity Log 01")

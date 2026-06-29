@@ -1,4 +1,5 @@
 import * as React from "react"
+import { createPortal } from "react-dom"
 
 import { cn } from "@/lib/utils"
 import { WorkspaceTabs } from "@/components/workspaceui/workspace-tabs"
@@ -945,7 +946,8 @@ function SnapZoneOverlay({ activeZone }: { activeZone: SnapZone | null }) {
 // ── DragGhost ──────────────────────────────────────────────────────────────
 
 function DragGhost({ title, x, y }: { title: string; x: number; y: number }) {
-  return (
+  // Portal to body so `position:fixed` uses the true viewport, not a transformed ancestor
+  return createPortal(
     <div
       aria-hidden
       className="pointer-events-none fixed z-50 select-none"
@@ -954,6 +956,7 @@ function DragGhost({ title, x, y }: { title: string; x: number; y: number }) {
       <div className="flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1.5 shadow-md">
         <span className="text-[12px] font-medium text-foreground">{title}</span>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }

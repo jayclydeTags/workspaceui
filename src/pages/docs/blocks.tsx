@@ -1,4 +1,5 @@
 import { ExternalLink } from "lucide-react"
+import { Link } from "react-router-dom"
 
 import { useDocumentTitle } from "@/lib/use-document-title"
 
@@ -68,18 +69,28 @@ export function BlocksPage() {
       </div>
 
       <div className="not-prose grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {BLOCKS.map((block) => (
-          <div
-            key={block.id}
-            className="rounded-xl border border-border p-5"
-          >
-            <div className="mb-3 aspect-video rounded-md bg-muted/50 flex items-center justify-center">
-              <span className="text-xs text-muted-foreground">{block.title}</span>
+        {BLOCKS.map((block) => {
+          const href =
+            block.id === "dashboard"
+              ? "/docs/blocks/dashboard-with-sidebar"
+              : undefined
+          const card = (
+            <div className={`rounded-xl border border-border p-5${href ? " transition-colors hover:bg-muted/50" : ""}`}>
+              <div className="mb-3 aspect-video rounded-md bg-muted/50 flex items-center justify-center">
+                <span className="text-xs text-muted-foreground">{block.title}</span>
+              </div>
+              <h3 className="mb-1 font-semibold text-foreground">{block.title}</h3>
+              <p className="text-sm text-muted-foreground">{block.description}</p>
             </div>
-            <h3 className="mb-1 font-semibold text-foreground">{block.title}</h3>
-            <p className="text-sm text-muted-foreground">{block.description}</p>
-          </div>
-        ))}
+          )
+          return href ? (
+            <Link key={block.id} to={href} className="block">
+              {card}
+            </Link>
+          ) : (
+            <div key={block.id}>{card}</div>
+          )
+        })}
       </div>
 
       <section className="space-y-3 text-sm text-muted-foreground">

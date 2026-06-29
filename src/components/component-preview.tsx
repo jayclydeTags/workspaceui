@@ -7,6 +7,8 @@ import { WorkspaceTabsOverflowDemo } from "@/components/previews/workspace-tabs-
 import { WorkspaceTabsMinimalDemo } from "@/components/previews/workspace-tabs-minimal"
 import { WorkspaceLiveDemo } from "@/components/previews/workspace-live"
 import { WorkspaceSinglePaneDemo } from "@/components/previews/workspace-single-pane"
+import { WorkspacePanelSingleDemo } from "@/components/previews/workspace-panel-single"
+import { WorkspacePanelSplitDemo } from "@/components/previews/workspace-panel-split"
 
 const previewComponents: Record<string, React.ReactNode> = {
   "workspace-tabs": <WorkspaceTabsLiveDemo />,
@@ -14,6 +16,8 @@ const previewComponents: Record<string, React.ReactNode> = {
   "workspace-tabs-minimal": <WorkspaceTabsMinimalDemo />,
   workspace: <WorkspaceLiveDemo />,
   "workspace-single-pane": <WorkspaceSinglePaneDemo />,
+  "workspace-panel-single": <WorkspacePanelSingleDemo />,
+  "workspace-panel-split": <WorkspacePanelSplitDemo />,
 }
 
 interface ComponentPreviewProps {

@@ -1,9 +1,11 @@
 import workspaceTabsRaw from "@/components/workspaceui/workspace-tabs.tsx?raw"
+import workspacePanelRaw from "@/components/workspaceui/workspace-panel.tsx?raw"
 import workspaceRaw from "@/components/workspaceui/workspace.tsx?raw"
 import { CodeBlock } from "@/components/code-block"
 
 const sources: Record<string, string> = {
   "workspace-tabs": workspaceTabsRaw,
+  "workspace-panel": workspacePanelRaw,
   workspace: workspaceRaw,
 }
 

@@ -6,6 +6,7 @@ import { HomePage } from "@/pages/home"
 import { IntroductionPage } from "@/pages/docs/getting-started/introduction"
 import { InstallationPage } from "@/pages/docs/getting-started/installation"
 import { WorkspaceTabsPage } from "@/pages/docs/components/workspace-tabs"
+import { WorkspacePanelPage } from "@/pages/docs/components/workspace-panel"
 import { WorkspacePage } from "@/pages/docs/components/workspace"
 import { BlocksPage } from "@/pages/docs/blocks"
 
@@ -27,6 +28,10 @@ export function App() {
           <Route
             path="/docs/components/workspace-tabs"
             element={<WorkspaceTabsPage />}
+          />
+          <Route
+            path="/docs/components/workspace-panel"
+            element={<WorkspacePanelPage />}
           />
           <Route
             path="/docs/components/workspace"

@@ -2,7 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { WorkspaceTabs } from "@/components/workspaceui/workspace-tabs"
-import { WorkspaceDragContext, WorkspaceDragContextValue, useWorkspaceDrag } from "@/components/workspaceui/workspace-context"
+import { WorkspaceDragContext, useWorkspaceDrag, type WorkspaceDragContextValue } from "@/components/workspaceui/workspace-context"
 import {
   ResizableHandle,
   ResizablePanel,

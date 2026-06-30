@@ -2,6 +2,7 @@ import { Link } from "react-router-dom"
 
 import { DocSearch } from "@/components/doc-search"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { WorkspaceUILogo } from "@/components/workspaceui-logo"
 
 function GithubIcon({ className }: { className?: string }) {
   return (
@@ -20,8 +21,8 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur">
       <div className="flex h-14 w-full items-center gap-4 px-6">
-        <Link to="/" className="flex items-center gap-2 font-semibold">
-          <span className="text-sm">WorkspaceUI</span>
+        <Link to="/" className="flex items-center gap-2">
+          <WorkspaceUILogo className="h-5 w-auto" />
         </Link>
 
         <nav className="hidden items-center gap-1 text-sm text-muted-foreground md:flex">

@@ -1,15 +1,11 @@
 import { Outlet } from "react-router-dom"
 import { DocsLayout as FumaDocsLayout } from "fumadocs-ui/layouts/docs"
 
-import { DocSearch } from "@/components/doc-search"
 import { WorkspaceUILogo } from "@/components/workspaceui-logo"
 import { pageTree } from "@/lib/page-tree"
 
 const links = [
-  { text: "Docs", url: "/docs/getting-started/introduction", active: "nested-url" as const },
-  { text: "Components", url: "/docs/components/workspace-tabs", active: "nested-url" as const },
   { text: "Blocks", url: "/blocks", active: "nested-url" as const },
-  { type: "custom" as const, children: <DocSearch />, secondary: true },
 ]
 
 export function DocsLayout() {
@@ -19,7 +15,6 @@ export function DocsLayout() {
       links={links}
       githubUrl="https://github.com/jayclydeTags/workspaceui"
       nav={{ title: <WorkspaceUILogo className="h-5 w-auto" /> }}
-      searchToggle={{ enabled: false }}
     >
       <Outlet />
     </FumaDocsLayout>

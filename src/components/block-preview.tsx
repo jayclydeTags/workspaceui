@@ -161,6 +161,15 @@ export function BlockPreview({
 
   const activeCode = files.find((f) => (f.path ?? f.name) === activeFile)?.code ?? ""
   const tree = buildTree(files)
+  const [installHtml, setInstallHtml] = useState("")
+
+  useEffect(() => {
+    codeToHtml(installCmd, {
+      lang: "bash",
+      themes: { light: "github-light", dark: "github-dark" },
+      defaultColor: false,
+    }).then(setInstallHtml)
+  }, [installCmd])
 
   useEffect(() => {
     if (!activeCode) return
@@ -253,7 +262,10 @@ export function BlockPreview({
 
           {/* Install command */}
           <div className="flex items-center gap-1 overflow-hidden rounded-md border border-border bg-muted/50 py-1 pl-3 pr-1">
-            <code className="text-xs text-muted-foreground">{installCmd}</code>
+            <div
+              className="text-xs [&_.shiki]:bg-transparent! [&_pre]:bg-transparent! [&_pre]:!m-0"
+              dangerouslySetInnerHTML={{ __html: installHtml }}
+            />
             <CopyButton value={installCmd} />
           </div>
         </div>

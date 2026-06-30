@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { FumaProvider } from "@/lib/fumadocs-provider"
 
-import { Header } from "@/components/header"
+import { HomeLayout } from "@/layouts/home-layout"
 import { DocsLayout } from "@/layouts/docs-layout"
 import { BlocksLayout } from "@/layouts/blocks-layout"
 import { HomePage } from "@/pages/home"
@@ -13,9 +13,10 @@ export function App() {
   return (
     <BrowserRouter>
       <FumaProvider>
-        <Header />
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route element={<HomeLayout />}>
+            <Route path="/" element={<HomePage />} />
+          </Route>
           <Route element={<DocsLayout />}>
             <Route path="/docs/*" element={<DocPage />} />
           </Route>

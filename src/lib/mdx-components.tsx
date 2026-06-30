@@ -1,24 +1,20 @@
-import { CodeBlock, InlineCode } from "@/components/code-block"
-import { Callout } from "@/components/callout"
-import { Steps, Step } from "@/components/steps"
-import { CodeTabs } from "@/components/code-tabs"
+import defaultMdxComponents from "fumadocs-ui/mdx"
+import { Steps, Step } from "fumadocs-ui/components/steps"
+import { Tab, Tabs } from "fumadocs-ui/components/tabs"
+import { TypeTable } from "fumadocs-ui/components/type-table"
+
 import { ComponentPreview } from "@/components/component-preview"
 import { ComponentSource } from "@/components/component-source"
 import { ComponentTree } from "@/components/component-tree"
-import { PropsTable } from "@/components/props-table"
-import { MdxPre } from "@/components/mdx-pre"
 
-// DocsBody handles prose typography — only override pre and named JSX components.
 export const mdxComponents = {
-  pre: MdxPre,
-  CodeBlock,
-  InlineCode,
-  Callout,
+  ...defaultMdxComponents,
   Steps,
   Step,
-  CodeTabs,
+  Tab,
+  Tabs,
+  TypeTable,
   ComponentPreview,
   ComponentSource,
   ComponentTree,
-  PropsTable,
 }

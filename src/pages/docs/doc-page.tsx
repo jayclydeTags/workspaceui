@@ -1,15 +1,22 @@
+import { useEffect } from "react"
 import { useParams } from "react-router-dom"
 
 import { useDocumentTitle } from "@/lib/use-document-title"
 import { getPage } from "@/lib/source"
 import { mdxComponents } from "@/lib/mdx-components"
+import { useTocContext } from "@/lib/toc-context"
 
 export function DocPage() {
   const params = useParams()
   const slug = (params["*"] ?? "").split("/").filter(Boolean)
   const page = getPage(slug)
+  const { setToc } = useTocContext()
 
   useDocumentTitle(page?.frontmatter.title ?? "")
+
+  useEffect(() => {
+    setToc(page?.toc ?? [])
+  }, [slug.join("/"), page, setToc])
 
   if (!page) {
     return (

@@ -1,12 +1,12 @@
 import type { FC } from "react"
+import type { TOCItemType } from "fumadocs-core/toc"
 
 type DocModule = {
   default: FC<{ components?: Record<string, unknown> }>
   frontmatter: { title: string; description?: string }
-  toc: Array<{ title: string; url: string; depth: number }>
+  toc: TOCItemType[]
 }
 
-// ponytail: eager glob — 5 pages, bundle cost is negligible
 const modules = import.meta.glob<DocModule>("/content/docs/**/*.mdx", { eager: true })
 
 export function getPage(slug: string[]) {

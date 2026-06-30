@@ -23,8 +23,10 @@
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "@/registry/*": ["./registry/*"],
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      ".source": ["./.source"],
+      ".source/*": ["./.source/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", ".source"]
 }

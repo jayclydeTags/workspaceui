@@ -1,0 +1,36 @@
+---
+title: Installation
+---
+
+WorkspaceUI components are distributed via the shadcn registry. Each component is added to your project as editable source code — no package to maintain.
+
+## Prerequisites
+
+- React 18 or 19
+- Tailwind CSS v4
+- shadcn/ui initialised in your project
+- TypeScript (recommended)
+
+## Quick start
+
+<Steps>
+  <Step>Initialise shadcn/ui if you haven't already</Step>
+
+```bash
+npx shadcn@latest init
+```
+
+  <Step>Add the component you need</Step>
+
+```bash
+npx shadcn@latest add jayclydeTags/workspaceui/workspace-tabs
+npx shadcn@latest add jayclydeTags/workspaceui/workspace
+```
+
+</Steps>
+
+<Callout>The CLI automatically installs peer dependencies and resolves registry dependencies — `workspace` will pull in `workspace-tabs` automatically.</Callout>
+
+## Manual installation
+
+Each component page has a **Manual** tab in the installation section with the full source and dependency list.

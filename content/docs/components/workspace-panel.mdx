@@ -1,0 +1,178 @@
+---
+title: Workspace Panel
+---
+
+export const PREVIEW_CODE = `import { Home, FileText, Settings } from "lucide-react"
+import { Workspace } from "@/components/ui/workspace"
+import { WorkspacePanel } from "@/components/ui/workspace-panel"
+
+export function MyPanel() {
+  return (
+    <Workspace
+      initialPanes={[{
+        id: "main",
+        tabs: [
+          { id: "home",     title: "Home",          icon: <Home />,     pinned: true },
+          { id: "docs",     title: "Documentation", icon: <FileText />, badge: 2 },
+          { id: "settings", title: "Settings",      icon: <Settings /> },
+        ],
+      }]}
+      renderTabContent={(_paneId, tabId) => (
+        <WorkspacePanel>
+          <div className="flex h-full items-center justify-center">
+            <p className="text-sm text-muted-foreground">{tabId}</p>
+          </div>
+        </WorkspacePanel>
+      )}
+    />
+  )
+}`
+
+export const USAGE_IMPORT = `import { Workspace } from "@/components/ui/workspace"
+import { WorkspacePanel } from "@/components/ui/workspace-panel"
+import { WorkspaceTabs } from "@/components/ui/workspace-tabs"`
+
+export const USAGE_CODE = `<Workspace
+  initialPanes={[{ id: "editor", tabs: [{ id: "main", title: "main.tsx" }] }]}
+  renderTabContent={(_paneId, tabId) => (
+    <WorkspacePanel>
+      <div>{/* editor content for {tabId} */}</div>
+    </WorkspacePanel>
+  )}
+/>`
+
+export const SPLIT_CODE = `import { useState } from "react"
+import { FileText, Terminal } from "lucide-react"
+import { Workspace } from "@/components/ui/workspace"
+import { WorkspacePanel } from "@/components/ui/workspace-panel"
+import { WorkspaceTabs } from "@/components/ui/workspace-tabs"
+
+function EditorWithTerminal({ tabId }: { tabId: string }) {
+  const [terminalId, setTerminalId] = useState("bash")
+
+  return (
+    <WorkspacePanel>
+      <div className="flex h-full items-center justify-center">
+        <p className="font-mono text-sm text-muted-foreground">{tabId}</p>
+      </div>
+      <WorkspaceTabs
+        tabs={[
+          { id: "bash", title: "bash",        icon: <Terminal />, pinned: true },
+          { id: "npm",  title: "npm run dev", icon: <Terminal /> },
+        ]}
+        activeTabId={terminalId}
+        onTabChange={setTerminalId}
+      >
+        <div className="flex h-full items-center justify-center font-mono text-sm text-muted-foreground">
+          {terminalId === "bash" ? "$ _" : "$ pnpm dev"}
+        </div>
+      </WorkspaceTabs>
+    </WorkspacePanel>
+  )
+}
+
+export function MySplitPanel() {
+  return (
+    <Workspace
+      initialPanes={[{
+        id: "editor",
+        tabs: [
+          { id: "main.tsx", title: "main.tsx", icon: <FileText />, pinned: true },
+          { id: "app.tsx",  title: "app.tsx",  icon: <FileText /> },
+        ],
+      }]}
+      renderTabContent={(_paneId, tabId) => <EditorWithTerminal tabId={tabId} />}
+    />
+  )
+}`
+
+export const PANEL_TREE = {
+  name: "WorkspacePanel",
+  children: [
+    {
+      name: "WorkspaceTabs (top)",
+      children: [{ name: "children (content area)" }],
+    },
+    {
+      name: "WorkspaceTabs (bottom, optional)",
+      children: [{ name: "children (content area)" }],
+    },
+  ],
+}
+
+export const PANEL_PROPS = [
+  {
+    name: "children",
+    type: "React.ReactNode",
+    required: true,
+    description: "One or two <WorkspaceTabs> instances. Two children render in a vertically resizable split.",
+  },
+  {
+    name: "className",
+    type: "string",
+    description: "Additional CSS classes applied to the root element.",
+  },
+]
+
+A layout component used inside `<Workspace>`'s `renderTabContent` to split a pane's content area vertically. One child fills the pane; two children stack with a drag-to-resize handle between them. Drag-to-reorder and cross-pane transfers work automatically via the parent `Workspace` context.
+
+<ComponentPreview name="workspace-panel-single" code={PREVIEW_CODE} />
+
+<div className="space-y-4">
+
+## Installation
+
+<CodeTabs
+  cli="npx shadcn@latest add jayclydeTags/workspaceui/workspace-panel"
+  manual={
+    <Steps>
+      <Step>Install dependencies</Step>
+      <CodeBlock code="npm install @base-ui/react lucide-react react-resizable-panels" lang="bash" />
+      <Step>Copy the component into your project</Step>
+      <ComponentSource name="workspace-panel" />
+    </Steps>
+  }
+/>
+
+</div>
+
+<div className="space-y-4">
+
+## Usage
+
+<CodeBlock code={USAGE_IMPORT} lang="tsx" />
+<CodeBlock code={USAGE_CODE} />
+
+</div>
+
+<div className="space-y-4">
+
+## Split Panel
+
+Pass two children to `WorkspacePanel` to get a vertically resizable split — ideal for an editor above and a terminal strip below. The bottom child is typically a `WorkspaceTabs` for secondary content like terminal sessions or output panels.
+
+<ComponentPreview name="workspace-panel-split" code={SPLIT_CODE} />
+
+</div>
+
+<div className="space-y-4">
+
+## Composition
+
+<ComponentTree description="Compose WorkspacePanel with WorkspaceTabs:" root={PANEL_TREE} />
+
+</div>
+
+<div className="space-y-4">
+
+## API Reference
+
+<div className="space-y-3">
+
+### WorkspacePanel
+
+<PropsTable props={PANEL_PROPS} />
+
+</div>
+
+</div>

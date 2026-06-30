@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom"
 import { ArrowRight } from "lucide-react"
 
-import { InlineCode } from "@/components/code-block"
+import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock"
 
 function GithubIcon({ className }: { className?: string }) {
   return (
@@ -50,7 +50,7 @@ export function HomePage() {
 
         {/* Install snippet */}
         <div className="mx-auto max-w-lg">
-          <InlineCode code="npx shadcn@latest add jayclydeTags/workspaceui/workspace-tabs" />
+          <DynamicCodeBlock lang="bash" code="npx shadcn@latest add jayclydeTags/workspaceui/workspace-tabs" />
         </div>
       </div>
 

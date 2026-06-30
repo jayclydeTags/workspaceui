@@ -1,6 +1,3 @@
-import { useState, useEffect } from "react"
-import { codeToHtml } from "shiki"
-
 import { ComponentPreviewShell } from "@/components/component-preview-shell"
 import { WorkspaceTabsLiveDemo } from "@/components/previews/workspace-tabs-live"
 import { WorkspaceTabsOverflowDemo } from "@/components/previews/workspace-tabs-overflow"
@@ -28,20 +25,10 @@ interface ComponentPreviewProps {
 
 export function ComponentPreview({ name, code, className }: ComponentPreviewProps) {
   const preview = previewComponents[name]
-  const [codeHtml, setCodeHtml] = useState("")
-
-  useEffect(() => {
-    codeToHtml(code, {
-      lang: "tsx",
-      themes: { light: "github-light", dark: "github-dark" },
-      defaultColor: false,
-    }).then(setCodeHtml)
-  }, [code])
-
   if (!preview) return null
 
   return (
-    <ComponentPreviewShell code={code} codeHtml={codeHtml} className={className}>
+    <ComponentPreviewShell code={code} className={className}>
       {preview}
     </ComponentPreviewShell>
   )

@@ -1,8 +1,9 @@
+import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock"
+
 import workspaceTabsRaw from "@/components/workspaceui/workspace-tabs.tsx?raw"
 import workspacePanelRaw from "@/components/workspaceui/workspace-panel.tsx?raw"
 import workspaceContextRaw from "@/components/workspaceui/workspace-context.tsx?raw"
 import workspaceRaw from "@/components/workspaceui/workspace.tsx?raw"
-import { CodeBlock } from "@/components/code-block"
 
 const sources: Record<string, string> = {
   "workspace-tabs": workspaceTabsRaw,
@@ -14,17 +15,16 @@ const sources: Record<string, string> = {
 interface ComponentSourceProps {
   name: string
   filename?: string
-  collapsible?: boolean
 }
 
-export function ComponentSource({ name, filename, collapsible = true }: ComponentSourceProps) {
+export function ComponentSource({ name, filename }: ComponentSourceProps) {
   const src = sources[name]
   if (!src) return null
   return (
-    <CodeBlock
+    <DynamicCodeBlock
+      lang="tsx"
       code={src}
-      filename={filename ?? `components/ui/${name}.tsx`}
-      collapsible={collapsible}
+      codeblock={{ title: filename ?? `components/ui/${name}.tsx` }}
     />
   )
 }

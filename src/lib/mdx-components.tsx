@@ -1,20 +1,33 @@
 import defaultMdxComponents from "fumadocs-ui/mdx"
-import { Steps, Step } from "fumadocs-ui/components/steps"
-import { Tab, Tabs } from "fumadocs-ui/components/tabs"
-import { TypeTable } from "fumadocs-ui/components/type-table"
 
+import { Accordion, Accordions } from "@/components/accordion"
+import { CodeBlock, CodeBlockTab, CodeBlockTabs, CodeBlockTabsList, CodeBlockTabsTrigger } from "@/components/codeblock"
 import { ComponentPreview } from "@/components/component-preview"
 import { ComponentSource } from "@/components/component-source"
 import { ComponentTree } from "@/components/component-tree"
+import { File, Files, Folder } from "@/components/files"
+import { Step, Steps } from "@/components/steps"
+import { Tab, Tabs } from "@/components/tabs"
+import { TypeTable } from "@/components/type-table"
 
 export const mdxComponents = {
   ...defaultMdxComponents,
-  Steps,
-  Step,
-  Tab,
-  Tabs,
-  TypeTable,
+  Accordion,
+  Accordions,
+  CodeBlock,
+  CodeBlockTab,
+  CodeBlockTabs,
+  CodeBlockTabsList,
+  CodeBlockTabsTrigger,
   ComponentPreview,
   ComponentSource,
   ComponentTree,
+  File,
+  Files,
+  Folder,
+  Step,
+  Steps,
+  Tab,
+  Tabs,
+  TypeTable,
 }

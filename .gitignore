@@ -26,6 +26,7 @@ dist-ssr
 
 .claude/settings.local.json
 .playwright-mcp
+.playwright-cli
 *.png
 
 docs/.next

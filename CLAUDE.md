@@ -112,7 +112,7 @@ Components import each other via `@/components/workspaceui/...`.
 Every component in `src/components/workspaceui/` must have a matching fumadocs page:
 - `content/docs/components/<component>.mdx` — install (CLI + manual `<ComponentSource>`), usage, and a `<TypeTable>` API reference
 - A live demo in `src/components/previews/<component>-live.tsx`, registered in `previewComponents` in `src/components/component-preview.tsx`, and referenced via `<ComponentPreview name="<component>" code={...} />` in the mdx
-- A sidebar entry in the `Components` section of `src/lib/nav.ts`
+- A sidebar entry in the `Components` section of **both** `src/lib/nav.ts` and `src/lib/page-tree.ts` (`page-tree.ts` is what the fumadocs sidebar actually renders — `nav.ts` alone won't show the page)
 - A `registry.json` entry pointing at the component file
 
 Use `content/docs/components/workspace-panel.mdx` and `src/components/previews/workspace-panel-single.tsx` as the reference pattern.

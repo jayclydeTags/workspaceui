@@ -53,7 +53,7 @@ export function Page({
           <div className="flex items-start justify-between gap-4">
             <div className="flex min-w-0 items-center gap-3">
               {visual && (
-                <span aria-hidden="true" className="mt-0.5 shrink-0">
+                <span aria-hidden="true" className="shrink-0">
                   {visual}
                 </span>
               )}
@@ -83,7 +83,7 @@ export function Page({
                   </Breadcrumb>
                 </>
               ) : (
-                <h1 className="truncate text-lg font-semibold">{title}</h1>
+                <h1 className="not-prose truncate text-lg font-semibold">{title}</h1>
               )}
               {badge}
             </div>

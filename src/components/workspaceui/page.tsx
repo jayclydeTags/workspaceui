@@ -92,7 +92,7 @@ export function Page({
             )}
           </div>
           {subtitle && (
-            <p className="truncate text-sm text-muted-foreground">{subtitle}</p>
+            <p className="m-0 truncate text-sm text-muted-foreground">{subtitle}</p>
           )}
         </header>
       )}

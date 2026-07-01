@@ -61,23 +61,109 @@ import { Page } from "@/components/ui/page"
 </Page>
 ```
 
-## Breadcrumbs
+## Examples
+
+### Default
+
+A plain title and subtitle, no header extras.
+
+<ComponentPreview name="page-default" code={`import { Page } from "@/components/ui/page"
+
+export function MyPage() {
+  return (
+    <Page title="Settings" subtitle="Manage your account">
+      <p className="text-sm text-muted-foreground">Page content goes here.</p>
+    </Page>
+  )
+}`} />
+
+### With Subtitle
+
+A secondary line under the title.
+
+<ComponentPreview name="page-with-subtitle" code={`import { Page } from "@/components/ui/page"
+
+export function MyPage() {
+  return (
+    <Page title="Billing" subtitle="Manage your subscription and invoices">
+      <p className="text-sm text-muted-foreground">Page content goes here.</p>
+    </Page>
+  )
+}`} />
+
+### With Breadcrumbs
 
 Pass `breadcrumbs` to replace the plain title with a breadcrumb trail — the last item renders as the current page, and `badge` (if set) appears next to it instead of next to the title.
 
-```tsx
-<Page breadcrumbs={[{ label: "Settings", href: "/settings" }, { label: "Billing" }]} />
-```
+<ComponentPreview name="page-with-breadcrumbs" code={`import { Page } from "@/components/ui/page"
 
-## Without a header
+export function MyPage() {
+  return (
+    <Page breadcrumbs={[{ label: "Settings", href: "/settings" }, { label: "Billing" }]}>
+      <p className="text-sm text-muted-foreground">Page content goes here.</p>
+    </Page>
+  )
+}`} />
+
+### With Badge & Actions
+
+A decorative `visual`, a `badge` next to the title, and right-aligned `actions`.
+
+<ComponentPreview name="page-with-badge-and-actions" code={`import { Settings } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Page } from "@/components/ui/page"
+
+export function MyPage() {
+  return (
+    <Page
+      visual={<Settings className="mt-0.5 size-5 text-muted-foreground" />}
+      title="Billing"
+      badge={<Badge variant="secondary">Beta</Badge>}
+      actions={<Button size="sm">Save changes</Button>}
+    >
+      <p className="text-sm text-muted-foreground">Page content goes here.</p>
+    </Page>
+  )
+}`} />
+
+### Without a Header
 
 Set `hasHeader={false}` to omit the header entirely and render only the content area.
 
-```tsx
-<Page hasHeader={false}>
-  <div>{/* full-bleed content */}</div>
-</Page>
-```
+<ComponentPreview name="page-without-header" code={`import { Page } from "@/components/ui/page"
+
+export function MyPage() {
+  return (
+    <Page hasHeader={false} hasPadding>
+      <div>{/* full-bleed content */}</div>
+    </Page>
+  )
+}`} />
+
+### Full Configuration
+
+Every prop combined — `visual`, `breadcrumbs`, `subtitle`, `badge`, `actions`, and `hasPadding`.
+
+<ComponentPreview name="page-full" code={`import { Settings } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Page } from "@/components/ui/page"
+
+export function MyPage() {
+  return (
+    <Page
+      visual={<Settings className="mt-0.5 size-5 text-muted-foreground" />}
+      breadcrumbs={[{ label: "Settings", href: "/settings" }, { label: "Billing" }]}
+      subtitle="Manage your subscription and invoices"
+      badge={<Badge variant="secondary">Beta</Badge>}
+      actions={<Button size="sm">Save changes</Button>}
+      hasPadding
+    >
+      <p className="text-sm text-muted-foreground">Page content goes here.</p>
+    </Page>
+  )
+}`} />
 
 ## API Reference
 

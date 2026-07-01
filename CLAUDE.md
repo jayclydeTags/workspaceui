@@ -117,7 +117,7 @@ Vitest with jsdom. `src/test/setup.ts` provides:
 
 Tests live in `src/registry/bases/base/workspaceui/__tests__/`.
 
-New component or block: see [`.claude/rules/component-testing.md`](.claude/rules/component-testing.md) — needs both a component-level test and a `registry.json` entry (validated automatically by `src/registry/__tests__/registry.test.ts`).
+New component or block, or a prop change on an existing one: see [`.claude/rules/component-testing.md`](.claude/rules/component-testing.md) — needs a component-level test, a `registry.json` entry, and doc/sidebar entries (the latter two are validated automatically by `src/registry/__tests__/registry.test.ts` and `registry-docs.test.ts`).
 
 ## Tooling
 

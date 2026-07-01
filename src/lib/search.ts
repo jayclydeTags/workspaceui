@@ -1,4 +1,4 @@
-import { create, insert, insertMultiple, save } from "@orama/orama"
+import { create, insertMultiple, save } from "@orama/orama"
 
 export type SearchIndexEntry = {
   title: string

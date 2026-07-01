@@ -62,14 +62,24 @@ workspaceui/
 
 ## Registry distribution model
 
-Components live in `src/components/workspaceui/` and are distributed via the shadcn GitHub registry shorthand:
+Components live in `src/components/workspaceui/` and are distributed via `registry.json` at the repo root — no build step, no Vercel endpoint.
 
-```bash
-npx shadcn@latest add jayclydeTags/workspaceui/workspace-tabs
-npx shadcn@latest add jayclydeTags/workspaceui/workspace
+The shadcn CLI has no "user/repo/item" GitHub shorthand, so consumers must register this repo's raw `registry.json` as a named registry in their project's `components.json`:
+
+```json
+{
+  "registries": {
+    "@workspaceui": "https://raw.githubusercontent.com/jayclydeTags/workspaceui/main/registry.json"
+  }
+}
 ```
 
-The shadcn CLI resolves this directly from `registry.json` at the repo root — no build step, no Vercel endpoint.
+Then install components with the namespace prefix:
+
+```bash
+npx shadcn@latest add @workspaceui/workspace-tabs
+npx shadcn@latest add @workspaceui/workspace
+```
 
 ## Path aliases
 

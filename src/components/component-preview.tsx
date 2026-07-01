@@ -7,6 +7,11 @@ import { WorkspaceSinglePaneDemo } from "@/components/previews/workspace-single-
 import { WorkspacePanelSingleDemo } from "@/components/previews/workspace-panel-single"
 import { WorkspacePanelSplitDemo } from "@/components/previews/workspace-panel-split"
 import { PageLiveDemo } from "@/components/previews/page-live"
+import { PageDefaultDemo } from "@/components/previews/page-default"
+import { PageWithSubtitleDemo } from "@/components/previews/page-with-subtitle"
+import { PageWithBreadcrumbsDemo } from "@/components/previews/page-with-breadcrumbs"
+import { PageWithBadgeAndActionsDemo } from "@/components/previews/page-with-badge-and-actions"
+import { PageWithoutHeaderDemo } from "@/components/previews/page-without-header"
 
 const previewComponents: Record<string, React.ReactNode> = {
   "workspace-tabs": <WorkspaceTabsLiveDemo />,
@@ -17,6 +22,11 @@ const previewComponents: Record<string, React.ReactNode> = {
   "workspace-panel-single": <WorkspacePanelSingleDemo />,
   "workspace-panel-split": <WorkspacePanelSplitDemo />,
   page: <PageLiveDemo />,
+  "page-default": <PageDefaultDemo />,
+  "page-with-subtitle": <PageWithSubtitleDemo />,
+  "page-with-breadcrumbs": <PageWithBreadcrumbsDemo />,
+  "page-with-badge-and-actions": <PageWithBadgeAndActionsDemo />,
+  "page-without-header": <PageWithoutHeaderDemo />,
 }
 
 interface ComponentPreviewProps {

@@ -20,6 +20,7 @@ export const pageTree: PageTree.Root = {
         { type: "page", name: "Workspace Tabs", url: "/docs/components/workspace-tabs" },
         { type: "page", name: "Workspace Panel", url: "/docs/components/workspace-panel" },
         { type: "page", name: "Workspace", url: "/docs/components/workspace" },
+        { type: "page", name: "Page", url: "/docs/components/page" },
       ],
     },
   ],

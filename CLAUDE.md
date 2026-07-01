@@ -62,24 +62,14 @@ workspaceui/
 
 ## Registry distribution model
 
-Components live in `src/components/workspaceui/` and are distributed via `registry.json` at the repo root — no build step, no Vercel endpoint.
-
-The shadcn CLI has no "user/repo/item" GitHub shorthand, so consumers must register this repo's raw `registry.json` as a named registry in their project's `components.json`:
-
-```json
-{
-  "registries": {
-    "@workspaceui": "https://raw.githubusercontent.com/jayclydeTags/workspaceui/main/registry.json"
-  }
-}
-```
-
-Then install components with the namespace prefix:
+Components live in `src/components/workspaceui/` and are distributed via `registry.json` at the repo root using the shadcn CLI's [GitHub registry shorthand](https://ui.shadcn.com/docs/registry/github) — no build step, no Vercel endpoint, no `components.json` registries config needed.
 
 ```bash
-npx shadcn@latest add @workspaceui/workspace-tabs
-npx shadcn@latest add @workspaceui/workspace
+npx shadcn@latest add jayclydeTags/workspaceui/workspace-tabs
+npx shadcn@latest add jayclydeTags/workspaceui/workspace
 ```
+
+The repo must be public and have `registry.json` at its root; the CLI resolves items from it directly. Within `registry.json`, `registryDependencies` that point at sibling items in this same repo must use the full `jayclydeTags/workspaceui/<item>` address (not the bare name) — bare names resolve against the consumer's default `@shadcn` registry and 404. Plain shadcn primitives (`utils`, `resizable`, `sidebar`, `breadcrumb`, etc.) stay unprefixed.
 
 ## Path aliases
 

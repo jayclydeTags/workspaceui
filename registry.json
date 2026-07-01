@@ -23,7 +23,7 @@
       "title": "Workspace Tabs",
       "description": "Chrome-style scrollable tab strip with closeable tabs, unread badges, overflow fade, and macOS-style curved active-tab connectors.",
       "dependencies": ["@base-ui/react", "lucide-react"],
-      "registryDependencies": ["utils", "workspace-context"],
+      "registryDependencies": ["utils", "jayclydeTags/workspaceui/workspace-context"],
       "files": [
         {
           "path": "src/components/workspaceui/workspace-tabs.tsx",
@@ -37,7 +37,7 @@
       "title": "Workspace Panel",
       "description": "Layout component used inside Workspace's renderTabContent to split a pane's content area vertically. One child fills the pane; two children stack with a drag-to-resize handle. Drag-to-reorder works via the parent Workspace context.",
       "dependencies": ["@base-ui/react", "lucide-react", "react-resizable-panels"],
-      "registryDependencies": ["workspace-tabs", "resizable", "utils"],
+      "registryDependencies": ["jayclydeTags/workspaceui/workspace-tabs", "resizable", "utils"],
       "files": [
         {
           "path": "src/components/workspaceui/workspace-panel.tsx",
@@ -51,7 +51,7 @@
       "title": "Workspace",
       "description": "Self-contained workspace with tab-based panels: closing a panel's last tab collapses the panel; closing all panels reveals a configurable fallback. Exposes useWorkspace context and a WorkspaceHandle ref for programmatic control.",
       "dependencies": ["@base-ui/react", "react-resizable-panels", "lucide-react"],
-      "registryDependencies": ["resizable", "workspace-tabs", "workspace-context", "utils"],
+      "registryDependencies": ["resizable", "jayclydeTags/workspaceui/workspace-tabs", "jayclydeTags/workspaceui/workspace-context", "utils"],
       "files": [
         {
           "path": "src/components/workspaceui/workspace.tsx",
@@ -65,7 +65,7 @@
       "title": "Dashboard 01",
       "description": "Collapsible sidebar nav paired with the Workspace component. Sidebar items open tabs; repeat clicks focus the existing tab.",
       "dependencies": ["@base-ui/react", "lucide-react", "react-resizable-panels"],
-      "registryDependencies": ["workspace", "sidebar", "utils"],
+      "registryDependencies": ["jayclydeTags/workspaceui/workspace", "sidebar", "utils"],
       "files": [
         {
           "path": "src/components/workspaceui/blocks/dashboard-01.tsx",

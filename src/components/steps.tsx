@@ -12,9 +12,9 @@ export function Steps({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-export function Step({ className, ...props }: React.ComponentProps<"h3">) {
+export function Step({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <h3
+    <div
       className={cn(
         "step relative mt-8 font-semibold text-base first:mt-0",
         className

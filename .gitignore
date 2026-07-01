@@ -24,10 +24,13 @@ dist-ssr
 *.sln
 *.sw?
 
+# Claude
 .claude/settings.local.json
+.claude/worktrees/
+
 .playwright-mcp
+.playwright-cli
 *.png
 
-docs/.next
-
-.claude/worktrees/
+# Fumadocs
+public/api/search.json

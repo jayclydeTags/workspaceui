@@ -50,21 +50,21 @@ export function Page({
     <div className={cn("flex h-full flex-col", className)}>
       {hasHeader && (
         <div className="flex items-start justify-between gap-4 border-b px-6 py-4">
-          <div className="flex items-start gap-3">
+          <div className="flex min-w-0 items-start gap-3">
             {visual}
-            <div className="flex flex-col gap-1">
+            <div className="flex min-w-0 flex-col gap-1">
               {breadcrumbs ? (
                 <Breadcrumb>
-                  <BreadcrumbList>
+                  <BreadcrumbList className="flex-nowrap">
                     {breadcrumbs.map((crumb, i) => {
                       const isLast = i === breadcrumbs.length - 1
                       return (
                         <React.Fragment key={i}>
                           {i > 0 && <BreadcrumbSeparator />}
-                          <BreadcrumbItem>
+                          <BreadcrumbItem className={isLast ? "min-w-0" : undefined}>
                             {isLast ? (
-                              <span className="flex items-center gap-2">
-                                <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                              <span className="flex min-w-0 items-center gap-2">
+                                <BreadcrumbPage className="truncate">{crumb.label}</BreadcrumbPage>
                                 {badge}
                               </span>
                             ) : (
@@ -79,13 +79,13 @@ export function Page({
                   </BreadcrumbList>
                 </Breadcrumb>
               ) : (
-                <div className="flex items-center gap-2">
-                  <h1 className="text-lg font-semibold">{title}</h1>
+                <div className="flex min-w-0 items-center gap-2">
+                  <h1 className="truncate text-lg font-semibold">{title}</h1>
                   {badge}
                 </div>
               )}
               {subtitle && (
-                <p className="text-sm text-muted-foreground">{subtitle}</p>
+                <p className="truncate text-sm text-muted-foreground">{subtitle}</p>
               )}
             </div>
           </div>

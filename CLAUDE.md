@@ -107,6 +107,16 @@ Components import each other via `@/components/workspaceui/...`.
 - Fallback content shown when all panes are closed (configurable via `fallback` prop)
 - Constants: `MIN_COL_SIZE = 20%`, `MIN_ROW_SIZE = 30%`
 
+## Documentation
+
+Every component in `src/components/workspaceui/` must have a matching fumadocs page:
+- `content/docs/components/<component>.mdx` — install (CLI + manual `<ComponentSource>`), usage, and a `<TypeTable>` API reference
+- A live demo in `src/components/previews/<component>-live.tsx`, registered in `previewComponents` in `src/components/component-preview.tsx`, and referenced via `<ComponentPreview name="<component>" code={...} />` in the mdx
+- A sidebar entry in the `Components` section of `src/lib/nav.ts`
+- A `registry.json` entry pointing at the component file
+
+Use `content/docs/components/workspace-panel.mdx` and `src/components/previews/workspace-panel-single.tsx` as the reference pattern.
+
 ## Testing
 
 Vitest with jsdom. `src/test/setup.ts` provides:

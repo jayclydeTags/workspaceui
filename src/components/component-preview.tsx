@@ -6,6 +6,7 @@ import { WorkspaceLiveDemo } from "@/components/previews/workspace-live"
 import { WorkspaceSinglePaneDemo } from "@/components/previews/workspace-single-pane"
 import { WorkspacePanelSingleDemo } from "@/components/previews/workspace-panel-single"
 import { WorkspacePanelSplitDemo } from "@/components/previews/workspace-panel-split"
+import { PageLiveDemo } from "@/components/previews/page-live"
 
 const previewComponents: Record<string, React.ReactNode> = {
   "workspace-tabs": <WorkspaceTabsLiveDemo />,
@@ -15,6 +16,7 @@ const previewComponents: Record<string, React.ReactNode> = {
   "workspace-single-pane": <WorkspaceSinglePaneDemo />,
   "workspace-panel-single": <WorkspacePanelSingleDemo />,
   "workspace-panel-split": <WorkspacePanelSplitDemo />,
+  page: <PageLiveDemo />,
 }
 
 interface ComponentPreviewProps {

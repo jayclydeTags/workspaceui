@@ -60,6 +60,20 @@
       ]
     },
     {
+      "name": "page",
+      "type": "registry:ui",
+      "title": "Page",
+      "description": "Page shell with an optional header (title/subtitle, breadcrumbs, visual, badge, actions) and a content area that can be padded.",
+      "dependencies": [],
+      "registryDependencies": ["breadcrumb", "utils"],
+      "files": [
+        {
+          "path": "src/components/workspaceui/page.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "dashboard-01",
       "type": "registry:block",
       "title": "Dashboard 01",

@@ -1,0 +1,97 @@
+---
+title: Page
+---
+
+export const PREVIEW_CODE = `import { Settings } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Page } from "@/components/ui/page"
+
+export function MyPage() {
+  return (
+    <Page
+      visual={<Settings className="mt-0.5 size-5 text-muted-foreground" />}
+      breadcrumbs={[{ label: "Settings", href: "/settings" }, { label: "Billing" }]}
+      subtitle="Manage your subscription and invoices"
+      badge={<Badge variant="secondary">Beta</Badge>}
+      actions={<Button size="sm">Save changes</Button>}
+      hasPadding
+    >
+      <p className="text-sm text-muted-foreground">Page content goes here.</p>
+    </Page>
+  )
+}`
+
+A page shell with an optional header — title or breadcrumbs, subtitle, a visual, a badge, and actions — plus a content area that can be padded.
+
+<ComponentPreview name="page" code={PREVIEW_CODE} />
+
+## Installation
+
+<Tabs items={["CLI", "Manual"]}>
+<Tab value="CLI">
+
+```bash
+npx shadcn@latest add jayclydeTags/workspaceui/page
+```
+
+</Tab>
+<Tab value="Manual">
+
+<Steps>
+<Step>
+### Copy the component into your project
+
+<ComponentSource name="page" />
+</Step>
+</Steps>
+
+</Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Page } from "@/components/ui/page"
+```
+
+```tsx
+<Page title="Settings" subtitle="Manage your account">
+  <div>{/* page content */}</div>
+</Page>
+```
+
+## Breadcrumbs
+
+Pass `breadcrumbs` to replace the plain title with a breadcrumb trail — the last item renders as the current page, and `badge` (if set) appears next to it instead of next to the title.
+
+```tsx
+<Page breadcrumbs={[{ label: "Settings", href: "/settings" }, { label: "Billing" }]} />
+```
+
+## Without a header
+
+Set `hasHeader={false}` to omit the header entirely and render only the content area.
+
+```tsx
+<Page hasHeader={false}>
+  <div>{/* full-bleed content */}</div>
+</Page>
+```
+
+## API Reference
+
+<TypeTable
+  type={{
+    title: { type: "React.ReactNode", description: "Page title. Ignored when `breadcrumbs` is set." },
+    subtitle: { type: "React.ReactNode", description: "Secondary line shown under the title or breadcrumbs." },
+    breadcrumbs: { type: "{ label: string; href?: string }[]", description: "Renders a breadcrumb trail in place of the plain title; the last item is the current page." },
+    visual: { type: "React.ReactNode", description: "Decorative visual shown left of the title/breadcrumbs." },
+    badge: { type: "React.ReactNode", description: "Shown next to the title, or next to the last breadcrumb when `breadcrumbs` is set." },
+    actions: { type: "React.ReactNode", description: "Right-aligned actions in the header." },
+    hasHeader: { type: "boolean", default: "true", description: "Set to `false` to omit the header entirely." },
+    hasPadding: { type: "boolean", default: "false", description: "Adds padding to the content area." },
+    className: { type: "string", description: "Additional CSS classes applied to the root element." },
+    children: { type: "React.ReactNode", description: "Content area." },
+  }}
+/>

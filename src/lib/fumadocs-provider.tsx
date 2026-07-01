@@ -31,7 +31,7 @@ export function FumaProvider({ children }: { children: ReactNode }) {
       useRouter={useRouter}
       Link={Link}
     >
-      <RootProvider>{children}</RootProvider>
+      <RootProvider search={{ options: { api: "/api/search.json", type: "static" } }}>{children}</RootProvider>
     </FrameworkProvider>
   )
 }

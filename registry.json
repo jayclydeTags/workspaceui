@@ -82,7 +82,29 @@
       "registryDependencies": ["jayclydeTags/workspaceui/workspace", "sidebar", "utils"],
       "files": [
         {
-          "path": "src/registry/bases/base/workspaceui/blocks/dashboard-01.tsx",
+          "path": "src/registry/bases/base/blocks/dashboard-01/page.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "activity-log-01",
+      "type": "registry:block",
+      "title": "Activity Log 01",
+      "description": "Filterable activity log with a responsive datatable — collapses to cards on narrow panes.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["badge", "button", "input", "dropdown-menu"],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/activity-log-01/page.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/activity-log-01/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/activity-log-01/components/data-table.tsx",
           "type": "registry:block"
         }
       ]

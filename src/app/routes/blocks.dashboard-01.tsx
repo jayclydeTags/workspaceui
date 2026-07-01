@@ -1,8 +1,8 @@
-import blockSource from "@/registry/bases/base/workspaceui/blocks/dashboard-01.tsx?raw"
+import blockSource from "@/registry/bases/base/blocks/dashboard-01/page.tsx?raw"
 
 import { useDocumentTitle } from "@/lib/use-document-title"
 import { BlockPreview } from "@/components/block-preview"
-import { Dashboard01 } from "@/registry/bases/base/workspaceui/blocks/dashboard-01"
+import { Dashboard01 } from "@/registry/bases/base/blocks/dashboard-01/page"
 
 const FILES = [{ name: "dashboard-01.tsx", code: blockSource }]
 

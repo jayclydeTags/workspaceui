@@ -39,8 +39,10 @@ workspaceui/
 │   │       ├── workspaceui/   # Distributable components (source of truth)
 │   │       │   ├── workspace-tabs.tsx
 │   │       │   ├── workspace.tsx
-│   │       │   ├── blocks/
 │   │       │   └── __tests__/
+│   │       ├── blocks/        # Distributable blocks — each its own folder: page.tsx, components/, data.ts
+│   │       │   ├── dashboard-01/
+│   │       │   └── activity-log-01/
 │   │       └── examples/      # Live demo components (registered in component-preview.tsx)
 │   ├── index.css             # Tailwind v4 + theme tokens
 │   ├── components/

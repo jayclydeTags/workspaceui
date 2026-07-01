@@ -60,7 +60,7 @@ export function Page({
               {breadcrumbs ? (
                 <>
                   <h1 className="sr-only">{breadcrumbs[breadcrumbs.length - 1]?.label}</h1>
-                  <Breadcrumb className="min-w-0">
+                  <Breadcrumb className="not-prose min-w-0">
                     <BreadcrumbList className="flex-nowrap">
                       {breadcrumbs.map((crumb, i) => {
                         const isLast = i === breadcrumbs.length - 1

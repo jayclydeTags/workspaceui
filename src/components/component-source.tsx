@@ -1,10 +1,10 @@
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock"
 
-import workspaceTabsRaw from "@/components/workspaceui/workspace-tabs.tsx?raw"
-import workspacePanelRaw from "@/components/workspaceui/workspace-panel.tsx?raw"
-import workspaceContextRaw from "@/components/workspaceui/workspace-context.tsx?raw"
-import workspaceRaw from "@/components/workspaceui/workspace.tsx?raw"
-import pageRaw from "@/components/workspaceui/page.tsx?raw"
+import workspaceTabsRaw from "@/registry/bases/base/workspaceui/workspace-tabs.tsx?raw"
+import workspacePanelRaw from "@/registry/bases/base/workspaceui/workspace-panel.tsx?raw"
+import workspaceContextRaw from "@/registry/bases/base/workspaceui/workspace-context.tsx?raw"
+import workspaceRaw from "@/registry/bases/base/workspaceui/workspace.tsx?raw"
+import pageRaw from "@/registry/bases/base/workspaceui/page.tsx?raw"
 
 const sources: Record<string, string> = {
   "workspace-tabs": workspaceTabsRaw,

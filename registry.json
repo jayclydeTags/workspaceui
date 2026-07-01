@@ -12,7 +12,7 @@
       "registryDependencies": [],
       "files": [
         {
-          "path": "src/components/workspaceui/workspace-context.tsx",
+          "path": "src/registry/bases/base/workspaceui/workspace-context.tsx",
           "type": "registry:ui"
         }
       ]
@@ -26,7 +26,7 @@
       "registryDependencies": ["utils", "jayclydeTags/workspaceui/workspace-context"],
       "files": [
         {
-          "path": "src/components/workspaceui/workspace-tabs.tsx",
+          "path": "src/registry/bases/base/workspaceui/workspace-tabs.tsx",
           "type": "registry:ui"
         }
       ]
@@ -40,7 +40,7 @@
       "registryDependencies": ["jayclydeTags/workspaceui/workspace-tabs", "resizable", "utils"],
       "files": [
         {
-          "path": "src/components/workspaceui/workspace-panel.tsx",
+          "path": "src/registry/bases/base/workspaceui/workspace-panel.tsx",
           "type": "registry:ui"
         }
       ]
@@ -54,7 +54,7 @@
       "registryDependencies": ["resizable", "jayclydeTags/workspaceui/workspace-tabs", "jayclydeTags/workspaceui/workspace-context", "utils"],
       "files": [
         {
-          "path": "src/components/workspaceui/workspace.tsx",
+          "path": "src/registry/bases/base/workspaceui/workspace.tsx",
           "type": "registry:ui"
         }
       ]
@@ -68,7 +68,7 @@
       "registryDependencies": ["breadcrumb", "utils"],
       "files": [
         {
-          "path": "src/components/workspaceui/page.tsx",
+          "path": "src/registry/bases/base/workspaceui/page.tsx",
           "type": "registry:ui"
         }
       ]
@@ -82,7 +82,7 @@
       "registryDependencies": ["jayclydeTags/workspaceui/workspace", "sidebar", "utils"],
       "files": [
         {
-          "path": "src/components/workspaceui/blocks/dashboard-01.tsx",
+          "path": "src/registry/bases/base/workspaceui/blocks/dashboard-01.tsx",
           "type": "registry:block"
         }
       ]

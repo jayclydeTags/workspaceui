@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link } from "react-router"
 
 import { DocSearch } from "@/components/doc-search"
 import { ThemeToggle } from "@/components/theme-toggle"

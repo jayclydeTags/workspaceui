@@ -4,7 +4,7 @@ import { fileURLToPath } from "url"
 import { create, insertMultiple, save } from "@orama/orama"
 
 const __dir = fileURLToPath(new URL("..", import.meta.url))
-const contentDir = join(__dir, "content/docs")
+const contentDir = join(__dir, "src/content/docs")
 
 // Schema required by fumadocs-core's searchAdvanced
 const schema = {
@@ -17,7 +17,7 @@ const schema = {
 }
 
 function extractFrontmatter(text) {
-  const match = text.match(/^---\n([\s\S]*?)\n---/)
+  const match = text.replace(/\r\n/g, "\n").match(/^---\n([\s\S]*?)\n---/)
   if (!match) return {}
   return Object.fromEntries(
     match[1].split("\n").flatMap((line) => {

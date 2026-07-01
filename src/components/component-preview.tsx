@@ -1,12 +1,12 @@
 import { ComponentPreviewShell } from "@/components/component-preview-shell"
-import { WorkspaceTabsLiveDemo } from "@/components/previews/workspace-tabs-live"
-import { WorkspaceTabsOverflowDemo } from "@/components/previews/workspace-tabs-overflow"
-import { WorkspaceTabsMinimalDemo } from "@/components/previews/workspace-tabs-minimal"
-import { WorkspaceLiveDemo } from "@/components/previews/workspace-live"
-import { WorkspaceSinglePaneDemo } from "@/components/previews/workspace-single-pane"
-import { WorkspacePanelSingleDemo } from "@/components/previews/workspace-panel-single"
-import { WorkspacePanelSplitDemo } from "@/components/previews/workspace-panel-split"
-import { PageLiveDemo } from "@/components/previews/page-live"
+import { WorkspaceTabsLiveDemo } from "@/registry/bases/base/examples/workspace-tabs-live"
+import { WorkspaceTabsOverflowDemo } from "@/registry/bases/base/examples/workspace-tabs-overflow"
+import { WorkspaceTabsMinimalDemo } from "@/registry/bases/base/examples/workspace-tabs-minimal"
+import { WorkspaceLiveDemo } from "@/registry/bases/base/examples/workspace-live"
+import { WorkspaceSinglePaneDemo } from "@/registry/bases/base/examples/workspace-single-pane"
+import { WorkspacePanelSingleDemo } from "@/registry/bases/base/examples/workspace-panel-single"
+import { WorkspacePanelSplitDemo } from "@/registry/bases/base/examples/workspace-panel-split"
+import { PageLiveDemo } from "@/registry/bases/base/examples/page-live"
 import {
   PageDefaultDemo,
   PageWithSubtitleDemo,
@@ -14,7 +14,7 @@ import {
   PageWithBadgeAndActionsDemo,
   PageWithoutHeaderDemo,
   PageFullDemo,
-} from "@/components/previews/page-sample"
+} from "@/registry/bases/base/examples/page-sample"
 
 const previewComponents: Record<string, React.ReactNode> = {
   "workspace-tabs": <WorkspaceTabsLiveDemo />,

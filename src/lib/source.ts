@@ -7,9 +7,9 @@ type DocModule = {
   toc: TOCItemType[]
 }
 
-const modules = import.meta.glob<DocModule>("/content/docs/**/*.mdx", { eager: true })
+const modules = import.meta.glob<DocModule>("/src/content/docs/**/*.mdx", { eager: true })
 
 export function getPage(slug: string[]) {
-  const path = `/content/docs/${slug.join("/")}.mdx`
+  const path = `/src/content/docs/${slug.join("/")}.mdx`
   return modules[path]
 }

@@ -1,10 +1,10 @@
 import { useMemo, type ReactNode, type ComponentProps } from "react"
-import { Link as RouterLink, useLocation, useNavigate, useParams } from "react-router-dom"
+import { Link as RouterLink, useLocation, useNavigate, useParams } from "react-router"
 import { FrameworkProvider } from "fumadocs-core/framework"
 import { RootProvider } from "fumadocs-ui/provider/base"
 
-// Custom framework adapter using react-router-dom — avoids fumadocs-core/framework/react-router
-// which imports useRevalidator from "react-router" and pulls in a server chunk that uses cookie@1.1.1.
+// Custom framework adapter — avoids fumadocs-core/framework/react-router which imports
+// useRevalidator and pulls in a server chunk that uses cookie@1.1.1.
 
 function usePathname() {
   return useLocation().pathname

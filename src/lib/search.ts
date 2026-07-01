@@ -24,11 +24,11 @@ const schema = {
   url: "string",
 } as const
 
-const modules = import.meta.glob<DocModule>("/content/docs/**/*.mdx", { eager: true })
+const modules = import.meta.glob<DocModule>("/src/content/docs/**/*.mdx", { eager: true })
 
 export async function buildSearchIndexEntries(): Promise<SearchIndexEntry[]> {
   return Object.entries(modules).map(([path, module]) => {
-    const slug = path.replace("/content/docs/", "").replace(/\.mdx$/, "")
+    const slug = path.replace("/src/content/docs/", "").replace(/\.mdx$/, "")
     const url = `/docs/${slug}`
 
     return {

@@ -22,7 +22,6 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@/registry/*": ["./registry/*"],
       "@/*": ["./src/*"],
       ".source": ["./.source"],
       ".source/*": ["./.source/*"]

@@ -13,6 +13,7 @@ import {
   PageWithBreadcrumbsDemo,
   PageWithBadgeAndActionsDemo,
   PageWithoutHeaderDemo,
+  PageFullDemo,
 } from "@/components/previews/page-sample"
 
 const previewComponents: Record<string, React.ReactNode> = {
@@ -29,6 +30,7 @@ const previewComponents: Record<string, React.ReactNode> = {
   "page-with-breadcrumbs": <PageWithBreadcrumbsDemo />,
   "page-with-badge-and-actions": <PageWithBadgeAndActionsDemo />,
   "page-without-header": <PageWithoutHeaderDemo />,
+  "page-full": <PageFullDemo />,
 }
 
 interface ComponentPreviewProps {

@@ -66,3 +66,20 @@ export function PageWithoutHeaderDemo() {
     </PreviewFrame>
   )
 }
+
+export function PageFullDemo() {
+  return (
+    <PreviewFrame>
+      <Page
+        visual={<Settings className="mt-0.5 size-5 text-muted-foreground" />}
+        breadcrumbs={[{ label: "Settings", href: "#" }, { label: "Billing" }]}
+        subtitle="Manage your subscription and invoices"
+        badge={<Badge variant="secondary">Beta</Badge>}
+        actions={<Button size="sm">Save changes</Button>}
+        hasPadding
+      >
+        <p className="text-sm text-muted-foreground">Page content goes here.</p>
+      </Page>
+    </PreviewFrame>
+  )
+}

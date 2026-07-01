@@ -141,6 +141,30 @@ export function MyPage() {
   )
 }`} />
 
+### Full Configuration
+
+Every prop combined — `visual`, `breadcrumbs`, `subtitle`, `badge`, `actions`, and `hasPadding`.
+
+<ComponentPreview name="page-full" code={`import { Settings } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Page } from "@/components/ui/page"
+
+export function MyPage() {
+  return (
+    <Page
+      visual={<Settings className="mt-0.5 size-5 text-muted-foreground" />}
+      breadcrumbs={[{ label: "Settings", href: "/settings" }, { label: "Billing" }]}
+      subtitle="Manage your subscription and invoices"
+      badge={<Badge variant="secondary">Beta</Badge>}
+      actions={<Button size="sm">Save changes</Button>}
+      hasPadding
+    >
+      <p className="text-sm text-muted-foreground">Page content goes here.</p>
+    </Page>
+  )
+}`} />
+
 ## API Reference
 
 <TypeTable

@@ -39,6 +39,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
   )
 }
 
+// Rendered during initial SPA hydration, before route modules/clientLoaders
+// resolve — avoids a blank flash and silences react-router's HydrateFallback warning.
+export function HydrateFallback() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="size-6 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-foreground" />
+    </div>
+  )
+}
+
 export default function Root() {
   return (
     <FumaProvider>

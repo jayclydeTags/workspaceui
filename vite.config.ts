@@ -16,11 +16,13 @@ export default defineConfig({
       { find: ".source", replacement: path.resolve(__dirname, "./.source") },
     ],
   },
-  // ponytail: pre-bundle deps Vite discovers late, else it re-optimizes + reloads
-  // on first load (transient 504s). Add names from any future "new dependencies
-  // optimized" log line here.
+  // ponytail: SPA mode has no index.html entry and react-router lazy-loads route
+  // modules, so Vite's initial dep scan misses their imports, then re-optimizes +
+  // reloads on first request (transient 504 "Outdated Optimize Dep"). Point the
+  // scanner at all source so every dep is found in the first pass — no more
+  // per-package whack-a-mole in `include`.
   optimizeDeps: {
-    include: ["@fuma-translate/react", "lucide-react", "next-themes"],
+    entries: ["./src/**/*.{ts,tsx,mdx}", "./.source/**/*.{js,ts}"],
   },
   test: {
     environment: "jsdom",

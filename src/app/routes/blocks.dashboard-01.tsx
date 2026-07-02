@@ -12,7 +12,6 @@ export default function Dashboard01Page() {
   return (
     <BlockPreview
       title="Dashboard 01"
-      description="Collapsible sidebar nav paired with the Workspace component."
       installCmd="npx shadcn@latest add jayclydeTags/workspaceui/dashboard-01"
       files={FILES}
     >

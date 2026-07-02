@@ -1,9 +1,25 @@
-import { useState, useRef } from "react"
-import { Code2, Eye, Monitor, Smartphone, Tablet } from "lucide-react"
+import { Fragment, useRef, useState } from "react"
+import {
+  Check,
+  ChevronRight,
+  File as FileIcon,
+  Folder as FolderIcon,
+  Maximize2,
+  Monitor,
+  RotateCw,
+  Smartphone,
+  Tablet,
+  Terminal,
+  X,
+} from "lucide-react"
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock"
-import { Files, Folder, File as FumaFile } from "fumadocs-ui/components/files"
 
 import { cn } from "@/lib/utils"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export interface BlockFile {
@@ -15,11 +31,14 @@ export interface BlockFile {
 
 interface BlockPreviewProps {
   title: string
-  description: string
   installCmd: string
   files: BlockFile[]
   children: React.ReactNode
 }
+
+// Fixed preview/code viewport height — the block sits in a card of this height
+// and the page scrolls around it (matches the shadcn/v0 blocks layout).
+const CONTENT_HEIGHT = "h-[820px]"
 
 type Viewport = "desktop" | "tablet" | "mobile"
 
@@ -34,6 +53,18 @@ const VIEWPORT_ICONS = {
   tablet: Tablet,
   mobile: Smartphone,
 } satisfies Record<Viewport, React.ComponentType<{ className?: string }>>
+
+// Small extension badge shown in the code header (e.g. "TS", "CSS"), matching
+// the shadcn blocks code tab.
+function FileTypeIcon({ name }: { name: string }) {
+  const ext = name.split(".").pop() ?? ""
+  const label = ext === "ts" || ext === "tsx" ? "TS" : ext.toUpperCase()
+  return (
+    <span className="inline-flex size-4 items-center justify-center rounded-[3px] bg-foreground text-[8px] font-bold leading-none text-background">
+      {label}
+    </span>
+  )
+}
 
 // ── File tree ──────────────────────────────────────────────────────────────
 
@@ -67,30 +98,90 @@ function buildTree(files: BlockFile[]): TreeNode[] {
   return root
 }
 
+function Divider({ className }: { className?: string }) {
+  return <div className={cn("h-4 w-px shrink-0 bg-border", className)} />
+}
+
+// Full-bleed row: left padding indents by depth so the active highlight still
+// spans the full panel width (matches the Paper design's file tree).
+const rowClass =
+  "flex h-8 w-full items-center gap-2 pr-2 text-left text-sm transition-colors [&_svg]:size-4 [&_svg]:shrink-0"
+const indent = (depth: number) => ({ paddingLeft: 16 + depth * 22 })
+
+function TreeFolder({
+  node,
+  depth,
+  activeKey,
+  onSelect,
+}: {
+  node: TreeNode
+  depth: number
+  activeKey: string
+  onSelect: (key: string) => void
+}) {
+  const [open, setOpen] = useState(true)
+  return (
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <CollapsibleTrigger
+        style={indent(depth)}
+        className={cn(rowClass, "text-foreground hover:bg-muted")}
+      >
+        <ChevronRight
+          className={cn("text-muted-foreground transition-transform", open && "rotate-90")}
+        />
+        <FolderIcon className="text-muted-foreground" />
+        {node.name}
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <FileTree
+          nodes={node.children!}
+          depth={depth + 1}
+          activeKey={activeKey}
+          onSelect={onSelect}
+        />
+      </CollapsibleContent>
+    </Collapsible>
+  )
+}
+
 function FileTree({
   nodes,
+  depth = 0,
   activeKey,
   onSelect,
 }: {
   nodes: TreeNode[]
+  depth?: number
   activeKey: string
   onSelect: (key: string) => void
 }) {
   return nodes.map((node) =>
     node.children ? (
-      <Folder key={node.name} name={node.name} defaultOpen>
-        <FileTree nodes={node.children} activeKey={activeKey} onSelect={onSelect} />
-      </Folder>
+      <TreeFolder
+        key={node.name}
+        node={node}
+        depth={depth}
+        activeKey={activeKey}
+        onSelect={onSelect}
+      />
     ) : (
-      <FumaFile
+      <button
         key={node.fileKey}
-        name={node.name}
+        type="button"
+        style={indent(depth)}
         onClick={() => onSelect(node.fileKey!)}
         className={cn(
-          "cursor-pointer",
-          activeKey === node.fileKey && "bg-muted text-foreground",
+          rowClass,
+          activeKey === node.fileKey
+            ? "bg-muted font-medium text-foreground"
+            : "text-foreground hover:bg-muted"
         )}
-      />
+      >
+        {/* chevron spacer so file icons align under folder icons */}
+        <span className="size-4 shrink-0" />
+        <FileIcon className="text-muted-foreground" />
+        {node.name}
+      </button>
     ),
   )
 }
@@ -99,7 +190,6 @@ function FileTree({
 
 export function BlockPreview({
   title,
-  description,
   installCmd,
   files,
   children,
@@ -110,7 +200,16 @@ export function BlockPreview({
   const [previewWidth, setPreviewWidth] = useState(1440)
   const [isDragging, setIsDragging] = useState(false)
   const [activeFile, setActiveFile] = useState(firstKey)
+  const [previewKey, setPreviewKey] = useState(0)
+  const [fullscreen, setFullscreen] = useState(false)
+  const [copied, setCopied] = useState(false)
   const dragRef = useRef<{ startX: number; startWidth: number } | null>(null)
+
+  async function copyInstall() {
+    await navigator.clipboard.writeText(installCmd)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1500)
+  }
 
   const activeCode = files.find((f) => (f.path ?? f.name) === activeFile)?.code ?? ""
   const tree = buildTree(files)
@@ -139,55 +238,87 @@ export function BlockPreview({
   }
 
   return (
-    <div className="flex h-full flex-col overflow-hidden">
+    <div className="flex h-full flex-col overflow-y-auto">
       {/* ── Toolbar ──────────────────────────────────────────────────────── */}
-      <div className="flex shrink-0 flex-wrap items-center gap-3 border-b border-border bg-background px-6 py-3">
-        <div className="min-w-0">
-          <h1 className="text-base font-semibold leading-tight">{title}</h1>
-          <p className="truncate text-sm text-muted-foreground">{description}</p>
-        </div>
+      <div className="sticky top-0 z-10 flex shrink-0 items-center gap-2 border-b border-border bg-background px-4 py-2.5">
+        {/* Preview / Code toggle */}
+        <Tabs value={tab} onValueChange={(v) => setTab(v as "preview" | "code")}>
+          <TabsList>
+            <TabsTrigger value="preview">Preview</TabsTrigger>
+            <TabsTrigger value="code">Code</TabsTrigger>
+          </TabsList>
+        </Tabs>
 
-        <div className="ml-auto flex flex-wrap items-center gap-2">
-          {/* Preview / Code */}
-          <Tabs value={tab} onValueChange={(v) => setTab(v as "preview" | "code")}>
-            <TabsList>
-              {(["preview", "code"] as const).map((t) => (
-                <TabsTrigger key={t} value={t}>
-                  {t === "preview" ? (
-                    <Eye data-icon="inline-start" />
-                  ) : (
-                    <Code2 data-icon="inline-start" />
-                  )}
-                  <span className="capitalize">{t}</span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
+        <Divider className="mx-1" />
 
-          {/* Viewport switcher — preview only */}
-          {tab === "preview" && (
-            <Tabs value={viewport} onValueChange={(v) => handleViewport(v as Viewport)}>
-              <TabsList>
-                {(["desktop", "tablet", "mobile"] as const).map((v) => {
-                  const Icon = VIEWPORT_ICONS[v]
-                  return (
-                    <TabsTrigger key={v} value={v} title={v[0]!.toUpperCase() + v.slice(1)}>
-                      <Icon />
-                    </TabsTrigger>
-                  )
-                })}
-              </TabsList>
-            </Tabs>
+        {/* Title */}
+        <p className="min-w-0 flex-1 truncate text-sm font-medium">{title}</p>
+
+        {/* Viewport + preview actions — preview only */}
+        {tab === "preview" && (
+          <>
+            <div className="flex items-center gap-1 rounded-lg border border-border p-[3px]">
+              {(["desktop", "tablet", "mobile"] as const).map((v) => {
+                const Icon = VIEWPORT_ICONS[v]
+                return (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => handleViewport(v)}
+                    title={v[0]!.toUpperCase() + v.slice(1)}
+                    className={cn(
+                      "flex size-6 items-center justify-center rounded-md transition-colors [&_svg]:size-4",
+                      viewport === v
+                        ? "bg-muted text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <Icon />
+                  </button>
+                )
+              })}
+              <Divider className="mx-0.5" />
+              <button
+                type="button"
+                onClick={() => setFullscreen(true)}
+                title="Fullscreen"
+                className="flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground [&_svg]:size-4"
+              >
+                <Maximize2 />
+              </button>
+              <Divider className="mx-0.5" />
+              <button
+                type="button"
+                onClick={() => setPreviewKey((k) => k + 1)}
+                title="Refresh"
+                className="flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground [&_svg]:size-4"
+              >
+                <RotateCw />
+              </button>
+            </div>
+            <Divider className="mx-1" />
+          </>
+        )}
+
+        {/* Install command — click to copy */}
+        <button
+          type="button"
+          onClick={copyInstall}
+          title="Copy install command"
+          className="flex h-8 items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 text-sm font-medium transition-colors hover:bg-muted [&_svg]:size-4 [&_svg]:shrink-0"
+        >
+          {copied ? (
+            <Check className="text-emerald-600" />
+          ) : (
+            <Terminal className="text-muted-foreground" />
           )}
-
-          {/* Install command */}
-          <DynamicCodeBlock lang="bash" code={installCmd} />
-        </div>
+          <span className="truncate">{installCmd}</span>
+        </button>
       </div>
 
       {/* ── Content ──────────────────────────────────────────────────────── */}
       {tab === "preview" ? (
-        <div className="flex flex-1 items-start justify-center overflow-hidden bg-muted/30 p-6">
+        <div className={cn(CONTENT_HEIGHT, "flex shrink-0 items-stretch justify-center overflow-hidden bg-muted/30 p-6")}>
           {/* left spacer balances the resize handle so the frame stays centered */}
           <div className="w-4 shrink-0" />
           <div className="flex h-full min-w-0 items-stretch">
@@ -196,7 +327,7 @@ export function BlockPreview({
               className="relative translate-x-0 overflow-hidden rounded-xl border border-border shadow-lg"
               style={{ width: previewWidth, height: "100%" }}
             >
-              {children}
+              <Fragment key={previewKey}>{children}</Fragment>
               {isDragging && (
                 <div className="pointer-events-none absolute left-1/2 top-3 -translate-x-1/2 rounded bg-foreground/80 px-2 py-0.5 text-xs text-background">
                   {previewWidth}px
@@ -220,20 +351,49 @@ export function BlockPreview({
           </div>
         </div>
       ) : (
-        <div className="flex flex-1 overflow-hidden">
+        <div className={cn(CONTENT_HEIGHT, "flex shrink-0 overflow-hidden")}>
           {/* File tree */}
-          <div className="w-56 shrink-0 overflow-auto border-r border-border bg-muted/20 p-2">
-            <p className="mb-2 px-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          <div className="flex w-72 shrink-0 flex-col overflow-auto border-r border-border bg-muted/40">
+            <div className="flex h-12 shrink-0 items-center border-b border-border px-4 text-sm font-medium text-muted-foreground">
               Files
-            </p>
-            <Files>
+            </div>
+            <div className="flex flex-col py-2">
               <FileTree nodes={tree} activeKey={activeFile} onSelect={setActiveFile} />
-            </Files>
+            </div>
           </div>
 
           {/* Code viewer */}
-          <div className="flex-1 overflow-auto [&_figure]:m-0 [&_figure]:h-full [&_figure]:rounded-none [&_figure]:border-0">
-            {activeCode && <DynamicCodeBlock lang="tsx" code={activeCode} />}
+          <div className="min-w-0 flex-1 [&_figure]:m-0 [&_figure]:h-full [&_figure]:rounded-none [&_figure]:border-0 [&_figure]:border-l-0">
+            {activeCode && (
+              <DynamicCodeBlock
+                lang="tsx"
+                code={activeCode}
+                codeblock={{
+                  title: activeFile,
+                  icon: <FileTypeIcon name={activeFile} />,
+                }}
+              />
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Fullscreen preview overlay */}
+      {fullscreen && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-background">
+          <div className="flex shrink-0 items-center gap-2 border-b border-border px-4 py-2.5">
+            <p className="min-w-0 flex-1 truncate text-sm font-medium">{title}</p>
+            <button
+              type="button"
+              onClick={() => setFullscreen(false)}
+              title="Exit fullscreen"
+              className="flex size-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground [&_svg]:size-4"
+            >
+              <X />
+            </button>
+          </div>
+          <div className="min-h-0 flex-1 overflow-hidden">
+            <Fragment key={previewKey}>{children}</Fragment>
           </div>
         </div>
       )}

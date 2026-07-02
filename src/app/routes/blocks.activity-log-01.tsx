@@ -18,7 +18,6 @@ export default function ActivityLog01Page() {
   return (
     <BlockPreview
       title="Activity Log 01"
-      description="Filterable activity log with a responsive datatable — collapses to cards on narrow panes."
       installCmd="npx shadcn@latest add jayclydeTags/workspaceui/activity-log-01"
       files={FILES}
     >

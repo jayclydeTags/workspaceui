@@ -13,6 +13,7 @@ import {
   X,
 } from "lucide-react"
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock"
+import type { PanelImperativeHandle } from "react-resizable-panels"
 
 import { cn } from "@/lib/utils"
 import {
@@ -20,6 +21,11 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export interface BlockFile {
@@ -42,10 +48,14 @@ const CONTENT_HEIGHT = "h-[820px]"
 
 type Viewport = "desktop" | "tablet" | "mobile"
 
-const VIEWPORT_PRESET: Record<Viewport, number> = {
-  desktop: 1440,
-  tablet: 768,
-  mobile: 390,
+// Viewport toggles resize the preview panel to real device widths. The v4
+// panel API accepts px strings, so we get true 768/390px frames (clamped to
+// the container) instead of container-relative percentages. Dragging the
+// handle resizes the same panel.
+const VIEWPORT_SIZE: Record<Viewport, string> = {
+  desktop: "100%",
+  tablet: "768px",
+  mobile: "390px",
 }
 
 const VIEWPORT_ICONS = {
@@ -200,13 +210,11 @@ export function BlockPreview({
   const firstKey = files[0] ? (files[0].path ?? files[0].name) : ""
   const [tab, setTab] = useState<"preview" | "code">("preview")
   const [viewport, setViewport] = useState<Viewport>("desktop")
-  const [previewWidth, setPreviewWidth] = useState(1440)
-  const [isDragging, setIsDragging] = useState(false)
   const [activeFile, setActiveFile] = useState(firstKey)
   const [previewKey, setPreviewKey] = useState(0)
   const [fullscreen, setFullscreen] = useState(false)
   const [copied, setCopied] = useState(false)
-  const dragRef = useRef<{ startX: number; startWidth: number } | null>(null)
+  const panelRef = useRef<PanelImperativeHandle>(null)
 
   async function copyInstall() {
     await navigator.clipboard.writeText(installCmd)
@@ -220,31 +228,7 @@ export function BlockPreview({
 
   function handleViewport(v: Viewport) {
     setViewport(v)
-    setPreviewWidth(VIEWPORT_PRESET[v])
-  }
-
-  function onResizeStart(e: React.PointerEvent) {
-    e.currentTarget.setPointerCapture(e.pointerId)
-    dragRef.current = { startX: e.clientX, startWidth: previewWidth }
-    setIsDragging(true)
-  }
-
-  function onResizeMove(e: React.PointerEvent) {
-    if (!dragRef.current) return
-    setPreviewWidth(
-      Math.max(
-        320,
-        Math.min(
-          1440,
-          dragRef.current.startWidth + e.clientX - dragRef.current.startX
-        )
-      )
-    )
-  }
-
-  function onResizeEnd() {
-    dragRef.current = null
-    setIsDragging(false)
+    panelRef.current?.resize(VIEWPORT_SIZE[v])
   }
 
   return (
@@ -331,49 +315,38 @@ export function BlockPreview({
         </div>
 
         {/* ── Content card ─────────────────────────────────────────────────── */}
-        <div
-          className={cn(
-            CONTENT_HEIGHT,
-            "shrink-0 overflow-hidden rounded-[14px] border border-border bg-muted/40"
-          )}
-        >
+        <div className={cn(CONTENT_HEIGHT, "shrink-0")}>
           {tab === "preview" ? (
-            <div className="flex h-full items-stretch justify-center p-6">
-              {/* left spacer balances the resize handle so the frame stays centered */}
-              <div className="w-4 shrink-0" />
-              <div className="flex h-full min-w-0 items-stretch">
-                {/* Preview frame */}
-                <div
-                  className="relative translate-x-0 overflow-hidden rounded-xl border border-border shadow-lg"
-                  style={{ width: previewWidth, height: "100%" }}
-                >
+            <ResizablePanelGroup
+              orientation="horizontal"
+              className="h-full overflow-hidden rounded-[14px] bg-muted/40"
+            >
+              {/* Border + radius live on the panel itself so the frame tracks
+                  the resized preview; the group only supplies the bg backdrop. */}
+              <ResizablePanel
+                panelRef={panelRef}
+                defaultSize="100%"
+                minSize="320px"
+                className="overflow-hidden rounded-[14px] border border-border bg-background"
+              >
+                {/* translate-x-0 establishes a containing block so a block's
+                    position:fixed sidebar is scoped here, not the viewport. */}
+                <div className="h-full w-full translate-x-0 overflow-auto">
                   <Fragment key={previewKey}>{children}</Fragment>
-                  {isDragging && (
-                    <div className="pointer-events-none absolute top-3 left-1/2 -translate-x-1/2 rounded bg-foreground/80 px-2 py-0.5 text-xs text-background">
-                      {previewWidth}px
-                    </div>
-                  )}
                 </div>
-                {/* Resize handle */}
-                <div
-                  className="group flex w-4 shrink-0 cursor-col-resize touch-none items-center justify-center select-none"
-                  onPointerDown={onResizeStart}
-                  onPointerMove={onResizeMove}
-                  onPointerUp={onResizeEnd}
-                >
-                  <div
-                    className={cn(
-                      "h-10 w-1 rounded-full transition-colors",
-                      isDragging
-                        ? "bg-primary"
-                        : "bg-border group-hover:bg-muted-foreground/40"
-                    )}
-                  />
-                </div>
-              </div>
-            </div>
+              </ResizablePanel>
+              {/* bg-transparent drops the full-height divider line (it clashed
+                  with the rounded frame); only the grip pill shows. after:w-3
+                  gives a ~12px grab area without adding a layout gap. */}
+              <ResizableHandle
+                withHandle
+                className="bg-transparent w-3"
+              />
+              {/* Empty panel reveals the gray backdrop as the preview shrinks. */}
+              <ResizablePanel defaultSize={0} />
+            </ResizablePanelGroup>
           ) : (
-            <div className="flex h-full">
+            <div className="flex h-full overflow-hidden rounded-[14px] border border-border bg-muted/40">
               {/* File tree */}
               <div className="flex w-72 shrink-0 flex-col overflow-auto border-r border-border bg-muted/40">
                 <div className="flex h-12 shrink-0 items-center border-b border-border px-4 text-sm font-medium text-muted-foreground">

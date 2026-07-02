@@ -60,7 +60,7 @@ function FileTypeIcon({ name }: { name: string }) {
   const ext = name.split(".").pop() ?? ""
   const label = ext === "ts" || ext === "tsx" ? "TS" : ext.toUpperCase()
   return (
-    <span className="inline-flex size-4 items-center justify-center rounded-[3px] bg-foreground text-[8px] font-bold leading-none text-background">
+    <span className="inline-flex size-4 items-center justify-center rounded-[3px] bg-foreground text-[8px] leading-none font-bold text-background">
       {label}
     </span>
   )
@@ -127,7 +127,10 @@ function TreeFolder({
         className={cn(rowClass, "text-foreground hover:bg-muted")}
       >
         <ChevronRight
-          className={cn("text-muted-foreground transition-transform", open && "rotate-90")}
+          className={cn(
+            "text-muted-foreground transition-transform",
+            open && "rotate-90"
+          )}
         />
         <FolderIcon className="text-muted-foreground" />
         {node.name}
@@ -182,7 +185,7 @@ function FileTree({
         <FileIcon className="text-muted-foreground" />
         {node.name}
       </button>
-    ),
+    )
   )
 }
 
@@ -211,7 +214,8 @@ export function BlockPreview({
     setTimeout(() => setCopied(false), 1500)
   }
 
-  const activeCode = files.find((f) => (f.path ?? f.name) === activeFile)?.code ?? ""
+  const activeCode =
+    files.find((f) => (f.path ?? f.name) === activeFile)?.code ?? ""
   const tree = buildTree(files)
 
   function handleViewport(v: Viewport) {
@@ -228,7 +232,13 @@ export function BlockPreview({
   function onResizeMove(e: React.PointerEvent) {
     if (!dragRef.current) return
     setPreviewWidth(
-      Math.max(320, Math.min(1440, dragRef.current.startWidth + e.clientX - dragRef.current.startX))
+      Math.max(
+        320,
+        Math.min(
+          1440,
+          dragRef.current.startWidth + e.clientX - dragRef.current.startX
+        )
+      )
     )
   }
 
@@ -239,150 +249,173 @@ export function BlockPreview({
 
   return (
     <div className="flex h-full flex-col overflow-y-auto">
-      {/* ── Toolbar ──────────────────────────────────────────────────────── */}
-      <div className="sticky top-0 z-10 flex shrink-0 items-center gap-2 border-b border-border bg-background px-4 py-2.5">
-        {/* Preview / Code toggle */}
-        <Tabs value={tab} onValueChange={(v) => setTab(v as "preview" | "code")}>
-          <TabsList>
-            <TabsTrigger value="preview">Preview</TabsTrigger>
-            <TabsTrigger value="code">Code</TabsTrigger>
-          </TabsList>
-        </Tabs>
+      <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4 px-6 py-8">
+        {/* ── Toolbar ──────────────────────────────────────────────────────── */}
+        <div className="flex shrink-0 items-center gap-2 pr-4 pl-2">
+          {/* Preview / Code toggle */}
+          <Tabs
+            value={tab}
+            onValueChange={(v) => setTab(v as "preview" | "code")}
+          >
+            <TabsList>
+              <TabsTrigger value="preview">Preview</TabsTrigger>
+              <TabsTrigger value="code">Code</TabsTrigger>
+            </TabsList>
+          </Tabs>
 
-        <Divider className="mx-1" />
+          <Divider className="mx-1" />
 
-        {/* Title */}
-        <p className="min-w-0 flex-1 truncate text-sm font-medium">{title}</p>
+          {/* Title */}
+          <p className="min-w-0 flex-1 truncate text-sm font-medium">{title}</p>
 
-        {/* Viewport + preview actions — preview only */}
-        {tab === "preview" && (
-          <>
-            <div className="flex items-center gap-1 rounded-lg border border-border p-[3px]">
-              {(["desktop", "tablet", "mobile"] as const).map((v) => {
-                const Icon = VIEWPORT_ICONS[v]
-                return (
-                  <button
-                    key={v}
-                    type="button"
-                    onClick={() => handleViewport(v)}
-                    title={v[0]!.toUpperCase() + v.slice(1)}
-                    className={cn(
-                      "flex size-6 items-center justify-center rounded-md transition-colors [&_svg]:size-4",
-                      viewport === v
-                        ? "bg-muted text-foreground"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    <Icon />
-                  </button>
-                )
-              })}
-              <Divider className="mx-0.5" />
-              <button
-                type="button"
-                onClick={() => setFullscreen(true)}
-                title="Fullscreen"
-                className="flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground [&_svg]:size-4"
-              >
-                <Maximize2 />
-              </button>
-              <Divider className="mx-0.5" />
-              <button
-                type="button"
-                onClick={() => setPreviewKey((k) => k + 1)}
-                title="Refresh"
-                className="flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground [&_svg]:size-4"
-              >
-                <RotateCw />
-              </button>
-            </div>
-            <Divider className="mx-1" />
-          </>
-        )}
-
-        {/* Install command — click to copy */}
-        <button
-          type="button"
-          onClick={copyInstall}
-          title="Copy install command"
-          className="flex h-8 items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 text-sm font-medium transition-colors hover:bg-muted [&_svg]:size-4 [&_svg]:shrink-0"
-        >
-          {copied ? (
-            <Check className="text-emerald-600" />
-          ) : (
-            <Terminal className="text-muted-foreground" />
+          {/* Viewport + preview actions — preview only */}
+          {tab === "preview" && (
+            <>
+              <div className="flex items-center gap-1 rounded-lg border border-border p-[3px]">
+                {(["desktop", "tablet", "mobile"] as const).map((v) => {
+                  const Icon = VIEWPORT_ICONS[v]
+                  return (
+                    <button
+                      key={v}
+                      type="button"
+                      onClick={() => handleViewport(v)}
+                      title={v[0]!.toUpperCase() + v.slice(1)}
+                      className={cn(
+                        "flex size-6 items-center justify-center rounded-md transition-colors [&_svg]:size-4",
+                        viewport === v
+                          ? "bg-muted text-foreground"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      <Icon />
+                    </button>
+                  )
+                })}
+                <Divider className="mx-0.5" />
+                <button
+                  type="button"
+                  onClick={() => setFullscreen(true)}
+                  title="Fullscreen"
+                  className="flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground [&_svg]:size-4"
+                >
+                  <Maximize2 />
+                </button>
+                <Divider className="mx-0.5" />
+                <button
+                  type="button"
+                  onClick={() => setPreviewKey((k) => k + 1)}
+                  title="Refresh"
+                  className="flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground [&_svg]:size-4"
+                >
+                  <RotateCw />
+                </button>
+              </div>
+              <Divider className="mx-1" />
+            </>
           )}
-          <span className="truncate">{installCmd}</span>
-        </button>
-      </div>
 
-      {/* ── Content ──────────────────────────────────────────────────────── */}
-      {tab === "preview" ? (
-        <div className={cn(CONTENT_HEIGHT, "flex shrink-0 items-stretch justify-center overflow-hidden bg-muted/30 p-6")}>
-          {/* left spacer balances the resize handle so the frame stays centered */}
-          <div className="w-4 shrink-0" />
-          <div className="flex h-full min-w-0 items-stretch">
-            {/* Preview frame */}
-            <div
-              className="relative translate-x-0 overflow-hidden rounded-xl border border-border shadow-lg"
-              style={{ width: previewWidth, height: "100%" }}
-            >
-              <Fragment key={previewKey}>{children}</Fragment>
-              {isDragging && (
-                <div className="pointer-events-none absolute left-1/2 top-3 -translate-x-1/2 rounded bg-foreground/80 px-2 py-0.5 text-xs text-background">
-                  {previewWidth}px
-                </div>
-              )}
-            </div>
-            {/* Resize handle */}
-            <div
-              className="group flex w-4 shrink-0 cursor-col-resize items-center justify-center select-none touch-none"
-              onPointerDown={onResizeStart}
-              onPointerMove={onResizeMove}
-              onPointerUp={onResizeEnd}
-            >
-              <div
-                className={cn(
-                  "h-10 w-1 rounded-full transition-colors",
-                  isDragging ? "bg-primary" : "bg-border group-hover:bg-muted-foreground/40"
-                )}
-              />
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className={cn(CONTENT_HEIGHT, "flex shrink-0 overflow-hidden")}>
-          {/* File tree */}
-          <div className="flex w-72 shrink-0 flex-col overflow-auto border-r border-border bg-muted/40">
-            <div className="flex h-12 shrink-0 items-center border-b border-border px-4 text-sm font-medium text-muted-foreground">
-              Files
-            </div>
-            <div className="flex flex-col py-2">
-              <FileTree nodes={tree} activeKey={activeFile} onSelect={setActiveFile} />
-            </div>
-          </div>
-
-          {/* Code viewer */}
-          <div className="min-w-0 flex-1 [&_figure]:m-0 [&_figure]:h-full [&_figure]:rounded-none [&_figure]:border-0 [&_figure]:border-l-0">
-            {activeCode && (
-              <DynamicCodeBlock
-                lang="tsx"
-                code={activeCode}
-                codeblock={{
-                  title: activeFile,
-                  icon: <FileTypeIcon name={activeFile} />,
-                }}
-              />
+          {/* Install command — click to copy */}
+          <button
+            type="button"
+            onClick={copyInstall}
+            title="Copy install command"
+            className="flex h-8 items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 text-sm font-medium transition-colors hover:bg-muted [&_svg]:size-4 [&_svg]:shrink-0"
+          >
+            {copied ? (
+              <Check className="text-emerald-600" />
+            ) : (
+              <Terminal className="text-muted-foreground" />
             )}
-          </div>
+            <span className="truncate">{installCmd}</span>
+          </button>
         </div>
-      )}
+
+        {/* ── Content card ─────────────────────────────────────────────────── */}
+        <div
+          className={cn(
+            CONTENT_HEIGHT,
+            "shrink-0 overflow-hidden rounded-[14px] border border-border bg-muted/40"
+          )}
+        >
+          {tab === "preview" ? (
+            <div className="flex h-full items-stretch justify-center p-6">
+              {/* left spacer balances the resize handle so the frame stays centered */}
+              <div className="w-4 shrink-0" />
+              <div className="flex h-full min-w-0 items-stretch">
+                {/* Preview frame */}
+                <div
+                  className="relative translate-x-0 overflow-hidden rounded-xl border border-border shadow-lg"
+                  style={{ width: previewWidth, height: "100%" }}
+                >
+                  <Fragment key={previewKey}>{children}</Fragment>
+                  {isDragging && (
+                    <div className="pointer-events-none absolute top-3 left-1/2 -translate-x-1/2 rounded bg-foreground/80 px-2 py-0.5 text-xs text-background">
+                      {previewWidth}px
+                    </div>
+                  )}
+                </div>
+                {/* Resize handle */}
+                <div
+                  className="group flex w-4 shrink-0 cursor-col-resize touch-none items-center justify-center select-none"
+                  onPointerDown={onResizeStart}
+                  onPointerMove={onResizeMove}
+                  onPointerUp={onResizeEnd}
+                >
+                  <div
+                    className={cn(
+                      "h-10 w-1 rounded-full transition-colors",
+                      isDragging
+                        ? "bg-primary"
+                        : "bg-border group-hover:bg-muted-foreground/40"
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="flex h-full">
+              {/* File tree */}
+              <div className="flex w-72 shrink-0 flex-col overflow-auto border-r border-border bg-muted/40">
+                <div className="flex h-12 shrink-0 items-center border-b border-border px-4 text-sm font-medium text-muted-foreground">
+                  Files
+                </div>
+                <div className="flex flex-col py-2">
+                  <FileTree
+                    nodes={tree}
+                    activeKey={activeFile}
+                    onSelect={setActiveFile}
+                  />
+                </div>
+              </div>
+
+              {/* Code viewer — figure fills the card height; the scroll
+                  viewport (role=region) grows to fill instead of capping at
+                  fumadocs' default max-h-[600px]. Header (figure's first-child
+                  div) is bumped h-9.5 → h-12 to line up with the Files header. */}
+              <div className="min-w-0 flex-1 [&_[role=region]]:max-h-none [&_[role=region]]:flex-1 [&_figure>div:first-child]:h-12 [&_figure]:m-0 [&_figure]:flex [&_figure]:h-full [&_figure]:flex-col [&_figure]:rounded-none [&_figure]:border-0 [&_figure]:border-l-0">
+                {activeCode && (
+                  <DynamicCodeBlock
+                    lang="tsx"
+                    code={activeCode}
+                    codeblock={{
+                      title: activeFile,
+                      icon: <FileTypeIcon name={activeFile} />,
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Fullscreen preview overlay */}
       {fullscreen && (
         <div className="fixed inset-0 z-50 flex flex-col bg-background">
           <div className="flex shrink-0 items-center gap-2 border-b border-border px-4 py-2.5">
-            <p className="min-w-0 flex-1 truncate text-sm font-medium">{title}</p>
+            <p className="min-w-0 flex-1 truncate text-sm font-medium">
+              {title}
+            </p>
             <button
               type="button"
               onClick={() => setFullscreen(false)}

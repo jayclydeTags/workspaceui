@@ -20,7 +20,7 @@ function GithubIcon({ className }: { className?: string }) {
 export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur">
-      <div className="flex h-14 w-full items-center gap-4 px-6">
+      <div className="mx-auto flex h-14 w-full max-w-screen-xl items-center gap-4 px-6">
         <Link to="/" className="flex items-center gap-2">
           <WorkspaceUILogo className="h-5 w-auto" />
         </Link>

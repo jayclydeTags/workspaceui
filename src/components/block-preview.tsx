@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from "react"
-import { ChevronDown, ChevronRight, Code2, Eye, FileText, Folder, FolderOpen, Monitor, Smartphone, Tablet } from "lucide-react"
-import { codeToHtml } from "shiki"
+import { useState, useRef } from "react"
+import { Code2, Eye, Monitor, Smartphone, Tablet } from "lucide-react"
+import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock"
+import { Files, Folder, File as FumaFile } from "fumadocs-ui/components/files"
 
 import { cn } from "@/lib/utils"
-import { CopyButton } from "@/components/copy-button"
 
 export interface BlockFile {
   name: string
@@ -70,74 +70,27 @@ function FileTree({
   nodes,
   activeKey,
   onSelect,
-  depth = 0,
 }: {
   nodes: TreeNode[]
   activeKey: string
   onSelect: (key: string) => void
-  depth?: number
 }) {
-  return (
-    <>
-      {nodes.map((node) =>
-        node.children ? (
-          <FolderNode key={node.name} node={node} activeKey={activeKey} onSelect={onSelect} depth={depth} />
-        ) : (
-          <button
-            key={node.fileKey}
-            onClick={() => onSelect(node.fileKey!)}
-            style={{ paddingLeft: depth * 12 + 8 }}
-            className={cn(
-              "flex w-full items-center gap-1.5 rounded-md py-1.5 pr-2 text-left transition-colors",
-              activeKey === node.fileKey
-                ? "bg-muted text-foreground"
-                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
-            )}
-          >
-            <FileText className="size-3.5 shrink-0" />
-            <span className="truncate font-mono text-xs">{node.name}</span>
-          </button>
-        ),
-      )}
-    </>
-  )
-}
-
-function FolderNode({
-  node,
-  activeKey,
-  onSelect,
-  depth,
-}: {
-  node: TreeNode
-  activeKey: string
-  onSelect: (key: string) => void
-  depth: number
-}) {
-  const [open, setOpen] = useState(true)
-  const Icon = open ? FolderOpen : Folder
-  const Chevron = open ? ChevronDown : ChevronRight
-
-  return (
-    <>
-      <button
-        onClick={() => setOpen((v) => !v)}
-        style={{ paddingLeft: depth * 12 + 8 }}
-        className="flex w-full items-center gap-1.5 rounded-md py-1.5 pr-2 text-left text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
-      >
-        <Chevron className="size-3 shrink-0" />
-        <Icon className="size-3.5 shrink-0" />
-        <span className="truncate font-mono text-xs">{node.name}</span>
-      </button>
-      {open && (
-        <FileTree
-          nodes={node.children!}
-          activeKey={activeKey}
-          onSelect={onSelect}
-          depth={depth + 1}
-        />
-      )}
-    </>
+  return nodes.map((node) =>
+    node.children ? (
+      <Folder key={node.name} name={node.name} defaultOpen>
+        <FileTree nodes={node.children} activeKey={activeKey} onSelect={onSelect} />
+      </Folder>
+    ) : (
+      <FumaFile
+        key={node.fileKey}
+        name={node.name}
+        onClick={() => onSelect(node.fileKey!)}
+        className={cn(
+          "cursor-pointer",
+          activeKey === node.fileKey && "bg-muted text-foreground",
+        )}
+      />
+    ),
   )
 }
 
@@ -156,29 +109,10 @@ export function BlockPreview({
   const [previewWidth, setPreviewWidth] = useState(1440)
   const [isDragging, setIsDragging] = useState(false)
   const [activeFile, setActiveFile] = useState(firstKey)
-  const [codeHtml, setCodeHtml] = useState("")
   const dragRef = useRef<{ startX: number; startWidth: number } | null>(null)
 
   const activeCode = files.find((f) => (f.path ?? f.name) === activeFile)?.code ?? ""
   const tree = buildTree(files)
-  const [installHtml, setInstallHtml] = useState("")
-
-  useEffect(() => {
-    codeToHtml(installCmd, {
-      lang: "bash",
-      themes: { light: "github-light", dark: "github-dark" },
-      defaultColor: false,
-    }).then(setInstallHtml)
-  }, [installCmd])
-
-  useEffect(() => {
-    if (!activeCode) return
-    codeToHtml(activeCode, {
-      lang: "tsx",
-      themes: { light: "github-light", dark: "github-dark" },
-      defaultColor: false,
-    }).then(setCodeHtml)
-  }, [activeCode])
 
   function handleViewport(v: Viewport) {
     setViewport(v)
@@ -261,12 +195,8 @@ export function BlockPreview({
           )}
 
           {/* Install command */}
-          <div className="flex items-center gap-1 overflow-hidden rounded-md border border-border bg-muted/50 py-1 pl-3 pr-1">
-            <div
-              className="text-xs [&_.shiki]:bg-transparent! [&_pre]:bg-transparent! [&_pre]:!m-0"
-              dangerouslySetInnerHTML={{ __html: installHtml }}
-            />
-            <CopyButton value={installCmd} />
+          <div className="overflow-hidden rounded-md border border-border bg-muted/50 text-xs [&_figure]:m-0 [&_figure]:border-0 [&_figure]:bg-transparent [&_pre]:py-1.5">
+            <DynamicCodeBlock lang="bash" code={installCmd} />
           </div>
         </div>
       </div>
@@ -312,18 +242,14 @@ export function BlockPreview({
             <p className="mb-2 px-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
               Files
             </p>
-            <FileTree nodes={tree} activeKey={activeFile} onSelect={setActiveFile} />
+            <Files>
+              <FileTree nodes={tree} activeKey={activeFile} onSelect={setActiveFile} />
+            </Files>
           </div>
 
           {/* Code viewer */}
-          <div className="relative flex-1 overflow-auto">
-            <div className="absolute right-4 top-4 z-10">
-              <CopyButton value={activeCode} />
-            </div>
-            <div
-              className="min-h-full p-6 text-sm [&_.shiki]:bg-transparent! [&_pre]:!m-0 [&_pre]:bg-transparent!"
-              dangerouslySetInnerHTML={{ __html: codeHtml }}
-            />
+          <div className="flex-1 overflow-auto [&_figure]:m-0 [&_figure]:h-full [&_figure]:rounded-none [&_figure]:border-0">
+            {activeCode && <DynamicCodeBlock lang="tsx" code={activeCode} />}
           </div>
         </div>
       )}

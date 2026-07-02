@@ -4,6 +4,7 @@ import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock"
 import { Files, Folder, File as FumaFile } from "fumadocs-ui/components/files"
 
 import { cn } from "@/lib/utils"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export interface BlockFile {
   name: string
@@ -148,56 +149,39 @@ export function BlockPreview({
 
         <div className="ml-auto flex flex-wrap items-center gap-2">
           {/* Preview / Code */}
-          <div className="flex overflow-hidden rounded-md border border-border">
-            {(["preview", "code"] as const).map((t) => (
-              <button
-                key={t}
-                onClick={() => setTab(t)}
-                className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 text-sm transition-colors",
-                  tab === t
-                    ? "bg-muted font-medium text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {t === "preview" ? (
-                  <Eye className="size-3.5" />
-                ) : (
-                  <Code2 className="size-3.5" />
-                )}
-                <span className="capitalize">{t}</span>
-              </button>
-            ))}
-          </div>
+          <Tabs value={tab} onValueChange={(v) => setTab(v as "preview" | "code")}>
+            <TabsList>
+              {(["preview", "code"] as const).map((t) => (
+                <TabsTrigger key={t} value={t}>
+                  {t === "preview" ? (
+                    <Eye data-icon="inline-start" />
+                  ) : (
+                    <Code2 data-icon="inline-start" />
+                  )}
+                  <span className="capitalize">{t}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
 
           {/* Viewport switcher — preview only */}
           {tab === "preview" && (
-            <div className="flex overflow-hidden rounded-md border border-border">
-              {(["desktop", "tablet", "mobile"] as const).map((v) => {
-                const Icon = VIEWPORT_ICONS[v]
-                return (
-                  <button
-                    key={v}
-                    onClick={() => handleViewport(v)}
-                    title={v[0]!.toUpperCase() + v.slice(1)}
-                    className={cn(
-                      "px-2.5 py-1.5 transition-colors",
-                      viewport === v
-                        ? "bg-muted text-foreground"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    <Icon className="size-4" />
-                  </button>
-                )
-              })}
-            </div>
+            <Tabs value={viewport} onValueChange={(v) => handleViewport(v as Viewport)}>
+              <TabsList>
+                {(["desktop", "tablet", "mobile"] as const).map((v) => {
+                  const Icon = VIEWPORT_ICONS[v]
+                  return (
+                    <TabsTrigger key={v} value={v} title={v[0]!.toUpperCase() + v.slice(1)}>
+                      <Icon />
+                    </TabsTrigger>
+                  )
+                })}
+              </TabsList>
+            </Tabs>
           )}
 
           {/* Install command */}
-          <div className="overflow-hidden rounded-md border border-border bg-muted/50 text-xs [&_figure]:m-0 [&_figure]:border-0 [&_figure]:bg-transparent [&_pre]:py-1.5">
-            <DynamicCodeBlock lang="bash" code={installCmd} />
-          </div>
+          <DynamicCodeBlock lang="bash" code={installCmd} />
         </div>
       </div>
 

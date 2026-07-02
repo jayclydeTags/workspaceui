@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import {
   Check,
   ChevronRight,
@@ -39,7 +39,8 @@ interface BlockPreviewProps {
   title: string
   installCmd: string
   files: BlockFile[]
-  children: React.ReactNode
+  /** Block slug from lib/blocks.ts — drives the /blocks/preview/:slug iframe. */
+  slug: string
 }
 
 // Fixed preview/code viewport height — the block sits in a card of this height
@@ -205,7 +206,7 @@ export function BlockPreview({
   title,
   installCmd,
   files,
-  children,
+  slug,
 }: BlockPreviewProps) {
   const firstKey = files[0] ? (files[0].path ?? files[0].name) : ""
   const [tab, setTab] = useState<"preview" | "code">("preview")
@@ -329,11 +330,15 @@ export function BlockPreview({
                 minSize="320px"
                 className="overflow-hidden rounded-[14px] border border-border bg-background"
               >
-                {/* translate-x-0 establishes a containing block so a block's
-                    position:fixed sidebar is scoped here, not the viewport. */}
-                <div className="h-full w-full translate-x-0 overflow-auto">
-                  <Fragment key={previewKey}>{children}</Fragment>
-                </div>
+                {/* Real iframe: the block sees the panel's width as its own
+                    viewport, so its md: breakpoints + useIsMobile fire for real
+                    as the panel is resized/toggled. key=previewKey reloads it. */}
+                <iframe
+                  key={previewKey}
+                  src={`/blocks/preview/${slug}`}
+                  title={title}
+                  className="h-full w-full border-0"
+                />
               </ResizablePanel>
               {/* bg-transparent drops the full-height divider line (it clashed
                   with the rounded frame); only the grip pill shows. after:w-3
@@ -399,7 +404,12 @@ export function BlockPreview({
             </button>
           </div>
           <div className="min-h-0 flex-1 overflow-hidden">
-            <Fragment key={previewKey}>{children}</Fragment>
+            <iframe
+              key={previewKey}
+              src={`/blocks/preview/${slug}`}
+              title={title}
+              className="h-full w-full border-0"
+            />
           </div>
         </div>
       )}

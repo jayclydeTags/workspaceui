@@ -4,7 +4,6 @@ import dataTableSource from "@/registry/bases/base/blocks/activity-log-01/compon
 
 import { useDocumentTitle } from "@/lib/use-document-title"
 import { BlockPreview } from "@/components/block-preview"
-import { ActivityLog01 } from "@/registry/bases/base/blocks/activity-log-01/page"
 
 const FILES = [
   { name: "page.tsx",       path: "app/activity-log/page.tsx",   code: pageSource      },
@@ -18,10 +17,9 @@ export default function ActivityLog01Page() {
   return (
     <BlockPreview
       title="Activity Log 01"
+      slug="activity-log-01"
       installCmd="npx shadcn@latest add jayclydeTags/workspaceui/activity-log-01"
       files={FILES}
-    >
-      <ActivityLog01 />
-    </BlockPreview>
+    />
   )
 }

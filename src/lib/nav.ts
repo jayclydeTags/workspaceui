@@ -12,23 +12,23 @@ export interface NavSection {
 
 export const blocksNav: NavSection[] = [
   {
-    title: "Dashboard",
+    title: "Application",
     items: [
       {
         title: "Dashboard 01",
         href: "/blocks/dashboard-01",
         description: "Collapsible sidebar nav paired with the Workspace component.",
       },
-    ],
-  },
-  {
-    title: "Activity",
-    items: [
       {
         title: "Activity Log 01",
         href: "/blocks/activity-log-01",
         description:
           "Filterable activity log with a responsive datatable — collapses to cards on narrow panes.",
+      },
+      {
+        title: "Activity Feed 01",
+        href: "/blocks/activity-feed-01",
+        description: "Grouped activity timeline with type/user filters and running stats.",
       },
     ],
   },

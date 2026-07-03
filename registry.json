@@ -118,6 +118,30 @@
           "type": "registry:block"
         }
       ]
+    },
+    {
+      "name": "activity-feed-01",
+      "type": "registry:block",
+      "title": "Activity Feed 01",
+      "description": "Grouped activity timeline with type/user filters and running stats.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "avatar",
+        "button",
+        "dropdown-menu",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/activity-feed-01/page.tsx",
+          "type": "registry:page",
+          "target": "app/activity-feed/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/activity-feed-01/data.ts",
+          "type": "registry:block"
+        }
+      ]
     }
   ]
 }

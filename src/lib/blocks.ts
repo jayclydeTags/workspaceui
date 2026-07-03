@@ -1,5 +1,6 @@
 import type { ComponentType } from "react"
 
+import { ActivityFeed01 } from "@/registry/bases/base/blocks/activity-feed-01/page"
 import { ActivityLog01 } from "@/registry/bases/base/blocks/activity-log-01/page"
 import { Dashboard01 } from "@/registry/bases/base/blocks/dashboard-01/page"
 
@@ -29,5 +30,12 @@ export const blocks: BlockMeta[] = [
       "Filterable activity log with a responsive datatable — collapses to cards on narrow panes.",
     category: "Activity",
     Component: ActivityLog01,
+  },
+  {
+    slug: "activity-feed-01",
+    title: "Activity Feed 01",
+    description: "Grouped activity timeline with type/user filters and running stats.",
+    category: "Application",
+    Component: ActivityFeed01,
   },
 ]

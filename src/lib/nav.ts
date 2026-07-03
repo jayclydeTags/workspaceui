@@ -17,7 +17,8 @@ export const blocksNav: NavSection[] = [
       {
         title: "Dashboard 01",
         href: "/blocks/dashboard-01",
-        description: "Collapsible sidebar nav paired with the Workspace component.",
+        description:
+          "Collapsible sidebar nav paired with the Workspace component.",
       },
       {
         title: "Activity Log 01",
@@ -28,7 +29,14 @@ export const blocksNav: NavSection[] = [
       {
         title: "Activity Feed 01",
         href: "/blocks/activity-feed-01",
-        description: "Grouped activity timeline with type/user filters and running stats.",
+        description:
+          "Grouped activity timeline with type/user filters and running stats.",
+      },
+      {
+        title: "Access Control 01",
+        href: "/blocks/access-control-01",
+        description:
+          "Manage role permissions across resources with a per-role permission matrix.",
       },
     ],
   },

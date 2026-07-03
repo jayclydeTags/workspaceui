@@ -153,6 +153,38 @@
           "type": "registry:block"
         }
       ]
+    },
+    {
+      "name": "access-control-01",
+      "type": "registry:block",
+      "title": "Access Control 01",
+      "description": "Manage role permissions across resources with a per-role permission matrix.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "badge",
+        "button",
+        "checkbox",
+        "dialog",
+        "field",
+        "input",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/access-control-01/page.tsx",
+          "type": "registry:page",
+          "target": "app/access-control/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/access-control-01/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/access-control-01/components/permission-table.tsx",
+          "type": "registry:block"
+        }
+      ]
     }
   ]
 }

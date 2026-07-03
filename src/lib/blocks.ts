@@ -1,5 +1,6 @@
 import type { ComponentType } from "react"
 
+import { AccessControl01 } from "@/registry/bases/base/blocks/access-control-01/page"
 import { ActivityFeed01 } from "@/registry/bases/base/blocks/activity-feed-01/page"
 import { ActivityLog01 } from "@/registry/bases/base/blocks/activity-log-01/page"
 import { Dashboard01 } from "@/registry/bases/base/blocks/dashboard-01/page"
@@ -34,8 +35,17 @@ export const blocks: BlockMeta[] = [
   {
     slug: "activity-feed-01",
     title: "Activity Feed 01",
-    description: "Grouped activity timeline with type/user filters and running stats.",
+    description:
+      "Grouped activity timeline with type/user filters and running stats.",
     category: "Application",
     Component: ActivityFeed01,
+  },
+  {
+    slug: "access-control-01",
+    title: "Access Control 01",
+    description:
+      "Manage role permissions across resources with a per-role permission matrix.",
+    category: "Application",
+    Component: AccessControl01,
   },
 ]

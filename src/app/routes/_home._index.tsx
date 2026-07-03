@@ -1,5 +1,13 @@
 import { Link } from "react-router"
-import { ArrowRight } from "lucide-react"
+import {
+  ArrowRight,
+  Accessibility,
+  Copy,
+  Move,
+  Palette,
+  Zap,
+  Braces,
+} from "lucide-react"
 
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock"
 
@@ -50,45 +58,76 @@ export default function HomePage() {
 
         {/* Install snippet */}
         <div className="mx-auto max-w-lg">
-          <DynamicCodeBlock lang="bash" code="npx shadcn@latest add jayclydeTags/workspaceui/workspace-tabs" />
+          <DynamicCodeBlock lang="bash" code="npx shadcn@latest add jayclydeTags/workspaceui/workspace" />
         </div>
       </div>
 
-      {/* Component cards */}
-      <div className="mt-20 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {/* Features */}
+      <div className="mt-24 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
         {[
           {
-            title: "Workspace Tabs",
+            icon: Copy,
+            title: "Copy, own, adapt",
             description:
-              "Chrome-style scrollable tab strip with closeable tabs, unread badges, and macOS-style curved connectors.",
-            href: "/docs/components/workspace",
+              "Distributed via shadcn's model — the code lands in your repo. No black-box package to fight, no version lock-in.",
           },
           {
-            title: "Workspace",
+            icon: Accessibility,
+            title: "Accessible by default",
             description:
-              "Multi-pane IDE-like layout with tab drag/drop, cross-pane transfers, and snap-zone splitting.",
-            href: "/docs/components/workspace",
+              "Built on Base UI primitives with full keyboard navigation and correct ARIA out of the box.",
           },
           {
-            title: "Blocks",
+            icon: Move,
+            title: "Drag, drop & split",
             description:
-              "Full page layout examples — dashboard, inbox, analytics, calendar, documents, and settings.",
-            href: "/blocks",
+              "Multi-pane layouts with cross-pane tab transfers and snap-zone splitting — an IDE workspace in a component.",
+          },
+          {
+            icon: Palette,
+            title: "Tailwind v4 themeable",
+            description:
+              "Styled with theme tokens, not hard-coded colors. Retheme to match your app by editing CSS variables.",
+          },
+          {
+            icon: Braces,
+            title: "Fully typed",
+            description:
+              "Strict TypeScript with exported prop interfaces, so autocomplete and type-checking work end to end.",
+          },
+          {
+            icon: Zap,
+            title: "Zero-config install",
+            description:
+              "One shadcn CLI command pulls the component and its dependencies straight from GitHub — no build step.",
           },
         ].map((item) => (
-          <Link
-            key={item.href}
-            to={item.href}
-            className="group rounded-xl border border-border p-6 transition-colors hover:border-foreground/20 hover:bg-muted/30"
-          >
-            <h3 className="mb-2 font-semibold text-foreground">{item.title}</h3>
-            <p className="text-sm text-muted-foreground">{item.description}</p>
-            <div className="mt-4 flex items-center gap-1 text-sm font-medium text-foreground opacity-0 transition-opacity group-hover:opacity-100">
-              View component
-              <ArrowRight className="size-3.5" />
+          <div key={item.title}>
+            <div className="mb-3 inline-flex size-9 items-center justify-center rounded-lg border border-border bg-muted/50 text-foreground">
+              <item.icon className="size-4.5" />
             </div>
-          </Link>
+            <h3 className="mb-1.5 font-semibold text-foreground">{item.title}</h3>
+            <p className="text-sm text-muted-foreground">{item.description}</p>
+          </div>
         ))}
+      </div>
+
+      {/* Explore links */}
+      <div className="mt-16 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+        <Link
+          to="/docs/components/workspace"
+          className="inline-flex items-center gap-1 text-sm font-medium text-foreground hover:underline"
+        >
+          Browse components
+          <ArrowRight className="size-3.5" />
+        </Link>
+        <Link
+          to="/blocks"
+          className="inline-flex items-center gap-1 text-sm font-medium text-foreground hover:underline"
+        >
+          Explore blocks
+          <ArrowRight className="size-3.5" />
+        </Link>
       </div>
     </main>
   )

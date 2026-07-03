@@ -73,7 +73,7 @@ export default function HomePage() {
             title: "Blocks",
             description:
               "Full page layout examples — dashboard, inbox, analytics, calendar, documents, and settings.",
-            href: "/docs/blocks",
+            href: "/blocks",
           },
         ].map((item) => (
           <Link

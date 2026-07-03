@@ -36,7 +36,7 @@ export function SidebarNav({ sections = nav }: { sections?: NavSection[] }) {
         <nav className="w-full">
           {sections.map((section) => (
             <div key={section.title} className="pb-6">
-              <h4 className="mb-1 rounded-md px-2 py-1 text-sm font-semibold">
+              <h4 className="mb-1 rounded-md px-2 py-1 text-sm text-muted-foreground">
                 {section.title}
               </h4>
               <ul className="grid gap-0.5">
@@ -45,10 +45,10 @@ export function SidebarNav({ sections = nav }: { sections?: NavSection[] }) {
                     <Link
                       to={item.href}
                       className={cn(
-                        "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors",
+                        "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-semibold transition-colors",
                         pathname === item.href
-                          ? "bg-muted font-medium text-foreground"
-                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                          ? "bg-muted text-foreground"
+                          : "text-foreground hover:bg-muted"
                       )}
                     >
                       {item.title}

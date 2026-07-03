@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { Link } from "react-router"
+import { useNavigate } from "react-router"
 
 import { blocks } from "@/lib/blocks"
 import { cn } from "@/lib/utils"
@@ -35,6 +35,7 @@ function BlockThumb({ children }: { children: React.ReactNode }) {
 
 export default function BlocksIndex() {
   useDocumentTitle("Blocks")
+  const navigate = useNavigate()
   const [active, setActive] = useState("All")
 
   const visible =
@@ -68,7 +69,16 @@ export default function BlocksIndex() {
 
         <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {visible.map(({ slug, title, description, category, Component }) => (
-            <Link key={slug} to={`/blocks/${slug}`} className="group block">
+            <div
+              key={slug}
+              role="link"
+              tabIndex={0}
+              onClick={() => navigate(`/blocks/${slug}`)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") navigate(`/blocks/${slug}`)
+              }}
+              className="group block cursor-pointer"
+            >
               <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-border bg-muted/30 transition group-hover:border-primary/40">
                 <BlockThumb>
                   <Component />
@@ -83,7 +93,7 @@ export default function BlocksIndex() {
                 </div>
                 <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{description}</p>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </div>

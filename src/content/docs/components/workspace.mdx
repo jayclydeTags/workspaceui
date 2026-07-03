@@ -186,6 +186,220 @@ the [`useWorkspace()`](#useworkspace) hook — use the ref from outside `<Worksp
 the hook from within it. Both expose `openTabInPane`, `closeTab`, `activateTab`,
 `updateTab` (e.g. to set a tab's `badge`), `openPane`, and `closePane`.
 
+## Examples
+
+### Single pane, multiple tabs
+
+One pane with several tabs. Tabs are closable and reorderable by drag; the pinned tab has no close button.
+
+<ComponentPreview name="workspace-tabs" code={`import { Home, FolderOpen, Terminal } from "lucide-react"
+import { Workspace } from "@/components/ui/workspace"
+
+const CONTENT = { home: <Home />, files: <FolderOpen />, terminal: <Terminal /> }
+
+export function MyWorkspace() {
+  return (
+    <Workspace
+      initialPanes={[
+        {
+          id: "main",
+          tabs: [
+            { id: "home", title: "Home", icon: <Home />, pinned: true },
+            { id: "files", title: "Files", icon: <FolderOpen /> },
+            { id: "terminal", title: "Terminal", icon: <Terminal /> },
+          ],
+        },
+      ]}
+      renderTabContent={(_paneId, tabId) => CONTENT[tabId]}
+    />
+  )
+}`} />
+
+### Split panes
+
+Two side-by-side panes sized with \`defaultSize\`. Drag a tab across the divider to move it between panes, or drag it to an edge to split further.
+
+<ComponentPreview name="workspace-split" code={`import { LayoutDashboard, FileText, Settings } from "lucide-react"
+import { Workspace } from "@/components/ui/workspace"
+
+export function MyWorkspace() {
+  return (
+    <Workspace
+      initialPanes={[
+        {
+          id: "left",
+          defaultSize: 60,
+          tabs: [
+            { id: "dashboard", title: "Dashboard", icon: <LayoutDashboard />, pinned: true },
+            { id: "docs", title: "Documentation", icon: <FileText /> },
+          ],
+        },
+        {
+          id: "right",
+          defaultSize: 40,
+          tabs: [{ id: "settings", title: "Settings", icon: <Settings />, pinned: true }],
+        },
+      ]}
+      renderTabContent={(_paneId, tabId) => <div className="p-4">{tabId}</div>}
+    />
+  )
+}`} />
+
+### Tab badges
+
+Set \`badge\` (a number) on a tab to show a count next to its title.
+
+<ComponentPreview name="workspace-badges" code={`import { Inbox, MessageSquare, Bell } from "lucide-react"
+import { Workspace } from "@/components/ui/workspace"
+
+export function MyWorkspace() {
+  return (
+    <Workspace
+      initialPanes={[
+        {
+          id: "main",
+          tabs: [
+            { id: "inbox", title: "Inbox", icon: <Inbox />, badge: 12, pinned: true },
+            { id: "chat", title: "Chat", icon: <MessageSquare />, badge: 3 },
+            { id: "alerts", title: "Alerts", icon: <Bell /> },
+          ],
+        },
+      ]}
+      renderTabContent={(_paneId, tabId) => <div className="p-4">{tabId}</div>}
+    />
+  )
+}`} />
+
+### Add-tab button
+
+Provide \`onAddTab\` on a pane to render a "+" button in its tab strip. Open the new tab through the \`WorkspaceHandle\` ref.
+
+<ComponentPreview name="workspace-add-tab" code={`import * as React from "react"
+import { Home, FileText } from "lucide-react"
+import { Workspace, type WorkspaceHandle } from "@/components/ui/workspace"
+
+export function MyWorkspace() {
+  const workspace = React.useRef<WorkspaceHandle>(null)
+  const nextId = React.useRef(1)
+
+  return (
+    <Workspace
+      ref={workspace}
+      initialPanes={[
+        {
+          id: "main",
+          tabs: [{ id: "start", title: "Start", icon: <Home />, pinned: true }],
+          onAddTab: () => {
+            const n = nextId.current++
+            workspace.current?.openTabInPane("main", {
+              id: \`tab-\${n}\`,
+              title: \`Untitled \${n}\`,
+              icon: <FileText />,
+            })
+          },
+        },
+      ]}
+      renderTabContent={(_paneId, tabId) => <div className="p-4">{tabId}</div>}
+    />
+  )
+}`} />
+
+### Programmatic control (sidebar)
+
+Drive the workspace from outside with a \`WorkspaceHandle\` ref. Each sidebar button calls \`openTabInPane\` — reopening an existing tab just focuses it.
+
+<ComponentPreview name="workspace-programmatic" code={`import * as React from "react"
+import { LayoutDashboard, FileText, Settings } from "lucide-react"
+import { Workspace, type WorkspaceHandle } from "@/components/ui/workspace"
+
+export function MyWorkspace() {
+  const workspace = React.useRef<WorkspaceHandle>(null)
+
+  const open = (id: string, title: string, icon: React.ReactNode) =>
+    workspace.current?.openTabInPane("main", { id, title, icon })
+
+  return (
+    <div className="flex h-full">
+      <nav className="w-44 shrink-0 border-r p-2">
+        <button onClick={() => open("documents", "Documents", <FileText />)}>Documents</button>
+        <button onClick={() => open("settings", "Settings", <Settings />)}>Settings</button>
+      </nav>
+      <Workspace
+        ref={workspace}
+        className="flex-1"
+        initialPanes={[
+          {
+            id: "main",
+            tabs: [{ id: "dashboard", title: "Dashboard", icon: <LayoutDashboard />, pinned: true }],
+          },
+        ]}
+        renderTabContent={(_paneId, tabId) => <div className="p-4">{tabId}</div>}
+      />
+    </div>
+  )
+}`} />
+
+### Control from inside a pane
+
+Components rendered _inside_ a pane reach the same methods via the [\`useWorkspace()\`](#useworkspace) hook — no ref required.
+
+<ComponentPreview name="workspace-context" code={`import { LayoutDashboard, FileText } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Workspace, useWorkspace } from "@/components/ui/workspace"
+
+function OverviewPanel() {
+  const { openTabInPane } = useWorkspace()
+  return (
+    <Button
+      onClick={() =>
+        openTabInPane("main", { id: "details", title: "Details", icon: <FileText /> })
+      }
+    >
+      Open details tab
+    </Button>
+  )
+}
+
+export function MyWorkspace() {
+  return (
+    <Workspace
+      initialPanes={[
+        {
+          id: "main",
+          tabs: [{ id: "overview", title: "Overview", icon: <LayoutDashboard />, pinned: true }],
+        },
+      ]}
+      renderTabContent={(_paneId, tabId) =>
+        tabId === "overview" ? <OverviewPanel /> : <div className="p-4">{tabId}</div>
+      }
+    />
+  )
+}`} />
+
+### Custom fallback
+
+The \`fallback\` prop configures what shows when every pane is closed. Close the tab below to reveal it.
+
+<ComponentPreview name="workspace-fallback" code={`import { FileText, Inbox } from "lucide-react"
+import { Workspace } from "@/components/ui/workspace"
+
+export function MyWorkspace() {
+  return (
+    <Workspace
+      initialPanes={[
+        { id: "main", tabs: [{ id: "scratch", title: "Scratch", icon: <FileText /> }] },
+      ]}
+      renderTabContent={(_paneId, tabId) => <div className="p-4">{tabId}</div>}
+      fallback={
+        <div className="flex h-full flex-col items-center justify-center gap-2">
+          <Inbox className="size-8 text-muted-foreground/40" />
+          <p className="text-sm text-muted-foreground">No panels open</p>
+        </div>
+      }
+    />
+  )
+}`} />
+
 ## Composition
 
 <ComponentTree description="Use the following composition to build a workspace:" root={WORKSPACE_TREE} />

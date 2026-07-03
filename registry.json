@@ -83,7 +83,8 @@
       "files": [
         {
           "path": "src/registry/bases/base/blocks/dashboard-01/page.tsx",
-          "type": "registry:block"
+          "type": "registry:page",
+          "target": "app/dashboard/page.tsx"
         },
         {
           "path": "src/registry/bases/base/blocks/dashboard-01/components/app-sidebar.tsx",
@@ -105,7 +106,8 @@
       "files": [
         {
           "path": "src/registry/bases/base/blocks/activity-log-01/page.tsx",
-          "type": "registry:block"
+          "type": "registry:page",
+          "target": "app/activity-log/page.tsx"
         },
         {
           "path": "src/registry/bases/base/blocks/activity-log-01/data.ts",

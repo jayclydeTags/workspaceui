@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Plus, X } from "lucide-react"
+import { Tabs } from "@base-ui/react/tabs"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -107,9 +108,14 @@ function WorkspaceTabs({
       : null
 
   return (
-    <div
+    // Tabs.Root/List/Tab/Panel supply roving focus, Home/End/Arrow nav, and
+    // the tab/tablist/tabpanel aria wiring. Styling, drag, connectors, badge,
+    // and close buttons are all ours — Base UI only owns the a11y engine.
+    <Tabs.Root
+      value={activeTabId}
+      onValueChange={(value) => onTabChange(String(value))}
       data-slot="workspace-tabs"
-      className={cn("flex h-full flex-col overflow-hidden", className)}
+      className={cn("flex h-full min-h-0 flex-col overflow-hidden", className)}
     >
       {/* ── Tab strip ── */}
       <div
@@ -118,19 +124,9 @@ function WorkspaceTabs({
         className="flex shrink-0 items-end border-b border-border bg-muted/30 pl-2"
       >
         {/* Scrollable tab row */}
-        <div
-          role="tablist"
+        <Tabs.List
           aria-label="Open tabs"
           className="flex min-w-0 items-end overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          onKeyDown={(e) => {
-            if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return
-            const cur = tabs.findIndex((t) => t.id === activeTabId)
-            if (cur === -1) return
-            const next = e.key === "ArrowRight"
-              ? (cur + 1) % tabs.length
-              : (cur - 1 + tabs.length) % tabs.length
-            onTabChange(tabs[next]!.id)
-          }}
         >
           {tabs.map((tab, index) => {
             const isActive = tab.id === activeTabId
@@ -139,12 +135,9 @@ function WorkspaceTabs({
                 {/* Drop indicator shown when dragging over this strip position */}
                 {tabDropInsertIndex === index && <TabDropIndicator />}
 
-                <button
-                  role="tab"
-                  aria-selected={isActive}
-                  aria-controls={`workspace-tabpanel-${tab.id}`}
+                <Tabs.Tab
+                  value={tab.id}
                   id={`workspace-tab-${tab.id}`}
-                  onClick={() => onTabChange(tab.id)}
                   onPointerDown={(e) => {
                     if (tab.pinned || !paneId || !dragCtx) return
                     onTabChange(tab.id)
@@ -223,13 +216,13 @@ function WorkspaceTabs({
 
                   {/* Right curve connector (active tab only) */}
                   {isActive && <RightConnector />}
-                </button>
+                </Tabs.Tab>
               </React.Fragment>
             )
           })}
           {/* Trailing drop indicator (append at end) */}
           {tabDropInsertIndex === tabs.length && <TabDropIndicator />}
-        </div>
+        </Tabs.List>
 
         {/* Add-tab button (32×32) */}
         {onAddTab != null && (
@@ -246,15 +239,15 @@ function WorkspaceTabs({
       </div>
 
       {/* ── Content area ── */}
-      <div
-        role="tabpanel"
-        id={`workspace-tabpanel-${activeTabId}`}
-        aria-labelledby={`workspace-tab-${activeTabId}`}
+      {/* Single panel: value always matches the active tab, so it's always shown.
+          Base UI wires role="tabpanel" + aria-labelledby to the active tab. */}
+      <Tabs.Panel
+        value={activeTabId}
         className="min-h-0 flex-1 overflow-auto"
       >
         {children}
-      </div>
-    </div>
+      </Tabs.Panel>
+    </Tabs.Root>
   )
 }
 

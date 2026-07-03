@@ -3,6 +3,10 @@ import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 
 import { WorkspaceTabs } from "../workspace-tabs"
+import {
+  WorkspaceDragContext,
+  type WorkspaceDragContextValue,
+} from "../workspace-context"
 
 const tab = (id: string, title: string, extra?: object) => ({
   id,
@@ -92,8 +96,9 @@ describe("WorkspaceTabs", () => {
       const onTabChange = vi.fn()
       renderTabs({ activeTabId: "a", onTabChange })
       await userEvent.click(screen.getByRole("tab", { name: "Alpha" }))
-      // onClick fires but always emits — this is fine behavior, just document it
-      expect(onTabChange).toHaveBeenCalledWith("a")
+      // Base UI Tabs only fires onValueChange on an actual change — clicking
+      // the already-active tab is a no-op.
+      expect(onTabChange).not.toHaveBeenCalled()
     })
   })
 
@@ -145,6 +150,72 @@ describe("WorkspaceTabs", () => {
       renderTabs({ onAddTab })
       await userEvent.click(screen.getByRole("button", { name: "New tab" }))
       expect(onAddTab).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe("drag wiring", () => {
+    // Guards the Base UI <Tabs.Tab> swap: the drag onPointerDown must still
+    // reach startDrag. Base UI owns the button, so this proves it forwards
+    // our handler rather than swallowing it.
+    function dragCtx(startDrag: WorkspaceDragContextValue["startDrag"]) {
+      return {
+        isDragging: false,
+        snapState: null,
+        tabDropTarget: null,
+        registerPane: vi.fn(),
+        registerTabStrip: vi.fn(),
+        startDrag,
+        setLastActivePane: vi.fn(),
+      } satisfies WorkspaceDragContextValue
+    }
+
+    it("calls startDrag on pointer down when a paneId and drag context exist", async () => {
+      const startDrag = vi.fn()
+      render(
+        <WorkspaceDragContext.Provider value={dragCtx(startDrag)}>
+          <WorkspaceTabs
+            tabs={[tab("a", "Alpha"), tab("b", "Beta")]}
+            activeTabId="a"
+            onTabChange={vi.fn()}
+            paneId="pane-1"
+          >
+            <div>content</div>
+          </WorkspaceTabs>
+        </WorkspaceDragContext.Provider>,
+      )
+      await userEvent.pointer({
+        keys: "[MouseLeft>]",
+        target: screen.getByRole("tab", { name: "Beta" }),
+      })
+      expect(startDrag).toHaveBeenCalledWith(
+        "pane-1",
+        "b",
+        "Beta",
+        expect.any(Number),
+        expect.any(Number),
+        expect.any(Number),
+      )
+    })
+
+    it("does not start a drag for pinned tabs", async () => {
+      const startDrag = vi.fn()
+      render(
+        <WorkspaceDragContext.Provider value={dragCtx(startDrag)}>
+          <WorkspaceTabs
+            tabs={[tab("a", "Alpha", { pinned: true })]}
+            activeTabId="a"
+            onTabChange={vi.fn()}
+            paneId="pane-1"
+          >
+            <div>content</div>
+          </WorkspaceTabs>
+        </WorkspaceDragContext.Provider>,
+      )
+      await userEvent.pointer({
+        keys: "[MouseLeft>]",
+        target: screen.getByRole("tab", { name: "Alpha" }),
+      })
+      expect(startDrag).not.toHaveBeenCalled()
     })
   })
 

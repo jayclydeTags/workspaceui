@@ -50,7 +50,7 @@ export function Page({
     <div className={cn("flex h-full flex-col", className)}>
       {hasHeader && (
         <header className="flex flex-col gap-1 border-b px-6 py-4">
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex min-w-0 items-center gap-3">
               {visual && (
                 <span aria-hidden="true" className="shrink-0">
@@ -67,11 +67,11 @@ export function Page({
                         return (
                           <React.Fragment key={i}>
                             {i > 0 && <BreadcrumbSeparator />}
-                            <BreadcrumbItem className={isLast ? "min-w-0" : undefined}>
+                            <BreadcrumbItem className="min-w-0">
                               {isLast ? (
                                 <BreadcrumbPage className="truncate">{crumb.label}</BreadcrumbPage>
                               ) : (
-                                <BreadcrumbLink href={crumb.href}>
+                                <BreadcrumbLink href={crumb.href} className="truncate">
                                   {crumb.label}
                                 </BreadcrumbLink>
                               )}

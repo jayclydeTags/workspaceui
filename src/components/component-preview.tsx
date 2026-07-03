@@ -17,6 +17,9 @@ import {
   PageWithBreadcrumbsDemo,
   PageWithBadgeAndActionsDemo,
   PageWithoutHeaderDemo,
+  PageTitleOnlyDemo,
+  PageWithActionsGroupDemo,
+  PageScrollDemo,
   PageFullDemo,
 } from "@/registry/bases/base/examples/page-sample"
 
@@ -36,6 +39,9 @@ const previewComponents: Record<string, React.ReactNode> = {
   "page-with-breadcrumbs": <PageWithBreadcrumbsDemo />,
   "page-with-badge-and-actions": <PageWithBadgeAndActionsDemo />,
   "page-without-header": <PageWithoutHeaderDemo />,
+  "page-title-only": <PageTitleOnlyDemo />,
+  "page-actions-group": <PageWithActionsGroupDemo />,
+  "page-scroll": <PageScrollDemo />,
   "page-full": <PageFullDemo />,
 }
 

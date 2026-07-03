@@ -1,4 +1,4 @@
-import { Settings } from "lucide-react"
+import { Settings, Download, Share2 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -62,6 +62,58 @@ export function PageWithoutHeaderDemo() {
     <PreviewFrame>
       <Page hasHeader={false} hasPadding>
         <p className="text-sm text-muted-foreground">Full-bleed content, no header.</p>
+      </Page>
+    </PreviewFrame>
+  )
+}
+
+export function PageTitleOnlyDemo() {
+  return (
+    <PreviewFrame>
+      <Page title="Dashboard">
+        <p className="text-sm text-muted-foreground">Page content goes here.</p>
+      </Page>
+    </PreviewFrame>
+  )
+}
+
+export function PageWithActionsGroupDemo() {
+  return (
+    <PreviewFrame>
+      <Page
+        title="Report"
+        subtitle="Q3 2026 performance"
+        actions={
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline">
+              <Share2 className="size-4" />
+              Share
+            </Button>
+            <Button size="sm">
+              <Download className="size-4" />
+              Export
+            </Button>
+          </div>
+        }
+      >
+        <p className="text-sm text-muted-foreground">Page content goes here.</p>
+      </Page>
+    </PreviewFrame>
+  )
+}
+
+export function PageScrollDemo() {
+  return (
+    <PreviewFrame>
+      <Page title="Changelog" subtitle="The header stays fixed while content scrolls" hasPadding>
+        <div className="space-y-4">
+          {Array.from({ length: 12 }, (_, i) => (
+            <div key={i} className="rounded-md border border-border p-3">
+              <p className="text-sm font-medium">Release {12 - i}.0</p>
+              <p className="text-sm text-muted-foreground">Notes for this release.</p>
+            </div>
+          ))}
+        </div>
       </Page>
     </PreviewFrame>
   )

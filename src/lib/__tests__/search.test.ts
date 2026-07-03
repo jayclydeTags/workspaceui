@@ -7,7 +7,7 @@ describe("buildSearchIndexEntries", () => {
     const entries = await buildSearchIndexEntries()
 
     expect(entries.some((entry) => entry.title === "Introduction" && entry.url === "/docs/getting-started/introduction")).toBe(true)
-    expect(entries.some((entry) => entry.title === "Workspace Tabs" && entry.url === "/docs/components/workspace-tabs")).toBe(true)
+    expect(entries.some((entry) => entry.title === "Workspace" && entry.url === "/docs/components/workspace")).toBe(true)
   })
 })
 

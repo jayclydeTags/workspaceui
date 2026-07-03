@@ -57,13 +57,7 @@ export const WORKSPACE_TREE = {
         },
       ],
     },
-    {
-      name: "renderTabContent → WorkspacePanel (optional vertical split)",
-      children: [
-        { name: "WorkspaceTabs (top content area)" },
-        { name: "WorkspaceTabs (bottom content area, optional)" },
-      ],
-    },
+    { name: "renderTabContent(paneId, tabId) → your content" },
     { name: "fallback (shown when all panes closed)" },
   ],
 }
@@ -93,16 +87,13 @@ npm install @base-ui/react react-resizable-panels lucide-react
 ```
 </Step>
 <Step>
-### Add the workspace-tabs and workspace-context components
+### Copy the workspace files into your project
 
-```bash
-npx shadcn@latest add jayclydeTags/workspaceui/workspace-tabs
-```
-</Step>
-<Step>
-### Copy the workspace component into your project
+Workspace bundles an internal tab strip and drag context — copy all three files:
 
 <ComponentSource name="workspace" />
+<ComponentSource name="workspace-tabs" />
+<ComponentSource name="workspace-context" />
 </Step>
 </Steps>
 
@@ -117,8 +108,6 @@ import {
   useWorkspace,
   type WorkspaceHandle,
 } from "@/components/ui/workspace"
-import { WorkspacePanel } from "@/components/ui/workspace-panel"
-import { WorkspaceTabs } from "@/components/ui/workspace-tabs"
 ```
 
 ```tsx
@@ -130,19 +119,72 @@ import { WorkspaceTabs } from "@/components/ui/workspace-tabs"
     },
   ]}
   renderTabContent={(_paneId, tabId) => (
-    <WorkspacePanel>
-      <div className="p-4">{tabId} content</div>
-      <WorkspaceTabs
-        tabs={[{ id: "terminal", title: "Terminal" }]}
-        activeTabId="terminal"
-        onTabChange={() => {}}
-      >
-        <div className="p-3 font-mono text-xs">$ _</div>
-      </WorkspaceTabs>
-    </WorkspacePanel>
+    <div className="p-4">{tabId} content</div>
   )}
 />
 ```
+
+### Opening tabs at runtime
+
+`renderTabContent` is called on every render for the active tab of each pane, so
+content lives in a lookup keyed by tab id — not inside the tabs. To open tabs
+programmatically (e.g. from a sidebar), attach a `WorkspaceHandle` ref and call
+`openTabInPane`. Reopening an already-open tab just focuses it.
+
+```tsx
+import * as React from "react"
+import { LayoutDashboard, FileText, Settings } from "lucide-react"
+import { Workspace, type WorkspaceHandle } from "@/components/ui/workspace"
+
+// Content is looked up by tab id, defined once outside the component.
+const TAB_CONTENT: Record<string, React.ReactNode> = {
+  dashboard: <DashboardView />,
+  documents: <DocumentsView />,
+  settings: <SettingsView />,
+}
+
+export function App() {
+  const workspace = React.useRef<WorkspaceHandle>(null)
+
+  function openTab(id: string, title: string, icon: React.ReactNode) {
+    // "main" is the target pane id from initialPanes; the tab is created if missing,
+    // or focused if it already exists.
+    workspace.current?.openTabInPane("main", { id, title, icon })
+  }
+
+  return (
+    <div className="flex h-full">
+      <nav className="w-48 shrink-0 border-r p-2">
+        <button onClick={() => openTab("documents", "Documents", <FileText />)}>
+          Documents
+        </button>
+        <button onClick={() => openTab("settings", "Settings", <Settings />)}>
+          Settings
+        </button>
+      </nav>
+
+      <Workspace
+        ref={workspace}
+        className="flex-1"
+        initialPanes={[
+          {
+            id: "main",
+            tabs: [
+              { id: "dashboard", title: "Dashboard", icon: <LayoutDashboard />, pinned: true },
+            ],
+          },
+        ]}
+        renderTabContent={(_paneId, tabId) => TAB_CONTENT[tabId] ?? <div className="p-4">{tabId}</div>}
+      />
+    </div>
+  )
+}
+```
+
+Components rendered _inside_ a pane can reach the same methods without a ref via
+the [`useWorkspace()`](#useworkspace) hook — use the ref from outside `<Workspace>`,
+the hook from within it. Both expose `openTabInPane`, `closeTab`, `activateTab`,
+`updateTab` (e.g. to set a tab's `badge`), `openPane`, and `closePane`.
 
 ## Composition
 

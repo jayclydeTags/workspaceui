@@ -2,7 +2,7 @@ import * as React from "react"
 import { createPortal } from "react-dom"
 
 import { cn } from "@/lib/utils"
-import { WorkspaceTabs } from "@/registry/bases/base/workspaceui/workspace-tabs"
+import { WorkspaceTabs, type WorkspaceTab } from "@/registry/bases/base/workspaceui/workspace-tabs"
 import { WorkspaceDragContext, useWorkspaceDrag, type WorkspaceDragContextValue } from "@/registry/bases/base/workspaceui/workspace-context"
 import {
   ResizableHandle,
@@ -17,14 +17,11 @@ const MIN_ROW_SIZE = 30
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
-export interface WorkspaceTabDef {
-  id: string
-  title: string
-  icon?: React.ReactNode
-  badge?: number
-  /** Pinned tabs cannot be closed and have no close button. */
-  pinned?: boolean
-}
+/**
+ * Public alias for the tab shape consumers pass to Workspace. Single source of
+ * truth lives in workspace-tabs.tsx ({@link WorkspaceTab}).
+ */
+export type WorkspaceTabDef = WorkspaceTab
 
 export interface WorkspacePaneDef {
   id: string

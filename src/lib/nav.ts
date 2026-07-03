@@ -53,8 +53,6 @@ export const nav: NavSection[] = [
   {
     title: "Components",
     items: [
-      { title: "Workspace Tabs", href: "/docs/components/workspace-tabs" },
-      { title: "Workspace Panel", href: "/docs/components/workspace-panel" },
       { title: "Workspace", href: "/docs/components/workspace" },
       { title: "Page", href: "/docs/components/page" },
     ],

@@ -18,10 +18,7 @@ const REPO_ROOT = process.cwd()
 
 const registry: { items: RegistryItem[] } = JSON.parse(readFileSync(resolve(REPO_ROOT, "registry.json"), "utf-8"))
 
-// Installed automatically as a dependency of other items — not a standalone doc page.
-const INTERNAL_ONLY = new Set(["workspace-context"])
-
-const uiItems = registry.items.filter((item) => item.type === "registry:ui" && !INTERNAL_ONLY.has(item.name))
+const uiItems = registry.items.filter((item) => item.type === "registry:ui")
 
 function toPascalCase(kebabName: string) {
   return kebabName.replace(/(^|-)([a-z])/g, (_, __, letter: string) => letter.toUpperCase())

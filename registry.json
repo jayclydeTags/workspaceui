@@ -102,7 +102,18 @@
       "title": "Activity Log 01",
       "description": "Filterable activity log with a responsive datatable — collapses to cards on narrow panes.",
       "dependencies": ["lucide-react"],
-      "registryDependencies": ["badge", "button", "input", "dropdown-menu"],
+      "registryDependencies": [
+        "avatar",
+        "badge",
+        "button",
+        "empty",
+        "input-group",
+        "dropdown-menu",
+        "pagination",
+        "select",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
       "files": [
         {
           "path": "src/registry/bases/base/blocks/activity-log-01/page.tsx",

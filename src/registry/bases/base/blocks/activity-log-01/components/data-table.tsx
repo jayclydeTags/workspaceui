@@ -1,5 +1,15 @@
 import { cn } from "@/lib/utils"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import type { ActivityEntry, ActionType, StatusType } from "../data"
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -18,13 +28,13 @@ const STATUS_VARIANT: Record<StatusType, "default" | "secondary" | "destructive"
   pending: "secondary",
 }
 
-const ACTION_CLASS: Record<ActionType, string> = {
-  created:  "text-emerald-600 dark:text-emerald-400",
-  updated:  "text-blue-600 dark:text-blue-400",
-  deleted:  "text-red-600 dark:text-red-400",
-  viewed:   "text-muted-foreground",
-  shared:   "text-violet-600 dark:text-violet-400",
-  exported: "text-amber-600 dark:text-amber-400",
+const ACTION_VARIANT: Record<ActionType, "default" | "secondary" | "destructive" | "outline"> = {
+  created:  "default",
+  updated:  "secondary",
+  deleted:  "destructive",
+  viewed:   "outline",
+  shared:   "secondary",
+  exported: "outline",
 }
 
 // ── DataTable ──────────────────────────────────────────────────────────────
@@ -32,9 +42,12 @@ const ACTION_CLASS: Record<ActionType, string> = {
 export function DataTable({ entries }: { entries: ActivityEntry[] }) {
   if (entries.length === 0) {
     return (
-      <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-        No matching events
-      </div>
+      <Empty>
+        <EmptyHeader>
+          <EmptyTitle>No matching events</EmptyTitle>
+          <EmptyDescription>Try adjusting your search or filters.</EmptyDescription>
+        </EmptyHeader>
+      </Empty>
     )
   }
 
@@ -42,58 +55,66 @@ export function DataTable({ entries }: { entries: ActivityEntry[] }) {
     <>
       {/* Table — wide pane (≥ @sm) */}
       <div className="hidden flex-1 overflow-auto @sm:block">
-        <table className="w-full text-sm">
-          <thead className="sticky top-0 z-10 border-b border-border bg-background">
-            <tr className="text-left text-xs text-muted-foreground">
-              <th className="px-6 py-2.5 font-medium">User</th>
-              <th className="px-4 py-2.5 font-medium">Action</th>
-              <th className="hidden px-4 py-2.5 font-medium @md:table-cell">Resource</th>
-              <th className="px-4 py-2.5 font-medium">Status</th>
-              <th className="pr-6 py-2.5 font-medium text-right">Time</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
+        <Table>
+          <TableHeader className="sticky top-0 z-10 bg-background">
+            <TableRow>
+              <TableHead className="px-6">User</TableHead>
+              <TableHead>Action</TableHead>
+              <TableHead className="hidden @md:table-cell">Resource</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="pr-6 text-right">Time</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {entries.map((e) => (
-              <tr key={e.id} className="hover:bg-muted/40">
-                <td className="px-6 py-3">
+              <TableRow key={e.id}>
+                <TableCell className="px-6">
                   <div className="flex items-center gap-2.5">
-                    <Avatar initials={e.initials} />
+                    <Avatar className="size-7 text-[10px]">
+                      <AvatarFallback>{e.initials}</AvatarFallback>
+                    </Avatar>
                     <span className="font-medium">{e.user}</span>
                   </div>
-                </td>
-                <td className="px-4 py-3">
-                  <span className={cn("capitalize", ACTION_CLASS[e.action])}>{e.action}</span>
-                </td>
-                <td className="hidden px-4 py-3 @md:table-cell">
+                </TableCell>
+                <TableCell>
+                  <Badge variant={ACTION_VARIANT[e.action]} className="capitalize text-[11px]">
+                    {e.action}
+                  </Badge>
+                </TableCell>
+                <TableCell className="hidden @md:table-cell">
                   <p className="max-w-[200px] truncate">{e.resource}</p>
                   <p className="text-xs text-muted-foreground">{e.resourceType}</p>
-                </td>
-                <td className="px-4 py-3">
+                </TableCell>
+                <TableCell>
                   <Badge variant={STATUS_VARIANT[e.status]} className="capitalize text-[11px]">
                     {e.status}
                   </Badge>
-                </td>
-                <td className="pr-6 py-3 text-right text-xs text-muted-foreground">
+                </TableCell>
+                <TableCell className="pr-6 text-right text-xs text-muted-foreground">
                   {formatTime(e.timestamp)}
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
       {/* Card list — narrow pane (< @sm) */}
       <ul className="flex-1 divide-y divide-border overflow-auto @sm:hidden">
         {entries.map((e) => (
           <li key={e.id} className="flex gap-3 px-4 py-3">
-            <Avatar initials={e.initials} className="mt-0.5 size-8 text-xs" />
+            <Avatar className="mt-0.5 size-8 text-xs">
+              <AvatarFallback>{e.initials}</AvatarFallback>
+            </Avatar>
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between gap-2">
                 <span className="truncate text-sm font-medium">{e.user}</span>
                 <span className="shrink-0 text-xs text-muted-foreground">{formatTime(e.timestamp)}</span>
               </div>
               <div className="mt-0.5 flex flex-wrap items-center gap-1 text-xs">
-                <span className={cn("capitalize", ACTION_CLASS[e.action])}>{e.action}</span>
+                <Badge variant={ACTION_VARIANT[e.action]} className="capitalize text-[10px]">
+                  {e.action}
+                </Badge>
                 <span className="text-muted-foreground">·</span>
                 <span className="truncate text-muted-foreground">{e.resource}</span>
               </div>
@@ -107,18 +128,5 @@ export function DataTable({ entries }: { entries: ActivityEntry[] }) {
         ))}
       </ul>
     </>
-  )
-}
-
-function Avatar({ initials, className }: { initials: string; className?: string }) {
-  return (
-    <div
-      className={cn(
-        "flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] font-semibold text-foreground",
-        className,
-      )}
-    >
-      {initials}
-    </div>
   )
 }

@@ -61,7 +61,7 @@ export default function HomePage() {
             title: "Workspace Tabs",
             description:
               "Chrome-style scrollable tab strip with closeable tabs, unread badges, and macOS-style curved connectors.",
-            href: "/docs/components/workspace-tabs",
+            href: "/docs/components/workspace",
           },
           {
             title: "Workspace",

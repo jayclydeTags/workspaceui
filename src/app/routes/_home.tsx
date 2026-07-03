@@ -5,7 +5,7 @@ import { WorkspaceUILogo } from "@/components/workspaceui-logo"
 
 const links = [
   { text: "Docs", url: "/docs/getting-started/introduction", active: "nested-url" as const },
-  { text: "Components", url: "/docs/components/workspace-tabs", active: "nested-url" as const },
+  { text: "Components", url: "/docs/components/workspace", active: "nested-url" as const },
   { text: "Blocks", url: "/blocks", active: "nested-url" as const },
 ]
 

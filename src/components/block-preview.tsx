@@ -43,10 +43,6 @@ interface BlockPreviewProps {
   slug: string
 }
 
-// Fixed preview/code viewport height — the block sits in a card of this height
-// and the page scrolls around it (matches the shadcn/v0 blocks layout).
-const CONTENT_HEIGHT = "h-[820px]"
-
 type Viewport = "desktop" | "tablet" | "mobile"
 
 // Viewport toggles resize the preview panel to real device widths. The v4
@@ -233,8 +229,8 @@ export function BlockPreview({
   }
 
   return (
-    <div className="flex h-full flex-col overflow-y-auto">
-      <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4 px-6 py-8">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+      <div className="mx-auto flex w-full min-h-0 max-w-[1600px] flex-1 flex-col gap-4 px-6 py-8">
         {/* ── Toolbar ──────────────────────────────────────────────────────── */}
         <div className="flex shrink-0 items-center gap-2 pr-4 pl-2">
           {/* Preview / Code toggle */}
@@ -316,7 +312,7 @@ export function BlockPreview({
         </div>
 
         {/* ── Content card ─────────────────────────────────────────────────── */}
-        <div className={cn(CONTENT_HEIGHT, "shrink-0")}>
+        <div className="min-h-0 flex-1">
           {tab === "preview" ? (
             <ResizablePanelGroup
               orientation="horizontal"

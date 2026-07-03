@@ -2,6 +2,7 @@ export interface NavItem {
   title: string
   href: string
   label?: string
+  description?: string
 }
 
 export interface NavSection {
@@ -12,11 +13,24 @@ export interface NavSection {
 export const blocksNav: NavSection[] = [
   {
     title: "Dashboard",
-    items: [{ title: "Dashboard 01", href: "/blocks/dashboard-01" }],
+    items: [
+      {
+        title: "Dashboard 01",
+        href: "/blocks/dashboard-01",
+        description: "Collapsible sidebar nav paired with the Workspace component.",
+      },
+    ],
   },
   {
     title: "Activity",
-    items: [{ title: "Activity Log 01", href: "/blocks/activity-log-01" }],
+    items: [
+      {
+        title: "Activity Log 01",
+        href: "/blocks/activity-log-01",
+        description:
+          "Filterable activity log with a responsive datatable — collapses to cards on narrow panes.",
+      },
+    ],
   },
 ]
 

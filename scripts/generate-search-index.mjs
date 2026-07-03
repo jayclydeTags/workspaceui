@@ -2,6 +2,7 @@ import { readFileSync, readdirSync, writeFileSync, mkdirSync } from "fs"
 import { join, relative } from "path"
 import { fileURLToPath } from "url"
 import { create, insertMultiple, save } from "@orama/orama"
+import { blocksNav } from "../src/lib/nav.ts"
 
 const __dir = fileURLToPath(new URL("..", import.meta.url))
 const contentDir = join(__dir, "src/content/docs")
@@ -47,7 +48,14 @@ for (const file of files) {
   if (fm.description) docs.push({ id: `${url}-desc`, page_id: url, type: "text", content: fm.description, breadcrumbs: [], tags: [], url })
 }
 
+for (const section of blocksNav) {
+  for (const item of section.items) {
+    docs.push({ id: item.href, page_id: item.href, type: "page", content: item.title, breadcrumbs: [section.title], tags: [], url: item.href })
+    if (item.description) docs.push({ id: `${item.href}-desc`, page_id: item.href, type: "text", content: item.description, breadcrumbs: [], tags: [], url: item.href })
+  }
+}
+
 await insertMultiple(db, docs)
 mkdirSync(join(__dir, "public/api"), { recursive: true })
 writeFileSync(join(__dir, "public/api/search.json"), JSON.stringify({ type: "advanced", ...(await save(db)) }))
-console.log(`Search index: ${files.length} pages → public/api/search.json`)
+console.log(`Search index: ${files.length + blocksNav.flatMap((s) => s.items).length} pages → public/api/search.json`)

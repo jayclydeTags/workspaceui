@@ -88,7 +88,7 @@ export function CodeBlock({
       {...props}
       tabIndex={-1}
       className={cn(
-        inTab ? 'bg-muted/40 -mx-px -mb-px last:rounded-b-xl' : 'my-4 bg-muted/40 rounded-xl',
+        !inTab && 'my-4 bg-muted/40 rounded-xl',
         keepBackground && 'bg-(--shiki-light-bg) dark:bg-(--shiki-dark-bg)',
 
         'shiki relative not-prose overflow-hidden text-sm',
@@ -114,6 +114,7 @@ export function CodeBlock({
           })}
         </div>
       ) : (
+        !inTab &&
         Actions({
           className:
             'absolute top-2 right-2 z-2 backdrop-blur-lg rounded-lg text-fd-muted-foreground',
@@ -192,7 +193,11 @@ export function CodeBlockTabs({ ref, className, ...props }: ComponentProps<typeo
     <Tabs
       ref={mergeRefs(containerRef, ref)}
       {...props}
-      className={cn(!nested && 'my-4', className)}
+      className={cn(
+        'overflow-hidden rounded-xl border bg-muted/40',
+        !nested && 'my-4',
+        className,
+      )}
     >
       <TabsContext
         value={useMemo(
@@ -210,13 +215,19 @@ export function CodeBlockTabs({ ref, className, ...props }: ComponentProps<typeo
 }
 
 export function CodeBlockTabsList({ className, ...props }: ComponentProps<typeof TabsList>) {
+  const ctx = use(TabsContext);
+
   return (
-    <TabsList
-      {...props}
-      className={cn('flex flex-row px-2 overflow-x-auto text-fd-muted-foreground', className)}
-    >
-      {props.children}
-    </TabsList>
+    <div className="flex items-center justify-between border-b px-2">
+      <TabsList
+        {...props}
+        variant="line"
+        className={cn('overflow-x-auto text-fd-muted-foreground', className)}
+      >
+        {props.children}
+      </TabsList>
+      {ctx && <CopyButton containerRef={ctx.containerRef} className="shrink-0 me-1" />}
+    </div>
   );
 }
 
@@ -229,11 +240,10 @@ export function CodeBlockTabsTrigger({
     <TabsTrigger
       {...props}
       className={cn(
-        'relative group inline-flex text-sm font-medium text-nowrap items-center transition-colors gap-2 px-2 py-1.5 [&_svg]:size-3.5 hover:text-fd-accent-foreground data-active:text-fd-primary',
+        'inline-flex text-sm font-medium text-nowrap items-center transition-colors gap-2 px-2 py-1.5 [&_svg]:size-3.5 hover:text-fd-accent-foreground data-active:text-fd-primary',
         className,
       )}
     >
-      <div className="absolute inset-x-2 bottom-0 h-px group-data-active:bg-fd-primary" />
       {children}
     </TabsTrigger>
   );

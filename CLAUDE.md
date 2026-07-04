@@ -5,9 +5,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-pnpm dev              # start docs site (react-router dev)
-pnpm build            # build docs site (tsc + react-router build → build/client/)
-pnpm preview          # serve build/client/
+pnpm dev              # start docs site (next dev)
+pnpm build            # static export (next build → out/)
+pnpm preview          # serve out/ (npx serve out)
 pnpm lint             # ESLint
 pnpm format           # Prettier (writes in place)
 pnpm typecheck        # tsc --noEmit

@@ -1,3 +1,5 @@
+"use client"
+
 import { LayoutDashboard, FileText, Settings } from "lucide-react"
 
 import { Workspace } from "@/registry/bases/base/workspaceui/workspace"

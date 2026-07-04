@@ -41,3 +41,8 @@ coverage
 
 # Fumadocs
 public/api/search.json
+
+# NextJs
+.next
+out
+.source

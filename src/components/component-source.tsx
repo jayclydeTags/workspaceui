@@ -1,15 +1,15 @@
+import { readFileSync } from "fs"
+import { join } from "path"
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock"
 
-import workspaceTabsRaw from "@/registry/bases/base/workspaceui/workspace-tabs.tsx?raw"
-import workspaceContextRaw from "@/registry/bases/base/workspaceui/workspace-context.tsx?raw"
-import workspaceRaw from "@/registry/bases/base/workspaceui/workspace.tsx?raw"
-import pageRaw from "@/registry/bases/base/workspaceui/page.tsx?raw"
-
-const sources: Record<string, string> = {
-  "workspace-tabs": workspaceTabsRaw,
-  "workspace-context": workspaceContextRaw,
-  workspace: workspaceRaw,
-  page: pageRaw,
+// Server component: read the registry source at build time instead of Vite's
+// `?raw` import (unsupported by Turbopack). Runs once per page at static export.
+const REGISTRY = "src/registry/bases/base/workspaceui"
+const files: Record<string, string> = {
+  "workspace-tabs": `${REGISTRY}/workspace-tabs.tsx`,
+  "workspace-context": `${REGISTRY}/workspace-context.tsx`,
+  workspace: `${REGISTRY}/workspace.tsx`,
+  page: `${REGISTRY}/page.tsx`,
 }
 
 interface ComponentSourceProps {
@@ -18,8 +18,9 @@ interface ComponentSourceProps {
 }
 
 export function ComponentSource({ name, filename }: ComponentSourceProps) {
-  const src = sources[name]
-  if (!src) return null
+  const file = files[name]
+  if (!file) return null
+  const src = readFileSync(join(process.cwd(), file), "utf-8")
   return (
     <DynamicCodeBlock
       lang="tsx"

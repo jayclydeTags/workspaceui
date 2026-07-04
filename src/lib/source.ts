@@ -1,15 +1,12 @@
-import type { FC } from "react"
-import type { TOCItemType } from "fumadocs-core/toc"
+import { loader } from "fumadocs-core/source"
+import { toFumadocsSource } from "fumadocs-mdx/runtime/server"
 
-type DocModule = {
-  default: FC<{ components?: Record<string, unknown> }>
-  frontmatter: { title: string; description?: string }
-  toc: TOCItemType[]
-}
+import { docs, meta } from ".source/server"
 
-const modules = import.meta.glob<DocModule>("/src/content/docs/**/*.mdx", { eager: true })
-
-export function getPage(slug: string[]) {
-  const path = `/src/content/docs/${slug.join("/")}.mdx`
-  return modules[path]
-}
+// Fumadocs loader over the generated `.source` collections (regenerated per
+// bundler: createMDX for `next build`, the fumadocs vite plugin for tests).
+// Replaces the old import.meta.glob loader.
+export const source = loader({
+  baseUrl: "/docs",
+  source: toFumadocsSource(docs, meta),
+})

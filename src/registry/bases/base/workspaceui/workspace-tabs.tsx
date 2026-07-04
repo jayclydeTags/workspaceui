@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import { Plus, X } from "lucide-react"
 import { Tabs } from "@base-ui/react/tabs"

@@ -1,13 +1,20 @@
 {
   "compilerOptions": {
     "target": "es2023",
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2023",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "esnext",
     "moduleResolution": "bundler",
     // vite/client kept for import.meta.glob typing in src/lib/{source,search}.ts;
     // drop it in Phase 1 once those are replaced by the fumadocs loader.
-    "types": ["vite/client", "node"],
-    "jsx": "preserve",
+    "types": [
+      "vite/client",
+      "node"
+    ],
+    "jsx": "react-jsx",
     "skipLibCheck": true,
     "noEmit": true,
     "incremental": true,
@@ -16,7 +23,6 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "moduleDetection": "force",
-
     /* Strictness — carried over from the previous tsconfig.app.json */
     "strict": true,
     "noUnusedLocals": true,
@@ -24,12 +30,21 @@
     "verbatimModuleSyntax": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-
-    "plugins": [{ "name": "next" }],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "paths": {
-      "@/*": ["./src/*"],
-      ".source": ["./.source"],
-      ".source/*": ["./.source/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      ".source": [
+        "./.source"
+      ],
+      ".source/*": [
+        "./.source/*"
+      ]
     }
   },
   "include": [
@@ -37,7 +52,13 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     ".source",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "out", ".next"]
+  "exclude": [
+    "node_modules",
+    "out",
+    ".next",
+    "src/app/routes"
+  ]
 }

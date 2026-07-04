@@ -1,3 +1,5 @@
+"use client"
+
 import { Settings, Download, Share2 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"

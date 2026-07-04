@@ -1,3 +1,5 @@
+"use client"
+
 import { Home, FolderOpen, Terminal } from "lucide-react"
 
 import { Workspace } from "@/registry/bases/base/workspaceui/workspace"

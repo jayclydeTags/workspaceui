@@ -2,7 +2,7 @@
 title: Introduction
 ---
 
-import { Link } from "react-router"
+import Link from "next/link"
 
 WorkspaceUI is a collection of open-source React components for building IDE-style workspace interfaces.
 
@@ -24,14 +24,14 @@ npx shadcn@latest add jayclydeTags/workspaceui/workspace-tabs
 
 <div className="grid gap-3 sm:grid-cols-2">
   <Link
-    to="/docs/components/workspace"
+    href="/docs/components/workspace"
     className="rounded-lg border border-border p-4 transition-colors hover:bg-muted/40"
   >
     <p className="font-medium text-foreground">Workspace Tabs</p>
     <p className="text-sm text-muted-foreground">Chrome-style scrollable tab strip</p>
   </Link>
   <Link
-    to="/docs/components/workspace"
+    href="/docs/components/workspace"
     className="rounded-lg border border-border p-4 transition-colors hover:bg-muted/40"
   >
     <p className="font-medium text-foreground">Workspace</p>

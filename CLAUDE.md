@@ -23,44 +23,60 @@ pnpm vitest run src/registry/bases/base/workspaceui/__tests__/workspace-tabs.tes
 
 ## Project structure
 
+Next.js App Router, **static export** (`output: "export"` → `out/`). No server
+runtime; matches the old React Router SPA behavior.
+
 ```
 workspaceui/
 ├── registry.json             # shadcn registry manifest (points to src/registry/bases/base/workspaceui/)
-├── react-router.config.ts    # appDirectory: src/app, ssr: false (SPA mode)
+├── next.config.ts            # createMDX() wrapper + output:"export", images.unoptimized
+├── source.config.ts          # fumadocs-mdx config (docs/meta collections)
+├── postcss.config.mjs        # @tailwindcss/postcss
+├── vitest.config.ts          # standalone; fumadocs() + react() plugins, jsdom
 ├── src/
-│   ├── app/
-│   │   ├── root.tsx           # document shell (replaces index.html/main.tsx), wraps FumaProvider
-│   │   ├── routes.ts          # flatRoutes() — @react-router/fs-routes config
-│   │   └── routes/            # flat-file routes: _home.tsx, docs.tsx+docs.$.tsx, blocks.tsx+children
-│   ├── content/
-│   │   └── docs/              # fumadocs mdx content
-│   ├── registry/
-│   │   └── bases/base/
-│   │       ├── workspaceui/   # Distributable components (source of truth)
-│   │       │   ├── workspace-tabs.tsx
-│   │       │   ├── workspace.tsx
-│   │       │   └── __tests__/
-│   │       ├── blocks/        # Distributable blocks — each its own folder: page.tsx, components/, data.ts
-│   │       │   ├── dashboard-01/
-│   │       │   └── activity-log-01/
-│   │       └── examples/      # Live demo components (registered in component-preview.tsx)
-│   ├── index.css             # Tailwind v4 + theme tokens
-│   ├── components/
-│   │   ├── ui/                # shadcn UI primitives
-│   │   ├── header.tsx         # Docs site header
-│   │   ├── sidebar-nav.tsx
-│   │   ├── code-block.tsx     # Shiki syntax highlighting
-│   │   ├── component-preview.tsx
-│   │   ├── component-preview-shell.tsx
-│   │   ├── copy-button.tsx
-│   │   ├── props-table.tsx
-│   │   └── theme-toggle.tsx
+│   ├── app/                  # App Router
+│   │   ├── layout.tsx        # root: <html>/<body> + fumadocs RootProvider (static search)
+│   │   ├── globals.css       # Tailwind v4 + theme tokens (was src/index.css)
+│   │   ├── (marketing)/      # home: layout.tsx (SiteShell) + page.tsx
+│   │   ├── docs/             # layout.tsx (DocsLayout) + [[...slug]]/page.tsx (generateStaticParams)
+│   │   ├── blocks/
+│   │   │   ├── (browse)/     # layout (SiteShell + sidebar), page.tsx (gallery), [slug]/page.tsx
+│   │   │   └── preview/[slug]/page.tsx   # bare iframe target — escapes (browse) chrome
+│   │   └── api/search/route.ts           # createSearchAPI advanced → staticGET (out/api/search)
+│   ├── content/docs/         # fumadocs mdx content
+│   ├── registry/bases/base/
+│   │   ├── workspaceui/      # Distributable components (source of truth) + __tests__/
+│   │   ├── blocks/           # Distributable blocks — each its own folder: page.tsx, components/, data.ts
+│   │   └── examples/         # Live demo components (registered in component-preview.tsx)
+│   ├── components/           # ui/ (shadcn primitives) + docs-site components:
+│   │   │                     #   site-shell, sidebar-nav, theme-toggle, component-preview{,-shell},
+│   │   │                     #   component-source (fs reads), block-preview, codeblock, type-table, …
 │   ├── lib/
-│   │   ├── utils.ts          # cn() helper
-│   │   ├── nav.ts            # Sidebar navigation config
-│   │   └── use-document-title.ts
+│   │   ├── source.ts         # fumadocs loader() over .source (replaces import.meta.glob)
+│   │   ├── nav.ts            # nav + blocksNav config
+│   │   ├── page-tree.ts      # fumadocs sidebar tree (what actually renders)
+│   │   ├── blocks.ts         # /blocks gallery data (slug→Component)
+│   │   ├── block-files.ts    # per-block source-file manifest for the Code tab (fs-read paths)
+│   │   ├── mdx-components.tsx # MDX component map
+│   │   └── utils.ts          # cn() helper
 │   └── test/setup.ts         # Vitest setup (ResizeObserver polyfill, pointer capture mocks)
 ```
+
+### Next.js rendering notes
+- **Server vs client**: pages/layouts are React Server Components by default;
+  anything with hooks, state, or event handlers needs `"use client"` at the top
+  (all the interactive `components/`, `examples/`, and `blocks/` are marked).
+  A function prop (e.g. `renderTabContent`) can't cross a server→client boundary,
+  so any component that passes one must itself be a client component.
+- **Reading source at build time**: `?raw` imports are unsupported under
+  Turbopack. `component-source.tsx` and `blocks/(browse)/[slug]/page.tsx` read
+  registry files with `fs.readFileSync(join(process.cwd(), …))` at build instead.
+- **`.source`** is generated by fumadocs-mdx (createMDX at `next build`, the
+  fumadocs vite plugin at `pnpm test`) — gitignored, self-heals per tool.
+- **Search**: `app/api/search/route.ts` uses `createSearchAPI("advanced")`, not
+  `"simple"` — fumadocs-core 16.10.7's orama-static client mis-dispatches the
+  simple index (passes the DB wrapper, not `db.db`) so simple static search
+  returns nothing. Advanced merges docs pages + the blocks gallery.
 
 ## Registry distribution model
 
@@ -109,7 +125,7 @@ Every component in `src/registry/bases/base/workspaceui/` must have a matching f
 - A sidebar entry in the `Components` section of **both** `src/lib/nav.ts` and `src/lib/page-tree.ts` (`page-tree.ts` is what the fumadocs sidebar actually renders — `nav.ts` alone won't show the page)
 - A `registry.json` entry pointing at the component file
 
-Use `src/content/docs/components/workspace-panel.mdx` and `src/registry/bases/base/examples/workspace-panel-single.tsx` as the reference pattern.
+Use `src/content/docs/components/workspace.mdx` and `src/registry/bases/base/examples/workspace-live.tsx` as the reference pattern.
 
 ## Testing
 
@@ -123,7 +139,9 @@ New component or block, or a prop change on an existing one: see [`.claude/rules
 
 ## Tooling
 
+- **Next.js 16** App Router (Turbopack), static export (`output: "export"`)
 - **TypeScript ~6**, strict, `verbatimModuleSyntax`, `erasableSyntaxOnly`, `noUnusedLocals/Params`
-- **ESLint** flat config — `typescript-eslint` + `react-hooks` + `react-refresh`
+- **ESLint** flat config — `typescript-eslint` + `react-hooks` (generated dirs `.next`/`.source`/`out` ignored)
 - **Prettier** — double quotes, trailing commas (es5), `prettier-plugin-tailwindcss` with `cn` and `cva` listed as Tailwind class functions so class sorting works inside those helpers
-- **Tailwind CSS v4** via `@tailwindcss/vite` plugin (no PostCSS config needed)
+- **Tailwind CSS v4** via `@tailwindcss/postcss` (`postcss.config.mjs`)
+- **Vitest** still runs on Vite (`vitest.config.ts`) — Vite/`@vitejs/plugin-react`/the fumadocs vite plugin are kept as devDeps for tests only

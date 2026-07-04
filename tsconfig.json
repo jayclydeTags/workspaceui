@@ -8,10 +8,7 @@
     ],
     "module": "esnext",
     "moduleResolution": "bundler",
-    // vite/client kept for import.meta.glob typing in src/lib/{source,search}.ts;
-    // drop it in Phase 1 once those are replaced by the fumadocs loader.
     "types": [
-      "vite/client",
       "node"
     ],
     "jsx": "react-jsx",

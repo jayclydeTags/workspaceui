@@ -38,6 +38,30 @@ export const blocksNav: NavSection[] = [
         description:
           "Manage role permissions across resources with a per-role permission matrix.",
       },
+      {
+        title: "Invoice Detail 01",
+        href: "/blocks/invoice-detail-01",
+        description:
+          "Master-detail invoice workspace — select a row to open its line items in a new tab.",
+      },
+      {
+        title: "Purchase Order Form 01",
+        href: "/blocks/purchase-order-form-01",
+        description:
+          "Three-step wizard for creating a purchase order — vendor details, line items, and review.",
+      },
+      {
+        title: "Approval Board 01",
+        href: "/blocks/approval-board-01",
+        description:
+          "Drag-and-drop Kanban board for triaging expense, purchase order, and time-off approval requests.",
+      },
+      {
+        title: "Settings 01",
+        href: "/blocks/settings-01",
+        description:
+          "Sectioned workspace settings — company profile, notifications, billing, and security.",
+      },
     ],
   },
 ]

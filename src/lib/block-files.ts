@@ -44,4 +44,60 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/permission-table.tsx",
     },
   ],
+  "invoice-detail-01": [
+    { name: "page.tsx", path: "app/invoice-detail/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/invoice-detail/data.ts", src: "data.ts" },
+    {
+      name: "invoice-list.tsx",
+      path: "components/blocks/invoice-detail-01/components/invoice-list.tsx",
+      src: "components/invoice-list.tsx",
+    },
+    {
+      name: "invoice-view.tsx",
+      path: "components/blocks/invoice-detail-01/components/invoice-view.tsx",
+      src: "components/invoice-view.tsx",
+    },
+  ],
+  "purchase-order-form-01": [
+    { name: "page.tsx", path: "app/purchase-order-form/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/purchase-order-form/data.ts", src: "data.ts" },
+    {
+      name: "step-indicator.tsx",
+      path: "components/blocks/purchase-order-form-01/components/step-indicator.tsx",
+      src: "components/step-indicator.tsx",
+    },
+    {
+      name: "wizard-steps.tsx",
+      path: "components/blocks/purchase-order-form-01/components/wizard-steps.tsx",
+      src: "components/wizard-steps.tsx",
+    },
+  ],
+  "approval-board-01": [
+    { name: "page.tsx", path: "app/approval-board/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/approval-board/data.ts", src: "data.ts" },
+    {
+      name: "approval-card.tsx",
+      path: "components/blocks/approval-board-01/components/approval-card.tsx",
+      src: "components/approval-card.tsx",
+    },
+    {
+      name: "approval-column.tsx",
+      path: "components/blocks/approval-board-01/components/approval-column.tsx",
+      src: "components/approval-column.tsx",
+    },
+  ],
+  "settings-01": [
+    { name: "page.tsx", path: "app/settings/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/settings/data.ts", src: "data.ts" },
+    {
+      name: "settings-nav.tsx",
+      path: "components/blocks/settings-01/components/settings-nav.tsx",
+      src: "components/settings-nav.tsx",
+    },
+    {
+      name: "sections.tsx",
+      path: "components/blocks/settings-01/components/sections.tsx",
+      src: "components/sections.tsx",
+    },
+  ],
 }

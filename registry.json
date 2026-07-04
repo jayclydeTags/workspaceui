@@ -8,8 +8,17 @@
       "type": "registry:ui",
       "title": "Workspace",
       "description": "Self-contained workspace with tab-based panels: closing a panel's last tab collapses the panel; closing all panels reveals a configurable fallback. Exposes useWorkspace context and a WorkspaceHandle ref for programmatic control. Bundles its internal tab strip and drag context.",
-      "dependencies": ["@base-ui/react", "react-resizable-panels", "lucide-react"],
-      "registryDependencies": ["resizable", "badge", "button", "utils"],
+      "dependencies": [
+        "@base-ui/react",
+        "react-resizable-panels",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "resizable",
+        "badge",
+        "button",
+        "utils"
+      ],
       "files": [
         {
           "path": "src/registry/bases/base/workspaceui/workspace.tsx",
@@ -31,7 +40,10 @@
       "title": "Page",
       "description": "Page shell with an optional header (title/subtitle, breadcrumbs, visual, badge, actions) and a content area that can be padded.",
       "dependencies": [],
-      "registryDependencies": ["breadcrumb", "utils"],
+      "registryDependencies": [
+        "breadcrumb",
+        "utils"
+      ],
       "files": [
         {
           "path": "src/registry/bases/base/workspaceui/page.tsx",
@@ -44,8 +56,14 @@
       "type": "registry:block",
       "title": "Dashboard 01",
       "description": "Collapsible sidebar nav paired with the Workspace component. Sidebar items open tabs; repeat clicks focus the existing tab.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": ["jayclydeTags/workspaceui/workspace", "sidebar", "utils"],
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "jayclydeTags/workspaceui/workspace",
+        "sidebar",
+        "utils"
+      ],
       "files": [
         {
           "path": "src/registry/bases/base/blocks/dashboard-01/page.tsx",
@@ -66,8 +84,10 @@
       "name": "activity-log-01",
       "type": "registry:block",
       "title": "Activity Log 01",
-      "description": "Filterable activity log with a responsive datatable — collapses to cards on narrow panes.",
-      "dependencies": ["lucide-react"],
+      "description": "Filterable activity log with a responsive datatable \u2014 collapses to cards on narrow panes.",
+      "dependencies": [
+        "lucide-react"
+      ],
       "registryDependencies": [
         "avatar",
         "badge",
@@ -101,7 +121,9 @@
       "type": "registry:block",
       "title": "Activity Feed 01",
       "description": "Grouped activity timeline with type/user filters and running stats.",
-      "dependencies": ["lucide-react"],
+      "dependencies": [
+        "lucide-react"
+      ],
       "registryDependencies": [
         "avatar",
         "button",
@@ -125,7 +147,9 @@
       "type": "registry:block",
       "title": "Access Control 01",
       "description": "Manage role permissions across resources with a per-role permission matrix.",
-      "dependencies": ["lucide-react"],
+      "dependencies": [
+        "lucide-react"
+      ],
       "registryDependencies": [
         "badge",
         "button",
@@ -148,6 +172,143 @@
         },
         {
           "path": "src/registry/bases/base/blocks/access-control-01/components/permission-table.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "invoice-detail-01",
+      "type": "registry:block",
+      "title": "Invoice Detail 01",
+      "description": "Master-detail invoice workspace \u2014 select a row to open its line items in a new tab.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "badge",
+        "input-group",
+        "table",
+        "jayclydeTags/workspaceui/workspace",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/invoice-detail-01/page.tsx",
+          "type": "registry:page",
+          "target": "app/invoice-detail/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/invoice-detail-01/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/invoice-detail-01/components/invoice-list.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/invoice-detail-01/components/invoice-view.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "purchase-order-form-01",
+      "type": "registry:block",
+      "title": "Purchase Order Form 01",
+      "description": "Three-step wizard for creating a purchase order \u2014 vendor details, line items, and review.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "button",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "table",
+        "textarea",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/purchase-order-form-01/page.tsx",
+          "type": "registry:page",
+          "target": "app/purchase-order-form/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/purchase-order-form-01/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/purchase-order-form-01/components/step-indicator.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/purchase-order-form-01/components/wizard-steps.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "approval-board-01",
+      "type": "registry:block",
+      "title": "Approval Board 01",
+      "description": "Drag-and-drop Kanban board for triaging expense, purchase order, and time-off approval requests.",
+      "registryDependencies": [
+        "avatar",
+        "badge",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/approval-board-01/page.tsx",
+          "type": "registry:page",
+          "target": "app/approval-board/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/approval-board-01/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/approval-board-01/components/approval-card.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/approval-board-01/components/approval-column.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "settings-01",
+      "type": "registry:block",
+      "title": "Settings 01",
+      "description": "Sectioned workspace settings \u2014 company profile, notifications, billing, and security.",
+      "registryDependencies": [
+        "badge",
+        "button",
+        "checkbox",
+        "field",
+        "input",
+        "select",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/settings-01/page.tsx",
+          "type": "registry:page",
+          "target": "app/settings/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/settings-01/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/settings-01/components/settings-nav.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/settings-01/components/sections.tsx",
           "type": "registry:block"
         }
       ]

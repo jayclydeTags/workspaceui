@@ -1,9 +1,13 @@
 import type { ComponentType } from "react"
 
 import { AccessControl01 } from "@/registry/bases/base/blocks/access-control-01/page"
+import { ApprovalBoard01 } from "@/registry/bases/base/blocks/approval-board-01/page"
 import { ActivityFeed01 } from "@/registry/bases/base/blocks/activity-feed-01/page"
 import { ActivityLog01 } from "@/registry/bases/base/blocks/activity-log-01/page"
 import { Dashboard01 } from "@/registry/bases/base/blocks/dashboard-01/page"
+import { InvoiceDetail01 } from "@/registry/bases/base/blocks/invoice-detail-01/page"
+import { PurchaseOrderForm01 } from "@/registry/bases/base/blocks/purchase-order-form-01/page"
+import { Settings01 } from "@/registry/bases/base/blocks/settings-01/page"
 
 export interface BlockMeta {
   slug: string
@@ -47,5 +51,37 @@ export const blocks: BlockMeta[] = [
       "Manage role permissions across resources with a per-role permission matrix.",
     category: "Application",
     Component: AccessControl01,
+  },
+  {
+    slug: "invoice-detail-01",
+    title: "Invoice Detail 01",
+    description:
+      "Master-detail invoice workspace — select a row to open its line items in a new tab.",
+    category: "Application",
+    Component: InvoiceDetail01,
+  },
+  {
+    slug: "purchase-order-form-01",
+    title: "Purchase Order Form 01",
+    description:
+      "Three-step wizard for creating a purchase order — vendor details, line items, and review.",
+    category: "Application",
+    Component: PurchaseOrderForm01,
+  },
+  {
+    slug: "approval-board-01",
+    title: "Approval Board 01",
+    description:
+      "Drag-and-drop Kanban board for triaging expense, purchase order, and time-off approval requests.",
+    category: "Application",
+    Component: ApprovalBoard01,
+  },
+  {
+    slug: "settings-01",
+    title: "Settings 01",
+    description:
+      "Sectioned workspace settings — company profile, notifications, billing, and security.",
+    category: "Application",
+    Component: Settings01,
   },
 ]

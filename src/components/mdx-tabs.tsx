@@ -51,37 +51,19 @@ function useTabContext() {
 
 export function TabsList({
   className,
+  variant = 'line',
   ...props
 }: React.ComponentPropsWithRef<typeof Unstyled.TabsList>) {
   return (
     <Unstyled.TabsList
       {...props}
-      className={(s) =>
-        cn(
-          'flex gap-3.5 text-fd-secondary-foreground overflow-x-auto px-4 not-prose',
-          typeof className === 'function' ? className(s) : className,
-        )
-      }
+      variant={variant}
+      className={cn('overflow-x-auto px-4 not-prose', className)}
     />
   );
 }
 
-export function TabsTrigger({
-  className,
-  ...props
-}: React.ComponentPropsWithRef<typeof Unstyled.TabsTrigger>) {
-  return (
-    <Unstyled.TabsTrigger
-      {...props}
-      className={(s) =>
-        cn(
-          'inline-flex items-center gap-2 whitespace-nowrap text-fd-muted-foreground border-b border-transparent py-2 text-sm font-medium transition-colors [&_svg]:size-4 hover:text-fd-accent-foreground disabled:pointer-events-none disabled:opacity-50 data-active:border-fd-primary data-active:text-fd-primary',
-          typeof className === 'function' ? className(s) : className,
-        )
-      }
-    />
-  );
-}
+export const TabsTrigger = Unstyled.TabsTrigger;
 
 export function Tabs({
   ref,
@@ -98,12 +80,10 @@ export function Tabs({
   return (
     <Unstyled.Tabs
       ref={ref}
-      className={(s) =>
-        cn(
-          'flex flex-col overflow-hidden rounded-xl border bg-fd-secondary my-4',
-          typeof className === 'function' ? className(s) : className,
-        )
-      }
+      className={cn(
+        'flex flex-col overflow-hidden rounded-xl border bg-fd-secondary my-4',
+        className,
+      )}
       value={value}
       onValueChange={(v: string) => {
         if (items && !items.some((item) => escapeValue(item) === v)) return;
@@ -162,12 +142,10 @@ export function TabsContent({
     <Unstyled.TabsContent
       value={value}
       keepMounted
-      className={(s) =>
-        cn(
-          'p-4 text-[0.9375rem] bg-fd-background rounded-xl outline-none prose-no-margin data-inactive:hidden [&>figure:only-child]:-m-4 [&>figure:only-child]:border-none',
-          typeof className === 'function' ? className(s) : className,
-        )
-      }
+      className={cn(
+        'p-4 text-[0.9375rem] bg-fd-background rounded-xl outline-none prose-no-margin data-inactive:hidden [&>figure:only-child]:-m-4 [&>figure:only-child]:border-none',
+        className,
+      )}
       {...props}
     >
       {props.children}

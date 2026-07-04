@@ -5,7 +5,7 @@ import { useCopyButton } from "@fumadocs/base-ui/utils/use-copy-button"
 import { CopyCheckIcon, LinkIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
 
 export function Heading({
   as: As,
@@ -25,17 +25,15 @@ export function Heading({
   return (
     <As {...props} className={cn("group/heading flex flex-row items-center gap-1", className)}>
       <a href={`#${props.id}`}>{children}</a>
-      <button
-        type="button"
+      <Button
+        variant="ghost"
+        size="icon-xs"
         aria-label="Copy anchor link"
         onClick={onCopy}
-        className={cn(
-          buttonVariants({ variant: "ghost", size: "icon-xs" }),
-          "shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover/heading:opacity-100"
-        )}
+        className="shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover/heading:opacity-100"
       >
         {isChecked ? <CopyCheckIcon /> : <LinkIcon />}
-      </button>
+      </Button>
     </As>
   )
 }

@@ -13,7 +13,7 @@ import { ComponentSource } from "@/components/component-source"
 import { ComponentTree } from "@/components/component-tree"
 import { File, Files, Folder } from "@/components/files"
 import { Step, Steps } from "@/components/steps"
-import { Tab, Tabs } from "@/components/tabs"
+import { Tab, Tabs } from "@/components/mdx-tabs"
 import { TypeTable } from "@/components/type-table"
 
 function MdxLink({ href = "#", children, ...props }: ComponentProps<"a">) {

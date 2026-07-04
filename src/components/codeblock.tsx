@@ -12,7 +12,7 @@ import {
 } from 'react';
 import { cn } from '../lib/cn';
 import { useCopyButton } from '@fumadocs/base-ui/utils/use-copy-button';
-import { buttonVariants } from './ui/button';
+import { Button } from './ui/button';
 import { useTranslations } from '@fuma-translate/react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { mergeRefs } from '../lib/merge-refs';
@@ -88,10 +88,10 @@ export function CodeBlock({
       {...props}
       tabIndex={-1}
       className={cn(
-        inTab ? 'bg-fd-secondary -mx-px -mb-px last:rounded-b-xl' : 'my-4 bg-fd-card rounded-xl',
+        inTab ? 'bg-muted/40 -mx-px -mb-px last:rounded-b-xl' : 'my-4 bg-muted/40 rounded-xl',
         keepBackground && 'bg-(--shiki-light-bg) dark:bg-(--shiki-dark-bg)',
 
-        'shiki relative border shadow-sm not-prose overflow-hidden text-sm',
+        'shiki relative not-prose overflow-hidden text-sm',
         props.className,
       )}
     >
@@ -167,16 +167,12 @@ function CopyButton({
   });
 
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
+      size="icon-xs"
       data-checked={checked || undefined}
-      className={cn(
-        buttonVariants({
-          className: 'hover:text-fd-accent-foreground data-checked:text-fd-accent-foreground',
-          size: 'icon-xs',
-        }),
-        className,
-      )}
+      className={cn('hover:text-fd-accent-foreground data-checked:text-fd-accent-foreground', className)}
       aria-label={
         checked ? t('Copied Text', { note: 'aria-label' }) : t('Copy Text', { note: 'aria-label' })
       }
@@ -184,7 +180,7 @@ function CopyButton({
       {...props}
     >
       {checked ? <Check /> : <Clipboard />}
-    </button>
+    </Button>
   );
 }
 
@@ -196,13 +192,7 @@ export function CodeBlockTabs({ ref, className, ...props }: ComponentProps<typeo
     <Tabs
       ref={mergeRefs(containerRef, ref)}
       {...props}
-      className={(s) =>
-        cn(
-          'bg-fd-card rounded-xl border',
-          !nested && 'my-4',
-          typeof className === 'function' ? className(s) : className,
-        )
-      }
+      className={cn(!nested && 'my-4', className)}
     >
       <TabsContext
         value={useMemo(
@@ -223,12 +213,7 @@ export function CodeBlockTabsList({ className, ...props }: ComponentProps<typeof
   return (
     <TabsList
       {...props}
-      className={(s) =>
-        cn(
-          'flex flex-row px-2 overflow-x-auto text-fd-muted-foreground',
-          typeof className === 'function' ? className(s) : className,
-        )
-      }
+      className={cn('flex flex-row px-2 overflow-x-auto text-fd-muted-foreground', className)}
     >
       {props.children}
     </TabsList>
@@ -243,13 +228,10 @@ export function CodeBlockTabsTrigger({
   return (
     <TabsTrigger
       {...props}
-      className={(s) =>
-        cn(
-          'relative group inline-flex text-sm font-medium text-nowrap items-center transition-colors gap-2 px-2 py-1.5 [&_svg]:size-3.5',
-          s.active ? 'text-fd-primary' : 'hover:text-fd-accent-foreground',
-          typeof className === 'function' ? className(s) : className,
-        )
-      }
+      className={cn(
+        'relative group inline-flex text-sm font-medium text-nowrap items-center transition-colors gap-2 px-2 py-1.5 [&_svg]:size-3.5 hover:text-fd-accent-foreground data-active:text-fd-primary',
+        className,
+      )}
     >
       <div className="absolute inset-x-2 bottom-0 h-px group-data-active:bg-fd-primary" />
       {children}

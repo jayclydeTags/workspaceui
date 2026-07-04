@@ -1,11 +1,13 @@
 import type { ReactNode } from "react"
 import type { Metadata } from "next"
-import { RootProvider } from "fumadocs-ui/provider/next"
+import { ThemeProvider } from "next-themes"
+
+import { SiteHeader } from "@/components/site-header"
 
 import "./globals.css"
 
-// next-themes (inside RootProvider) injects its own no-flash theme script, so
-// the hand-rolled inline <script> from the old root.tsx is gone.
+// next-themes injects its own no-flash theme script, so the hand-rolled
+// inline <script> from the old root.tsx is gone.
 export const metadata: Metadata = {
   title: "WorkspaceUI",
   description:
@@ -16,9 +18,15 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <RootProvider search={{ options: { type: "static" } }}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SiteHeader />
           {children}
-        </RootProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

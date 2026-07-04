@@ -22,8 +22,9 @@ Every new distributable component or block added to
    `registry:ui` item automatically and checks:
    - `src/content/docs/components/<name>.mdx` exists
    - the component name is listed in `src/content/docs/components/meta.json`
-     `pages` (fumadocs' `source.pageTree` renders the docs sidebar from it) and
-     a sidebar entry exists in `src/lib/nav.ts`
+     `pages` and a sidebar entry exists in `src/lib/nav.ts` (the hand-rolled
+     `SidebarNav` renders the docs sidebar from this config — see CLAUDE.md's
+     "UI architecture" section)
    - **every prop on the component's `export interface <Name>Props`
      appears as a key in that mdx's `<TypeTable>` block(s)** — this is the
      check that catches "changed the component but forgot to update the

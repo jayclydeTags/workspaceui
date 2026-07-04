@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 
-import { SiteShell } from "@/components/site-shell"
 import { SidebarNav } from "@/components/sidebar-nav"
 import { blocksNav } from "@/lib/nav"
 
@@ -17,17 +16,15 @@ export default function BlocksLayout({
   children: React.ReactNode
 }) {
   return (
-    <SiteShell>
-      <div className="flex h-[calc(100svh-3.5rem)] overflow-hidden">
-        <aside className="hidden w-56 shrink-0 px-4 py-6 md:flex">
-          <div className="w-full">
-            <SidebarNav sections={blocksNav} />
-          </div>
-        </aside>
-        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-          {children}
+    <div className="flex h-[calc(100svh-3.5rem)] overflow-hidden">
+      <aside className="hidden w-56 shrink-0 px-4 py-6 md:flex">
+        <div className="w-full">
+          <SidebarNav sections={blocksNav} />
         </div>
+      </aside>
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+        {children}
       </div>
-    </SiteShell>
+    </div>
   )
 }

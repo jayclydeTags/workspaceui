@@ -1,5 +1,5 @@
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "fumadocs-ui/components/tabs"
-import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/tabs"
+import { DynamicCodeBlock } from "@/components/dynamic-codeblock"
 
 import { cn } from "@/lib/utils"
 

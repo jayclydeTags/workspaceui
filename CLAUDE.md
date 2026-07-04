@@ -35,12 +35,12 @@ workspaceui/
 ├── vitest.config.ts          # standalone; fumadocs() + react() plugins, jsdom
 ├── src/
 │   ├── app/                  # App Router
-│   │   ├── layout.tsx        # root: <html>/<body> + fumadocs RootProvider (static search)
+│   │   ├── layout.tsx        # root: <html>/<body> + next-themes ThemeProvider + <SiteHeader/>
 │   │   ├── globals.css       # Tailwind v4 + theme tokens (was src/index.css)
-│   │   ├── (marketing)/      # home: layout.tsx (SiteShell) + page.tsx
-│   │   ├── docs/             # layout.tsx (DocsLayout) + [[...slug]]/page.tsx (generateStaticParams)
+│   │   ├── (marketing)/      # home: page.tsx (no layout — SiteHeader is global now)
+│   │   ├── docs/             # layout.tsx (sidebar + content, hand-built) + [[...slug]]/page.tsx
 │   │   ├── blocks/
-│   │   │   ├── (browse)/     # layout (SiteShell + sidebar), page.tsx (gallery), [slug]/page.tsx
+│   │   │   ├── (browse)/     # layout (sidebar only — SiteHeader is global), page.tsx (gallery), [slug]/page.tsx
 │   │   │   └── preview/[slug]/page.tsx   # bare iframe target — escapes (browse) chrome
 │   │   └── api/search/route.ts           # createSearchAPI advanced → staticGET (out/api/search)
 │   ├── content/docs/         # fumadocs mdx content
@@ -49,24 +49,60 @@ workspaceui/
 │   │   ├── blocks/           # Distributable blocks — each its own folder: page.tsx, components/, data.ts
 │   │   └── examples/         # Live demo components (registered in component-preview.tsx)
 │   ├── components/           # ui/ (shadcn primitives) + docs-site components:
-│   │   │                     #   site-shell, sidebar-nav, theme-toggle, component-preview{,-shell},
+│   │   │                     #   site-header, search-dialog, theme-toggle, sidebar-nav, docs-toc,
+│   │   │                     #   mdx-heading, dynamic-codeblock, component-preview{,-shell},
 │   │   │                     #   component-source (fs reads), block-preview, codeblock, type-table, …
 │   ├── lib/
-│   │   ├── source.ts         # fumadocs loader() over .source — source.pageTree drives the docs sidebar
-│   │   ├── nav.ts            # nav + blocksNav config (blocks sidebar + search)
+│   │   ├── source.ts         # fumadocs loader() over .source — content/page data for docs/[[...slug]]
+│   │   ├── nav.ts            # nav + blocksNav config — drives SidebarNav (docs + blocks) and search
 │   │   ├── blocks.ts         # /blocks gallery data (slug→Component)
 │   │   ├── block-files.ts    # per-block source-file manifest for the Code tab (fs-read paths)
-│   │   ├── mdx-components.tsx # MDX component map
+│   │   ├── mdx-components.tsx # MDX component map (custom typography, no fumadocs-ui)
 │   │   └── utils.ts          # cn() helper
 │   └── test/setup.ts         # Vitest setup (ResizeObserver polyfill, pointer capture mocks)
 ```
+
+### UI architecture: no fumadocs-ui
+The docs/marketing/blocks chrome is hand-built on **fumadocs-core** (headless:
+`source`/page-tree, `search/client`+`search/server`, `toc`, `highlight`) and the
+project's own shadcn/ui primitives (`src/components/ui/*`) — not
+`fumadocs-ui`'s pre-built `HomeLayout`/`DocsLayout`/`DocsPage`/`RootProvider`/
+`DynamicCodeBlock` components, which this repo doesn't depend on at all.
+- **`SiteHeader`** (`src/components/site-header.tsx`) is mounted once in the
+  root layout and shared by every route (marketing, docs, blocks) — it's not
+  per-route-group chrome.
+- **Docs sidebar** reuses `SidebarNav` (`src/components/sidebar-nav.tsx`), the
+  same hand-rolled component the blocks gallery already used — fed by the
+  hand-maintained `nav` config in `src/lib/nav.ts`, not fumadocs'
+  `source.pageTree`.
+- **Search** (`src/components/search-dialog.tsx`) is a shadcn `Command`
+  dialog wired to fumadocs-core's headless `useDocsSearch` hook against the
+  existing static `/api/search` index.
+- **TOC** (`src/components/docs-toc.tsx`) uses fumadocs-core's headless
+  `AnchorProvider`/`TOCItem`/`useActiveAnchor` (scrollspy) over `page.data.toc`.
+- **Code blocks**: `src/components/dynamic-codeblock.tsx` reimplements
+  fumadocs-ui's `DynamicCodeBlock` directly on fumadocs-core's
+  `highlight/shiki/react` + the already-vendored `CodeBlock`/`Pre` in
+  `src/components/codeblock.tsx`.
+- **Typography**: `src/lib/mdx-components.tsx` hand-styles MDX elements
+  (headings via `mdx-heading.tsx`, tables, lists, code, etc.) instead of using
+  fumadocs-ui's typography preset — there's no Tailwind Typography plugin.
+- `globals.css` inlines the small pieces still needed from fumadocs' CSS
+  (the `--color-fd-*` → shadcn-token bridge, the `fd-scroll-container` and
+  `prose-no-margin` utilities) since the vendored `codeblock.tsx`/`tabs.tsx`/
+  `accordion.tsx`/`type-table.tsx` still reference those classes.
 
 ### Next.js rendering notes
 - **Server vs client**: pages/layouts are React Server Components by default;
   anything with hooks, state, or event handlers needs `"use client"` at the top
   (all the interactive `components/`, `examples/`, and `blocks/` are marked).
   A function prop (e.g. `renderTabContent`) can't cross a server→client boundary,
-  so any component that passes one must itself be a client component.
+  so any component that passes one must itself be a client component. This is
+  also why `mdx-components.tsx` stays a plain (non-`"use client"`) module even
+  though some of its entries render client components — one entry
+  (`ComponentSource`) reads files with Node's `fs` at build time, so the map
+  itself can't force a client boundary; only `mdx-heading.tsx` (the copy-link
+  button) is marked `"use client"`.
 - **Reading source at build time**: `?raw` imports are unsupported under
   Turbopack. `component-source.tsx` and `blocks/(browse)/[slug]/page.tsx` read
   registry files with `fs.readFileSync(join(process.cwd(), …))` at build instead.
@@ -121,7 +157,7 @@ Components import each other via `@/components/workspaceui/...`.
 Every component in `src/registry/bases/base/workspaceui/` must have a matching fumadocs page:
 - `src/content/docs/components/<component>.mdx` — install (CLI + manual `<ComponentSource>`), usage, and a `<TypeTable>` API reference
 - A live demo in `src/registry/bases/base/examples/<component>-live.tsx`, registered in `previewComponents` in `src/components/component-preview.tsx`, and referenced via `<ComponentPreview name="<component>" code={...} />` in the mdx
-- The component's name added to the `pages` array in `src/content/docs/components/meta.json` (this is what fumadocs' `source.pageTree` renders in the docs sidebar — a page not listed there is dropped), **and** a sidebar entry in the `Components` section of `src/lib/nav.ts` (which drives the blocks sidebar + search)
+- The component's name added to the `pages` array in `src/content/docs/components/meta.json` (validated by `registry-docs.test.ts`), **and** a sidebar entry in the `Components` section of `src/lib/nav.ts` (this is what actually renders the docs sidebar — see "UI architecture" above)
 - A `registry.json` entry pointing at the component file
 
 Use `src/content/docs/components/workspace.mdx` and `src/registry/bases/base/examples/workspace-live.tsx` as the reference pattern.

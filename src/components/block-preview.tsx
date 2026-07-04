@@ -14,7 +14,7 @@ import {
   Terminal,
   X,
 } from "lucide-react"
-import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock"
+import { DynamicCodeBlock } from "@/components/dynamic-codeblock"
 import type { PanelImperativeHandle } from "react-resizable-panels"
 
 import { cn } from "@/lib/utils"

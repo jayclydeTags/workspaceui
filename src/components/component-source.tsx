@@ -1,6 +1,6 @@
 import { readFileSync } from "fs"
 import { join } from "path"
-import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock"
+import { DynamicCodeBlock } from "@/components/dynamic-codeblock"
 
 // Server component: read the registry source at build time instead of Vite's
 // `?raw` import (unsupported by Turbopack). Runs once per page at static export.

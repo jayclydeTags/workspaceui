@@ -135,7 +135,7 @@ function Item({
       </CollapsibleTrigger>
       <CollapsibleContent>
         <div className="grid grid-cols-[1fr_3fr] gap-y-4 text-sm p-3 overflow-auto fd-scroll-container border-t">
-          <div className="text-sm prose col-span-full prose-no-margin empty:hidden">
+          <div className="text-sm col-span-full prose-no-margin empty:hidden">
             {description}
           </div>
           {typeDescription && (
@@ -157,7 +157,7 @@ function Item({
                 {parameters.map((param) => (
                   <div key={param.name} className="inline-flex items-center flex-wrap gap-1">
                     <p className="font-medium not-prose text-nowrap">{param.name} -</p>
-                    <div className="text-sm prose prose-no-margin">{param.description}</div>
+                    <div className="text-sm prose-no-margin">{param.description}</div>
                   </div>
                 ))}
               </div>
@@ -166,7 +166,7 @@ function Item({
           {returns && (
             <>
               <p className={cn(fieldVariants())}>Returns</p>
-              <div className="my-auto text-sm prose prose-no-margin">{returns}</div>
+              <div className="my-auto text-sm prose-no-margin">{returns}</div>
             </>
           )}
         </div>

@@ -1,9 +1,9 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { DocsPage, DocsBody, DocsTitle, DocsDescription } from "fumadocs-ui/page"
 
 import { source } from "@/lib/source"
 import { mdxComponents } from "@/lib/mdx-components"
+import { DocsPageLayout } from "@/components/docs-toc"
 
 type PageProps = { params: Promise<{ slug?: string[] }> }
 
@@ -28,14 +28,16 @@ export default async function Page({ params }: PageProps) {
   const MDX = page.data.body
 
   return (
-    <DocsPage toc={page.data.toc}>
-      <DocsTitle>{page.data.title}</DocsTitle>
+    <DocsPageLayout toc={page.data.toc}>
+      <h1 className="text-3xl font-bold tracking-tight">{page.data.title}</h1>
       {page.data.description && (
-        <DocsDescription>{page.data.description}</DocsDescription>
+        <p className="mt-2 text-lg text-muted-foreground">
+          {page.data.description}
+        </p>
       )}
-      <DocsBody>
+      <div className="mt-8">
         <MDX components={mdxComponents} />
-      </DocsBody>
-    </DocsPage>
+      </div>
+    </DocsPageLayout>
   )
 }

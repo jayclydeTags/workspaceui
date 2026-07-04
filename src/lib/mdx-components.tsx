@@ -8,6 +8,7 @@ import { Accordion, Accordions } from "@/components/accordion"
 import { Callout } from "@/components/callout"
 import { CodeBlock, Pre, CodeBlockTab, CodeBlockTabs, CodeBlockTabsList, CodeBlockTabsTrigger } from "@/components/codeblock"
 import { ComponentPreview } from "@/components/component-preview"
+import { ComponentsIndex } from "@/components/components-index"
 import { ComponentSource } from "@/components/component-source"
 import { ComponentTree } from "@/components/component-tree"
 import { File, Files, Folder } from "@/components/files"
@@ -89,6 +90,7 @@ export const mdxComponents = {
   Accordions,
   Callout,
   ComponentPreview,
+  ComponentsIndex,
   ComponentSource,
   ComponentTree,
   File,

@@ -21,7 +21,7 @@ import {
 
 const links = [
   { text: "Docs", href: "/docs/getting-started/introduction" },
-  { text: "Components", href: "/docs/components/workspace" },
+  { text: "Components", href: "/docs/components" },
   { text: "Blocks", href: "/blocks" },
 ]
 

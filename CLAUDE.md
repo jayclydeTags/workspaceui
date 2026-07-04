@@ -52,9 +52,8 @@ workspaceui/
 │   │   │                     #   site-shell, sidebar-nav, theme-toggle, component-preview{,-shell},
 │   │   │                     #   component-source (fs reads), block-preview, codeblock, type-table, …
 │   ├── lib/
-│   │   ├── source.ts         # fumadocs loader() over .source (replaces import.meta.glob)
-│   │   ├── nav.ts            # nav + blocksNav config
-│   │   ├── page-tree.ts      # fumadocs sidebar tree (what actually renders)
+│   │   ├── source.ts         # fumadocs loader() over .source — source.pageTree drives the docs sidebar
+│   │   ├── nav.ts            # nav + blocksNav config (blocks sidebar + search)
 │   │   ├── blocks.ts         # /blocks gallery data (slug→Component)
 │   │   ├── block-files.ts    # per-block source-file manifest for the Code tab (fs-read paths)
 │   │   ├── mdx-components.tsx # MDX component map
@@ -122,7 +121,7 @@ Components import each other via `@/components/workspaceui/...`.
 Every component in `src/registry/bases/base/workspaceui/` must have a matching fumadocs page:
 - `src/content/docs/components/<component>.mdx` — install (CLI + manual `<ComponentSource>`), usage, and a `<TypeTable>` API reference
 - A live demo in `src/registry/bases/base/examples/<component>-live.tsx`, registered in `previewComponents` in `src/components/component-preview.tsx`, and referenced via `<ComponentPreview name="<component>" code={...} />` in the mdx
-- A sidebar entry in the `Components` section of **both** `src/lib/nav.ts` and `src/lib/page-tree.ts` (`page-tree.ts` is what the fumadocs sidebar actually renders — `nav.ts` alone won't show the page)
+- The component's name added to the `pages` array in `src/content/docs/components/meta.json` (this is what fumadocs' `source.pageTree` renders in the docs sidebar — a page not listed there is dropped), **and** a sidebar entry in the `Components` section of `src/lib/nav.ts` (which drives the blocks sidebar + search)
 - A `registry.json` entry pointing at the component file
 
 Use `src/content/docs/components/workspace.mdx` and `src/registry/bases/base/examples/workspace-live.tsx` as the reference pattern.

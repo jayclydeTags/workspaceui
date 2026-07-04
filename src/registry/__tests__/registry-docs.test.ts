@@ -5,7 +5,6 @@ import ts from "typescript"
 import { describe, expect, it } from "vitest"
 
 import { nav } from "@/lib/nav"
-import { pageTree } from "@/lib/page-tree"
 
 interface RegistryItem {
   name: string
@@ -58,10 +57,13 @@ describe("component docs coverage", () => {
     const inNav = nav.some((section) => section.items.some((navItem) => navItem.href === url))
     expect(inNav, `${item.name}: no sidebar entry in src/lib/nav.ts for ${url}`).toBe(true)
 
-    const inPageTree = pageTree.children.some(
-      (child) => child.type === "folder" && child.children.some((page) => page.type === "page" && page.url === url)
-    )
-    expect(inPageTree, `${item.name}: no sidebar entry in src/lib/page-tree.ts for ${url}`).toBe(true)
+    // fumadocs builds the sidebar from content/docs/**/meta.json `pages`; a page
+    // not listed there is dropped from the tree. Assert the item is curated in.
+    const meta = JSON.parse(
+      readFileSync(resolve(REPO_ROOT, "src/content/docs/components/meta.json"), "utf-8")
+    ) as { pages?: string[] }
+    const inTree = meta.pages?.includes(item.name) ?? false
+    expect(inTree, `${item.name}: not listed in src/content/docs/components/meta.json pages`).toBe(true)
   })
 
   it.each(uiItems)("$name: every component prop is documented in its TypeTable", (item) => {

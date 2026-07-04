@@ -15,6 +15,7 @@ import {
   CommandList,
 } from "@/components/ui/command"
 import { Button } from "@/components/ui/button"
+import { Kbd } from "@/components/ui/kbd"
 import { SearchIcon } from "lucide-react"
 
 const client = oramaStaticClient({ from: "/api/search" })
@@ -44,11 +45,11 @@ export function SearchDialog() {
         className="h-8 w-full max-w-56 justify-start gap-2 rounded-full px-3 text-muted-foreground shadow-none sm:w-56"
         onClick={() => setOpen(true)}
       >
-        <SearchIcon className="size-4" />
-        <span className="flex-1 text-left text-sm">Search documentation...</span>
-        <kbd className="pointer-events-none hidden h-5 items-center gap-0.5 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium sm:flex">
-          <span>⌘</span>K
-        </kbd>
+        <SearchIcon className="size-4 shrink-0" />
+        <span className="flex-1 truncate text-left text-sm">
+          Search documentation...
+        </span>
+        <Kbd className="hidden shrink-0 sm:inline-flex">⌘K</Kbd>
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <Command shouldFilter={false}>

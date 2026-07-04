@@ -34,9 +34,12 @@ export function SiteHeader() {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
 
+  // Bare iframe target for BlockPreview — no site chrome inside the frame.
+  if (pathname.startsWith("/blocks/preview")) return null
+
   return (
     <header className="sticky top-0 z-40 h-14 border-b bg-background/80 backdrop-blur-lg">
-      <div className="mx-auto flex h-14 max-w-(--fd-layout-width,90rem) items-center gap-4 px-4">
+      <div className="flex h-14 items-center gap-4 px-4">
         <Link href="/" className="inline-flex items-center gap-2.5 font-semibold">
           <WorkspaceUILogo className="h-5 w-auto" />
         </Link>
@@ -81,6 +84,21 @@ export function SiteHeader() {
           <Button
             variant="ghost"
             size="icon-sm"
+            aria-label="GitHub"
+            nativeButton={false}
+            render={
+              <a
+                href="https://github.com/jayclydeTags/workspaceui"
+                target="_blank"
+                rel="noreferrer"
+              />
+            }
+          >
+            <GithubIcon className="size-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon-sm"
             aria-label="Toggle menu"
             onClick={() => setMobileOpen(true)}
           >
@@ -113,14 +131,21 @@ export function SiteHeader() {
                 {link.text}
               </Link>
             ))}
-            <a
-              href="https://github.com/jayclydeTags/workspaceui"
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-md px-2 py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
+            <Button
+              variant="ghost"
+              className="justify-start gap-2 px-2 text-sm font-medium text-muted-foreground hover:text-foreground"
+              nativeButton={false}
+              render={
+                <a
+                  href="https://github.com/jayclydeTags/workspaceui"
+                  target="_blank"
+                  rel="noreferrer"
+                />
+              }
             >
+              <GithubIcon className="size-4" />
               GitHub
-            </a>
+            </Button>
           </nav>
           {pathname.startsWith("/docs") && (
             <div

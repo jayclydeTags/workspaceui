@@ -58,7 +58,6 @@
   "exclude": [
     "node_modules",
     "out",
-    ".next",
-    "src/app/routes"
+    ".next"
   ]
 }

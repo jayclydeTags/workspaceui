@@ -1,4 +1,4 @@
-import { Link } from "react-router"
+import Link from "next/link"
 import {
   ArrowRight,
   Accessibility,
@@ -39,7 +39,7 @@ export default function HomePage() {
 
         <div className="mb-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
           <Link
-            to="/docs/getting-started/introduction"
+            href="/docs/getting-started/introduction"
             className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Get started
@@ -115,14 +115,14 @@ export default function HomePage() {
       {/* Explore links */}
       <div className="mt-16 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
         <Link
-          to="/docs/components/workspace"
+          href="/docs/components/workspace"
           className="inline-flex items-center gap-1 text-sm font-medium text-foreground hover:underline"
         >
           Browse components
           <ArrowRight className="size-3.5" />
         </Link>
         <Link
-          to="/blocks"
+          href="/blocks"
           className="inline-flex items-center gap-1 text-sm font-medium text-foreground hover:underline"
         >
           Explore blocks

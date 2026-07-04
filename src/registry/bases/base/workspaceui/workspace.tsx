@@ -96,7 +96,6 @@ export interface WorkspaceContextValue {
 
 const WorkspaceContext = React.createContext<WorkspaceContextValue | null>(null)
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useWorkspace(): WorkspaceContextValue {
   const ctx = React.useContext(WorkspaceContext)
   if (ctx == null) throw new Error("useWorkspace must be used inside <Workspace>")

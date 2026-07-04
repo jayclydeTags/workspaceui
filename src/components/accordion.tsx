@@ -34,6 +34,8 @@ export function Accordions({
     if (!selected || !element.contains(selected)) return;
     const value = selected.getAttribute('data-accordion-value');
 
+    // Open the accordion item containing the hash target on mount; intentional.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (value) setValue((prev) => [value, ...prev]);
   }, []);
 

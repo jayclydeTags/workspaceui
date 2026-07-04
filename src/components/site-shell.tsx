@@ -1,4 +1,3 @@
-import { Outlet } from "react-router"
 import { HomeLayout as FumaHomeLayout } from "fumadocs-ui/layouts/home"
 
 import { WorkspaceUILogo } from "@/components/workspaceui-logo"
@@ -9,14 +8,16 @@ const links = [
   { text: "Blocks", url: "/blocks", active: "nested-url" as const },
 ]
 
-export default function HomeLayout() {
+// Shared top-nav chrome for the marketing home and the blocks browser
+// (was duplicated in _home.tsx + blocks.tsx under react-router).
+export function SiteShell({ children }: { children: React.ReactNode }) {
   return (
     <FumaHomeLayout
       links={links}
       githubUrl="https://github.com/jayclydeTags/workspaceui"
       nav={{ title: <WorkspaceUILogo className="h-5 w-auto" /> }}
     >
-      <Outlet />
+      {children}
     </FumaHomeLayout>
   )
 }

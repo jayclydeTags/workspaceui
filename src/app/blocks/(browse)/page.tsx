@@ -1,9 +1,10 @@
+"use client"
+
 import { useEffect, useRef, useState } from "react"
-import { useNavigate } from "react-router"
+import { useRouter } from "next/navigation"
 
 import { blocks } from "@/lib/blocks"
 import { cn } from "@/lib/utils"
-import { useDocumentTitle } from "@/lib/use-document-title"
 
 const categories = ["All", ...new Set(blocks.map((b) => b.category))]
 
@@ -34,8 +35,7 @@ function BlockThumb({ children }: { children: React.ReactNode }) {
 }
 
 export default function BlocksIndex() {
-  useDocumentTitle("Blocks")
-  const navigate = useNavigate()
+  const router = useRouter()
   const [active, setActive] = useState("All")
 
   const visible =
@@ -73,9 +73,9 @@ export default function BlocksIndex() {
               key={slug}
               role="link"
               tabIndex={0}
-              onClick={() => navigate(`/blocks/${slug}`)}
+              onClick={() => router.push(`/blocks/${slug}`)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") navigate(`/blocks/${slug}`)
+                if (e.key === "Enter") router.push(`/blocks/${slug}`)
               }}
               className="group block cursor-pointer"
             >

@@ -1,13 +1,14 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Link, useLocation } from "react-router"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 import { cn } from "@/lib/utils"
 import { nav, type NavSection } from "@/lib/nav"
 
 export function SidebarNav({ sections = nav }: { sections?: NavSection[] }) {
-  const { pathname } = useLocation()
+  const pathname = usePathname()
   const scrollRef = useRef<HTMLDivElement>(null)
   const [fades, setFades] = useState({ top: false, bottom: false })
 
@@ -45,7 +46,7 @@ export function SidebarNav({ sections = nav }: { sections?: NavSection[] }) {
                 {section.items.map((item) => (
                   <li key={item.href}>
                     <Link
-                      to={item.href}
+                      href={item.href}
                       className={cn(
                         "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-semibold transition-colors",
                         pathname === item.href

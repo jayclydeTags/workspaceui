@@ -7,36 +7,38 @@ import { blocksNav } from "@/lib/nav"
 // (RootProvider search type "static") fetches it. Replaces the custom
 // generate-search-index.mjs script + public/api/search.json.
 //
-// "simple" (title/description) matches the previous shallow index, and lets us
-// merge docs pages with the blocks gallery — fumadocs' createFromSource would
-// only cover MDX docs and silently drop blocks from search.
+// Uses "advanced" (not "simple"): fumadocs-core 16.10.6's orama-static client
+// passes the DB wrapper — not the inner orama db — to searchSimple, so "simple"
+// static search throws and silently returns nothing. The "advanced" path passes
+// db.db correctly. We merge docs pages with the blocks gallery, which fumadocs'
+// createFromSource wouldn't cover.
 export const revalidate = false
 
-const entry = (
-  id: string,
-  url: string,
-  title: string,
-  description?: string
-) => ({
-  id,
+// Shallow structuredData (title + description) matches the previous index —
+// advanced entries require it, so synthesize one searchable content block.
+const entry = (url: string, title: string, description?: string) => ({
+  id: url,
   url,
   title,
   description,
-  // simple index requires `content`; use title + description as the
-  // searchable text (matches the old shallow index).
-  content: [title, description].filter(Boolean).join(" — "),
+  structuredData: {
+    headings: [],
+    contents: [
+      { heading: "", content: [title, description].filter(Boolean).join(". ") },
+    ],
+  },
 })
 
-const server = createSearchAPI("simple", {
+const server = createSearchAPI("advanced", {
   indexes: [
     ...source
       .getPages()
       .map((page) =>
-        entry(page.url, page.url, page.data.title ?? page.url, page.data.description)
+        entry(page.url, page.data.title ?? page.url, page.data.description)
       ),
     ...blocksNav.flatMap((section) =>
       section.items.map((item) =>
-        entry(item.href, item.href, item.title, item.description)
+        entry(item.href, item.title, item.description)
       )
     ),
   ],

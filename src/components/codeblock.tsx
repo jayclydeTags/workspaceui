@@ -222,7 +222,10 @@ export function CodeBlockTabsList({ className, ...props }: ComponentProps<typeof
       <TabsList
         {...props}
         variant="line"
-        className={cn('overflow-x-auto text-fd-muted-foreground', className)}
+        className={cn(
+          'overflow-x-auto text-fd-muted-foreground [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+          className,
+        )}
       >
         {props.children}
       </TabsList>

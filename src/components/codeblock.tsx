@@ -88,7 +88,7 @@ export function CodeBlock({
       {...props}
       tabIndex={-1}
       className={cn(
-        !inTab && 'my-4 bg-muted/40 rounded-xl',
+        !inTab && 'my-4 bg-muted/40 rounded-xl border',
         keepBackground && 'bg-(--shiki-light-bg) dark:bg-(--shiki-dark-bg)',
 
         'shiki relative not-prose overflow-hidden text-sm',

@@ -30,6 +30,12 @@ export const blocksNav: NavSection[] = [
               "Payroll run summary with per-employee payslips — gross, deductions, and net pay.",
           },
           {
+            title: "Payroll Tasks",
+            href: "/blocks/payroll-tasks",
+            description:
+              "Employee payroll task dashboard — pending/overdue/completed overview cards, a searchable task list, and a complete-with-summary dialog.",
+          },
+          {
             title: "Payslip Detail 01",
             href: "/blocks/payslip-detail-01",
             description:

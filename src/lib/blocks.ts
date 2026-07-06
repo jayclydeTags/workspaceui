@@ -7,6 +7,7 @@ import { ActivityLog01 } from "@/registry/bases/base/blocks/activity-log-01/page
 import { Dashboard01 } from "@/registry/bases/base/blocks/dashboard-01/page"
 import { InvoiceDetail01 } from "@/registry/bases/base/blocks/invoice-detail-01/page"
 import { PayrollRun01 } from "@/registry/bases/base/blocks/payroll-run-01/page"
+import { PayrollTasks } from "@/registry/bases/base/blocks/payroll-tasks/page"
 import { PayslipDetail01 } from "@/registry/bases/base/blocks/payslip-detail-01/page"
 import { CompensationTable01 } from "@/registry/bases/base/blocks/compensation-table-01/page"
 import { PayrollCalendar01 } from "@/registry/bases/base/blocks/payroll-calendar-01/page"
@@ -33,6 +34,14 @@ export const blocks: BlockMeta[] = [
       "Payroll run summary with per-employee payslips — gross, deductions, and net pay.",
     category: "Payroll",
     Component: PayrollRun01,
+  },
+  {
+    slug: "payroll-tasks",
+    title: "Payroll Tasks",
+    description:
+      "Employee payroll task dashboard — pending/overdue/completed overview cards, a searchable task list, and a complete-with-summary dialog.",
+    category: "Payroll",
+    Component: PayrollTasks,
   },
   {
     slug: "payslip-detail-01",

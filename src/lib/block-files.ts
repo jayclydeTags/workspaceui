@@ -13,6 +13,10 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
     { name: "page.tsx", path: "app/payroll-run/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/payroll-run/data.ts", src: "data.ts" },
   ],
+  "payroll-tasks": [
+    { name: "page.tsx", path: "app/payroll-tasks/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/payroll-tasks/data.ts", src: "data.ts" },
+  ],
   "payslip-detail-01": [
     { name: "page.tsx", path: "app/payslip-detail/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/payslip-detail/data.ts", src: "data.ts" },

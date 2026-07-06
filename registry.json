@@ -75,6 +75,36 @@
       ]
     },
     {
+      "name": "payroll-tasks",
+      "type": "registry:block",
+      "title": "Payroll Tasks",
+      "description": "Employee payroll task dashboard — pending/overdue/completed overview cards, a searchable task list, and a complete-with-summary dialog.",
+      "registryDependencies": [
+        "badge",
+        "button",
+        "card",
+        "dialog",
+        "empty",
+        "input-group",
+        "label",
+        "select",
+        "table",
+        "textarea",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/payroll-tasks/page.tsx",
+          "type": "registry:page",
+          "target": "app/payroll-tasks/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/payroll-tasks/data.ts",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "payslip-detail-01",
       "type": "registry:block",
       "title": "Payslip Detail 01",

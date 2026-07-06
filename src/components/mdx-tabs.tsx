@@ -12,12 +12,17 @@ import {
   useState,
 } from 'react';
 import { cn } from '../lib/cn';
-import * as Unstyled from './ui/tabs';
+import {
+  Tabs as TabsRoot,
+  TabsList as TabsListPrimitive,
+  TabsTrigger as TabsTriggerPrimitive,
+  TabsContent as TabsContentPrimitive,
+} from './ui/tabs';
 
 type CollectionKey = string | symbol;
 
 export interface TabsProps extends Omit<
-  ComponentProps<typeof Unstyled.Tabs>,
+  ComponentProps<typeof TabsRoot>,
   'value' | 'onValueChange'
 > {
   /**
@@ -53,9 +58,9 @@ export function TabsList({
   className,
   variant = 'line',
   ...props
-}: React.ComponentPropsWithRef<typeof Unstyled.TabsList>) {
+}: React.ComponentPropsWithRef<typeof TabsListPrimitive>) {
   return (
-    <Unstyled.TabsList
+    <TabsListPrimitive
       {...props}
       variant={variant}
       className={cn('overflow-x-auto px-4 not-prose', className)}
@@ -63,7 +68,7 @@ export function TabsList({
   );
 }
 
-export const TabsTrigger = Unstyled.TabsTrigger;
+export const TabsTrigger = TabsTriggerPrimitive;
 
 export function Tabs({
   ref,
@@ -78,7 +83,7 @@ export function Tabs({
   const collection = useMemo<CollectionKey[]>(() => [], []);
 
   return (
-    <Unstyled.Tabs
+    <TabsRoot
       ref={ref}
       className={cn(
         'flex flex-col overflow-hidden rounded-xl border bg-fd-secondary my-4',
@@ -104,11 +109,11 @@ export function Tabs({
       <TabsContext.Provider value={useMemo(() => ({ items, collection }), [collection, items])}>
         {props.children}
       </TabsContext.Provider>
-    </Unstyled.Tabs>
+    </TabsRoot>
   );
 }
 
-export interface TabProps extends Omit<ComponentProps<typeof Unstyled.TabsContent>, 'value'> {
+export interface TabProps extends Omit<ComponentProps<typeof TabsContentPrimitive>, 'value'> {
   /**
    * Value of tab, detect from index if unspecified.
    */
@@ -137,9 +142,9 @@ export function TabsContent({
   value,
   className,
   ...props
-}: ComponentProps<typeof Unstyled.TabsContent>) {
+}: ComponentProps<typeof TabsContentPrimitive>) {
   return (
-    <Unstyled.TabsContent
+    <TabsContentPrimitive
       value={value}
       keepMounted
       className={cn(
@@ -149,7 +154,7 @@ export function TabsContent({
       {...props}
     >
       {props.children}
-    </Unstyled.TabsContent>
+    </TabsContentPrimitive>
   );
 }
 

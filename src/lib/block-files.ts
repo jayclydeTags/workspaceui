@@ -110,6 +110,9 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/approval-column.tsx",
     },
   ],
+  "account-locked": [
+    { name: "page.tsx", path: "app/account-locked/page.tsx", src: "page.tsx" },
+  ],
   "settings-01": [
     { name: "page.tsx", path: "app/settings/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/settings/data.ts", src: "data.ts" },

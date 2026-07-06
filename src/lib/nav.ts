@@ -141,6 +141,22 @@ export const blocksNav: NavSection[] = [
       },
     ],
   },
+  {
+    title: "Authentication",
+    groups: [
+      {
+        title: "Login",
+        items: [
+          {
+            title: "Account Locked",
+            href: "/blocks/account-locked",
+            description:
+              "Account-locked screen after too many failed sign-in attempts — locked email, lockout countdown, and reset/support actions.",
+          },
+        ],
+      },
+    ],
+  },
 ]
 
 export const nav: NavSection[] = [

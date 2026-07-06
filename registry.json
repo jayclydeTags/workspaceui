@@ -430,6 +430,27 @@
       ]
     },
     {
+      "name": "account-locked",
+      "type": "registry:block",
+      "title": "Account Locked",
+      "description": "Account-locked screen after too many failed sign-in attempts — shows the locked email, a lockout countdown, and reset/support actions.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "button",
+        "card",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/account-locked/page.tsx",
+          "type": "registry:page",
+          "target": "app/account-locked/page.tsx"
+        }
+      ]
+    },
+    {
       "name": "settings-01",
       "type": "registry:block",
       "title": "Settings 01",

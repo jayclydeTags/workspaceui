@@ -1,6 +1,7 @@
 import type { ComponentType } from "react"
 
 import { AccessControl01 } from "@/registry/bases/base/blocks/access-control-01/page"
+import { AccountLocked } from "@/registry/bases/base/blocks/account-locked/page"
 import { ApprovalBoard01 } from "@/registry/bases/base/blocks/approval-board-01/page"
 import { ActivityFeed01 } from "@/registry/bases/base/blocks/activity-feed-01/page"
 import { ActivityLog01 } from "@/registry/bases/base/blocks/activity-log-01/page"
@@ -129,6 +130,14 @@ export const blocks: BlockMeta[] = [
       "Drag-and-drop Kanban board for triaging expense, purchase order, and time-off approval requests.",
     category: "Operations",
     Component: ApprovalBoard01,
+  },
+  {
+    slug: "account-locked",
+    title: "Account Locked",
+    description:
+      "Account-locked screen after too many failed sign-in attempts — shows the locked email, a lockout countdown, and reset/support actions.",
+    category: "Authentication",
+    Component: AccountLocked,
   },
   {
     slug: "settings-01",

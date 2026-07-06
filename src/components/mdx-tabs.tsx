@@ -63,7 +63,7 @@ export function TabsList({
     <TabsListPrimitive
       {...props}
       variant={variant}
-      className={cn('overflow-x-auto px-4 not-prose', className)}
+      className={cn('overflow-x-auto overflow-y-hidden px-4 not-prose', className)}
     />
   );
 }

@@ -7,6 +7,10 @@ import { ActivityLog01 } from "@/registry/bases/base/blocks/activity-log-01/page
 import { Dashboard01 } from "@/registry/bases/base/blocks/dashboard-01/page"
 import { InvoiceDetail01 } from "@/registry/bases/base/blocks/invoice-detail-01/page"
 import { PayrollRun01 } from "@/registry/bases/base/blocks/payroll-run-01/page"
+import { PayslipDetail01 } from "@/registry/bases/base/blocks/payslip-detail-01/page"
+import { CompensationTable01 } from "@/registry/bases/base/blocks/compensation-table-01/page"
+import { PayrollCalendar01 } from "@/registry/bases/base/blocks/payroll-calendar-01/page"
+import { OffcyclePaymentForm01 } from "@/registry/bases/base/blocks/offcycle-payment-form-01/page"
 import { PurchaseOrderForm01 } from "@/registry/bases/base/blocks/purchase-order-form-01/page"
 import { Settings01 } from "@/registry/bases/base/blocks/settings-01/page"
 
@@ -29,6 +33,38 @@ export const blocks: BlockMeta[] = [
       "Payroll run summary with per-employee payslips — gross, deductions, and net pay.",
     category: "Payroll",
     Component: PayrollRun01,
+  },
+  {
+    slug: "payslip-detail-01",
+    title: "Payslip Detail 01",
+    description:
+      "Single-employee payslip breakdown — earnings, deductions, and employer contributions with YTD totals.",
+    category: "Payroll",
+    Component: PayslipDetail01,
+  },
+  {
+    slug: "compensation-table-01",
+    title: "Compensation Table 01",
+    description:
+      "Searchable org-wide salary overview with pay band, last adjustment, and change percentage.",
+    category: "Payroll",
+    Component: CompensationTable01,
+  },
+  {
+    slug: "payroll-calendar-01",
+    title: "Payroll Calendar 01",
+    description:
+      "Monthly pay schedule with timesheet cutoffs, pay dates, and the next upcoming run highlighted.",
+    category: "Payroll",
+    Component: PayrollCalendar01,
+  },
+  {
+    slug: "offcycle-payment-form-01",
+    title: "Off-cycle Payment Form 01",
+    description:
+      "Form for issuing a one-off bonus, correction, or reimbursement outside the regular payroll run.",
+    category: "Payroll",
+    Component: OffcyclePaymentForm01,
   },
   {
     slug: "dashboard-01",

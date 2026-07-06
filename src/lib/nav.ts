@@ -29,6 +29,30 @@ export const blocksNav: NavSection[] = [
             description:
               "Payroll run summary with per-employee payslips — gross, deductions, and net pay.",
           },
+          {
+            title: "Payslip Detail 01",
+            href: "/blocks/payslip-detail-01",
+            description:
+              "Single-employee payslip breakdown — earnings, deductions, and employer contributions with YTD totals.",
+          },
+          {
+            title: "Compensation Table 01",
+            href: "/blocks/compensation-table-01",
+            description:
+              "Searchable org-wide salary overview with pay band, last adjustment, and change percentage.",
+          },
+          {
+            title: "Payroll Calendar 01",
+            href: "/blocks/payroll-calendar-01",
+            description:
+              "Monthly pay schedule with timesheet cutoffs, pay dates, and the next upcoming run highlighted.",
+          },
+          {
+            title: "Off-cycle Payment Form 01",
+            href: "/blocks/offcycle-payment-form-01",
+            description:
+              "Form for issuing a one-off bonus, correction, or reimbursement outside the regular payroll run.",
+          },
         ],
       },
       {

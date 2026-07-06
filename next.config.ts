@@ -9,6 +9,9 @@ const config: NextConfig = {
   output: "export",
   // Static export can't use the Image Optimization server.
   images: { unoptimized: true },
+  // Pin the workspace root — a stray package-lock.json in the home dir
+  // otherwise makes Next infer the wrong root (this repo uses pnpm).
+  turbopack: { root: __dirname },
 }
 
 export default withMDX(config)

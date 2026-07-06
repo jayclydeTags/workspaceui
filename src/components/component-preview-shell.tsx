@@ -20,8 +20,12 @@ export function ComponentPreviewShell({
       className={cn("my-4 gap-0 overflow-hidden rounded-xl border", className)}
     >
       <TabsList variant="line" className="w-full justify-start px-4">
-        <TabsTrigger value="preview">Preview</TabsTrigger>
-        <TabsTrigger value="code">Code</TabsTrigger>
+        <TabsTrigger value="preview" className="flex-none">
+          Preview
+        </TabsTrigger>
+        <TabsTrigger value="code" className="flex-none">
+          Code
+        </TabsTrigger>
       </TabsList>
       <TabsContent
         value="preview"

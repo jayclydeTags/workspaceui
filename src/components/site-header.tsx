@@ -31,7 +31,7 @@ function isActive(pathname: string, href: string) {
 }
 
 export function SiteHeader() {
-  const pathname = usePathname()
+  const pathname = usePathname() ?? ""
   const [mobileOpen, setMobileOpen] = useState(false)
 
   // Bare iframe target for BlockPreview — no site chrome inside the frame.

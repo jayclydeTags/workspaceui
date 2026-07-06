@@ -1,4 +1,4 @@
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/mdx-tabs"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { DynamicCodeBlock } from "@/components/dynamic-codeblock"
 
 import { cn } from "@/lib/utils"
@@ -15,18 +15,26 @@ export function ComponentPreviewShell({
   className,
 }: ComponentPreviewShellProps) {
   return (
-    <Tabs defaultValue="preview" className={cn("overflow-hidden rounded-xl", className)}>
-      <TabsList>
+    <Tabs
+      defaultValue="preview"
+      className={cn("my-4 gap-0 overflow-hidden rounded-xl border", className)}
+    >
+      <TabsList variant="line" className="w-full justify-start px-4">
         <TabsTrigger value="preview">Preview</TabsTrigger>
         <TabsTrigger value="code">Code</TabsTrigger>
       </TabsList>
-      <TabsContent value="preview">
-        <div className="flex min-h-[350px] items-center justify-center">
-          {children}
-        </div>
+      <TabsContent
+        value="preview"
+        className="flex min-h-[350px] items-center justify-center border-t p-4"
+      >
+        {children}
       </TabsContent>
-      <TabsContent value="code">
-        <DynamicCodeBlock lang="tsx" code={code} codeblock={{ allowCopy: true, className: "my-0 rounded-none" }} />
+      <TabsContent value="code" className="border-t">
+        <DynamicCodeBlock
+          lang="tsx"
+          code={code}
+          codeblock={{ allowCopy: true, className: "my-0 rounded-none border-0" }}
+        />
       </TabsContent>
     </Tabs>
   )

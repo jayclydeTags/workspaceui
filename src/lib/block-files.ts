@@ -9,6 +9,10 @@ export interface BlockFileRef {
 }
 
 export const blockFiles: Record<string, BlockFileRef[]> = {
+  "payroll-run-01": [
+    { name: "page.tsx", path: "app/payroll-run/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/payroll-run/data.ts", src: "data.ts" },
+  ],
   "dashboard-01": [
     { name: "page.tsx", path: "app/dashboard/page.tsx", src: "page.tsx" },
     {

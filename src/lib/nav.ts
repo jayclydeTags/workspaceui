@@ -5,62 +5,109 @@ export interface NavItem {
   description?: string
 }
 
-export interface NavSection {
+export interface NavGroup {
   title: string
   items: NavItem[]
 }
 
+export interface NavSection {
+  title: string
+  items?: NavItem[] // flat list (docs sidebar)
+  groups?: NavGroup[] // nested collapsible subcategories (blocks sidebar)
+}
+
 export const blocksNav: NavSection[] = [
   {
-    title: "Application",
-    items: [
+    title: "Applications",
+    groups: [
       {
-        title: "Dashboard 01",
-        href: "/blocks/dashboard-01",
-        description:
-          "Collapsible sidebar nav paired with the Workspace component.",
+        title: "Payroll",
+        items: [
+          {
+            title: "Payroll Run 01",
+            href: "/blocks/payroll-run-01",
+            description:
+              "Payroll run summary with per-employee payslips — gross, deductions, and net pay.",
+          },
+        ],
       },
       {
-        title: "Activity Log 01",
-        href: "/blocks/activity-log-01",
-        description:
-          "Filterable activity log with a responsive datatable — collapses to cards on narrow panes.",
+        title: "Dashboard",
+        items: [
+          {
+            title: "Dashboard 01",
+            href: "/blocks/dashboard-01",
+            description:
+              "Collapsible sidebar nav paired with the Workspace component.",
+          },
+        ],
       },
       {
-        title: "Activity Feed 01",
-        href: "/blocks/activity-feed-01",
-        description:
-          "Grouped activity timeline with type/user filters and running stats.",
+        title: "Activity",
+        items: [
+          {
+            title: "Activity Log 01",
+            href: "/blocks/activity-log-01",
+            description:
+              "Filterable activity log with a responsive datatable — collapses to cards on narrow panes.",
+          },
+          {
+            title: "Activity Feed 01",
+            href: "/blocks/activity-feed-01",
+            description:
+              "Grouped activity timeline with type/user filters and running stats.",
+          },
+        ],
       },
       {
-        title: "Access Control 01",
-        href: "/blocks/access-control-01",
-        description:
-          "Manage role permissions across resources with a per-role permission matrix.",
+        title: "Access",
+        items: [
+          {
+            title: "Access Control 01",
+            href: "/blocks/access-control-01",
+            description:
+              "Manage role permissions across resources with a per-role permission matrix.",
+          },
+        ],
       },
       {
-        title: "Invoice Detail 01",
-        href: "/blocks/invoice-detail-01",
-        description:
-          "Master-detail invoice workspace — select a row to open its line items in a new tab.",
+        title: "Finance",
+        items: [
+          {
+            title: "Invoice Detail 01",
+            href: "/blocks/invoice-detail-01",
+            description:
+              "Master-detail invoice workspace — select a row to open its line items in a new tab.",
+          },
+          {
+            title: "Purchase Order Form 01",
+            href: "/blocks/purchase-order-form-01",
+            description:
+              "Three-step wizard for creating a purchase order — vendor details, line items, and review.",
+          },
+        ],
       },
       {
-        title: "Purchase Order Form 01",
-        href: "/blocks/purchase-order-form-01",
-        description:
-          "Three-step wizard for creating a purchase order — vendor details, line items, and review.",
+        title: "Operations",
+        items: [
+          {
+            title: "Approval Board 01",
+            href: "/blocks/approval-board-01",
+            description:
+              "Drag-and-drop Kanban board for triaging expense, purchase order, and time-off approval requests.",
+          },
+        ],
       },
       {
-        title: "Approval Board 01",
-        href: "/blocks/approval-board-01",
-        description:
-          "Drag-and-drop Kanban board for triaging expense, purchase order, and time-off approval requests.",
-      },
-      {
-        title: "Settings 01",
-        href: "/blocks/settings-01",
-        description:
-          "Sectioned workspace settings — company profile, notifications, billing, and security.",
+        title: "Settings",
+        items: [
+          {
+            title: "Settings 01",
+            href: "/blocks/settings-01",
+            description:
+              "Sectioned workspace settings — company profile, notifications, billing, and security.",
+          },
+        ],
       },
     ],
   },

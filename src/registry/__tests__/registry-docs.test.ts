@@ -54,7 +54,7 @@ describe("component docs coverage", () => {
 
     expect(existsSync(resolve(REPO_ROOT, docPath)), `missing doc page: ${docPath}`).toBe(true)
 
-    const inNav = nav.some((section) => section.items.some((navItem) => navItem.href === url))
+    const inNav = nav.some((section) => (section.items ?? []).some((navItem) => navItem.href === url))
     expect(inNav, `${item.name}: no sidebar entry in src/lib/nav.ts for ${url}`).toBe(true)
 
     // fumadocs builds the sidebar from content/docs/**/meta.json `pages`; a page

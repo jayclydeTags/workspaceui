@@ -6,6 +6,7 @@ import { ActivityFeed01 } from "@/registry/bases/base/blocks/activity-feed-01/pa
 import { ActivityLog01 } from "@/registry/bases/base/blocks/activity-log-01/page"
 import { Dashboard01 } from "@/registry/bases/base/blocks/dashboard-01/page"
 import { InvoiceDetail01 } from "@/registry/bases/base/blocks/invoice-detail-01/page"
+import { PayrollRun01 } from "@/registry/bases/base/blocks/payroll-run-01/page"
 import { PurchaseOrderForm01 } from "@/registry/bases/base/blocks/purchase-order-form-01/page"
 import { Settings01 } from "@/registry/bases/base/blocks/settings-01/page"
 
@@ -21,6 +22,14 @@ export interface BlockMeta {
 // route so the block components stay code-split to /blocks (nav.ts, which loads
 // everywhere, must not import this).
 export const blocks: BlockMeta[] = [
+  {
+    slug: "payroll-run-01",
+    title: "Payroll Run 01",
+    description:
+      "Payroll run summary with per-employee payslips — gross, deductions, and net pay.",
+    category: "Payroll",
+    Component: PayrollRun01,
+  },
   {
     slug: "dashboard-01",
     title: "Dashboard 01",
@@ -41,7 +50,7 @@ export const blocks: BlockMeta[] = [
     title: "Activity Feed 01",
     description:
       "Grouped activity timeline with type/user filters and running stats.",
-    category: "Application",
+    category: "Activity",
     Component: ActivityFeed01,
   },
   {
@@ -49,7 +58,7 @@ export const blocks: BlockMeta[] = [
     title: "Access Control 01",
     description:
       "Manage role permissions across resources with a per-role permission matrix.",
-    category: "Application",
+    category: "Access",
     Component: AccessControl01,
   },
   {
@@ -57,7 +66,7 @@ export const blocks: BlockMeta[] = [
     title: "Invoice Detail 01",
     description:
       "Master-detail invoice workspace — select a row to open its line items in a new tab.",
-    category: "Application",
+    category: "Finance",
     Component: InvoiceDetail01,
   },
   {
@@ -65,7 +74,7 @@ export const blocks: BlockMeta[] = [
     title: "Purchase Order Form 01",
     description:
       "Three-step wizard for creating a purchase order — vendor details, line items, and review.",
-    category: "Application",
+    category: "Finance",
     Component: PurchaseOrderForm01,
   },
   {
@@ -73,7 +82,7 @@ export const blocks: BlockMeta[] = [
     title: "Approval Board 01",
     description:
       "Drag-and-drop Kanban board for triaging expense, purchase order, and time-off approval requests.",
-    category: "Application",
+    category: "Operations",
     Component: ApprovalBoard01,
   },
   {
@@ -81,7 +90,7 @@ export const blocks: BlockMeta[] = [
     title: "Settings 01",
     description:
       "Sectioned workspace settings — company profile, notifications, billing, and security.",
-    category: "Application",
+    category: "Settings",
     Component: Settings01,
   },
 ]

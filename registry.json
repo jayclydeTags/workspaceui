@@ -52,6 +52,28 @@
       ]
     },
     {
+      "name": "payroll-run-01",
+      "type": "registry:block",
+      "title": "Payroll Run 01",
+      "description": "Payroll run summary with per-employee payslips — gross, deductions, and net pay.",
+      "registryDependencies": [
+        "badge",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/payroll-run-01/page.tsx",
+          "type": "registry:page",
+          "target": "app/payroll-run/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/payroll-run-01/data.ts",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "dashboard-01",
       "type": "registry:block",
       "title": "Dashboard 01",

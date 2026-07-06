@@ -223,7 +223,7 @@ export function CodeBlockTabsList({ className, ...props }: ComponentProps<typeof
         {...props}
         variant="line"
         className={cn(
-          'overflow-x-auto text-fd-muted-foreground [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+          'overflow-x-auto overflow-y-hidden text-fd-muted-foreground [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
           className,
         )}
       >

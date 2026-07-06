@@ -59,10 +59,10 @@ export function SidebarNav({ sections = nav }: { sections?: NavSection[] }) {
                 </h4>
                 {section.groups
                   ? section.groups.map((group) => (
-                      // ponytail: default-open, no persisted expand state
-                      <Collapsible key={group.title} defaultOpen className="mb-1">
-                        <CollapsibleTrigger className="group flex w-full items-center gap-1.5 rounded-md px-2 py-1 text-sm font-medium text-foreground hover:bg-muted">
-                          <ChevronDown className="size-3.5 shrink-0 -rotate-90 text-muted-foreground transition-transform group-data-open:rotate-0" />
+                      // ponytail: uncontrolled, default-closed
+                      <Collapsible key={group.title} className="mb-1">
+                        <CollapsibleTrigger className="group flex w-full items-center gap-1.5 rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted">
+                          <ChevronDown className="size-3.5 shrink-0 -rotate-90 text-muted-foreground transition-transform group-data-panel-open:rotate-0" />
                           {group.title}
                           <span className="text-xs text-muted-foreground/70">
                             ({group.items.length})
@@ -119,7 +119,7 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
       <Link
         href={item.href}
         className={cn(
-          "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-semibold transition-colors",
+          "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium transition-colors",
           active ? "bg-muted text-foreground" : "text-foreground hover:bg-muted"
         )}
       >

@@ -17,9 +17,15 @@ export function ComponentPreviewShell({
   return (
     <Tabs
       defaultValue="preview"
-      className={cn("my-4 gap-0 overflow-hidden rounded-xl border", className)}
+      className={cn(
+        "bg-fd-secondary my-4 flex flex-col gap-0 overflow-hidden rounded-xl border",
+        className
+      )}
     >
-      <TabsList variant="line" className="w-full justify-start px-4">
+      <TabsList
+        variant="line"
+        className="w-full justify-start overflow-x-auto overflow-y-hidden px-4"
+      >
         <TabsTrigger value="preview" className="flex-none">
           Preview
         </TabsTrigger>
@@ -29,15 +35,18 @@ export function ComponentPreviewShell({
       </TabsList>
       <TabsContent
         value="preview"
-        className="flex min-h-[350px] items-center justify-center border-t p-4"
+        className="bg-fd-background flex min-h-[350px] items-center justify-center rounded-xl p-4 outline-none"
       >
         {children}
       </TabsContent>
-      <TabsContent value="code" className="border-t">
+      <TabsContent
+        value="code"
+        className="bg-fd-background rounded-xl p-4 outline-none [&>figure:only-child]:-m-4 [&>figure:only-child]:border-none"
+      >
         <DynamicCodeBlock
           lang="tsx"
           code={code}
-          codeblock={{ allowCopy: true, className: "my-0 rounded-none border-0" }}
+          codeblock={{ allowCopy: true, className: "my-0" }}
         />
       </TabsContent>
     </Tabs>

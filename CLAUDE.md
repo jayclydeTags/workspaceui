@@ -172,6 +172,8 @@ Tests live in `src/registry/bases/base/workspaceui/__tests__/`.
 
 New component or block, or a prop change on an existing one: see [`.claude/rules/component-testing.md`](.claude/rules/component-testing.md) — needs a component-level test, a `registry.json` entry, and doc/sidebar entries (the latter two are validated automatically by `src/registry/__tests__/registry.test.ts` and `registry-docs.test.ts`).
 
+New block: before building it, invoke the `shadcn` skill for component context — see [`.claude/rules/block-creation.md`](.claude/rules/block-creation.md).
+
 ## Tooling
 
 - **Next.js 16** App Router (Turbopack), static export (`output: "export"`)

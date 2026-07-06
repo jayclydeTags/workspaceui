@@ -86,7 +86,7 @@ export function Tabs({
     <TabsRoot
       ref={ref}
       className={cn(
-        'flex flex-col overflow-hidden rounded-xl border bg-fd-secondary my-4',
+        'flex flex-col overflow-hidden rounded-xl border gap-0 bg-fd-secondary my-4',
         className,
       )}
       value={value}

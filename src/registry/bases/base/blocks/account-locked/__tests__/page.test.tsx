@@ -1,4 +1,5 @@
 import { act, render, screen } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi, afterEach } from "vitest"
 
 import { AccountLocked } from "../page"
@@ -8,13 +9,23 @@ afterEach(() => {
 })
 
 describe("AccountLocked", () => {
-  it("shows the locked state with a countdown and reset action", () => {
+  it("shows the locked state with an mm:ss countdown and reset action", () => {
     render(<AccountLocked />)
     expect(screen.getByText("Account locked")).toBeInTheDocument()
-    expect(screen.getByText(/try again in 14 minutes/i)).toBeInTheDocument()
+    expect(screen.getByText("14:00")).toBeInTheDocument()
     expect(
       screen.getByRole("button", { name: /reset password/i })
     ).toBeInTheDocument()
+  })
+
+  it("confirms once reset password is clicked", async () => {
+    const user = userEvent.setup()
+    render(<AccountLocked />)
+    await user.click(screen.getByRole("button", { name: /reset password/i }))
+    expect(screen.getByText(/reset link sent to/i)).toBeInTheDocument()
+    expect(
+      screen.queryByRole("button", { name: /reset password/i })
+    ).not.toBeInTheDocument()
   })
 
   it("unlocks once the countdown elapses", () => {

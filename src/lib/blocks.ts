@@ -23,9 +23,12 @@ import { InvoiceDetail01 } from "@/registry/bases/base/blocks/invoice-detail-01/
 import { Login } from "@/registry/bases/base/blocks/login/page"
 import { LoginSocial } from "@/registry/bases/base/blocks/login-social/page"
 import { MagicLinkSent } from "@/registry/bases/base/blocks/magic-link-sent/page"
+import { MasterDetail01 } from "@/registry/bases/base/blocks/master-detail-01/page"
 import { NotificationsInbox01 } from "@/registry/bases/base/blocks/notifications-inbox-01/page"
 import { OtpVerify } from "@/registry/bases/base/blocks/otp-verify/page"
 import { PendingApproval } from "@/registry/bases/base/blocks/pending-approval/page"
+import { RecordDetail01 } from "@/registry/bases/base/blocks/record-detail-01/page"
+import { RecordFormDialog01 } from "@/registry/bases/base/blocks/record-form-dialog-01/page"
 import { ResetPassword } from "@/registry/bases/base/blocks/reset-password/page"
 import { TwoFactorChallenge } from "@/registry/bases/base/blocks/two-factor-challenge/page"
 import { TwoFactorSetup } from "@/registry/bases/base/blocks/two-factor-setup/page"
@@ -147,6 +150,30 @@ export const blocks: BlockMeta[] = [
     Component: DetailTabs,
   },
   {
+    slug: "record-form-dialog-01",
+    title: "Record Form Dialog 01",
+    description:
+      "Standalone create/edit dialog — one form handles both add and update, seeded from the record being edited.",
+    category: "CRUD",
+    Component: RecordFormDialog01,
+  },
+  {
+    slug: "record-detail-01",
+    title: "Record Detail 01",
+    description:
+      "Read-only single-record view — header with avatar/status badge and grouped label/value field sections, no tabs.",
+    category: "CRUD",
+    Component: RecordDetail01,
+  },
+  {
+    slug: "master-detail-01",
+    title: "Master-Detail 01",
+    description:
+      "Resizable list + detail split pane — select a row on the left to view its fields on the right, with an empty state when nothing's selected.",
+    category: "CRUD",
+    Component: MasterDetail01,
+  },
+  {
     slug: "department",
     title: "Department",
     description:
@@ -166,7 +193,7 @@ export const blocks: BlockMeta[] = [
     slug: "file-upload-01",
     title: "File Upload 01",
     description:
-      "Attachments panel — click-or-drag dropzone, per-file upload progress, type icons, error state, and remove.",
+      "Attachments panel — click-or-drag dropzone, per-file upload/error states, type icons, retry, and remove.",
     category: "CRUD",
     Component: FileUpload01,
   },

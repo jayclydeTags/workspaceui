@@ -34,7 +34,7 @@ export function ConfirmDialogDemo() {
   }
 
   return (
-    <Page title="API keys" subtitle={`${keys.length} keys`}>
+    <Page title="API keys" subtitle={`${keys.length} keys`} hasPadding>
       {keys.length === 0 ? (
         <Empty>
           <EmptyHeader>

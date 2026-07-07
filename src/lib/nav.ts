@@ -54,6 +54,24 @@ export const blocksNav: NavSection[] = [
               "Single-record detail view with a header and Overview / Activity / Orders tabs.",
           },
           {
+            title: "Record Form Dialog 01",
+            href: "/blocks/record-form-dialog-01",
+            description:
+              "Standalone create/edit dialog — one form handles both add and update, seeded from the record being edited.",
+          },
+          {
+            title: "Record Detail 01",
+            href: "/blocks/record-detail-01",
+            description:
+              "Read-only single-record view — header with avatar/status badge and grouped label/value field sections, no tabs.",
+          },
+          {
+            title: "Master-Detail 01",
+            href: "/blocks/master-detail-01",
+            description:
+              "Resizable list + detail split pane — select a row on the left to view its fields on the right, with an empty state when nothing's selected.",
+          },
+          {
             title: "Department",
             href: "/blocks/department",
             description:
@@ -69,7 +87,7 @@ export const blocksNav: NavSection[] = [
             title: "File Upload 01",
             href: "/blocks/file-upload-01",
             description:
-              "Attachments panel — click-or-drag dropzone, per-file upload progress, type icons, error state, and remove.",
+              "Attachments panel — click-or-drag dropzone, per-file upload/error states, type icons, retry, and remove.",
           },
         ],
       },

@@ -5,13 +5,22 @@ import {
   FileImage,
   FileText,
   File as FileIcon,
-  Trash2,
+  RefreshCw,
   TriangleAlert,
   UploadCloud,
+  X,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import {
+  Attachment,
+  AttachmentAction,
+  AttachmentActions,
+  AttachmentContent,
+  AttachmentDescription,
+  AttachmentMedia,
+  AttachmentTitle,
+} from "@/components/ui/attachment"
 import {
   Empty,
   EmptyDescription,
@@ -19,37 +28,82 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
+import { Spinner } from "@/components/ui/spinner"
 import { Page } from "@/registry/bases/base/workspaceui/page"
 import {
   ATTACHMENTS,
+  extLabel,
   formatBytes,
-  type Attachment,
-  type AttachmentStatus,
+  type FileAttachment,
 } from "./data"
 
-function iconFor(name: string): React.ComponentType<{ className?: string }> {
+function fileIcon(name: string) {
   const ext = name.split(".").pop()?.toLowerCase() ?? ""
   if (["png", "jpg", "jpeg", "gif", "webp", "svg"].includes(ext))
-    return FileImage
+    return <FileImage />
   if (["pdf", "doc", "docx", "txt", "md", "csv", "xlsx"].includes(ext))
-    return FileText
-  return FileIcon
+    return <FileText />
+  return <FileIcon />
 }
 
-const STATUS_HINT: Record<AttachmentStatus, string> = {
-  uploading: "Uploading…",
-  done: "Uploaded",
-  error: "Upload failed",
+function FileRow({
+  file,
+  onRemove,
+  onRetry,
+}: {
+  file: FileAttachment
+  onRemove: (id: string) => void
+  onRetry: (id: string) => void
+}) {
+  return (
+    <Attachment state={file.status} className="w-full">
+      <AttachmentMedia>
+        {file.status === "uploading" ? (
+          <Spinner />
+        ) : file.status === "error" ? (
+          <TriangleAlert />
+        ) : (
+          fileIcon(file.name)
+        )}
+      </AttachmentMedia>
+      <AttachmentContent>
+        <AttachmentTitle>{file.name}</AttachmentTitle>
+        <AttachmentDescription>
+          {file.status === "uploading"
+            ? `Uploading · ${file.progress}%`
+            : file.status === "error"
+              ? "Upload failed. Try again."
+              : `${extLabel(file.name)} · ${formatBytes(file.size)}`}
+        </AttachmentDescription>
+      </AttachmentContent>
+      <AttachmentActions>
+        {file.status === "error" && (
+          <AttachmentAction
+            aria-label={`Retry ${file.name}`}
+            onClick={() => onRetry(file.id)}
+          >
+            <RefreshCw />
+          </AttachmentAction>
+        )}
+        <AttachmentAction
+          aria-label={`Remove ${file.name}`}
+          onClick={() => onRemove(file.id)}
+        >
+          <X />
+        </AttachmentAction>
+      </AttachmentActions>
+    </Attachment>
+  )
 }
 
 export function FileUpload01() {
-  const [files, setFiles] = React.useState<Attachment[]>(ATTACHMENTS)
+  const [files, setFiles] = React.useState<FileAttachment[]>(ATTACHMENTS)
   const [dragging, setDragging] = React.useState(false)
   const inputRef = React.useRef<HTMLInputElement>(null)
 
   function addFiles(list: FileList | null) {
     if (!list || list.length === 0) return
-    const added: Attachment[] = Array.from(list).map((f) => ({
+    const added: FileAttachment[] = Array.from(list).map((f) => ({
       id: crypto.randomUUID(),
       name: f.name,
       size: f.size,
@@ -61,6 +115,16 @@ export function FileUpload01() {
 
   const remove = (id: string) =>
     setFiles((prev) => prev.filter((f) => f.id !== id))
+
+  // ponytail: retry just flips the row back to done — no real re-upload/network
+  // call to retry, this is a static demo. Wire to the real upload request when
+  // this block is adapted to an actual endpoint.
+  const retry = (id: string) =>
+    setFiles((prev) =>
+      prev.map((f) =>
+        f.id === id ? { ...f, status: "done", progress: 100 } : f
+      )
+    )
 
   const doneCount = files.filter((f) => f.status === "done").length
 
@@ -131,76 +195,11 @@ export function FileUpload01() {
             </EmptyHeader>
           </Empty>
         ) : (
-          <ul className="flex flex-col gap-2">
-            {files.map((f) => {
-              const Icon = iconFor(f.name)
-              return (
-                <li
-                  key={f.id}
-                  className="flex items-center gap-3 rounded-md border p-3"
-                >
-                  <span
-                    className={cn(
-                      "flex size-9 shrink-0 items-center justify-center rounded-md bg-muted [&_svg]:size-4.5",
-                      f.status === "error"
-                        ? "text-destructive"
-                        : "text-muted-foreground"
-                    )}
-                    aria-hidden="true"
-                  >
-                    {f.status === "error" ? <TriangleAlert /> : <Icon />}
-                  </span>
-
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="truncate text-sm font-medium">
-                        {f.name}
-                      </span>
-                      <span className="shrink-0 text-xs text-muted-foreground">
-                        {formatBytes(f.size)}
-                      </span>
-                    </div>
-                    {f.status === "uploading" ? (
-                      <div
-                        role="progressbar"
-                        aria-valuenow={f.progress}
-                        aria-valuemin={0}
-                        aria-valuemax={100}
-                        aria-label={`Uploading ${f.name}`}
-                        className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-muted"
-                      >
-                        <div
-                          className="h-full rounded-full bg-primary transition-all"
-                          style={{ width: `${f.progress}%` }}
-                        />
-                      </div>
-                    ) : (
-                      <span
-                        className={cn(
-                          "text-xs",
-                          f.status === "error"
-                            ? "text-destructive"
-                            : "text-muted-foreground"
-                        )}
-                      >
-                        {STATUS_HINT[f.status]}
-                      </span>
-                    )}
-                  </div>
-
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="size-8 shrink-0 text-muted-foreground"
-                    aria-label={`Remove ${f.name}`}
-                    onClick={() => remove(f.id)}
-                  >
-                    <Trash2 />
-                  </Button>
-                </li>
-              )
-            })}
-          </ul>
+          <div className="flex flex-col gap-2">
+            {files.map((f) => (
+              <FileRow key={f.id} file={f} onRemove={remove} onRetry={retry} />
+            ))}
+          </div>
         )}
       </div>
     </Page>

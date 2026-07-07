@@ -111,6 +111,23 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
     { name: "page.tsx", path: "app/detail-tabs/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/detail-tabs/data.ts", src: "data.ts" },
   ],
+  "record-form-dialog-01": [
+    { name: "page.tsx", path: "app/record-form-dialog/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/record-form-dialog/data.ts", src: "data.ts" },
+    {
+      name: "contact-dialog.tsx",
+      path: "components/blocks/record-form-dialog-01/components/contact-dialog.tsx",
+      src: "components/contact-dialog.tsx",
+    },
+  ],
+  "record-detail-01": [
+    { name: "page.tsx", path: "app/record-detail/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/record-detail/data.ts", src: "data.ts" },
+  ],
+  "master-detail-01": [
+    { name: "page.tsx", path: "app/master-detail/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/master-detail/data.ts", src: "data.ts" },
+  ],
   dashboard: [
     { name: "page.tsx", path: "app/dashboard/page.tsx", src: "page.tsx" },
     {

@@ -300,6 +300,94 @@
       ]
     },
     {
+      "name": "record-form-dialog-01",
+      "type": "registry:block",
+      "title": "Record Form Dialog 01",
+      "description": "Standalone create/edit dialog — one form handles both add and update, seeded from the record being edited.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "avatar",
+        "badge",
+        "button",
+        "dialog",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/record-form-dialog-01/page.tsx",
+          "type": "registry:page",
+          "target": "app/record-form-dialog/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/record-form-dialog-01/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/record-form-dialog-01/components/contact-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "record-detail-01",
+      "type": "registry:block",
+      "title": "Record Detail 01",
+      "description": "Read-only single-record view — header with avatar/status badge and grouped label/value field sections, no tabs.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "avatar",
+        "badge",
+        "button",
+        "separator",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/record-detail-01/page.tsx",
+          "type": "registry:page",
+          "target": "app/record-detail/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/record-detail-01/data.ts",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "master-detail-01",
+      "type": "registry:block",
+      "title": "Master-Detail 01",
+      "description": "Resizable list + detail split pane — select a row on the left to view its fields on the right, with an empty state when nothing's selected.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "badge",
+        "empty",
+        "resizable",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/master-detail-01/page.tsx",
+          "type": "registry:page",
+          "target": "app/master-detail/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/master-detail-01/data.ts",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "department",
       "type": "registry:block",
       "title": "Department",
@@ -372,13 +460,15 @@
       "name": "file-upload-01",
       "type": "registry:block",
       "title": "File Upload 01",
-      "description": "Attachments panel — click-or-drag dropzone, per-file upload progress, type icons, error state, and remove.",
+      "description": "Attachments panel — click-or-drag dropzone, per-file upload/error states, type icons, retry, and remove.",
       "dependencies": [
         "lucide-react"
       ],
       "registryDependencies": [
+        "attachment",
         "button",
         "empty",
+        "spinner",
         "jayclydeTags/workspaceui/page"
       ],
       "files": [

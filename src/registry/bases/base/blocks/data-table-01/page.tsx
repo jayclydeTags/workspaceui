@@ -11,6 +11,7 @@ export function DataTable01() {
       title="Payments"
       subtitle={`${PAYMENTS.length} payments`}
       className="@container overflow-hidden"
+      hasPadding
     >
       <DataTable
         columns={columns}

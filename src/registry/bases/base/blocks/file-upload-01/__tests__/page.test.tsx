@@ -5,16 +5,13 @@ import { describe, it, expect } from "vitest"
 import { FileUpload01 } from "../page"
 
 describe("FileUpload01", () => {
-  it("lists seeded attachments with formatted sizes and an upload progress bar", () => {
+  it("lists seeded attachments with formatted sizes and upload/error states", () => {
     render(<FileUpload01 />)
     expect(screen.getByText("4 files · 2 uploaded")).toBeInTheDocument()
     expect(screen.getByText("Q3-financials.pdf")).toBeInTheDocument()
-    expect(screen.getByText("2.3 MB")).toBeInTheDocument()
-    // the in-progress upload renders a progressbar
-    expect(screen.getByRole("progressbar")).toHaveAttribute(
-      "aria-valuenow",
-      "62"
-    )
+    expect(screen.getByText("PDF · 2.3 MB")).toBeInTheDocument()
+    expect(screen.getByText("Uploading · 62%")).toBeInTheDocument()
+    expect(screen.getByText("Upload failed. Try again.")).toBeInTheDocument()
   })
 
   it("removes an attachment", async () => {
@@ -38,5 +35,19 @@ describe("FileUpload01", () => {
 
     expect(screen.getByText("notes.txt")).toBeInTheDocument()
     expect(screen.getByText(/^5 files/)).toBeInTheDocument()
+  })
+
+  it("retries a failed upload", async () => {
+    const user = userEvent.setup()
+    render(<FileUpload01 />)
+
+    await user.click(
+      screen.getByRole("button", { name: "Retry warehouse-photo.jpg" })
+    )
+
+    expect(
+      screen.queryByText("Upload failed. Try again.")
+    ).not.toBeInTheDocument()
+    expect(screen.getByText("4 files · 3 uploaded")).toBeInTheDocument()
   })
 })

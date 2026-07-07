@@ -16,8 +16,10 @@ the entity + fields.
 
 - [x] **Data table** — generic TanStack block `data-table-01` (sorting, column
   filter, column visibility, row selection, pagination). Swap `Payment`/columns to reuse.
-- [~] **Create/Edit form dialog** — add + update in one form. *`department` has it inline; not extracted.*
-- [~] **Detail / record view** — single-record read-only. *`payslip-detail-01`, `invoice-detail-01` are variants.*
+- [x] **Create/Edit form dialog** — `record-form-dialog-01`: standalone
+  create/edit dialog, one form for both, extracted from `department`'s inline pattern.
+- [x] **Detail / record view** — `record-detail-01`: read-only header + grouped
+  label/value field sections, no tabs (distinct from `detail-tabs`/`invoice-detail-01`).
 - [x] **Delete confirm dialog** — generic `confirm-dialog` block (controlled,
   custom title/description/labels, destructive styling). Reusable for any irreversible action.
 - [x] **Search + filter bar** — `search-filter-bar` block (search box + faceted
@@ -25,7 +27,8 @@ the entity + fields.
 - [x] **Bulk actions toolbar** — `bulk-actions-toolbar` block: row selection +
   select-all + contextual toolbar (export/delete) with confirm on destructive action.
 - [x] **Detail tabs** — `detail-tabs` block: record header + Overview / Activity / Orders tabs.
-- [~] **Master–detail (list + panel)** — *`invoice-detail-01` demonstrates it.*
+- [x] **Master–detail (list + panel)** — `master-detail-01`: resizable list +
+  detail split pane, lighter than `invoice-detail-01`'s tabbed Workspace pattern.
 
 ## 1. Cross-cutting blocks (support CRUD, not domain-specific)
 

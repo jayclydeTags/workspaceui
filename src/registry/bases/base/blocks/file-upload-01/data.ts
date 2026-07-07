@@ -2,11 +2,11 @@
 
 export type AttachmentStatus = "uploading" | "done" | "error"
 
-export interface Attachment {
+export interface FileAttachment {
   id: string
   name: string
   size: number // bytes
-  progress: number // 0–100
+  progress: number // 0–100, only meaningful while status is "uploading"
   status: AttachmentStatus
 }
 
@@ -24,9 +24,12 @@ export function formatBytes(bytes: number): string {
   return `${value.toFixed(value < 10 ? 1 : 0)} ${units[i]}`
 }
 
+export const extLabel = (name: string) =>
+  (name.split(".").pop() ?? "").toUpperCase()
+
 // ── Mock data ──────────────────────────────────────────────────────────────
 
-export const ATTACHMENTS: Attachment[] = [
+export const ATTACHMENTS: FileAttachment[] = [
   { id: "1", name: "Q3-financials.pdf", size: 2_411_520, progress: 100, status: "done" },
   { id: "2", name: "logo-final.png", size: 184_320, progress: 100, status: "done" },
   { id: "3", name: "vendor-contract.docx", size: 96_240, progress: 62, status: "uploading" },

@@ -26,6 +26,7 @@ export function SearchFilterBar() {
     <Page
       title="Members"
       subtitle={`${results.length} of ${MEMBERS.length} members`}
+      hasPadding
     >
       <div className="flex flex-col gap-4">
         <FilterBar filters={filters} onChange={setFilters} />

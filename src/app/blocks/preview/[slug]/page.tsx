@@ -17,5 +17,9 @@ export default async function BlockPreviewFrame({ params }: PageProps) {
   const block = blocks.find((b) => b.slug === slug)
   if (!block) notFound()
   const { Component } = block
-  return <Component />
+  return (
+    <div className="h-dvh">
+      <Component />
+    </div>
+  )
 }

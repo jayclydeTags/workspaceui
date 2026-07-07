@@ -250,6 +250,36 @@
       ]
     },
     {
+      "name": "dashboard",
+      "type": "registry:block",
+      "title": "Dashboard",
+      "description": "Icon-collapsible sidebar (trigger lives in the sidebar) paired with the Workspace component; each tab renders inside the Page component.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "jayclydeTags/workspaceui/workspace",
+        "jayclydeTags/workspaceui/page",
+        "sidebar",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/dashboard/page.tsx",
+          "type": "registry:page",
+          "target": "app/dashboard/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/dashboard/components/app-sidebar.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/dashboard/components/dashboard-content.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "activity-log-01",
       "type": "registry:block",
       "title": "Activity Log 01",

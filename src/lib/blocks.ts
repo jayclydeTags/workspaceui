@@ -27,6 +27,7 @@ import { CompensationTable01 } from "@/registry/bases/base/blocks/compensation-t
 import { PayrollCalendar01 } from "@/registry/bases/base/blocks/payroll-calendar-01/page"
 import { OffcyclePaymentForm01 } from "@/registry/bases/base/blocks/offcycle-payment-form-01/page"
 import { PurchaseOrderForm01 } from "@/registry/bases/base/blocks/purchase-order-form-01/page"
+import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
 import { Settings01 } from "@/registry/bases/base/blocks/settings-01/page"
 import { VerifyEmail } from "@/registry/bases/base/blocks/verify-email/page"
 import { Unauthorized403 } from "@/registry/bases/base/blocks/unauthorized-403/page"
@@ -265,6 +266,14 @@ export const blocks: BlockMeta[] = [
       "Sign-in with Google/GitHub SSO buttons over an email-and-password form — provider divider, inline validation, invalid-credentials banner, and pending state.",
     category: "Authentication",
     Component: LoginSocial,
+  },
+  {
+    slug: "session-expired",
+    title: "Session Expired",
+    description:
+      "Re-authentication prompt after an idle timeout — quick password re-entry for the current user, incorrect-password error, and a switch-user action.",
+    category: "Authentication",
+    Component: SessionExpired,
   },
   {
     slug: "account-locked",

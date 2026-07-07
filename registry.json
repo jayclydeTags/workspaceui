@@ -451,6 +451,29 @@
       ]
     },
     {
+      "name": "session-expired",
+      "type": "registry:block",
+      "title": "Session Expired",
+      "description": "Re-authentication prompt after an idle timeout — quick password re-entry for the current user, incorrect-password error, and a switch-user action.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "button",
+        "card",
+        "field",
+        "input",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/session-expired/page.tsx",
+          "type": "registry:page",
+          "target": "app/session-expired/page.tsx"
+        }
+      ]
+    },
+    {
       "name": "login",
       "type": "registry:block",
       "title": "Login",

@@ -171,6 +171,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Account-locked screen after too many failed sign-in attempts — locked email, lockout countdown, and reset/support actions.",
           },
+          {
+            title: "Session Expired",
+            href: "/blocks/session-expired",
+            description:
+              "Re-authentication prompt after an idle timeout — quick password re-entry for the current user, incorrect-password error, and a switch-user action.",
+          },
         ],
       },
       {

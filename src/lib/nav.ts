@@ -24,8 +24,8 @@ export const blocksNav: NavSection[] = [
         title: "CRUD",
         items: [
           {
-            title: "Data Table 01",
-            href: "/blocks/data-table-01",
+            title: "Data Table",
+            href: "/blocks/data-table",
             description:
               "Generic TanStack data table — sortable columns, column filter, column visibility, row selection, and pagination.",
           },
@@ -54,20 +54,20 @@ export const blocksNav: NavSection[] = [
               "Single-record detail view with a header and Overview / Activity / Orders tabs.",
           },
           {
-            title: "Record Form Dialog 01",
-            href: "/blocks/record-form-dialog-01",
+            title: "Record Form Dialog",
+            href: "/blocks/record-form-dialog",
             description:
               "Standalone create/edit dialog — one form handles both add and update, seeded from the record being edited.",
           },
           {
-            title: "Record Detail 01",
-            href: "/blocks/record-detail-01",
+            title: "Record Detail",
+            href: "/blocks/record-detail",
             description:
               "Read-only single-record view — header with avatar/status badge and grouped label/value field sections, no tabs.",
           },
           {
-            title: "Master-Detail 01",
-            href: "/blocks/master-detail-01",
+            title: "Master-Detail",
+            href: "/blocks/master-detail",
             description:
               "Resizable list + detail split pane — select a row on the left to view its fields on the right, with an empty state when nothing's selected.",
           },
@@ -78,14 +78,14 @@ export const blocksNav: NavSection[] = [
               "Departments table with create/edit dialog form, row-action menu, and a delete confirmation.",
           },
           {
-            title: "Import / Export 01",
-            href: "/blocks/import-export-01",
+            title: "Import / Export",
+            href: "/blocks/import-export",
             description:
               "CSV import wizard — paste or load data, map columns to entity fields with a live preview, then import. Includes a CSV export action.",
           },
           {
-            title: "File Upload 01",
-            href: "/blocks/file-upload-01",
+            title: "File Upload",
+            href: "/blocks/file-upload",
             description:
               "Attachments panel — click-or-drag dropzone, per-file upload/error states, type icons, retry, and remove.",
           },
@@ -95,14 +95,14 @@ export const blocksNav: NavSection[] = [
         title: "Communication",
         items: [
           {
-            title: "Notifications Inbox 01",
-            href: "/blocks/notifications-inbox-01",
+            title: "Notifications Inbox",
+            href: "/blocks/notifications-inbox",
             description:
               "Notification inbox with All/Unread tabs, per-type icons, unread indicators, mark-one-read on click, and mark-all-read.",
           },
           {
-            title: "Comments Thread 01",
-            href: "/blocks/comments-thread-01",
+            title: "Comments Thread",
+            href: "/blocks/comments-thread",
             description:
               "Threaded comments with avatars, inline reply composers, and a top-level composer, with a running comment count.",
           },
@@ -112,8 +112,8 @@ export const blocksNav: NavSection[] = [
         title: "Payroll",
         items: [
           {
-            title: "Payroll Run 01",
-            href: "/blocks/payroll-run-01",
+            title: "Payroll Run",
+            href: "/blocks/payroll-run",
             description:
               "Payroll run summary with per-employee payslips — gross, deductions, and net pay.",
           },
@@ -142,26 +142,26 @@ export const blocksNav: NavSection[] = [
               "Employee payroll task dashboard — pending/overdue/completed overview cards, a searchable task list, and a complete-with-summary dialog.",
           },
           {
-            title: "Payslip Detail 01",
-            href: "/blocks/payslip-detail-01",
+            title: "Payslip Detail",
+            href: "/blocks/payslip-detail",
             description:
               "Single-employee payslip breakdown — earnings, deductions, and employer contributions with YTD totals.",
           },
           {
-            title: "Compensation Table 01",
-            href: "/blocks/compensation-table-01",
+            title: "Compensation Table",
+            href: "/blocks/compensation-table",
             description:
               "Searchable org-wide salary overview with pay band, last adjustment, and change percentage.",
           },
           {
-            title: "Payroll Calendar 01",
-            href: "/blocks/payroll-calendar-01",
+            title: "Payroll Calendar",
+            href: "/blocks/payroll-calendar",
             description:
               "Monthly pay schedule with timesheet cutoffs, pay dates, and the next upcoming run highlighted.",
           },
           {
-            title: "Off-cycle Payment Form 01",
-            href: "/blocks/offcycle-payment-form-01",
+            title: "Off-cycle Payment Form",
+            href: "/blocks/offcycle-payment-form",
             description:
               "Form for issuing a one-off bonus, correction, or reimbursement outside the regular payroll run.",
           },
@@ -188,20 +188,20 @@ export const blocksNav: NavSection[] = [
         title: "Activity",
         items: [
           {
-            title: "Activity Log 01",
-            href: "/blocks/activity-log-01",
+            title: "Activity Log",
+            href: "/blocks/activity-log",
             description:
               "Filterable activity log with a responsive datatable — collapses to cards on narrow panes.",
           },
           {
-            title: "Activity Feed 01",
-            href: "/blocks/activity-feed-01",
+            title: "Activity Feed",
+            href: "/blocks/activity-feed",
             description:
               "Grouped activity timeline with type/user filters and running stats.",
           },
           {
-            title: "Audit Log 01",
-            href: "/blocks/audit-log-01",
+            title: "Audit Log",
+            href: "/blocks/audit-log",
             description:
               "Field-level audit trail — who changed what field, with before → after values, actor avatars, and search/action filters.",
           },
@@ -211,8 +211,8 @@ export const blocksNav: NavSection[] = [
         title: "Access",
         items: [
           {
-            title: "Access Control 01",
-            href: "/blocks/access-control-01",
+            title: "Access Control",
+            href: "/blocks/access-control",
             description:
               "Manage role permissions across resources with a per-role permission matrix.",
           },
@@ -222,14 +222,14 @@ export const blocksNav: NavSection[] = [
         title: "Finance",
         items: [
           {
-            title: "Invoice Detail 01",
-            href: "/blocks/invoice-detail-01",
+            title: "Invoice Detail",
+            href: "/blocks/invoice-detail",
             description:
               "Master-detail invoice workspace — select a row to open its line items in a new tab.",
           },
           {
-            title: "Purchase Order Form 01",
-            href: "/blocks/purchase-order-form-01",
+            title: "Purchase Order Form",
+            href: "/blocks/purchase-order-form",
             description:
               "Three-step wizard for creating a purchase order — vendor details, line items, and review.",
           },
@@ -269,8 +269,8 @@ export const blocksNav: NavSection[] = [
         title: "Operations",
         items: [
           {
-            title: "Approval Board 01",
-            href: "/blocks/approval-board-01",
+            title: "Approval Board",
+            href: "/blocks/approval-board",
             description:
               "Drag-and-drop Kanban board for triaging expense, purchase order, and time-off approval requests.",
           },
@@ -280,8 +280,8 @@ export const blocksNav: NavSection[] = [
         title: "Settings",
         items: [
           {
-            title: "Settings 01",
-            href: "/blocks/settings-01",
+            title: "Settings",
+            href: "/blocks/settings",
             description:
               "Sectioned workspace settings — company profile, notifications, billing, and security.",
           },

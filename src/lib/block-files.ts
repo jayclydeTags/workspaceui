@@ -9,7 +9,7 @@ export interface BlockFileRef {
 }
 
 export const blockFiles: Record<string, BlockFileRef[]> = {
-  "payroll-run-01": [
+  "payroll-run": [
     { name: "page.tsx", path: "app/payroll-run/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/payroll-run/data.ts", src: "data.ts" },
   ],
@@ -141,19 +141,19 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
     { name: "page.tsx", path: "app/payroll-tasks/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/payroll-tasks/data.ts", src: "data.ts" },
   ],
-  "payslip-detail-01": [
+  "payslip-detail": [
     { name: "page.tsx", path: "app/payslip-detail/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/payslip-detail/data.ts", src: "data.ts" },
   ],
-  "compensation-table-01": [
+  "compensation-table": [
     { name: "page.tsx", path: "app/compensation-table/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/compensation-table/data.ts", src: "data.ts" },
   ],
-  "payroll-calendar-01": [
+  "payroll-calendar": [
     { name: "page.tsx", path: "app/payroll-calendar/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/payroll-calendar/data.ts", src: "data.ts" },
   ],
-  "offcycle-payment-form-01": [
+  "offcycle-payment-form": [
     { name: "page.tsx", path: "app/offcycle-payment-form/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/offcycle-payment-form/data.ts", src: "data.ts" },
   ],
@@ -171,37 +171,37 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/department-dialog.tsx",
     },
   ],
-  "import-export-01": [
+  "import-export": [
     { name: "page.tsx", path: "app/import-export/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/import-export/data.ts", src: "data.ts" },
   ],
-  "file-upload-01": [
+  "file-upload": [
     { name: "page.tsx", path: "app/file-upload/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/file-upload/data.ts", src: "data.ts" },
   ],
-  "notifications-inbox-01": [
+  "notifications-inbox": [
     { name: "page.tsx", path: "app/notifications-inbox/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/notifications-inbox/data.ts", src: "data.ts" },
   ],
-  "comments-thread-01": [
+  "comments-thread": [
     { name: "page.tsx", path: "app/comments-thread/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/comments-thread/data.ts", src: "data.ts" },
   ],
-  "audit-log-01": [
+  "audit-log": [
     { name: "page.tsx", path: "app/audit-log/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/audit-log/data.ts", src: "data.ts" },
   ],
-  "data-table-01": [
+  "data-table": [
     { name: "page.tsx", path: "app/data-table/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/data-table/data.ts", src: "data.ts" },
     {
       name: "columns.tsx",
-      path: "components/blocks/data-table-01/components/columns.tsx",
+      path: "components/blocks/data-table/components/columns.tsx",
       src: "components/columns.tsx",
     },
     {
       name: "data-table.tsx",
-      path: "components/blocks/data-table-01/components/data-table.tsx",
+      path: "components/blocks/data-table/components/data-table.tsx",
       src: "components/data-table.tsx",
     },
   ],
@@ -235,20 +235,20 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
     { name: "page.tsx", path: "app/detail-tabs/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/detail-tabs/data.ts", src: "data.ts" },
   ],
-  "record-form-dialog-01": [
+  "record-form-dialog": [
     { name: "page.tsx", path: "app/record-form-dialog/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/record-form-dialog/data.ts", src: "data.ts" },
     {
       name: "contact-dialog.tsx",
-      path: "components/blocks/record-form-dialog-01/components/contact-dialog.tsx",
+      path: "components/blocks/record-form-dialog/components/contact-dialog.tsx",
       src: "components/contact-dialog.tsx",
     },
   ],
-  "record-detail-01": [
+  "record-detail": [
     { name: "page.tsx", path: "app/record-detail/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/record-detail/data.ts", src: "data.ts" },
   ],
-  "master-detail-01": [
+  "master-detail": [
     { name: "page.tsx", path: "app/master-detail/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/master-detail/data.ts", src: "data.ts" },
   ],
@@ -278,67 +278,67 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/dashboard-content.tsx",
     },
   ],
-  "activity-log-01": [
+  "activity-log": [
     { name: "page.tsx", path: "app/activity-log/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/activity-log/data.ts", src: "data.ts" },
     {
       name: "data-table.tsx",
-      path: "components/blocks/activity-log-01/components/data-table.tsx",
+      path: "components/blocks/activity-log/components/data-table.tsx",
       src: "components/data-table.tsx",
     },
   ],
-  "activity-feed-01": [
+  "activity-feed": [
     { name: "page.tsx", path: "app/activity-feed/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/activity-feed/data.ts", src: "data.ts" },
   ],
-  "access-control-01": [
+  "access-control": [
     { name: "page.tsx", path: "app/access-control/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/access-control/data.ts", src: "data.ts" },
     {
       name: "permission-table.tsx",
-      path: "components/blocks/access-control-01/components/permission-table.tsx",
+      path: "components/blocks/access-control/components/permission-table.tsx",
       src: "components/permission-table.tsx",
     },
   ],
-  "invoice-detail-01": [
+  "invoice-detail": [
     { name: "page.tsx", path: "app/invoice-detail/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/invoice-detail/data.ts", src: "data.ts" },
     {
       name: "invoice-list.tsx",
-      path: "components/blocks/invoice-detail-01/components/invoice-list.tsx",
+      path: "components/blocks/invoice-detail/components/invoice-list.tsx",
       src: "components/invoice-list.tsx",
     },
     {
       name: "invoice-view.tsx",
-      path: "components/blocks/invoice-detail-01/components/invoice-view.tsx",
+      path: "components/blocks/invoice-detail/components/invoice-view.tsx",
       src: "components/invoice-view.tsx",
     },
   ],
-  "purchase-order-form-01": [
+  "purchase-order-form": [
     { name: "page.tsx", path: "app/purchase-order-form/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/purchase-order-form/data.ts", src: "data.ts" },
     {
       name: "step-indicator.tsx",
-      path: "components/blocks/purchase-order-form-01/components/step-indicator.tsx",
+      path: "components/blocks/purchase-order-form/components/step-indicator.tsx",
       src: "components/step-indicator.tsx",
     },
     {
       name: "wizard-steps.tsx",
-      path: "components/blocks/purchase-order-form-01/components/wizard-steps.tsx",
+      path: "components/blocks/purchase-order-form/components/wizard-steps.tsx",
       src: "components/wizard-steps.tsx",
     },
   ],
-  "approval-board-01": [
+  "approval-board": [
     { name: "page.tsx", path: "app/approval-board/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/approval-board/data.ts", src: "data.ts" },
     {
       name: "approval-card.tsx",
-      path: "components/blocks/approval-board-01/components/approval-card.tsx",
+      path: "components/blocks/approval-board/components/approval-card.tsx",
       src: "components/approval-card.tsx",
     },
     {
       name: "approval-column.tsx",
-      path: "components/blocks/approval-board-01/components/approval-column.tsx",
+      path: "components/blocks/approval-board/components/approval-column.tsx",
       src: "components/approval-column.tsx",
     },
   ],
@@ -409,17 +409,17 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
   "session-expired": [
     { name: "page.tsx", path: "app/session-expired/page.tsx", src: "page.tsx" },
   ],
-  "settings-01": [
+  "settings": [
     { name: "page.tsx", path: "app/settings/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/settings/data.ts", src: "data.ts" },
     {
       name: "settings-nav.tsx",
-      path: "components/blocks/settings-01/components/settings-nav.tsx",
+      path: "components/blocks/settings/components/settings-nav.tsx",
       src: "components/settings-nav.tsx",
     },
     {
       name: "sections.tsx",
-      path: "components/blocks/settings-01/components/sections.tsx",
+      path: "components/blocks/settings/components/sections.tsx",
       src: "components/sections.tsx",
     },
   ],

@@ -11,7 +11,7 @@ Workflow for a new block:
    block needs (`Card`, `Table`, `Sidebar`, etc.).
 2. Build the block folder (`page.tsx`, `components/`, `data.ts`) using those
    primitives, following an existing block (e.g.
-   `blocks/compensation-table-01/`) as the reference pattern.
+   `blocks/compensation-table/`) as the reference pattern.
 3. Then satisfy the testing rule in
    [`component-testing.md`](component-testing.md) — component test,
    `registry.json` entry, and doc/sidebar entries.

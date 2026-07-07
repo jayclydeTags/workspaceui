@@ -14,12 +14,12 @@ generic block) · `[ ]` to build.
 The 80% core. Build these generic first — every domain module below just swaps
 the entity + fields.
 
-- [x] **Data table** — generic TanStack block `data-table-01` (sorting, column
+- [x] **Data table** — generic TanStack block `data-table` (sorting, column
   filter, column visibility, row selection, pagination). Swap `Payment`/columns to reuse.
-- [x] **Create/Edit form dialog** — `record-form-dialog-01`: standalone
+- [x] **Create/Edit form dialog** — `record-form-dialog`: standalone
   create/edit dialog, one form for both, extracted from `department`'s inline pattern.
-- [x] **Detail / record view** — `record-detail-01`: read-only header + grouped
-  label/value field sections, no tabs (distinct from `detail-tabs`/`invoice-detail-01`).
+- [x] **Detail / record view** — `record-detail`: read-only header + grouped
+  label/value field sections, no tabs (distinct from `detail-tabs`/`invoice-detail`).
 - [x] **Delete confirm dialog** — generic `confirm-dialog` block (controlled,
   custom title/description/labels, destructive styling). Reusable for any irreversible action.
 - [x] **Search + filter bar** — `search-filter-bar` block (search box + faceted
@@ -27,21 +27,21 @@ the entity + fields.
 - [x] **Bulk actions toolbar** — `bulk-actions-toolbar` block: row selection +
   select-all + contextual toolbar (export/delete) with confirm on destructive action.
 - [x] **Detail tabs** — `detail-tabs` block: record header + Overview / Activity / Orders tabs.
-- [x] **Master–detail (list + panel)** — `master-detail-01`: resizable list +
-  detail split pane, lighter than `invoice-detail-01`'s tabbed Workspace pattern.
+- [x] **Master–detail (list + panel)** — `master-detail`: resizable list +
+  detail split pane, lighter than `invoice-detail`'s tabbed Workspace pattern.
 
 ## 1. Cross-cutting blocks (support CRUD, not domain-specific)
 
 - [x] **Dashboard / KPI stat cards** — `dashboard`, `dashboard-01`
-- [x] **Activity log / timeline** — `activity-log-01`, `activity-feed-01`
-- [x] **Approval workflow** — `approval-board-01`
-- [x] **Access / role–permission matrix** — `access-control-01`
-- [x] **Settings (tabbed)** — `settings-01`
-- [x] **Import / export (CSV) wizard** — `import-export-01`
-- [x] **Notifications / inbox** — `notifications-inbox-01`
-- [x] **File / document upload + attachments** — `file-upload-01`
-- [x] **Comments / notes thread** — `comments-thread-01`
-- [x] **Audit log** (distinct from activity feed — who changed what field) — `audit-log-01`
+- [x] **Activity log / timeline** — `activity-log`, `activity-feed`
+- [x] **Approval workflow** — `approval-board`
+- [x] **Access / role–permission matrix** — `access-control`
+- [x] **Settings (tabbed)** — `settings`
+- [x] **Import / export (CSV) wizard** — `import-export`
+- [x] **Notifications / inbox** — `notifications-inbox`
+- [x] **File / document upload + attachments** — `file-upload`
+- [x] **Comments / notes thread** — `comments-thread`
+- [x] **Audit log** (distinct from activity feed — who changed what field) — `audit-log`
 
 ---
 
@@ -51,19 +51,19 @@ Each domain = its core CRUD entities. Ship the list + form + detail per entity;
 reuse the universal blocks from §0.
 
 ### Payroll  *(done)*
-- [x] Pay runs — `payroll-run-01`
-- [x] Payslips — `payslip-detail-01`
-- [x] Compensation — `compensation-table-01`
-- [x] Pay calendar — `payroll-calendar-01`
-- [x] Off-cycle payment — `offcycle-payment-form-01`
+- [x] Pay runs — `payroll-run`
+- [x] Payslips — `payslip-detail`
+- [x] Compensation — `compensation-table`
+- [x] Pay calendar — `payroll-calendar`
+- [x] Off-cycle payment — `offcycle-payment-form`
 - [x] Payroll tasks — `payroll-tasks`
 - [x] Employees list/form (shared with HRIS) — `employee`
 - [x] Deductions / benefits — `deductions-benefits`
 - [x] Tax tables — `tax-tables`
 
 ### Accounting / Finance  *(done)*
-- [x] Invoice detail — `invoice-detail-01`
-- [x] Purchase order form — `purchase-order-form-01`
+- [x] Invoice detail — `invoice-detail`
+- [x] Purchase order form — `purchase-order-form`
 - [x] Chart of accounts — `chart-of-accounts`
 - [x] Journal entries — `journal-entries`
 - [x] Bills — `bills`
@@ -74,7 +74,7 @@ reuse the universal blocks from §0.
 - [ ] Products / SKUs
 - [ ] Stock levels
 - [ ] Warehouses
-- [ ] Purchase orders *(reuse `purchase-order-form-01`)*
+- [ ] Purchase orders *(reuse `purchase-order-form`)*
 - [ ] Stock movements
 
 ### HRIS
@@ -96,7 +96,7 @@ reuse the universal blocks from §0.
 - [ ] Contacts
 - [ ] Accounts
 - [ ] Deals / pipeline
-- [ ] Activities *(reuse `activity-feed-01`)*
+- [ ] Activities *(reuse `activity-feed`)*
 
 ---
 

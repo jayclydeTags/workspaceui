@@ -1,50 +1,50 @@
 import type { ComponentType } from "react"
 
-import { AccessControl01 } from "@/registry/bases/base/blocks/access-control-01/page"
+import { AccessControl } from "@/registry/bases/base/blocks/access-control/page"
 import { AccountLocked } from "@/registry/bases/base/blocks/account-locked/page"
 import { AccountSuspended } from "@/registry/bases/base/blocks/account-suspended/page"
-import { ApprovalBoard01 } from "@/registry/bases/base/blocks/approval-board-01/page"
-import { AuditLog01 } from "@/registry/bases/base/blocks/audit-log-01/page"
+import { ApprovalBoard } from "@/registry/bases/base/blocks/approval-board/page"
+import { AuditLog } from "@/registry/bases/base/blocks/audit-log/page"
 import { BulkActionsToolbar } from "@/registry/bases/base/blocks/bulk-actions-toolbar/page"
-import { CommentsThread01 } from "@/registry/bases/base/blocks/comments-thread-01/page"
+import { CommentsThread } from "@/registry/bases/base/blocks/comments-thread/page"
 import { ConfirmDialogDemo } from "@/registry/bases/base/blocks/confirm-dialog/page"
-import { ActivityFeed01 } from "@/registry/bases/base/blocks/activity-feed-01/page"
-import { ActivityLog01 } from "@/registry/bases/base/blocks/activity-log-01/page"
+import { ActivityFeed } from "@/registry/bases/base/blocks/activity-feed/page"
+import { ActivityLog } from "@/registry/bases/base/blocks/activity-log/page"
 import { Dashboard } from "@/registry/bases/base/blocks/dashboard/page"
-import { DataTable01 } from "@/registry/bases/base/blocks/data-table-01/page"
+import { DataTable01 } from "@/registry/bases/base/blocks/data-table/page"
 import { Department } from "@/registry/bases/base/blocks/department/page"
 import { DetailTabs } from "@/registry/bases/base/blocks/detail-tabs/page"
 import { Dashboard01 } from "@/registry/bases/base/blocks/dashboard-01/page"
-import { FileUpload01 } from "@/registry/bases/base/blocks/file-upload-01/page"
+import { FileUpload } from "@/registry/bases/base/blocks/file-upload/page"
 import { ForbiddenWorkspace } from "@/registry/bases/base/blocks/forbidden-workspace/page"
 import { ForgotPassword } from "@/registry/bases/base/blocks/forgot-password/page"
-import { ImportExport01 } from "@/registry/bases/base/blocks/import-export-01/page"
-import { InvoiceDetail01 } from "@/registry/bases/base/blocks/invoice-detail-01/page"
+import { ImportExport } from "@/registry/bases/base/blocks/import-export/page"
+import { InvoiceDetail } from "@/registry/bases/base/blocks/invoice-detail/page"
 import { Login } from "@/registry/bases/base/blocks/login/page"
 import { LoginSocial } from "@/registry/bases/base/blocks/login-social/page"
 import { MagicLinkSent } from "@/registry/bases/base/blocks/magic-link-sent/page"
-import { MasterDetail01 } from "@/registry/bases/base/blocks/master-detail-01/page"
-import { NotificationsInbox01 } from "@/registry/bases/base/blocks/notifications-inbox-01/page"
+import { MasterDetail } from "@/registry/bases/base/blocks/master-detail/page"
+import { NotificationsInbox } from "@/registry/bases/base/blocks/notifications-inbox/page"
 import { OtpVerify } from "@/registry/bases/base/blocks/otp-verify/page"
 import { PendingApproval } from "@/registry/bases/base/blocks/pending-approval/page"
-import { RecordDetail01 } from "@/registry/bases/base/blocks/record-detail-01/page"
-import { RecordFormDialog01 } from "@/registry/bases/base/blocks/record-form-dialog-01/page"
+import { RecordDetail } from "@/registry/bases/base/blocks/record-detail/page"
+import { RecordFormDialog } from "@/registry/bases/base/blocks/record-form-dialog/page"
 import { ResetPassword } from "@/registry/bases/base/blocks/reset-password/page"
 import { TwoFactorChallenge } from "@/registry/bases/base/blocks/two-factor-challenge/page"
 import { TwoFactorSetup } from "@/registry/bases/base/blocks/two-factor-setup/page"
 import { RecoveryCodes } from "@/registry/bases/base/blocks/recovery-codes/page"
 import { Register } from "@/registry/bases/base/blocks/register/page"
-import { PayrollRun01 } from "@/registry/bases/base/blocks/payroll-run-01/page"
+import { PayrollRun } from "@/registry/bases/base/blocks/payroll-run/page"
 import { Employee } from "@/registry/bases/base/blocks/employee/page"
 import { DeductionsBenefits } from "@/registry/bases/base/blocks/deductions-benefits/page"
 import { TaxTables } from "@/registry/bases/base/blocks/tax-tables/page"
 import { PayrollTasks } from "@/registry/bases/base/blocks/payroll-tasks/page"
-import { PayslipDetail01 } from "@/registry/bases/base/blocks/payslip-detail-01/page"
+import { PayslipDetail } from "@/registry/bases/base/blocks/payslip-detail/page"
 import { ChangePassword } from "@/registry/bases/base/blocks/change-password/page"
-import { CompensationTable01 } from "@/registry/bases/base/blocks/compensation-table-01/page"
-import { PayrollCalendar01 } from "@/registry/bases/base/blocks/payroll-calendar-01/page"
-import { OffcyclePaymentForm01 } from "@/registry/bases/base/blocks/offcycle-payment-form-01/page"
-import { PurchaseOrderForm01 } from "@/registry/bases/base/blocks/purchase-order-form-01/page"
+import { CompensationTable } from "@/registry/bases/base/blocks/compensation-table/page"
+import { PayrollCalendar } from "@/registry/bases/base/blocks/payroll-calendar/page"
+import { OffcyclePaymentForm } from "@/registry/bases/base/blocks/offcycle-payment-form/page"
+import { PurchaseOrderForm } from "@/registry/bases/base/blocks/purchase-order-form/page"
 import { ChartOfAccounts } from "@/registry/bases/base/blocks/chart-of-accounts/page"
 import { Bills } from "@/registry/bases/base/blocks/bills/page"
 import { Payments } from "@/registry/bases/base/blocks/payments/page"
@@ -52,7 +52,7 @@ import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/pag
 import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
 import { SearchFilterBar } from "@/registry/bases/base/blocks/search-filter-bar/page"
-import { Settings01 } from "@/registry/bases/base/blocks/settings-01/page"
+import { Settings } from "@/registry/bases/base/blocks/settings/page"
 import { VerifyEmail } from "@/registry/bases/base/blocks/verify-email/page"
 import { Unauthorized403 } from "@/registry/bases/base/blocks/unauthorized-403/page"
 import { UpgradeRequired } from "@/registry/bases/base/blocks/upgrade-required/page"
@@ -70,12 +70,12 @@ export interface BlockMeta {
 // everywhere, must not import this).
 export const blocks: BlockMeta[] = [
   {
-    slug: "payroll-run-01",
-    title: "Payroll Run 01",
+    slug: "payroll-run",
+    title: "Payroll Run",
     description:
       "Payroll run summary with per-employee payslips — gross, deductions, and net pay.",
     category: "Payroll",
-    Component: PayrollRun01,
+    Component: PayrollRun,
   },
   {
     slug: "employee",
@@ -110,40 +110,40 @@ export const blocks: BlockMeta[] = [
     Component: PayrollTasks,
   },
   {
-    slug: "payslip-detail-01",
-    title: "Payslip Detail 01",
+    slug: "payslip-detail",
+    title: "Payslip Detail",
     description:
       "Single-employee payslip breakdown — earnings, deductions, and employer contributions with YTD totals.",
     category: "Payroll",
-    Component: PayslipDetail01,
+    Component: PayslipDetail,
   },
   {
-    slug: "compensation-table-01",
-    title: "Compensation Table 01",
+    slug: "compensation-table",
+    title: "Compensation Table",
     description:
       "Searchable org-wide salary overview with pay band, last adjustment, and change percentage.",
     category: "Payroll",
-    Component: CompensationTable01,
+    Component: CompensationTable,
   },
   {
-    slug: "payroll-calendar-01",
-    title: "Payroll Calendar 01",
+    slug: "payroll-calendar",
+    title: "Payroll Calendar",
     description:
       "Monthly pay schedule with timesheet cutoffs, pay dates, and the next upcoming run highlighted.",
     category: "Payroll",
-    Component: PayrollCalendar01,
+    Component: PayrollCalendar,
   },
   {
-    slug: "offcycle-payment-form-01",
-    title: "Off-cycle Payment Form 01",
+    slug: "offcycle-payment-form",
+    title: "Off-cycle Payment Form",
     description:
       "Form for issuing a one-off bonus, correction, or reimbursement outside the regular payroll run.",
     category: "Payroll",
-    Component: OffcyclePaymentForm01,
+    Component: OffcyclePaymentForm,
   },
   {
-    slug: "data-table-01",
-    title: "Data Table 01",
+    slug: "data-table",
+    title: "Data Table",
     description:
       "Generic TanStack data table — sortable columns, column filter, column visibility, row selection, and pagination.",
     category: "CRUD",
@@ -182,28 +182,28 @@ export const blocks: BlockMeta[] = [
     Component: DetailTabs,
   },
   {
-    slug: "record-form-dialog-01",
-    title: "Record Form Dialog 01",
+    slug: "record-form-dialog",
+    title: "Record Form Dialog",
     description:
       "Standalone create/edit dialog — one form handles both add and update, seeded from the record being edited.",
     category: "CRUD",
-    Component: RecordFormDialog01,
+    Component: RecordFormDialog,
   },
   {
-    slug: "record-detail-01",
-    title: "Record Detail 01",
+    slug: "record-detail",
+    title: "Record Detail",
     description:
       "Read-only single-record view — header with avatar/status badge and grouped label/value field sections, no tabs.",
     category: "CRUD",
-    Component: RecordDetail01,
+    Component: RecordDetail,
   },
   {
-    slug: "master-detail-01",
-    title: "Master-Detail 01",
+    slug: "master-detail",
+    title: "Master-Detail",
     description:
       "Resizable list + detail split pane — select a row on the left to view its fields on the right, with an empty state when nothing's selected.",
     category: "CRUD",
-    Component: MasterDetail01,
+    Component: MasterDetail,
   },
   {
     slug: "department",
@@ -214,36 +214,36 @@ export const blocks: BlockMeta[] = [
     Component: Department,
   },
   {
-    slug: "import-export-01",
-    title: "Import / Export 01",
+    slug: "import-export",
+    title: "Import / Export",
     description:
       "CSV import wizard — paste or load data, map columns to entity fields with a live preview, then import. Includes a CSV export action.",
     category: "CRUD",
-    Component: ImportExport01,
+    Component: ImportExport,
   },
   {
-    slug: "file-upload-01",
-    title: "File Upload 01",
+    slug: "file-upload",
+    title: "File Upload",
     description:
       "Attachments panel — click-or-drag dropzone, per-file upload/error states, type icons, retry, and remove.",
     category: "CRUD",
-    Component: FileUpload01,
+    Component: FileUpload,
   },
   {
-    slug: "notifications-inbox-01",
-    title: "Notifications Inbox 01",
+    slug: "notifications-inbox",
+    title: "Notifications Inbox",
     description:
       "Notification inbox with All/Unread tabs, per-type icons, unread indicators, mark-one-read on click, and mark-all-read.",
     category: "Communication",
-    Component: NotificationsInbox01,
+    Component: NotificationsInbox,
   },
   {
-    slug: "comments-thread-01",
-    title: "Comments Thread 01",
+    slug: "comments-thread",
+    title: "Comments Thread",
     description:
       "Threaded comments with avatars, inline reply composers, and a top-level composer, with a running comment count.",
     category: "Communication",
-    Component: CommentsThread01,
+    Component: CommentsThread,
   },
   {
     slug: "dashboard",
@@ -261,52 +261,52 @@ export const blocks: BlockMeta[] = [
     Component: Dashboard01,
   },
   {
-    slug: "activity-log-01",
-    title: "Activity Log 01",
+    slug: "activity-log",
+    title: "Activity Log",
     description:
       "Filterable activity log with a responsive datatable — collapses to cards on narrow panes.",
     category: "Activity",
-    Component: ActivityLog01,
+    Component: ActivityLog,
   },
   {
-    slug: "activity-feed-01",
-    title: "Activity Feed 01",
+    slug: "activity-feed",
+    title: "Activity Feed",
     description:
       "Grouped activity timeline with type/user filters and running stats.",
     category: "Activity",
-    Component: ActivityFeed01,
+    Component: ActivityFeed,
   },
   {
-    slug: "audit-log-01",
-    title: "Audit Log 01",
+    slug: "audit-log",
+    title: "Audit Log",
     description:
       "Field-level audit trail — who changed what field, with before → after values, actor avatars, and search/action filters.",
     category: "Activity",
-    Component: AuditLog01,
+    Component: AuditLog,
   },
   {
-    slug: "access-control-01",
-    title: "Access Control 01",
+    slug: "access-control",
+    title: "Access Control",
     description:
       "Manage role permissions across resources with a per-role permission matrix.",
     category: "Access",
-    Component: AccessControl01,
+    Component: AccessControl,
   },
   {
-    slug: "invoice-detail-01",
-    title: "Invoice Detail 01",
+    slug: "invoice-detail",
+    title: "Invoice Detail",
     description:
       "Master-detail invoice workspace — select a row to open its line items in a new tab.",
     category: "Finance",
-    Component: InvoiceDetail01,
+    Component: InvoiceDetail,
   },
   {
-    slug: "purchase-order-form-01",
-    title: "Purchase Order Form 01",
+    slug: "purchase-order-form",
+    title: "Purchase Order Form",
     description:
       "Three-step wizard for creating a purchase order — vendor details, line items, and review.",
     category: "Finance",
-    Component: PurchaseOrderForm01,
+    Component: PurchaseOrderForm,
   },
   {
     slug: "chart-of-accounts",
@@ -349,12 +349,12 @@ export const blocks: BlockMeta[] = [
     Component: BankReconciliation,
   },
   {
-    slug: "approval-board-01",
-    title: "Approval Board 01",
+    slug: "approval-board",
+    title: "Approval Board",
     description:
       "Drag-and-drop Kanban board for triaging expense, purchase order, and time-off approval requests.",
     category: "Operations",
-    Component: ApprovalBoard01,
+    Component: ApprovalBoard,
   },
   {
     slug: "login",
@@ -509,11 +509,11 @@ export const blocks: BlockMeta[] = [
     Component: AccountLocked,
   },
   {
-    slug: "settings-01",
-    title: "Settings 01",
+    slug: "settings",
+    title: "Settings",
     description:
       "Sectioned workspace settings — company profile, notifications, billing, and security.",
     category: "Settings",
-    Component: Settings01,
+    Component: Settings,
   },
 ]

@@ -32,6 +32,7 @@ import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/pag
 import { Settings01 } from "@/registry/bases/base/blocks/settings-01/page"
 import { VerifyEmail } from "@/registry/bases/base/blocks/verify-email/page"
 import { Unauthorized403 } from "@/registry/bases/base/blocks/unauthorized-403/page"
+import { UpgradeRequired } from "@/registry/bases/base/blocks/upgrade-required/page"
 
 export interface BlockMeta {
   slug: string
@@ -251,6 +252,14 @@ export const blocks: BlockMeta[] = [
       "Signed-in-but-forbidden screen — explains the missing permission, offers a request-access action with a sent confirmation, and a back link.",
     category: "Authorization",
     Component: Unauthorized403,
+  },
+  {
+    slug: "upgrade-required",
+    title: "Upgrade Required",
+    description:
+      "Plan-gated feature screen — a signed-in user hits a Pro-only feature, with the perks it unlocks, an upgrade action, and an ask-an-admin fallback that confirms once sent.",
+    category: "Authorization",
+    Component: UpgradeRequired,
   },
   {
     slug: "magic-link-sent",

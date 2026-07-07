@@ -280,6 +280,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Suspended-account screen — shows the suspension reason and offers an appeal action with a submitted confirmation plus a contact-support link.",
           },
+          {
+            title: "Upgrade Required",
+            href: "/blocks/upgrade-required",
+            description:
+              "Plan-gated feature screen — a signed-in user hits a Pro-only feature, with the perks it unlocks, an upgrade action, and an ask-an-admin fallback that confirms once sent.",
+          },
         ],
       },
     ],

@@ -791,6 +791,27 @@
       ]
     },
     {
+      "name": "upgrade-required",
+      "type": "registry:block",
+      "title": "Upgrade Required",
+      "description": "Plan-gated feature screen — a signed-in user hits a Pro-only feature, with the perks it unlocks, an upgrade action, and an ask-an-admin fallback that confirms once sent.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "button",
+        "card",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/upgrade-required/page.tsx",
+          "type": "registry:page",
+          "target": "app/upgrade-required/page.tsx"
+        }
+      ]
+    },
+    {
       "name": "forbidden-workspace",
       "type": "registry:block",
       "title": "Forbidden Workspace",

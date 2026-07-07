@@ -217,6 +217,12 @@ export const blocksNav: NavSection[] = [
               "Post-password 2FA step — authenticator-app code entry with auto-verify, a recovery-code fallback, trust-this-device option, and error states.",
           },
           {
+            title: "Two-Factor Setup",
+            href: "/blocks/two-factor-setup",
+            description:
+              "Authenticator enrollment — QR code, copyable manual setup key, and a 6-digit verify step with error and enabled states.",
+          },
+          {
             title: "OTP Verify",
             href: "/blocks/otp-verify",
             description:

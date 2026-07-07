@@ -152,6 +152,9 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "page.tsx",
     },
   ],
+  "two-factor-setup": [
+    { name: "page.tsx", path: "app/two-factor-setup/page.tsx", src: "page.tsx" },
+  ],
   "account-locked": [
     { name: "page.tsx", path: "app/account-locked/page.tsx", src: "page.tsx" },
   ],

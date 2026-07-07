@@ -16,6 +16,7 @@ import { OtpVerify } from "@/registry/bases/base/blocks/otp-verify/page"
 import { PendingApproval } from "@/registry/bases/base/blocks/pending-approval/page"
 import { ResetPassword } from "@/registry/bases/base/blocks/reset-password/page"
 import { TwoFactorChallenge } from "@/registry/bases/base/blocks/two-factor-challenge/page"
+import { TwoFactorSetup } from "@/registry/bases/base/blocks/two-factor-setup/page"
 import { Register } from "@/registry/bases/base/blocks/register/page"
 import { PayrollRun01 } from "@/registry/bases/base/blocks/payroll-run-01/page"
 import { PayrollTasks } from "@/registry/bases/base/blocks/payroll-tasks/page"
@@ -190,6 +191,14 @@ export const blocks: BlockMeta[] = [
       "Post-password 2FA step — authenticator-app code entry with auto-verify, a recovery-code fallback, trust-this-device option, and error states.",
     category: "Authentication",
     Component: TwoFactorChallenge,
+  },
+  {
+    slug: "two-factor-setup",
+    title: "Two-Factor Setup",
+    description:
+      "Authenticator enrollment — QR code, copyable manual setup key, and a 6-digit verify step with error and enabled states.",
+    category: "Authentication",
+    Component: TwoFactorSetup,
   },
   {
     slug: "pending-approval",

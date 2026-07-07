@@ -499,6 +499,26 @@
       ]
     },
     {
+      "name": "magic-link-sent",
+      "type": "registry:block",
+      "title": "Magic Link Sent",
+      "description": "Passwordless check-your-email confirmation after requesting a magic sign-in link — expiry note, cooldown-gated resend, and change-email action.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "button",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/magic-link-sent/page.tsx",
+          "type": "registry:page",
+          "target": "app/magic-link-sent/page.tsx"
+        }
+      ]
+    },
+    {
       "name": "register",
       "type": "registry:block",
       "title": "Register",

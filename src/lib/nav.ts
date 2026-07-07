@@ -160,6 +160,12 @@ export const blocksNav: NavSection[] = [
               "Sign-in with Google/GitHub SSO buttons over an email-and-password form — provider divider, inline validation, invalid-credentials banner, and pending state.",
           },
           {
+            title: "Magic Link Sent",
+            href: "/blocks/magic-link-sent",
+            description:
+              "Passwordless check-your-email confirmation after requesting a magic sign-in link — expiry note, cooldown-gated resend, and change-email action.",
+          },
+          {
             title: "Account Locked",
             href: "/blocks/account-locked",
             description:

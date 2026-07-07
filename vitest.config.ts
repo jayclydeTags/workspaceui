@@ -12,6 +12,9 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
+    // userEvent-driven dialog tests can exceed the 5s default under full-suite
+    // parallel load (they pass in isolation). ponytail: raise the ceiling.
+    testTimeout: 15000,
     setupFiles: ["./src/test/setup.ts"],
   },
 })

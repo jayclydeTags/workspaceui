@@ -225,7 +225,7 @@ export const blocks: BlockMeta[] = [
     title: "Pending Approval",
     description:
       "Account-under-review status screen — explains the pending admin approval, the notification email, and check-status/sign-out actions.",
-    category: "Authentication",
+    category: "Authorization",
     Component: PendingApproval,
   },
   {
@@ -233,7 +233,7 @@ export const blocks: BlockMeta[] = [
     title: "Forbidden Workspace",
     description:
       "Wrong-tenant screen — signed in but not a member of this workspace, with a switcher to workspaces you belong to and a switch-account action.",
-    category: "Authentication",
+    category: "Authorization",
     Component: ForbiddenWorkspace,
   },
   {
@@ -241,7 +241,7 @@ export const blocks: BlockMeta[] = [
     title: "Account Suspended",
     description:
       "Suspended-account screen — shows the suspension reason and offers an appeal action with a submitted confirmation plus a contact-support link.",
-    category: "Authentication",
+    category: "Authorization",
     Component: AccountSuspended,
   },
   {
@@ -249,7 +249,7 @@ export const blocks: BlockMeta[] = [
     title: "Unauthorized 403",
     description:
       "Signed-in-but-forbidden screen — explains the missing permission, offers a request-access action with a sent confirmation, and a back link.",
-    category: "Authentication",
+    category: "Authorization",
     Component: Unauthorized403,
   },
   {

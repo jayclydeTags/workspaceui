@@ -248,8 +248,13 @@ export const blocksNav: NavSection[] = [
           },
         ],
       },
+    ],
+  },
+  {
+    title: "Authorization",
+    groups: [
       {
-        title: "Authorization",
+        title: "Access",
         items: [
           {
             title: "Unauthorized 403",

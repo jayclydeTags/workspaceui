@@ -41,7 +41,7 @@ export function ForbiddenWorkspace() {
             you belong to, or ask an admin to invite you.
           </p>
 
-          <Card size="sm" className="mt-4 w-full">
+          <Card size="sm" className="mt-4 w-full py-0">
             <CardContent className="flex flex-col gap-1 p-1.5">
               {WORKSPACES.map((ws) => (
                 <button

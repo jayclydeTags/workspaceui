@@ -1,5 +1,5 @@
 {
   "title": "Components",
   "defaultOpen": true,
-  "pages": ["index", "workspace", "page"]
+  "pages": ["index", "workspace", "page", "password-input"]
 }

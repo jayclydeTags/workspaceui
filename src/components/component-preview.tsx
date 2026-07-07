@@ -22,6 +22,11 @@ import {
   PageScrollDemo,
   PageFullDemo,
 } from "@/registry/bases/base/examples/page-sample"
+import { PasswordInputLiveDemo } from "@/registry/bases/base/examples/password-input-live"
+import {
+  PasswordInputDefaultDemo,
+  PasswordInputStrengthDemo,
+} from "@/registry/bases/base/examples/password-input-sample"
 
 const previewComponents: Record<string, React.ReactNode> = {
   workspace: <WorkspaceLiveDemo />,
@@ -43,6 +48,9 @@ const previewComponents: Record<string, React.ReactNode> = {
   "page-actions-group": <PageWithActionsGroupDemo />,
   "page-scroll": <PageScrollDemo />,
   "page-full": <PageFullDemo />,
+  "password-input": <PasswordInputLiveDemo />,
+  "password-input-default": <PasswordInputDefaultDemo />,
+  "password-input-strength": <PasswordInputStrengthDemo />,
 }
 
 interface ComponentPreviewProps {

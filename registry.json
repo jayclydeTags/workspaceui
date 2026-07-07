@@ -52,6 +52,25 @@
       ]
     },
     {
+      "name": "password-input",
+      "type": "registry:ui",
+      "title": "Password Input",
+      "description": "Password field with a show/hide visibility toggle and an optional live strength meter. Exports a scorePassword heuristic. Wraps InputGroup; works controlled or uncontrolled.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "input-group",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/workspaceui/password-input.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "payroll-run-01",
       "type": "registry:block",
       "title": "Payroll Run 01",

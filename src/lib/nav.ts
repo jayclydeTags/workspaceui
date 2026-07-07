@@ -294,6 +294,7 @@ export const nav: NavSection[] = [
     items: [
       { title: "Workspace", href: "/docs/components/workspace" },
       { title: "Page", href: "/docs/components/page" },
+      { title: "Password Input", href: "/docs/components/password-input" },
     ],
   },
 ]

@@ -475,6 +475,30 @@
       ]
     },
     {
+      "name": "login-social",
+      "type": "registry:block",
+      "title": "Login (Social)",
+      "description": "Sign-in with Google/GitHub SSO buttons over an email-and-password form — provider divider, inline validation, invalid-credentials banner, and pending state.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "button",
+        "card",
+        "field",
+        "input",
+        "separator",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/login-social/page.tsx",
+          "type": "registry:page",
+          "target": "app/login-social/page.tsx"
+        }
+      ]
+    },
+    {
       "name": "register",
       "type": "registry:block",
       "title": "Register",

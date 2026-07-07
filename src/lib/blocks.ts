@@ -10,6 +10,7 @@ import { Dashboard01 } from "@/registry/bases/base/blocks/dashboard-01/page"
 import { ForgotPassword } from "@/registry/bases/base/blocks/forgot-password/page"
 import { InvoiceDetail01 } from "@/registry/bases/base/blocks/invoice-detail-01/page"
 import { Login } from "@/registry/bases/base/blocks/login/page"
+import { LoginSocial } from "@/registry/bases/base/blocks/login-social/page"
 import { OtpVerify } from "@/registry/bases/base/blocks/otp-verify/page"
 import { PendingApproval } from "@/registry/bases/base/blocks/pending-approval/page"
 import { ResetPassword } from "@/registry/bases/base/blocks/reset-password/page"
@@ -211,6 +212,14 @@ export const blocks: BlockMeta[] = [
       "Signed-in-but-forbidden screen — explains the missing permission, offers a request-access action with a sent confirmation, and a back link.",
     category: "Authentication",
     Component: Unauthorized403,
+  },
+  {
+    slug: "login-social",
+    title: "Login (Social)",
+    description:
+      "Sign-in with Google/GitHub SSO buttons over an email-and-password form — provider divider, inline validation, invalid-credentials banner, and pending state.",
+    category: "Authentication",
+    Component: LoginSocial,
   },
   {
     slug: "account-locked",

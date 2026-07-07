@@ -154,6 +154,12 @@ export const blocksNav: NavSection[] = [
               "Email and password sign-in form — inline field validation, invalid-credentials banner, pending state, remember-me, and forgot-password/sign-up links.",
           },
           {
+            title: "Login (Social)",
+            href: "/blocks/login-social",
+            description:
+              "Sign-in with Google/GitHub SSO buttons over an email-and-password form — provider divider, inline validation, invalid-credentials banner, and pending state.",
+          },
+          {
             title: "Account Locked",
             href: "/blocks/account-locked",
             description:

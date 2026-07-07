@@ -111,6 +111,9 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
     },
   ],
   login: [{ name: "page.tsx", path: "app/login/page.tsx", src: "page.tsx" }],
+  "login-social": [
+    { name: "page.tsx", path: "app/login-social/page.tsx", src: "page.tsx" },
+  ],
   register: [
     { name: "page.tsx", path: "app/register/page.tsx", src: "page.tsx" },
   ],

@@ -7,6 +7,7 @@ import { ApprovalBoard01 } from "@/registry/bases/base/blocks/approval-board-01/
 import { ActivityFeed01 } from "@/registry/bases/base/blocks/activity-feed-01/page"
 import { ActivityLog01 } from "@/registry/bases/base/blocks/activity-log-01/page"
 import { Dashboard } from "@/registry/bases/base/blocks/dashboard/page"
+import { Department } from "@/registry/bases/base/blocks/department/page"
 import { Dashboard01 } from "@/registry/bases/base/blocks/dashboard-01/page"
 import { ForbiddenWorkspace } from "@/registry/bases/base/blocks/forbidden-workspace/page"
 import { ForgotPassword } from "@/registry/bases/base/blocks/forgot-password/page"
@@ -94,6 +95,14 @@ export const blocks: BlockMeta[] = [
       "Form for issuing a one-off bonus, correction, or reimbursement outside the regular payroll run.",
     category: "Payroll",
     Component: OffcyclePaymentForm01,
+  },
+  {
+    slug: "department",
+    title: "Department",
+    description:
+      "Departments table with create/edit dialog form, row-action menu, and a delete confirmation.",
+    category: "CRUD",
+    Component: Department,
   },
   {
     slug: "dashboard",

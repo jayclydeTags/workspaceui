@@ -147,6 +147,46 @@
       ]
     },
     {
+      "name": "department",
+      "type": "registry:block",
+      "title": "Department",
+      "description": "Departments table with create/edit dialog form, row-action menu, and a delete confirmation.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/department/page.tsx",
+          "type": "registry:page",
+          "target": "app/department/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/department/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/department/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/department/components/department-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "compensation-table-01",
       "type": "registry:block",
       "title": "Compensation Table 01",

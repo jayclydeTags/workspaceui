@@ -33,6 +33,20 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
     { name: "page.tsx", path: "app/offcycle-payment-form/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/offcycle-payment-form/data.ts", src: "data.ts" },
   ],
+  department: [
+    { name: "page.tsx", path: "app/department/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/department/data.ts", src: "data.ts" },
+    {
+      name: "data-table.tsx",
+      path: "components/blocks/department/components/data-table.tsx",
+      src: "components/data-table.tsx",
+    },
+    {
+      name: "department-dialog.tsx",
+      path: "components/blocks/department/components/department-dialog.tsx",
+      src: "components/department-dialog.tsx",
+    },
+  ],
   dashboard: [
     { name: "page.tsx", path: "app/dashboard/page.tsx", src: "page.tsx" },
     {

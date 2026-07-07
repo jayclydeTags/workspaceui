@@ -21,6 +21,17 @@ export const blocksNav: NavSection[] = [
     title: "Applications",
     groups: [
       {
+        title: "CRUD",
+        items: [
+          {
+            title: "Department",
+            href: "/blocks/department",
+            description:
+              "Departments table with create/edit dialog form, row-action menu, and a delete confirmation.",
+          },
+        ],
+      },
+      {
         title: "Payroll",
         items: [
           {

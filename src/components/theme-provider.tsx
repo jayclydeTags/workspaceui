@@ -40,6 +40,22 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return t === "system" ? systemTheme() : t
   })
 
+  // Sync across same-origin documents (notably the /blocks preview iframes):
+  // toggling in the parent writes localStorage, which fires `storage` here so
+  // the iframe re-themes live instead of only on reload.
+  React.useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== STORAGE_KEY) return
+      const next = (e.newValue as Theme | null) ?? "system"
+      setThemeState(next)
+      const r = next === "system" ? systemTheme() : next
+      setResolved(r)
+      apply(r)
+    }
+    window.addEventListener("storage", onStorage)
+    return () => window.removeEventListener("storage", onStorage)
+  }, [])
+
   // Follow the OS while in system mode.
   React.useEffect(() => {
     if (theme !== "system") return

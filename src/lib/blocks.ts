@@ -25,6 +25,7 @@ import { PayrollCalendar01 } from "@/registry/bases/base/blocks/payroll-calendar
 import { OffcyclePaymentForm01 } from "@/registry/bases/base/blocks/offcycle-payment-form-01/page"
 import { PurchaseOrderForm01 } from "@/registry/bases/base/blocks/purchase-order-form-01/page"
 import { Settings01 } from "@/registry/bases/base/blocks/settings-01/page"
+import { VerifyEmail } from "@/registry/bases/base/blocks/verify-email/page"
 import { Unauthorized403 } from "@/registry/bases/base/blocks/unauthorized-403/page"
 
 export interface BlockMeta {
@@ -221,6 +222,14 @@ export const blocks: BlockMeta[] = [
       "Passwordless check-your-email confirmation after requesting a magic sign-in link — expiry note, cooldown-gated resend, and change-email action.",
     category: "Authentication",
     Component: MagicLinkSent,
+  },
+  {
+    slug: "verify-email",
+    title: "Verify Email",
+    description:
+      "Post-registration confirm-your-email pending screen — cooldown-gated resend and a transition to the email-confirmed success state.",
+    category: "Authentication",
+    Component: VerifyEmail,
   },
   {
     slug: "login-social",

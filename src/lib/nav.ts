@@ -182,6 +182,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Account sign-up form with a live password-strength meter, field validation, terms agreement, and a verify-your-email confirmation state.",
           },
+          {
+            title: "Verify Email",
+            href: "/blocks/verify-email",
+            description:
+              "Post-registration confirm-your-email pending screen — cooldown-gated resend and a transition to the email-confirmed success state.",
+          },
         ],
       },
       {

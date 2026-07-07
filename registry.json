@@ -543,6 +543,26 @@
       ]
     },
     {
+      "name": "verify-email",
+      "type": "registry:block",
+      "title": "Verify Email",
+      "description": "Post-registration confirm-your-email pending screen — cooldown-gated resend and a transition to the email-confirmed success state.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "button",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/verify-email/page.tsx",
+          "type": "registry:page",
+          "target": "app/verify-email/page.tsx"
+        }
+      ]
+    },
+    {
       "name": "otp-verify",
       "type": "registry:block",
       "title": "OTP Verify",

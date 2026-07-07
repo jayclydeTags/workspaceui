@@ -22,6 +22,7 @@ import { Register } from "@/registry/bases/base/blocks/register/page"
 import { PayrollRun01 } from "@/registry/bases/base/blocks/payroll-run-01/page"
 import { PayrollTasks } from "@/registry/bases/base/blocks/payroll-tasks/page"
 import { PayslipDetail01 } from "@/registry/bases/base/blocks/payslip-detail-01/page"
+import { ChangePassword } from "@/registry/bases/base/blocks/change-password/page"
 import { CompensationTable01 } from "@/registry/bases/base/blocks/compensation-table-01/page"
 import { PayrollCalendar01 } from "@/registry/bases/base/blocks/payroll-calendar-01/page"
 import { OffcyclePaymentForm01 } from "@/registry/bases/base/blocks/offcycle-payment-form-01/page"
@@ -184,6 +185,14 @@ export const blocks: BlockMeta[] = [
       "Set-a-new-password form with a live strength meter, confirm-match validation, an expired-link state, and a password-updated confirmation.",
     category: "Authentication",
     Component: ResetPassword,
+  },
+  {
+    slug: "change-password",
+    title: "Change Password",
+    description:
+      "Authenticated in-app password change — current-password re-auth check, new-password strength meter, confirm-match validation, and a changed confirmation.",
+    category: "Authentication",
+    Component: ChangePassword,
   },
   {
     slug: "two-factor-challenge",

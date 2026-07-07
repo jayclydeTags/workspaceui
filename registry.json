@@ -701,6 +701,29 @@
       ]
     },
     {
+      "name": "change-password",
+      "type": "registry:block",
+      "title": "Change Password",
+      "description": "Authenticated in-app password change — current-password re-auth check, new-password strength meter, confirm-match validation, and a changed confirmation.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "button",
+        "card",
+        "field",
+        "input",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/change-password/page.tsx",
+          "type": "registry:page",
+          "target": "app/change-password/page.tsx"
+        }
+      ]
+    },
+    {
       "name": "unauthorized-403",
       "type": "registry:block",
       "title": "Unauthorized 403",

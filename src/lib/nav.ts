@@ -205,6 +205,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Set-a-new-password form with a live strength meter, confirm-match validation, an expired-link state, and a password-updated confirmation.",
           },
+          {
+            title: "Change Password",
+            href: "/blocks/change-password",
+            description:
+              "Authenticated in-app password change — current-password re-auth check, new-password strength meter, confirm-match validation, and a changed confirmation.",
+          },
         ],
       },
       {

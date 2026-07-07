@@ -204,7 +204,7 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
               id: paneId,
               topPane: { id: paneId, tabs: [tab], activeTabId: tab.id },
             }
-            return { columns: [...prev.columns, newColumn] }
+            return normalizeColumnSizes({ columns: [...prev.columns, newColumn] })
           }
           return mapPane(prev, paneId, (p) => ({
             ...p,
@@ -260,7 +260,7 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
           return prev
         }
         const newColumn: PaneColumn = { id: paneDef.id, topPane: toPaneState(paneDef) }
-        return { columns: [...prev.columns, newColumn] }
+        return normalizeColumnSizes({ columns: [...prev.columns, newColumn] })
       })
     }, [])
 

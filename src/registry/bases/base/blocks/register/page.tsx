@@ -121,18 +121,13 @@ export function Register() {
                     id="reg-password"
                     autoComplete="new-password"
                     showStrength
+                    showChecklist
                     value={password}
                     disabled={submitting}
                     aria-invalid={!!errors.password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
-                  {errors.password ? (
-                    <FieldError>{errors.password}</FieldError>
-                  ) : (
-                    <FieldDescription>
-                      At least 8 characters, with a mix of cases, numbers, and symbols.
-                    </FieldDescription>
-                  )}
+                  {errors.password && <FieldError>{errors.password}</FieldError>}
                 </Field>
 
                 <Field data-invalid={!!errors.terms}>

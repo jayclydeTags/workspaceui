@@ -107,6 +107,7 @@ export function ChangePassword() {
                     id="cp-next"
                     autoComplete="new-password"
                     showStrength
+                    showChecklist
                     value={next}
                     disabled={submitting}
                     aria-invalid={!!errors.next}

@@ -11,10 +11,11 @@ export function PasswordInputLiveDemo() {
         id="pw-live"
         autoComplete="new-password"
         showStrength
+        showChecklist
         placeholder="Type to see the strength meter"
       />
       <FieldDescription>
-        Click the eye to reveal. The meter appears as you type.
+        Click the eye to reveal. The meter and checklist appear as you type.
       </FieldDescription>
     </Field>
   )

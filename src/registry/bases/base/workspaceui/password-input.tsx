@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Eye, EyeOff } from "lucide-react"
+import { Check, Eye, EyeOff, X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import {
@@ -24,14 +24,27 @@ export function scorePassword(pw: string) {
 
 const STRENGTH = ["Too weak", "Weak", "Good", "Strong"] as const
 
+/** The rules the checklist validates against, in display order. Exported so the
+ *  same set can gate submission (`passwordRequirements.every((r) => r.test(pw))`). */
+export const passwordRequirements = [
+  { label: "At least 8 characters", test: (pw: string) => pw.length >= 8 },
+  { label: "An uppercase letter", test: (pw: string) => /[A-Z]/.test(pw) },
+  { label: "A lowercase letter", test: (pw: string) => /[a-z]/.test(pw) },
+  { label: "A number", test: (pw: string) => /\d/.test(pw) },
+  { label: "A symbol", test: (pw: string) => /[^A-Za-z0-9]/.test(pw) },
+] as const
+
 export interface PasswordInputProps
   extends Omit<React.ComponentProps<"input">, "type"> {
   /** Show a live strength meter below the input. Use only on new-password fields. */
   showStrength?: boolean
+  /** Show a live requirements checklist below the input. Use only on new-password fields. */
+  showChecklist?: boolean
 }
 
 export function PasswordInput({
   showStrength,
+  showChecklist,
   className,
   value,
   defaultValue,
@@ -92,6 +105,32 @@ export function PasswordInput({
             {STRENGTH[strength]}
           </span>
         </div>
+      )}
+      {showChecklist && current && (
+        <ul className="flex flex-col gap-1" aria-live="polite">
+          {passwordRequirements.map(({ label, test }) => {
+            const met = test(current)
+            return (
+              <li
+                key={label}
+                className={cn(
+                  "flex items-center gap-1.5 text-xs",
+                  met
+                    ? "text-emerald-600 dark:text-emerald-400"
+                    : "text-destructive"
+                )}
+              >
+                {met ? (
+                  <Check className="size-3.5 shrink-0" />
+                ) : (
+                  <X className="size-3.5 shrink-0" />
+                )}
+                <span>{label}</span>
+                <span className="sr-only">{met ? "— met" : "— not met"}</span>
+              </li>
+            )
+          })}
+        </ul>
       )}
     </>
   )

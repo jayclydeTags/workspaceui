@@ -43,4 +43,28 @@ describe("PasswordInput", () => {
     await user.type(screen.getByLabelText("Password"), "MixedCase1!")
     expect(screen.queryByText("Strong")).not.toBeInTheDocument()
   })
+
+  it("renders a live requirements checklist that flips as rules are met", async () => {
+    const user = userEvent.setup()
+    render(<PasswordInput aria-label="Password" showChecklist />)
+    // Nothing typed yet — checklist hidden.
+    expect(screen.queryByText("A number")).not.toBeInTheDocument()
+
+    const input = screen.getByLabelText("Password")
+    await user.type(input, "abc")
+    // "A lowercase letter" is met, "A number" is not.
+    expect(screen.getByText("A lowercase letter").closest("li")).toHaveTextContent(
+      /— met$/
+    )
+    expect(screen.getByText("A number").closest("li")).toHaveTextContent(
+      /not met$/
+    )
+
+    await user.clear(input)
+    await user.type(input, "MixedCase1!")
+    expect(
+      screen.getByText("At least 8 characters").closest("li")
+    ).toHaveTextContent(/— met$/)
+    expect(screen.getByText("A symbol").closest("li")).toHaveTextContent(/— met$/)
+  })
 })

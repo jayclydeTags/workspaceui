@@ -110,6 +110,7 @@ export function ResetPassword() {
                     id="rp-password"
                     autoComplete="new-password"
                     showStrength
+                    showChecklist
                     value={password}
                     disabled={submitting}
                     aria-invalid={!!errors.password}

@@ -25,3 +25,18 @@ export function PasswordInputStrengthDemo() {
     </Field>
   )
 }
+
+export function PasswordInputChecklistDemo() {
+  return (
+    <Field className="w-full max-w-sm">
+      <FieldLabel htmlFor="pw-checklist">New password</FieldLabel>
+      <PasswordInput
+        id="pw-checklist"
+        autoComplete="new-password"
+        showStrength
+        showChecklist
+        defaultValue="Secret1"
+      />
+    </Field>
+  )
+}

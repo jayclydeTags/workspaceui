@@ -26,6 +26,7 @@ import { PasswordInputLiveDemo } from "@/registry/bases/base/examples/password-i
 import {
   PasswordInputDefaultDemo,
   PasswordInputStrengthDemo,
+  PasswordInputChecklistDemo,
 } from "@/registry/bases/base/examples/password-input-sample"
 
 const previewComponents: Record<string, React.ReactNode> = {
@@ -51,6 +52,7 @@ const previewComponents: Record<string, React.ReactNode> = {
   "password-input": <PasswordInputLiveDemo />,
   "password-input-default": <PasswordInputDefaultDemo />,
   "password-input-strength": <PasswordInputStrengthDemo />,
+  "password-input-checklist": <PasswordInputChecklistDemo />,
 }
 
 interface ComponentPreviewProps {

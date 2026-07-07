@@ -41,3 +41,4 @@ public/api/search.json
 .next
 out
 .source
+next-env.d.ts

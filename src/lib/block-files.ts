@@ -47,6 +47,26 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/department-dialog.tsx",
     },
   ],
+  "import-export-01": [
+    { name: "page.tsx", path: "app/import-export/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/import-export/data.ts", src: "data.ts" },
+  ],
+  "file-upload-01": [
+    { name: "page.tsx", path: "app/file-upload/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/file-upload/data.ts", src: "data.ts" },
+  ],
+  "notifications-inbox-01": [
+    { name: "page.tsx", path: "app/notifications-inbox/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/notifications-inbox/data.ts", src: "data.ts" },
+  ],
+  "comments-thread-01": [
+    { name: "page.tsx", path: "app/comments-thread/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/comments-thread/data.ts", src: "data.ts" },
+  ],
+  "audit-log-01": [
+    { name: "page.tsx", path: "app/audit-log/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/audit-log/data.ts", src: "data.ts" },
+  ],
   "data-table-01": [
     { name: "page.tsx", path: "app/data-table/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/data-table/data.ts", src: "data.ts" },

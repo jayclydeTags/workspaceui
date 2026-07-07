@@ -38,7 +38,7 @@ export function DetailTabs() {
   const c = CUSTOMER
 
   return (
-    <Page title="Customer" subtitle={c.company}>
+    <Page title="Customer" subtitle={c.company} hasPadding>
       <div className="flex flex-col gap-6">
         {/* Record header */}
         <div className="flex items-center gap-4">

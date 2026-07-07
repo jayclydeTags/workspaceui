@@ -59,6 +59,35 @@ export const blocksNav: NavSection[] = [
             description:
               "Departments table with create/edit dialog form, row-action menu, and a delete confirmation.",
           },
+          {
+            title: "Import / Export 01",
+            href: "/blocks/import-export-01",
+            description:
+              "CSV import wizard — paste or load data, map columns to entity fields with a live preview, then import. Includes a CSV export action.",
+          },
+          {
+            title: "File Upload 01",
+            href: "/blocks/file-upload-01",
+            description:
+              "Attachments panel — click-or-drag dropzone, per-file upload progress, type icons, error state, and remove.",
+          },
+        ],
+      },
+      {
+        title: "Communication",
+        items: [
+          {
+            title: "Notifications Inbox 01",
+            href: "/blocks/notifications-inbox-01",
+            description:
+              "Notification inbox with All/Unread tabs, per-type icons, unread indicators, mark-one-read on click, and mark-all-read.",
+          },
+          {
+            title: "Comments Thread 01",
+            href: "/blocks/comments-thread-01",
+            description:
+              "Threaded comments with avatars, inline reply composers, and a top-level composer, with a running comment count.",
+          },
         ],
       },
       {
@@ -133,6 +162,12 @@ export const blocksNav: NavSection[] = [
             href: "/blocks/activity-feed-01",
             description:
               "Grouped activity timeline with type/user filters and running stats.",
+          },
+          {
+            title: "Audit Log 01",
+            href: "/blocks/audit-log-01",
+            description:
+              "Field-level audit trail — who changed what field, with before → after values, actor avatars, and search/action filters.",
           },
         ],
       },

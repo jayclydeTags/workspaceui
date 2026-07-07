@@ -4,7 +4,9 @@ import { AccessControl01 } from "@/registry/bases/base/blocks/access-control-01/
 import { AccountLocked } from "@/registry/bases/base/blocks/account-locked/page"
 import { AccountSuspended } from "@/registry/bases/base/blocks/account-suspended/page"
 import { ApprovalBoard01 } from "@/registry/bases/base/blocks/approval-board-01/page"
+import { AuditLog01 } from "@/registry/bases/base/blocks/audit-log-01/page"
 import { BulkActionsToolbar } from "@/registry/bases/base/blocks/bulk-actions-toolbar/page"
+import { CommentsThread01 } from "@/registry/bases/base/blocks/comments-thread-01/page"
 import { ConfirmDialogDemo } from "@/registry/bases/base/blocks/confirm-dialog/page"
 import { ActivityFeed01 } from "@/registry/bases/base/blocks/activity-feed-01/page"
 import { ActivityLog01 } from "@/registry/bases/base/blocks/activity-log-01/page"
@@ -13,12 +15,15 @@ import { DataTable01 } from "@/registry/bases/base/blocks/data-table-01/page"
 import { Department } from "@/registry/bases/base/blocks/department/page"
 import { DetailTabs } from "@/registry/bases/base/blocks/detail-tabs/page"
 import { Dashboard01 } from "@/registry/bases/base/blocks/dashboard-01/page"
+import { FileUpload01 } from "@/registry/bases/base/blocks/file-upload-01/page"
 import { ForbiddenWorkspace } from "@/registry/bases/base/blocks/forbidden-workspace/page"
 import { ForgotPassword } from "@/registry/bases/base/blocks/forgot-password/page"
+import { ImportExport01 } from "@/registry/bases/base/blocks/import-export-01/page"
 import { InvoiceDetail01 } from "@/registry/bases/base/blocks/invoice-detail-01/page"
 import { Login } from "@/registry/bases/base/blocks/login/page"
 import { LoginSocial } from "@/registry/bases/base/blocks/login-social/page"
 import { MagicLinkSent } from "@/registry/bases/base/blocks/magic-link-sent/page"
+import { NotificationsInbox01 } from "@/registry/bases/base/blocks/notifications-inbox-01/page"
 import { OtpVerify } from "@/registry/bases/base/blocks/otp-verify/page"
 import { PendingApproval } from "@/registry/bases/base/blocks/pending-approval/page"
 import { ResetPassword } from "@/registry/bases/base/blocks/reset-password/page"
@@ -150,6 +155,38 @@ export const blocks: BlockMeta[] = [
     Component: Department,
   },
   {
+    slug: "import-export-01",
+    title: "Import / Export 01",
+    description:
+      "CSV import wizard — paste or load data, map columns to entity fields with a live preview, then import. Includes a CSV export action.",
+    category: "CRUD",
+    Component: ImportExport01,
+  },
+  {
+    slug: "file-upload-01",
+    title: "File Upload 01",
+    description:
+      "Attachments panel — click-or-drag dropzone, per-file upload progress, type icons, error state, and remove.",
+    category: "CRUD",
+    Component: FileUpload01,
+  },
+  {
+    slug: "notifications-inbox-01",
+    title: "Notifications Inbox 01",
+    description:
+      "Notification inbox with All/Unread tabs, per-type icons, unread indicators, mark-one-read on click, and mark-all-read.",
+    category: "Communication",
+    Component: NotificationsInbox01,
+  },
+  {
+    slug: "comments-thread-01",
+    title: "Comments Thread 01",
+    description:
+      "Threaded comments with avatars, inline reply composers, and a top-level composer, with a running comment count.",
+    category: "Communication",
+    Component: CommentsThread01,
+  },
+  {
     slug: "dashboard",
     title: "Dashboard",
     description:
@@ -179,6 +216,14 @@ export const blocks: BlockMeta[] = [
       "Grouped activity timeline with type/user filters and running stats.",
     category: "Activity",
     Component: ActivityFeed01,
+  },
+  {
+    slug: "audit-log-01",
+    title: "Audit Log 01",
+    description:
+      "Field-level audit trail — who changed what field, with before → after values, actor avatars, and search/action filters.",
+    category: "Activity",
+    Component: AuditLog01,
   },
   {
     slug: "access-control-01",

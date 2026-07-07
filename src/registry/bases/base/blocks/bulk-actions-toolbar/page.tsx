@@ -53,7 +53,7 @@ export function BulkActionsToolbar() {
   }
 
   return (
-    <Page title="Documents" subtitle={`${docs.length} files`}>
+    <Page title="Documents" subtitle={`${docs.length} files`} hasPadding>
       <div className="flex flex-col gap-3">
         <BulkToolbar count={selected.size} onClear={() => setSelected(new Set())}>
           <Button variant="outline" size="sm">

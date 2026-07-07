@@ -34,11 +34,11 @@ the entity + fields.
 - [x] **Approval workflow** — `approval-board-01`
 - [x] **Access / role–permission matrix** — `access-control-01`
 - [x] **Settings (tabbed)** — `settings-01`
-- [ ] **Import / export (CSV) wizard**
-- [ ] **Notifications / inbox**
-- [ ] **File / document upload + attachments**
-- [ ] **Comments / notes thread**
-- [ ] **Audit log** (distinct from activity feed — who changed what field)
+- [x] **Import / export (CSV) wizard** — `import-export-01`
+- [x] **Notifications / inbox** — `notifications-inbox-01`
+- [x] **File / document upload + attachments** — `file-upload-01`
+- [x] **Comments / notes thread** — `comments-thread-01`
+- [x] **Audit log** (distinct from activity feed — who changed what field) — `audit-log-01`
 
 ---
 

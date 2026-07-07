@@ -147,6 +147,159 @@
       ]
     },
     {
+      "name": "data-table-01",
+      "type": "registry:block",
+      "title": "Data Table 01",
+      "description": "Generic TanStack data table — sortable columns, column filter, column visibility, row selection, and pagination.",
+      "dependencies": [
+        "@tanstack/react-table",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "badge",
+        "button",
+        "checkbox",
+        "dropdown-menu",
+        "input",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/data-table-01/page.tsx",
+          "type": "registry:page",
+          "target": "app/data-table-01/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/data-table-01/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/data-table-01/components/columns.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/data-table-01/components/data-table.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "bulk-actions-toolbar",
+      "type": "registry:block",
+      "title": "Bulk Actions Toolbar",
+      "description": "Row selection with select-all and a contextual toolbar for bulk export/delete, with a confirm dialog for the destructive action.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "alert-dialog",
+        "button",
+        "checkbox",
+        "empty",
+        "separator",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/bulk-actions-toolbar/page.tsx",
+          "type": "registry:page",
+          "target": "app/bulk-actions-toolbar/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/bulk-actions-toolbar/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/bulk-actions-toolbar/components/bulk-toolbar.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "confirm-dialog",
+      "type": "registry:block",
+      "title": "Confirm Dialog",
+      "description": "Reusable confirm-before-you-act dialog for destructive actions — controlled open state, custom title/description/labels, destructive styling.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "alert-dialog",
+        "button",
+        "empty",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/confirm-dialog/page.tsx",
+          "type": "registry:page",
+          "target": "app/confirm-dialog/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/confirm-dialog/components/confirm-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "search-filter-bar",
+      "type": "registry:block",
+      "title": "Search + Filter Bar",
+      "description": "Search box with faceted Select filters and a clear-all action over a filtered result list with live count.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "badge",
+        "button",
+        "empty",
+        "input-group",
+        "select",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/search-filter-bar/page.tsx",
+          "type": "registry:page",
+          "target": "app/search-filter-bar/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/search-filter-bar/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/search-filter-bar/components/filter-bar.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "detail-tabs",
+      "type": "registry:block",
+      "title": "Detail Tabs",
+      "description": "Single-record detail view with a header and Overview / Activity / Orders tabs.",
+      "registryDependencies": [
+        "avatar",
+        "badge",
+        "separator",
+        "table",
+        "tabs",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/detail-tabs/page.tsx",
+          "type": "registry:page",
+          "target": "app/detail-tabs/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/detail-tabs/data.ts",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "department",
       "type": "registry:block",
       "title": "Department",

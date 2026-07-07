@@ -4,10 +4,14 @@ import { AccessControl01 } from "@/registry/bases/base/blocks/access-control-01/
 import { AccountLocked } from "@/registry/bases/base/blocks/account-locked/page"
 import { AccountSuspended } from "@/registry/bases/base/blocks/account-suspended/page"
 import { ApprovalBoard01 } from "@/registry/bases/base/blocks/approval-board-01/page"
+import { BulkActionsToolbar } from "@/registry/bases/base/blocks/bulk-actions-toolbar/page"
+import { ConfirmDialogDemo } from "@/registry/bases/base/blocks/confirm-dialog/page"
 import { ActivityFeed01 } from "@/registry/bases/base/blocks/activity-feed-01/page"
 import { ActivityLog01 } from "@/registry/bases/base/blocks/activity-log-01/page"
 import { Dashboard } from "@/registry/bases/base/blocks/dashboard/page"
+import { DataTable01 } from "@/registry/bases/base/blocks/data-table-01/page"
 import { Department } from "@/registry/bases/base/blocks/department/page"
+import { DetailTabs } from "@/registry/bases/base/blocks/detail-tabs/page"
 import { Dashboard01 } from "@/registry/bases/base/blocks/dashboard-01/page"
 import { ForbiddenWorkspace } from "@/registry/bases/base/blocks/forbidden-workspace/page"
 import { ForgotPassword } from "@/registry/bases/base/blocks/forgot-password/page"
@@ -31,6 +35,7 @@ import { PayrollCalendar01 } from "@/registry/bases/base/blocks/payroll-calendar
 import { OffcyclePaymentForm01 } from "@/registry/bases/base/blocks/offcycle-payment-form-01/page"
 import { PurchaseOrderForm01 } from "@/registry/bases/base/blocks/purchase-order-form-01/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
+import { SearchFilterBar } from "@/registry/bases/base/blocks/search-filter-bar/page"
 import { Settings01 } from "@/registry/bases/base/blocks/settings-01/page"
 import { VerifyEmail } from "@/registry/bases/base/blocks/verify-email/page"
 import { Unauthorized403 } from "@/registry/bases/base/blocks/unauthorized-403/page"
@@ -95,6 +100,46 @@ export const blocks: BlockMeta[] = [
       "Form for issuing a one-off bonus, correction, or reimbursement outside the regular payroll run.",
     category: "Payroll",
     Component: OffcyclePaymentForm01,
+  },
+  {
+    slug: "data-table-01",
+    title: "Data Table 01",
+    description:
+      "Generic TanStack data table — sortable columns, column filter, column visibility, row selection, and pagination.",
+    category: "CRUD",
+    Component: DataTable01,
+  },
+  {
+    slug: "bulk-actions-toolbar",
+    title: "Bulk Actions Toolbar",
+    description:
+      "Row selection with select-all and a contextual toolbar for bulk export/delete, with a confirm dialog for the destructive action.",
+    category: "CRUD",
+    Component: BulkActionsToolbar,
+  },
+  {
+    slug: "confirm-dialog",
+    title: "Confirm Dialog",
+    description:
+      "Reusable confirm-before-you-act dialog for destructive actions — controlled open state, custom title/description/labels, destructive styling.",
+    category: "CRUD",
+    Component: ConfirmDialogDemo,
+  },
+  {
+    slug: "search-filter-bar",
+    title: "Search + Filter Bar",
+    description:
+      "Search box with faceted Select filters and a clear-all action over a filtered result list with live count.",
+    category: "CRUD",
+    Component: SearchFilterBar,
+  },
+  {
+    slug: "detail-tabs",
+    title: "Detail Tabs",
+    description:
+      "Single-record detail view with a header and Overview / Activity / Orders tabs.",
+    category: "CRUD",
+    Component: DetailTabs,
   },
   {
     slug: "department",

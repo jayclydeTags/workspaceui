@@ -24,6 +24,36 @@ export const blocksNav: NavSection[] = [
         title: "CRUD",
         items: [
           {
+            title: "Data Table 01",
+            href: "/blocks/data-table-01",
+            description:
+              "Generic TanStack data table — sortable columns, column filter, column visibility, row selection, and pagination.",
+          },
+          {
+            title: "Bulk Actions Toolbar",
+            href: "/blocks/bulk-actions-toolbar",
+            description:
+              "Row selection with select-all and a contextual toolbar for bulk export/delete, with a confirm dialog for the destructive action.",
+          },
+          {
+            title: "Confirm Dialog",
+            href: "/blocks/confirm-dialog",
+            description:
+              "Reusable confirm-before-you-act dialog for destructive actions — controlled open state, custom title/description/labels, destructive styling.",
+          },
+          {
+            title: "Search + Filter Bar",
+            href: "/blocks/search-filter-bar",
+            description:
+              "Search box with faceted Select filters and a clear-all action over a filtered result list with live count.",
+          },
+          {
+            title: "Detail Tabs",
+            href: "/blocks/detail-tabs",
+            description:
+              "Single-record detail view with a header and Overview / Activity / Orders tabs.",
+          },
+          {
             title: "Department",
             href: "/blocks/department",
             description:

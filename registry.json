@@ -635,7 +635,8 @@
       "title": "Two-Factor Challenge",
       "description": "Post-password 2FA step — authenticator-app code entry with auto-verify, a recovery-code fallback, trust-this-device option, and error states.",
       "dependencies": [
-        "lucide-react"
+        "lucide-react",
+        "motion"
       ],
       "registryDependencies": [
         "button",

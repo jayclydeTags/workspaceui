@@ -9,6 +9,7 @@ import { Dashboard01 } from "@/registry/bases/base/blocks/dashboard-01/page"
 import { InvoiceDetail01 } from "@/registry/bases/base/blocks/invoice-detail-01/page"
 import { Login } from "@/registry/bases/base/blocks/login/page"
 import { OtpVerify } from "@/registry/bases/base/blocks/otp-verify/page"
+import { TwoFactorChallenge } from "@/registry/bases/base/blocks/two-factor-challenge/page"
 import { Register } from "@/registry/bases/base/blocks/register/page"
 import { PayrollRun01 } from "@/registry/bases/base/blocks/payroll-run-01/page"
 import { PayrollTasks } from "@/registry/bases/base/blocks/payroll-tasks/page"
@@ -157,6 +158,14 @@ export const blocks: BlockMeta[] = [
       "One-time passcode entry with a 6-digit segmented input, auto-verify on complete, incorrect-code error, and a countdown-gated resend.",
     category: "Authentication",
     Component: OtpVerify,
+  },
+  {
+    slug: "two-factor-challenge",
+    title: "Two-Factor Challenge",
+    description:
+      "Post-password 2FA step — authenticator-app code entry with auto-verify, a recovery-code fallback, trust-this-device option, and error states.",
+    category: "Authentication",
+    Component: TwoFactorChallenge,
   },
   {
     slug: "account-locked",

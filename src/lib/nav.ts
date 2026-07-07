@@ -176,6 +176,12 @@ export const blocksNav: NavSection[] = [
         title: "Two-Factor & OTP",
         items: [
           {
+            title: "Two-Factor Challenge",
+            href: "/blocks/two-factor-challenge",
+            description:
+              "Post-password 2FA step — authenticator-app code entry with auto-verify, a recovery-code fallback, trust-this-device option, and error states.",
+          },
+          {
             title: "OTP Verify",
             href: "/blocks/otp-verify",
             description:

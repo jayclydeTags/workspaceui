@@ -129,6 +129,13 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
   "pending-approval": [
     { name: "page.tsx", path: "app/pending-approval/page.tsx", src: "page.tsx" },
   ],
+  "account-suspended": [
+    {
+      name: "page.tsx",
+      path: "app/account-suspended/page.tsx",
+      src: "page.tsx",
+    },
+  ],
   "two-factor-challenge": [
     {
       name: "page.tsx",

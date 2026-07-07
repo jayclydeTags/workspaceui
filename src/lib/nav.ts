@@ -221,6 +221,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Account-under-review status screen — explains the pending admin approval, the notification email, and check-status/sign-out actions.",
           },
+          {
+            title: "Account Suspended",
+            href: "/blocks/account-suspended",
+            description:
+              "Suspended-account screen — shows the suspension reason and offers an appeal action with a submitted confirmation plus a contact-support link.",
+          },
         ],
       },
     ],

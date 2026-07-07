@@ -634,6 +634,27 @@
       ]
     },
     {
+      "name": "account-suspended",
+      "type": "registry:block",
+      "title": "Account Suspended",
+      "description": "Suspended-account screen — shows the suspension reason and offers an appeal action with a submitted confirmation plus a contact-support link.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "button",
+        "card",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/account-suspended/page.tsx",
+          "type": "registry:page",
+          "target": "app/account-suspended/page.tsx"
+        }
+      ]
+    },
+    {
       "name": "settings-01",
       "type": "registry:block",
       "title": "Settings 01",

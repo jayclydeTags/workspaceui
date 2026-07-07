@@ -2,6 +2,7 @@ import type { ComponentType } from "react"
 
 import { AccessControl01 } from "@/registry/bases/base/blocks/access-control-01/page"
 import { AccountLocked } from "@/registry/bases/base/blocks/account-locked/page"
+import { AccountSuspended } from "@/registry/bases/base/blocks/account-suspended/page"
 import { ApprovalBoard01 } from "@/registry/bases/base/blocks/approval-board-01/page"
 import { ActivityFeed01 } from "@/registry/bases/base/blocks/activity-feed-01/page"
 import { ActivityLog01 } from "@/registry/bases/base/blocks/activity-log-01/page"
@@ -194,6 +195,14 @@ export const blocks: BlockMeta[] = [
       "Account-under-review status screen — explains the pending admin approval, the notification email, and check-status/sign-out actions.",
     category: "Authentication",
     Component: PendingApproval,
+  },
+  {
+    slug: "account-suspended",
+    title: "Account Suspended",
+    description:
+      "Suspended-account screen — shows the suspension reason and offers an appeal action with a submitted confirmation plus a contact-support link.",
+    category: "Authentication",
+    Component: AccountSuspended,
   },
   {
     slug: "unauthorized-403",

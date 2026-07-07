@@ -161,6 +161,17 @@ export const blocksNav: NavSection[] = [
           },
         ],
       },
+      {
+        title: "Registration",
+        items: [
+          {
+            title: "Register",
+            href: "/blocks/register",
+            description:
+              "Account sign-up form with a live password-strength meter, field validation, terms agreement, and a verify-your-email confirmation state.",
+          },
+        ],
+      },
     ],
   },
 ]

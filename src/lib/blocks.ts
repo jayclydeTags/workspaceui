@@ -8,6 +8,7 @@ import { ActivityLog01 } from "@/registry/bases/base/blocks/activity-log-01/page
 import { Dashboard01 } from "@/registry/bases/base/blocks/dashboard-01/page"
 import { InvoiceDetail01 } from "@/registry/bases/base/blocks/invoice-detail-01/page"
 import { Login } from "@/registry/bases/base/blocks/login/page"
+import { Register } from "@/registry/bases/base/blocks/register/page"
 import { PayrollRun01 } from "@/registry/bases/base/blocks/payroll-run-01/page"
 import { PayrollTasks } from "@/registry/bases/base/blocks/payroll-tasks/page"
 import { PayslipDetail01 } from "@/registry/bases/base/blocks/payslip-detail-01/page"
@@ -139,6 +140,14 @@ export const blocks: BlockMeta[] = [
       "Email and password sign-in form — inline field validation, invalid-credentials banner, pending state, remember-me, and forgot-password/sign-up links.",
     category: "Authentication",
     Component: Login,
+  },
+  {
+    slug: "register",
+    title: "Register",
+    description:
+      "Account sign-up form with a live password-strength meter, field validation, terms agreement, and a verify-your-email confirmation state.",
+    category: "Authentication",
+    Component: Register,
   },
   {
     slug: "account-locked",

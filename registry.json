@@ -475,6 +475,30 @@
       ]
     },
     {
+      "name": "register",
+      "type": "registry:block",
+      "title": "Register",
+      "description": "Account sign-up form with a live password-strength meter, field validation, terms agreement, and a verify-your-email confirmation state.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "button",
+        "card",
+        "checkbox",
+        "field",
+        "input",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/register/page.tsx",
+          "type": "registry:page",
+          "target": "app/register/page.tsx"
+        }
+      ]
+    },
+    {
       "name": "settings-01",
       "type": "registry:block",
       "title": "Settings 01",

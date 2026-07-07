@@ -47,6 +47,50 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/department-dialog.tsx",
     },
   ],
+  "data-table-01": [
+    { name: "page.tsx", path: "app/data-table/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/data-table/data.ts", src: "data.ts" },
+    {
+      name: "columns.tsx",
+      path: "components/blocks/data-table-01/components/columns.tsx",
+      src: "components/columns.tsx",
+    },
+    {
+      name: "data-table.tsx",
+      path: "components/blocks/data-table-01/components/data-table.tsx",
+      src: "components/data-table.tsx",
+    },
+  ],
+  "confirm-dialog": [
+    { name: "page.tsx", path: "app/confirm-dialog/page.tsx", src: "page.tsx" },
+    {
+      name: "confirm-dialog.tsx",
+      path: "components/blocks/confirm-dialog/components/confirm-dialog.tsx",
+      src: "components/confirm-dialog.tsx",
+    },
+  ],
+  "search-filter-bar": [
+    { name: "page.tsx", path: "app/search-filter-bar/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/search-filter-bar/data.ts", src: "data.ts" },
+    {
+      name: "filter-bar.tsx",
+      path: "components/blocks/search-filter-bar/components/filter-bar.tsx",
+      src: "components/filter-bar.tsx",
+    },
+  ],
+  "bulk-actions-toolbar": [
+    { name: "page.tsx", path: "app/bulk-actions-toolbar/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/bulk-actions-toolbar/data.ts", src: "data.ts" },
+    {
+      name: "bulk-toolbar.tsx",
+      path: "components/blocks/bulk-actions-toolbar/components/bulk-toolbar.tsx",
+      src: "components/bulk-toolbar.tsx",
+    },
+  ],
+  "detail-tabs": [
+    { name: "page.tsx", path: "app/detail-tabs/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/detail-tabs/data.ts", src: "data.ts" },
+  ],
   dashboard: [
     { name: "page.tsx", path: "app/dashboard/page.tsx", src: "page.tsx" },
     {

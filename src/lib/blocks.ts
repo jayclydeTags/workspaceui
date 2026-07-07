@@ -17,6 +17,7 @@ import { PendingApproval } from "@/registry/bases/base/blocks/pending-approval/p
 import { ResetPassword } from "@/registry/bases/base/blocks/reset-password/page"
 import { TwoFactorChallenge } from "@/registry/bases/base/blocks/two-factor-challenge/page"
 import { TwoFactorSetup } from "@/registry/bases/base/blocks/two-factor-setup/page"
+import { RecoveryCodes } from "@/registry/bases/base/blocks/recovery-codes/page"
 import { Register } from "@/registry/bases/base/blocks/register/page"
 import { PayrollRun01 } from "@/registry/bases/base/blocks/payroll-run-01/page"
 import { PayrollTasks } from "@/registry/bases/base/blocks/payroll-tasks/page"
@@ -199,6 +200,14 @@ export const blocks: BlockMeta[] = [
       "Authenticator enrollment — QR code, copyable manual setup key, and a 6-digit verify step with error and enabled states.",
     category: "Authentication",
     Component: TwoFactorSetup,
+  },
+  {
+    slug: "recovery-codes",
+    title: "Recovery Codes",
+    description:
+      "Backup-code display with copy, download, and regenerate actions, gated behind an \"I've saved them\" acknowledgement before continuing.",
+    category: "Authentication",
+    Component: RecoveryCodes,
   },
   {
     slug: "pending-approval",

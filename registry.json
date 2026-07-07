@@ -632,6 +632,29 @@
       ]
     },
     {
+      "name": "recovery-codes",
+      "type": "registry:block",
+      "title": "Recovery Codes",
+      "description": "Backup-code display with copy, download, and regenerate actions, gated behind an \"I've saved them\" acknowledgement before continuing.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "button",
+        "card",
+        "checkbox",
+        "field",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/recovery-codes/page.tsx",
+          "type": "registry:page",
+          "target": "app/recovery-codes/page.tsx"
+        }
+      ]
+    },
+    {
       "name": "forgot-password",
       "type": "registry:block",
       "title": "Forgot Password",

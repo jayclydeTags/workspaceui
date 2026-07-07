@@ -223,6 +223,12 @@ export const blocksNav: NavSection[] = [
               "Authenticator enrollment — QR code, copyable manual setup key, and a 6-digit verify step with error and enabled states.",
           },
           {
+            title: "Recovery Codes",
+            href: "/blocks/recovery-codes",
+            description:
+              "Backup-code display with copy, download, and regenerate actions, gated behind an \"I've saved them\" acknowledgement before continuing.",
+          },
+          {
             title: "OTP Verify",
             href: "/blocks/otp-verify",
             description:

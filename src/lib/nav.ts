@@ -206,6 +206,17 @@ export const blocksNav: NavSection[] = [
           },
         ],
       },
+      {
+        title: "Authorization",
+        items: [
+          {
+            title: "Unauthorized 403",
+            href: "/blocks/unauthorized-403",
+            description:
+              "Signed-in-but-forbidden screen — explains the missing permission, offers a request-access action with a sent confirmation, and a back link.",
+          },
+        ],
+      },
     ],
   },
 ]

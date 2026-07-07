@@ -21,6 +21,7 @@ import { PayrollCalendar01 } from "@/registry/bases/base/blocks/payroll-calendar
 import { OffcyclePaymentForm01 } from "@/registry/bases/base/blocks/offcycle-payment-form-01/page"
 import { PurchaseOrderForm01 } from "@/registry/bases/base/blocks/purchase-order-form-01/page"
 import { Settings01 } from "@/registry/bases/base/blocks/settings-01/page"
+import { Unauthorized403 } from "@/registry/bases/base/blocks/unauthorized-403/page"
 
 export interface BlockMeta {
   slug: string
@@ -184,6 +185,14 @@ export const blocks: BlockMeta[] = [
       "Post-password 2FA step — authenticator-app code entry with auto-verify, a recovery-code fallback, trust-this-device option, and error states.",
     category: "Authentication",
     Component: TwoFactorChallenge,
+  },
+  {
+    slug: "unauthorized-403",
+    title: "Unauthorized 403",
+    description:
+      "Signed-in-but-forbidden screen — explains the missing permission, offers a request-access action with a sent confirmation, and a back link.",
+    category: "Authentication",
+    Component: Unauthorized403,
   },
   {
     slug: "account-locked",

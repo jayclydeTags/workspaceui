@@ -592,6 +592,27 @@
       ]
     },
     {
+      "name": "unauthorized-403",
+      "type": "registry:block",
+      "title": "Unauthorized 403",
+      "description": "Signed-in-but-forbidden screen — explains the missing permission, offers a request-access action with a sent confirmation, and a back link.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "button",
+        "card",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/unauthorized-403/page.tsx",
+          "type": "registry:page",
+          "target": "app/unauthorized-403/page.tsx"
+        }
+      ]
+    },
+    {
       "name": "settings-01",
       "type": "registry:block",
       "title": "Settings 01",

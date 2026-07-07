@@ -613,6 +613,27 @@
       ]
     },
     {
+      "name": "pending-approval",
+      "type": "registry:block",
+      "title": "Pending Approval",
+      "description": "Account-under-review status screen — explains the pending admin approval, the notification email, and check-status/sign-out actions.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "button",
+        "card",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/pending-approval/page.tsx",
+          "type": "registry:page",
+          "target": "app/pending-approval/page.tsx"
+        }
+      ]
+    },
+    {
       "name": "settings-01",
       "type": "registry:block",
       "title": "Settings 01",

@@ -10,6 +10,7 @@ import { ForgotPassword } from "@/registry/bases/base/blocks/forgot-password/pag
 import { InvoiceDetail01 } from "@/registry/bases/base/blocks/invoice-detail-01/page"
 import { Login } from "@/registry/bases/base/blocks/login/page"
 import { OtpVerify } from "@/registry/bases/base/blocks/otp-verify/page"
+import { PendingApproval } from "@/registry/bases/base/blocks/pending-approval/page"
 import { ResetPassword } from "@/registry/bases/base/blocks/reset-password/page"
 import { TwoFactorChallenge } from "@/registry/bases/base/blocks/two-factor-challenge/page"
 import { Register } from "@/registry/bases/base/blocks/register/page"
@@ -185,6 +186,14 @@ export const blocks: BlockMeta[] = [
       "Post-password 2FA step — authenticator-app code entry with auto-verify, a recovery-code fallback, trust-this-device option, and error states.",
     category: "Authentication",
     Component: TwoFactorChallenge,
+  },
+  {
+    slug: "pending-approval",
+    title: "Pending Approval",
+    description:
+      "Account-under-review status screen — explains the pending admin approval, the notification email, and check-status/sign-out actions.",
+    category: "Authentication",
+    Component: PendingApproval,
   },
   {
     slug: "unauthorized-403",

@@ -215,6 +215,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Signed-in-but-forbidden screen — explains the missing permission, offers a request-access action with a sent confirmation, and a back link.",
           },
+          {
+            title: "Pending Approval",
+            href: "/blocks/pending-approval",
+            description:
+              "Account-under-review status screen — explains the pending admin approval, the notification email, and check-status/sign-out actions.",
+          },
         ],
       },
     ],

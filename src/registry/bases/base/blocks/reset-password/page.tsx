@@ -12,26 +12,16 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
+import {
+  PasswordInput,
+  scorePassword,
+} from "@/registry/bases/base/workspaceui/password-input"
 import { Page } from "@/registry/bases/base/workspaceui/page"
 
 // ponytail: the demo renders the valid-token form. Flip TOKEN_VALID (or replace
 // it with the result of your reset-token check) to show the expired-link state
 // when integrated.
 const TOKEN_VALID = true
-
-// ponytail: 0–3 strength heuristic, same scale as the register block. Swap for
-// zxcvbn if real entropy scoring is needed.
-function scorePassword(pw: string) {
-  let score = 0
-  if (pw.length >= 8) score++
-  if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++
-  if (/\d/.test(pw) && /[^A-Za-z0-9]/.test(pw)) score++
-  return score as 0 | 1 | 2 | 3
-}
-
-const STRENGTH = ["Too weak", "Weak", "Good", "Strong"] as const
 
 type Errors = { password?: string; confirm?: string }
 
@@ -116,41 +106,22 @@ export function ResetPassword() {
               <FieldGroup>
                 <Field data-invalid={!!errors.password}>
                   <FieldLabel htmlFor="rp-password">New password</FieldLabel>
-                  <Input
+                  <PasswordInput
                     id="rp-password"
-                    type="password"
                     autoComplete="new-password"
+                    showStrength
                     value={password}
                     disabled={submitting}
                     aria-invalid={!!errors.password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
-                  {password && (
-                    <div className="flex items-center gap-2" aria-live="polite">
-                      <div className="flex flex-1 gap-1">
-                        {[0, 1, 2].map((i) => (
-                          <div
-                            key={i}
-                            className={cn(
-                              "h-1 flex-1 rounded-full",
-                              i < strength ? "bg-primary" : "bg-muted"
-                            )}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-xs text-muted-foreground tabular-nums">
-                        {STRENGTH[strength]}
-                      </span>
-                    </div>
-                  )}
                   {errors.password && <FieldError>{errors.password}</FieldError>}
                 </Field>
 
                 <Field data-invalid={!!errors.confirm}>
                   <FieldLabel htmlFor="rp-confirm">Confirm password</FieldLabel>
-                  <Input
+                  <PasswordInput
                     id="rp-confirm"
-                    type="password"
                     autoComplete="new-password"
                     value={confirm}
                     disabled={submitting}

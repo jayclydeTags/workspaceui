@@ -14,6 +14,7 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { PasswordInput } from "@/registry/bases/base/workspaceui/password-input"
 import { Page } from "@/registry/bases/base/workspaceui/page"
 
 // ponytail: no backend — a single demo credential drives the states and the SSO
@@ -157,9 +158,8 @@ export function LoginSocial() {
                         Forgot password?
                       </a>
                     </div>
-                    <Input
+                    <PasswordInput
                       id="ls-password"
-                      type="password"
                       autoComplete="current-password"
                       value={password}
                       disabled={submitting}

@@ -11,7 +11,7 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+import { PasswordInput } from "@/registry/bases/base/workspaceui/password-input"
 import { Page } from "@/registry/bases/base/workspaceui/page"
 
 // ponytail: no backend — a demo password stands in for the re-auth check. Wire it
@@ -87,9 +87,8 @@ export function SessionExpired() {
 
                 <Field data-invalid={!!fieldError}>
                   <FieldLabel htmlFor="se-password">Password</FieldLabel>
-                  <Input
+                  <PasswordInput
                     id="se-password"
-                    type="password"
                     autoComplete="current-password"
                     autoFocus
                     value={password}

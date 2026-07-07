@@ -12,25 +12,16 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
+import {
+  PasswordInput,
+  scorePassword,
+} from "@/registry/bases/base/workspaceui/password-input"
 import { Page } from "@/registry/bases/base/workspaceui/page"
 
 // ponytail: no backend — a demo current-password stands in for the re-auth check
 // so the wrong-current-password error is reachable. Wire the change request when
 // integrated; keep the current-password gate (never change a password without it).
 const DEMO_CURRENT = "password"
-
-// ponytail: 0–3 strength heuristic, same scale as the register/reset blocks.
-function scorePassword(pw: string) {
-  let score = 0
-  if (pw.length >= 8) score++
-  if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++
-  if (/\d/.test(pw) && /[^A-Za-z0-9]/.test(pw)) score++
-  return score as 0 | 1 | 2 | 3
-}
-
-const STRENGTH = ["Too weak", "Weak", "Good", "Strong"] as const
 
 type Errors = { current?: string; next?: string; confirm?: string }
 
@@ -99,9 +90,8 @@ export function ChangePassword() {
               <FieldGroup>
                 <Field data-invalid={!!errors.current}>
                   <FieldLabel htmlFor="cp-current">Current password</FieldLabel>
-                  <Input
+                  <PasswordInput
                     id="cp-current"
-                    type="password"
                     autoComplete="current-password"
                     value={current}
                     disabled={submitting}
@@ -113,41 +103,22 @@ export function ChangePassword() {
 
                 <Field data-invalid={!!errors.next}>
                   <FieldLabel htmlFor="cp-next">New password</FieldLabel>
-                  <Input
+                  <PasswordInput
                     id="cp-next"
-                    type="password"
                     autoComplete="new-password"
+                    showStrength
                     value={next}
                     disabled={submitting}
                     aria-invalid={!!errors.next}
                     onChange={(e) => setNext(e.target.value)}
                   />
-                  {next && (
-                    <div className="flex items-center gap-2" aria-live="polite">
-                      <div className="flex flex-1 gap-1">
-                        {[0, 1, 2].map((i) => (
-                          <div
-                            key={i}
-                            className={cn(
-                              "h-1 flex-1 rounded-full",
-                              i < strength ? "bg-primary" : "bg-muted"
-                            )}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-xs text-muted-foreground tabular-nums">
-                        {STRENGTH[strength]}
-                      </span>
-                    </div>
-                  )}
                   {errors.next && <FieldError>{errors.next}</FieldError>}
                 </Field>
 
                 <Field data-invalid={!!errors.confirm}>
                   <FieldLabel htmlFor="cp-confirm">Confirm new password</FieldLabel>
-                  <Input
+                  <PasswordInput
                     id="cp-confirm"
-                    type="password"
                     autoComplete="new-password"
                     value={confirm}
                     disabled={submitting}

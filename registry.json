@@ -481,7 +481,7 @@
         "button",
         "card",
         "field",
-        "input",
+        "jayclydeTags/workspaceui/password-input",
         "jayclydeTags/workspaceui/page"
       ],
       "files": [
@@ -506,6 +506,7 @@
         "checkbox",
         "field",
         "input",
+        "jayclydeTags/workspaceui/password-input",
         "jayclydeTags/workspaceui/page"
       ],
       "files": [
@@ -530,6 +531,7 @@
         "field",
         "input",
         "separator",
+        "jayclydeTags/workspaceui/password-input",
         "jayclydeTags/workspaceui/page"
       ],
       "files": [
@@ -574,6 +576,7 @@
         "checkbox",
         "field",
         "input",
+        "jayclydeTags/workspaceui/password-input",
         "jayclydeTags/workspaceui/page"
       ],
       "files": [
@@ -731,7 +734,7 @@
         "button",
         "card",
         "field",
-        "input",
+        "jayclydeTags/workspaceui/password-input",
         "jayclydeTags/workspaceui/page"
       ],
       "files": [
@@ -754,7 +757,7 @@
         "button",
         "card",
         "field",
-        "input",
+        "jayclydeTags/workspaceui/password-input",
         "jayclydeTags/workspaceui/page"
       ],
       "files": [

@@ -14,6 +14,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { PasswordInput } from "@/registry/bases/base/workspaceui/password-input"
 import { Page } from "@/registry/bases/base/workspaceui/page"
 
 // ponytail: no backend — a single demo credential stands in for the auth call so
@@ -117,9 +118,8 @@ export function Login() {
                       Forgot password?
                     </a>
                   </div>
-                  <Input
+                  <PasswordInput
                     id="login-password"
-                    type="password"
                     autoComplete="current-password"
                     value={password}
                     disabled={submitting}

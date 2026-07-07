@@ -14,21 +14,11 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
+import {
+  PasswordInput,
+  scorePassword,
+} from "@/registry/bases/base/workspaceui/password-input"
 import { Page } from "@/registry/bases/base/workspaceui/page"
-
-// ponytail: strength is a 0–3 heuristic (length + character classes), enough to
-// drive the meter and gate weak passwords. Swap for zxcvbn if real entropy
-// scoring is needed — keep the 0–3 scale the meter reads.
-function scorePassword(pw: string) {
-  let score = 0
-  if (pw.length >= 8) score++
-  if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++
-  if (/\d/.test(pw) && /[^A-Za-z0-9]/.test(pw)) score++
-  return score as 0 | 1 | 2 | 3
-}
-
-const STRENGTH = ["Too weak", "Weak", "Good", "Strong"] as const
 
 type Errors = { name?: string; email?: string; password?: string; terms?: string }
 
@@ -127,33 +117,15 @@ export function Register() {
 
                 <Field data-invalid={!!errors.password}>
                   <FieldLabel htmlFor="reg-password">Password</FieldLabel>
-                  <Input
+                  <PasswordInput
                     id="reg-password"
-                    type="password"
                     autoComplete="new-password"
+                    showStrength
                     value={password}
                     disabled={submitting}
                     aria-invalid={!!errors.password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
-                  {password && (
-                    <div className="flex items-center gap-2" aria-live="polite">
-                      <div className="flex flex-1 gap-1">
-                        {[0, 1, 2].map((i) => (
-                          <div
-                            key={i}
-                            className={cn(
-                              "h-1 flex-1 rounded-full",
-                              i < strength ? "bg-primary" : "bg-muted"
-                            )}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-xs text-muted-foreground tabular-nums">
-                        {STRENGTH[strength]}
-                      </span>
-                    </div>
-                  )}
                   {errors.password ? (
                     <FieldError>{errors.password}</FieldError>
                   ) : (

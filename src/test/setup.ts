@@ -10,3 +10,7 @@ window.ResizeObserver = class ResizeObserver {
 // jsdom does not implement pointer capture APIs used by the tab drag handler.
 Element.prototype.setPointerCapture = () => {}
 Element.prototype.releasePointerCapture = () => {}
+
+// input-otp calls document.elementFromPoint in a timer for caret tracking; jsdom
+// lacks it and throws an unhandled error after the test unmounts.
+document.elementFromPoint = () => null

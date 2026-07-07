@@ -499,6 +499,28 @@
       ]
     },
     {
+      "name": "otp-verify",
+      "type": "registry:block",
+      "title": "OTP Verify",
+      "description": "One-time passcode entry with a 6-digit segmented input, auto-verify on complete, incorrect-code error, and a countdown-gated resend.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "button",
+        "card",
+        "input-otp",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/otp-verify/page.tsx",
+          "type": "registry:page",
+          "target": "app/otp-verify/page.tsx"
+        }
+      ]
+    },
+    {
       "name": "settings-01",
       "type": "registry:block",
       "title": "Settings 01",

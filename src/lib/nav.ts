@@ -172,6 +172,17 @@ export const blocksNav: NavSection[] = [
           },
         ],
       },
+      {
+        title: "Two-Factor & OTP",
+        items: [
+          {
+            title: "OTP Verify",
+            href: "/blocks/otp-verify",
+            description:
+              "One-time passcode entry with a 6-digit segmented input, auto-verify on complete, incorrect-code error, and a countdown-gated resend.",
+          },
+        ],
+      },
     ],
   },
 ]

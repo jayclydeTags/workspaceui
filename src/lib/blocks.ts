@@ -8,6 +8,7 @@ import { ActivityLog01 } from "@/registry/bases/base/blocks/activity-log-01/page
 import { Dashboard01 } from "@/registry/bases/base/blocks/dashboard-01/page"
 import { InvoiceDetail01 } from "@/registry/bases/base/blocks/invoice-detail-01/page"
 import { Login } from "@/registry/bases/base/blocks/login/page"
+import { OtpVerify } from "@/registry/bases/base/blocks/otp-verify/page"
 import { Register } from "@/registry/bases/base/blocks/register/page"
 import { PayrollRun01 } from "@/registry/bases/base/blocks/payroll-run-01/page"
 import { PayrollTasks } from "@/registry/bases/base/blocks/payroll-tasks/page"
@@ -148,6 +149,14 @@ export const blocks: BlockMeta[] = [
       "Account sign-up form with a live password-strength meter, field validation, terms agreement, and a verify-your-email confirmation state.",
     category: "Authentication",
     Component: Register,
+  },
+  {
+    slug: "otp-verify",
+    title: "OTP Verify",
+    description:
+      "One-time passcode entry with a 6-digit segmented input, auto-verify on complete, incorrect-code error, and a countdown-gated resend.",
+    category: "Authentication",
+    Component: OtpVerify,
   },
   {
     slug: "account-locked",

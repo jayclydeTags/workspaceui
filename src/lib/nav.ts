@@ -148,6 +148,12 @@ export const blocksNav: NavSection[] = [
         title: "Login",
         items: [
           {
+            title: "Login",
+            href: "/blocks/login",
+            description:
+              "Email and password sign-in form — inline field validation, invalid-credentials banner, pending state, remember-me, and forgot-password/sign-up links.",
+          },
+          {
             title: "Account Locked",
             href: "/blocks/account-locked",
             description:

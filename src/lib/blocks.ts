@@ -7,6 +7,7 @@ import { ActivityFeed01 } from "@/registry/bases/base/blocks/activity-feed-01/pa
 import { ActivityLog01 } from "@/registry/bases/base/blocks/activity-log-01/page"
 import { Dashboard01 } from "@/registry/bases/base/blocks/dashboard-01/page"
 import { InvoiceDetail01 } from "@/registry/bases/base/blocks/invoice-detail-01/page"
+import { Login } from "@/registry/bases/base/blocks/login/page"
 import { PayrollRun01 } from "@/registry/bases/base/blocks/payroll-run-01/page"
 import { PayrollTasks } from "@/registry/bases/base/blocks/payroll-tasks/page"
 import { PayslipDetail01 } from "@/registry/bases/base/blocks/payslip-detail-01/page"
@@ -130,6 +131,14 @@ export const blocks: BlockMeta[] = [
       "Drag-and-drop Kanban board for triaging expense, purchase order, and time-off approval requests.",
     category: "Operations",
     Component: ApprovalBoard01,
+  },
+  {
+    slug: "login",
+    title: "Login",
+    description:
+      "Email and password sign-in form — inline field validation, invalid-credentials banner, pending state, remember-me, and forgot-password/sign-up links.",
+    category: "Authentication",
+    Component: Login,
   },
   {
     slug: "account-locked",

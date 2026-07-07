@@ -7,6 +7,7 @@ import { ApprovalBoard01 } from "@/registry/bases/base/blocks/approval-board-01/
 import { ActivityFeed01 } from "@/registry/bases/base/blocks/activity-feed-01/page"
 import { ActivityLog01 } from "@/registry/bases/base/blocks/activity-log-01/page"
 import { Dashboard01 } from "@/registry/bases/base/blocks/dashboard-01/page"
+import { ForbiddenWorkspace } from "@/registry/bases/base/blocks/forbidden-workspace/page"
 import { ForgotPassword } from "@/registry/bases/base/blocks/forgot-password/page"
 import { InvoiceDetail01 } from "@/registry/bases/base/blocks/invoice-detail-01/page"
 import { Login } from "@/registry/bases/base/blocks/login/page"
@@ -226,6 +227,14 @@ export const blocks: BlockMeta[] = [
       "Account-under-review status screen — explains the pending admin approval, the notification email, and check-status/sign-out actions.",
     category: "Authentication",
     Component: PendingApproval,
+  },
+  {
+    slug: "forbidden-workspace",
+    title: "Forbidden Workspace",
+    description:
+      "Wrong-tenant screen — signed in but not a member of this workspace, with a switcher to workspaces you belong to and a switch-account action.",
+    category: "Authentication",
+    Component: ForbiddenWorkspace,
   },
   {
     slug: "account-suspended",

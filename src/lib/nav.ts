@@ -258,6 +258,12 @@ export const blocksNav: NavSection[] = [
               "Signed-in-but-forbidden screen — explains the missing permission, offers a request-access action with a sent confirmation, and a back link.",
           },
           {
+            title: "Forbidden Workspace",
+            href: "/blocks/forbidden-workspace",
+            description:
+              "Wrong-tenant screen — signed in but not a member of this workspace, with a switcher to workspaces you belong to and a switch-account action.",
+          },
+          {
             title: "Pending Approval",
             href: "/blocks/pending-approval",
             description:

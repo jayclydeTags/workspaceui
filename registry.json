@@ -768,6 +768,28 @@
       ]
     },
     {
+      "name": "forbidden-workspace",
+      "type": "registry:block",
+      "title": "Forbidden Workspace",
+      "description": "Wrong-tenant screen — signed in but not a member of this workspace, with a switcher to workspaces you belong to and a switch-account action.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "avatar",
+        "button",
+        "card",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/forbidden-workspace/page.tsx",
+          "type": "registry:page",
+          "target": "app/forbidden-workspace/page.tsx"
+        }
+      ]
+    },
+    {
       "name": "pending-approval",
       "type": "registry:block",
       "title": "Pending Approval",

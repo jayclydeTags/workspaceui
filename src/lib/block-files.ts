@@ -138,6 +138,13 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
   "unauthorized-403": [
     { name: "page.tsx", path: "app/unauthorized-403/page.tsx", src: "page.tsx" },
   ],
+  "forbidden-workspace": [
+    {
+      name: "page.tsx",
+      path: "app/forbidden-workspace/page.tsx",
+      src: "page.tsx",
+    },
+  ],
   "pending-approval": [
     { name: "page.tsx", path: "app/pending-approval/page.tsx", src: "page.tsx" },
   ],

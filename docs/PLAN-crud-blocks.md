@@ -57,18 +57,18 @@ reuse the universal blocks from §0.
 - [x] Pay calendar — `payroll-calendar-01`
 - [x] Off-cycle payment — `offcycle-payment-form-01`
 - [x] Payroll tasks — `payroll-tasks`
-- [x] Employees list/form (shared with HRIS) — `employee-01`
-- [x] Deductions / benefits — `deductions-benefits-01`
-- [x] Tax tables — `tax-tables-01`
+- [x] Employees list/form (shared with HRIS) — `employee`
+- [x] Deductions / benefits — `deductions-benefits`
+- [x] Tax tables — `tax-tables`
 
 ### Accounting / Finance  *(done)*
 - [x] Invoice detail — `invoice-detail-01`
 - [x] Purchase order form — `purchase-order-form-01`
-- [x] Chart of accounts — `chart-of-accounts-01`
-- [x] Journal entries — `journal-entries-01`
-- [x] Bills — `bills-01`
-- [x] Payments — `payments-01`
-- [x] Bank reconciliation — `bank-reconciliation-01`
+- [x] Chart of accounts — `chart-of-accounts`
+- [x] Journal entries — `journal-entries`
+- [x] Bills — `bills`
+- [x] Payments — `payments`
+- [x] Bank reconciliation — `bank-reconciliation`
 
 ### Inventory
 - [ ] Products / SKUs
@@ -79,7 +79,7 @@ reuse the universal blocks from §0.
 
 ### HRIS
 - [x] Departments — `department`
-- [x] Employees — `employee-01` *(shared with Payroll)*
+- [x] Employees — `employee` *(shared with Payroll)*
 - [ ] Leave requests
 - [ ] Attendance
 - [ ] Performance reviews

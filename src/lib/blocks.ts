@@ -35,9 +35,9 @@ import { TwoFactorSetup } from "@/registry/bases/base/blocks/two-factor-setup/pa
 import { RecoveryCodes } from "@/registry/bases/base/blocks/recovery-codes/page"
 import { Register } from "@/registry/bases/base/blocks/register/page"
 import { PayrollRun01 } from "@/registry/bases/base/blocks/payroll-run-01/page"
-import { Employee01 } from "@/registry/bases/base/blocks/employee-01/page"
-import { DeductionsBenefits01 } from "@/registry/bases/base/blocks/deductions-benefits-01/page"
-import { TaxTables01 } from "@/registry/bases/base/blocks/tax-tables-01/page"
+import { Employee } from "@/registry/bases/base/blocks/employee/page"
+import { DeductionsBenefits } from "@/registry/bases/base/blocks/deductions-benefits/page"
+import { TaxTables } from "@/registry/bases/base/blocks/tax-tables/page"
 import { PayrollTasks } from "@/registry/bases/base/blocks/payroll-tasks/page"
 import { PayslipDetail01 } from "@/registry/bases/base/blocks/payslip-detail-01/page"
 import { ChangePassword } from "@/registry/bases/base/blocks/change-password/page"
@@ -45,11 +45,11 @@ import { CompensationTable01 } from "@/registry/bases/base/blocks/compensation-t
 import { PayrollCalendar01 } from "@/registry/bases/base/blocks/payroll-calendar-01/page"
 import { OffcyclePaymentForm01 } from "@/registry/bases/base/blocks/offcycle-payment-form-01/page"
 import { PurchaseOrderForm01 } from "@/registry/bases/base/blocks/purchase-order-form-01/page"
-import { ChartOfAccounts01 } from "@/registry/bases/base/blocks/chart-of-accounts-01/page"
-import { Bills01 } from "@/registry/bases/base/blocks/bills-01/page"
-import { Payments01 } from "@/registry/bases/base/blocks/payments-01/page"
-import { JournalEntries01 } from "@/registry/bases/base/blocks/journal-entries-01/page"
-import { BankReconciliation01 } from "@/registry/bases/base/blocks/bank-reconciliation-01/page"
+import { ChartOfAccounts } from "@/registry/bases/base/blocks/chart-of-accounts/page"
+import { Bills } from "@/registry/bases/base/blocks/bills/page"
+import { Payments } from "@/registry/bases/base/blocks/payments/page"
+import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/page"
+import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
 import { SearchFilterBar } from "@/registry/bases/base/blocks/search-filter-bar/page"
 import { Settings01 } from "@/registry/bases/base/blocks/settings-01/page"
@@ -78,28 +78,28 @@ export const blocks: BlockMeta[] = [
     Component: PayrollRun01,
   },
   {
-    slug: "employee-01",
-    title: "Employee 01",
+    slug: "employee",
+    title: "Employee",
     description:
       "Employee directory with create/edit dialog form, row-action menu, and a delete confirmation.",
     category: "Payroll",
-    Component: Employee01,
+    Component: Employee,
   },
   {
-    slug: "deductions-benefits-01",
-    title: "Deductions & Benefits 01",
+    slug: "deductions-benefits",
+    title: "Deductions & Benefits",
     description:
       "Deduction and benefit plan list with create/edit dialog form, row-action menu, and a delete confirmation.",
     category: "Payroll",
-    Component: DeductionsBenefits01,
+    Component: DeductionsBenefits,
   },
   {
-    slug: "tax-tables-01",
-    title: "Tax Tables 01",
+    slug: "tax-tables",
+    title: "Tax Tables",
     description:
       "Searchable tax bracket reference table filterable by jurisdiction, with income range and rate per filing status.",
     category: "Payroll",
-    Component: TaxTables01,
+    Component: TaxTables,
   },
   {
     slug: "payroll-tasks",
@@ -309,44 +309,44 @@ export const blocks: BlockMeta[] = [
     Component: PurchaseOrderForm01,
   },
   {
-    slug: "chart-of-accounts-01",
-    title: "Chart of Accounts 01",
+    slug: "chart-of-accounts",
+    title: "Chart of Accounts",
     description:
       "Chart of accounts table with create/edit dialog form, row-action menu, and a delete confirmation.",
     category: "Finance",
-    Component: ChartOfAccounts01,
+    Component: ChartOfAccounts,
   },
   {
-    slug: "bills-01",
-    title: "Bills 01",
+    slug: "bills",
+    title: "Bills",
     description:
       "Accounts-payable bills list with create/edit dialog form, row-action menu, and a delete confirmation.",
     category: "Finance",
-    Component: Bills01,
+    Component: Bills,
   },
   {
-    slug: "payments-01",
-    title: "Payments 01",
+    slug: "payments",
+    title: "Payments",
     description:
       "Payments list with create/edit dialog form, row-action menu, and a delete confirmation.",
     category: "Finance",
-    Component: Payments01,
+    Component: Payments,
   },
   {
-    slug: "journal-entries-01",
-    title: "Journal Entries 01",
+    slug: "journal-entries",
+    title: "Journal Entries",
     description:
       "Journal entry list with a dynamic debit/credit line-item dialog that validates the entry balances before it can be saved.",
     category: "Finance",
-    Component: JournalEntries01,
+    Component: JournalEntries,
   },
   {
-    slug: "bank-reconciliation-01",
-    title: "Bank Reconciliation 01",
+    slug: "bank-reconciliation",
+    title: "Bank Reconciliation",
     description:
       "Bank reconciliation checklist — mark transactions cleared against a statement balance, with live statement/cleared/difference summary cards.",
     category: "Finance",
-    Component: BankReconciliation01,
+    Component: BankReconciliation,
   },
   {
     slug: "approval-board-01",

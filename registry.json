@@ -428,9 +428,9 @@
       ]
     },
     {
-      "name": "employee-01",
+      "name": "employee",
       "type": "registry:block",
-      "title": "Employee 01",
+      "title": "Employee",
       "description": "Employee directory with create/edit dialog form, row-action menu, and a delete confirmation.",
       "dependencies": [
         "lucide-react"
@@ -450,28 +450,28 @@
       ],
       "files": [
         {
-          "path": "src/registry/bases/base/blocks/employee-01/page.tsx",
+          "path": "src/registry/bases/base/blocks/employee/page.tsx",
           "type": "registry:page",
           "target": "app/employee/page.tsx"
         },
         {
-          "path": "src/registry/bases/base/blocks/employee-01/data.ts",
+          "path": "src/registry/bases/base/blocks/employee/data.ts",
           "type": "registry:block"
         },
         {
-          "path": "src/registry/bases/base/blocks/employee-01/components/data-table.tsx",
+          "path": "src/registry/bases/base/blocks/employee/components/data-table.tsx",
           "type": "registry:block"
         },
         {
-          "path": "src/registry/bases/base/blocks/employee-01/components/employee-dialog.tsx",
+          "path": "src/registry/bases/base/blocks/employee/components/employee-dialog.tsx",
           "type": "registry:block"
         }
       ]
     },
     {
-      "name": "deductions-benefits-01",
+      "name": "deductions-benefits",
       "type": "registry:block",
-      "title": "Deductions & Benefits 01",
+      "title": "Deductions & Benefits",
       "description": "Deduction and benefit plan list with create/edit dialog form, row-action menu, and a delete confirmation.",
       "dependencies": [
         "lucide-react"
@@ -492,28 +492,28 @@
       ],
       "files": [
         {
-          "path": "src/registry/bases/base/blocks/deductions-benefits-01/page.tsx",
+          "path": "src/registry/bases/base/blocks/deductions-benefits/page.tsx",
           "type": "registry:page",
           "target": "app/deductions-benefits/page.tsx"
         },
         {
-          "path": "src/registry/bases/base/blocks/deductions-benefits-01/data.ts",
+          "path": "src/registry/bases/base/blocks/deductions-benefits/data.ts",
           "type": "registry:block"
         },
         {
-          "path": "src/registry/bases/base/blocks/deductions-benefits-01/components/data-table.tsx",
+          "path": "src/registry/bases/base/blocks/deductions-benefits/components/data-table.tsx",
           "type": "registry:block"
         },
         {
-          "path": "src/registry/bases/base/blocks/deductions-benefits-01/components/item-dialog.tsx",
+          "path": "src/registry/bases/base/blocks/deductions-benefits/components/item-dialog.tsx",
           "type": "registry:block"
         }
       ]
     },
     {
-      "name": "tax-tables-01",
+      "name": "tax-tables",
       "type": "registry:block",
-      "title": "Tax Tables 01",
+      "title": "Tax Tables",
       "description": "Searchable tax bracket reference table filterable by jurisdiction, with income range and rate per filing status.",
       "dependencies": [],
       "registryDependencies": [
@@ -524,12 +524,12 @@
       ],
       "files": [
         {
-          "path": "src/registry/bases/base/blocks/tax-tables-01/page.tsx",
+          "path": "src/registry/bases/base/blocks/tax-tables/page.tsx",
           "type": "registry:page",
           "target": "app/tax-tables/page.tsx"
         },
         {
-          "path": "src/registry/bases/base/blocks/tax-tables-01/data.ts",
+          "path": "src/registry/bases/base/blocks/tax-tables/data.ts",
           "type": "registry:block"
         }
       ]
@@ -974,9 +974,9 @@
       ]
     },
     {
-      "name": "chart-of-accounts-01",
+      "name": "chart-of-accounts",
       "type": "registry:block",
-      "title": "Chart of Accounts 01",
+      "title": "Chart of Accounts",
       "description": "Chart of accounts table with create/edit dialog form, row-action menu, and a delete confirmation.",
       "dependencies": [
         "lucide-react"
@@ -996,28 +996,28 @@
       ],
       "files": [
         {
-          "path": "src/registry/bases/base/blocks/chart-of-accounts-01/page.tsx",
+          "path": "src/registry/bases/base/blocks/chart-of-accounts/page.tsx",
           "type": "registry:page",
           "target": "app/chart-of-accounts/page.tsx"
         },
         {
-          "path": "src/registry/bases/base/blocks/chart-of-accounts-01/data.ts",
+          "path": "src/registry/bases/base/blocks/chart-of-accounts/data.ts",
           "type": "registry:block"
         },
         {
-          "path": "src/registry/bases/base/blocks/chart-of-accounts-01/components/data-table.tsx",
+          "path": "src/registry/bases/base/blocks/chart-of-accounts/components/data-table.tsx",
           "type": "registry:block"
         },
         {
-          "path": "src/registry/bases/base/blocks/chart-of-accounts-01/components/account-dialog.tsx",
+          "path": "src/registry/bases/base/blocks/chart-of-accounts/components/account-dialog.tsx",
           "type": "registry:block"
         }
       ]
     },
     {
-      "name": "bills-01",
+      "name": "bills",
       "type": "registry:block",
-      "title": "Bills 01",
+      "title": "Bills",
       "description": "Accounts-payable bills list with create/edit dialog form, row-action menu, and a delete confirmation.",
       "dependencies": [
         "lucide-react"
@@ -1037,28 +1037,28 @@
       ],
       "files": [
         {
-          "path": "src/registry/bases/base/blocks/bills-01/page.tsx",
+          "path": "src/registry/bases/base/blocks/bills/page.tsx",
           "type": "registry:page",
           "target": "app/bills/page.tsx"
         },
         {
-          "path": "src/registry/bases/base/blocks/bills-01/data.ts",
+          "path": "src/registry/bases/base/blocks/bills/data.ts",
           "type": "registry:block"
         },
         {
-          "path": "src/registry/bases/base/blocks/bills-01/components/data-table.tsx",
+          "path": "src/registry/bases/base/blocks/bills/components/data-table.tsx",
           "type": "registry:block"
         },
         {
-          "path": "src/registry/bases/base/blocks/bills-01/components/bill-dialog.tsx",
+          "path": "src/registry/bases/base/blocks/bills/components/bill-dialog.tsx",
           "type": "registry:block"
         }
       ]
     },
     {
-      "name": "payments-01",
+      "name": "payments",
       "type": "registry:block",
-      "title": "Payments 01",
+      "title": "Payments",
       "description": "Payments list with create/edit dialog form, row-action menu, and a delete confirmation.",
       "dependencies": [
         "lucide-react"
@@ -1078,28 +1078,28 @@
       ],
       "files": [
         {
-          "path": "src/registry/bases/base/blocks/payments-01/page.tsx",
+          "path": "src/registry/bases/base/blocks/payments/page.tsx",
           "type": "registry:page",
           "target": "app/payments/page.tsx"
         },
         {
-          "path": "src/registry/bases/base/blocks/payments-01/data.ts",
+          "path": "src/registry/bases/base/blocks/payments/data.ts",
           "type": "registry:block"
         },
         {
-          "path": "src/registry/bases/base/blocks/payments-01/components/data-table.tsx",
+          "path": "src/registry/bases/base/blocks/payments/components/data-table.tsx",
           "type": "registry:block"
         },
         {
-          "path": "src/registry/bases/base/blocks/payments-01/components/payment-dialog.tsx",
+          "path": "src/registry/bases/base/blocks/payments/components/payment-dialog.tsx",
           "type": "registry:block"
         }
       ]
     },
     {
-      "name": "journal-entries-01",
+      "name": "journal-entries",
       "type": "registry:block",
-      "title": "Journal Entries 01",
+      "title": "Journal Entries",
       "description": "Journal entry list with a dynamic debit/credit line-item dialog that validates the entry balances before it can be saved.",
       "dependencies": [
         "lucide-react"
@@ -1119,28 +1119,28 @@
       ],
       "files": [
         {
-          "path": "src/registry/bases/base/blocks/journal-entries-01/page.tsx",
+          "path": "src/registry/bases/base/blocks/journal-entries/page.tsx",
           "type": "registry:page",
           "target": "app/journal-entries/page.tsx"
         },
         {
-          "path": "src/registry/bases/base/blocks/journal-entries-01/data.ts",
+          "path": "src/registry/bases/base/blocks/journal-entries/data.ts",
           "type": "registry:block"
         },
         {
-          "path": "src/registry/bases/base/blocks/journal-entries-01/components/data-table.tsx",
+          "path": "src/registry/bases/base/blocks/journal-entries/components/data-table.tsx",
           "type": "registry:block"
         },
         {
-          "path": "src/registry/bases/base/blocks/journal-entries-01/components/entry-dialog.tsx",
+          "path": "src/registry/bases/base/blocks/journal-entries/components/entry-dialog.tsx",
           "type": "registry:block"
         }
       ]
     },
     {
-      "name": "bank-reconciliation-01",
+      "name": "bank-reconciliation",
       "type": "registry:block",
-      "title": "Bank Reconciliation 01",
+      "title": "Bank Reconciliation",
       "description": "Bank reconciliation checklist \u2014 mark transactions cleared against a statement balance, with live statement/cleared/difference summary cards.",
       "dependencies": [],
       "registryDependencies": [
@@ -1152,12 +1152,12 @@
       ],
       "files": [
         {
-          "path": "src/registry/bases/base/blocks/bank-reconciliation-01/page.tsx",
+          "path": "src/registry/bases/base/blocks/bank-reconciliation/page.tsx",
           "type": "registry:page",
           "target": "app/bank-reconciliation/page.tsx"
         },
         {
-          "path": "src/registry/bases/base/blocks/bank-reconciliation-01/data.ts",
+          "path": "src/registry/bases/base/blocks/bank-reconciliation/data.ts",
           "type": "registry:block"
         }
       ]

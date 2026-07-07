@@ -13,21 +13,21 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
     { name: "page.tsx", path: "app/payroll-run/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/payroll-run/data.ts", src: "data.ts" },
   ],
-  "employee-01": [
+  "employee": [
     { name: "page.tsx", path: "app/employee/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/employee/data.ts", src: "data.ts" },
     {
       name: "data-table.tsx",
-      path: "components/blocks/employee-01/components/data-table.tsx",
+      path: "components/blocks/employee/components/data-table.tsx",
       src: "components/data-table.tsx",
     },
     {
       name: "employee-dialog.tsx",
-      path: "components/blocks/employee-01/components/employee-dialog.tsx",
+      path: "components/blocks/employee/components/employee-dialog.tsx",
       src: "components/employee-dialog.tsx",
     },
   ],
-  "deductions-benefits-01": [
+  "deductions-benefits": [
     {
       name: "page.tsx",
       path: "app/deductions-benefits/page.tsx",
@@ -40,20 +40,20 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
     },
     {
       name: "data-table.tsx",
-      path: "components/blocks/deductions-benefits-01/components/data-table.tsx",
+      path: "components/blocks/deductions-benefits/components/data-table.tsx",
       src: "components/data-table.tsx",
     },
     {
       name: "item-dialog.tsx",
-      path: "components/blocks/deductions-benefits-01/components/item-dialog.tsx",
+      path: "components/blocks/deductions-benefits/components/item-dialog.tsx",
       src: "components/item-dialog.tsx",
     },
   ],
-  "tax-tables-01": [
+  "tax-tables": [
     { name: "page.tsx", path: "app/tax-tables/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/tax-tables/data.ts", src: "data.ts" },
   ],
-  "chart-of-accounts-01": [
+  "chart-of-accounts": [
     {
       name: "page.tsx",
       path: "app/chart-of-accounts/page.tsx",
@@ -66,44 +66,44 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
     },
     {
       name: "data-table.tsx",
-      path: "components/blocks/chart-of-accounts-01/components/data-table.tsx",
+      path: "components/blocks/chart-of-accounts/components/data-table.tsx",
       src: "components/data-table.tsx",
     },
     {
       name: "account-dialog.tsx",
-      path: "components/blocks/chart-of-accounts-01/components/account-dialog.tsx",
+      path: "components/blocks/chart-of-accounts/components/account-dialog.tsx",
       src: "components/account-dialog.tsx",
     },
   ],
-  "bills-01": [
+  "bills": [
     { name: "page.tsx", path: "app/bills/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/bills/data.ts", src: "data.ts" },
     {
       name: "data-table.tsx",
-      path: "components/blocks/bills-01/components/data-table.tsx",
+      path: "components/blocks/bills/components/data-table.tsx",
       src: "components/data-table.tsx",
     },
     {
       name: "bill-dialog.tsx",
-      path: "components/blocks/bills-01/components/bill-dialog.tsx",
+      path: "components/blocks/bills/components/bill-dialog.tsx",
       src: "components/bill-dialog.tsx",
     },
   ],
-  "payments-01": [
+  "payments": [
     { name: "page.tsx", path: "app/payments/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/payments/data.ts", src: "data.ts" },
     {
       name: "data-table.tsx",
-      path: "components/blocks/payments-01/components/data-table.tsx",
+      path: "components/blocks/payments/components/data-table.tsx",
       src: "components/data-table.tsx",
     },
     {
       name: "payment-dialog.tsx",
-      path: "components/blocks/payments-01/components/payment-dialog.tsx",
+      path: "components/blocks/payments/components/payment-dialog.tsx",
       src: "components/payment-dialog.tsx",
     },
   ],
-  "journal-entries-01": [
+  "journal-entries": [
     {
       name: "page.tsx",
       path: "app/journal-entries/page.tsx",
@@ -116,16 +116,16 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
     },
     {
       name: "data-table.tsx",
-      path: "components/blocks/journal-entries-01/components/data-table.tsx",
+      path: "components/blocks/journal-entries/components/data-table.tsx",
       src: "components/data-table.tsx",
     },
     {
       name: "entry-dialog.tsx",
-      path: "components/blocks/journal-entries-01/components/entry-dialog.tsx",
+      path: "components/blocks/journal-entries/components/entry-dialog.tsx",
       src: "components/entry-dialog.tsx",
     },
   ],
-  "bank-reconciliation-01": [
+  "bank-reconciliation": [
     {
       name: "page.tsx",
       path: "app/bank-reconciliation/page.tsx",

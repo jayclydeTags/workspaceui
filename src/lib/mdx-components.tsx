@@ -4,7 +4,7 @@ import NextImage from "next/image"
 
 import { cn } from "@/lib/utils"
 import { Heading } from "@/components/mdx-heading"
-import { Accordion, Accordions } from "@/components/accordion"
+import { Accordion, Accordions } from "@/components/mdx-accordion"
 import { Callout } from "@/components/callout"
 import { CodeBlock, Pre, CodeBlockTab, CodeBlockTabs, CodeBlockTabsList, CodeBlockTabsTrigger } from "@/components/codeblock"
 import { ComponentPreview } from "@/components/component-preview"

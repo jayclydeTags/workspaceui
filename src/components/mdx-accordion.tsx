@@ -1,26 +1,23 @@
 'use client';
 
-import { Check, LinkIcon } from 'lucide-react';
+// Self-contained docs accordion for MDX. Built directly on the base-ui
+// primitive rather than ./ui/accordion, which shadcn owns and overwrites on
+// every re-install (that overwrite drops AccordionHeader and breaks this).
+import { Accordion as Primitive } from '@base-ui/react/accordion';
+import { Check, ChevronRight, LinkIcon } from 'lucide-react';
 import { type ComponentProps, type ReactNode, useEffect, useRef, useState } from 'react';
 import { cn } from '../lib/cn';
 import { useCopyButton } from '@fumadocs/base-ui/utils/use-copy-button';
 import { buttonVariants } from './ui/button';
 import { mergeRefs } from '../lib/merge-refs';
 import { useTranslations } from '@fuma-translate/react';
-import {
-  Accordion as Root,
-  AccordionContent,
-  AccordionHeader,
-  AccordionItem,
-  AccordionTrigger,
-} from './ui/accordion';
 
 export function Accordions({
   ref,
   className,
   defaultValue,
   ...props
-}: ComponentProps<typeof Root>) {
+}: ComponentProps<typeof Primitive.Root>) {
   const rootRef = useRef<HTMLDivElement>(null);
   const composedRef = mergeRefs(ref, rootRef);
   const [value, setValue] = useState<unknown[]>(defaultValue ?? []);
@@ -40,7 +37,7 @@ export function Accordions({
   }, []);
 
   return (
-    <Root
+    <Primitive.Root
       ref={composedRef}
       value={value}
       onValueChange={setValue}
@@ -61,22 +58,32 @@ export function Accordion({
   value = String(title),
   children,
   ...props
-}: Omit<ComponentProps<typeof AccordionItem>, 'value' | 'title'> & {
+}: Omit<ComponentProps<typeof Primitive.Item>, 'value' | 'title'> & {
   title: string | ReactNode;
   value?: string;
 }) {
   return (
-    <AccordionItem value={value} {...props}>
-      <AccordionHeader id={id} data-accordion-value={value}>
-        <AccordionTrigger>{title}</AccordionTrigger>
+    <Primitive.Item value={value} {...props}>
+      <Primitive.Header
+        id={id}
+        data-accordion-value={value}
+        className="scroll-m-24 not-prose flex flex-row items-center font-medium text-fd-card-foreground has-focus-visible:bg-fd-accent"
+      >
+        <Primitive.Trigger className="group flex flex-1 items-center gap-2 px-3 py-2.5 text-start focus-visible:outline-none">
+          <ChevronRight className="size-4 shrink-0 text-fd-muted-foreground transition-transform duration-200 group-data-[panel-open]:rotate-90" />
+          {title}
+        </Primitive.Trigger>
         {id ? <CopyButton id={id} /> : null}
-      </AccordionHeader>
-      <AccordionContent hiddenUntilFound>
-        <div className="px-4 pb-2 text-[0.9375rem] prose-no-margin [&[hidden]:not([hidden='until-found'])]:hidden">
+      </Primitive.Header>
+      <Primitive.Panel
+        hiddenUntilFound
+        className="h-(--accordion-panel-height) overflow-hidden transition-[height] ease-out data-[ending-style]:h-0 data-[starting-style]:h-0"
+      >
+        <div className="prose-no-margin px-4 pb-2 text-[0.9375rem] [&[hidden]:not([hidden='until-found'])]:hidden">
           {children}
         </div>
-      </AccordionContent>
-    </AccordionItem>
+      </Primitive.Panel>
+    </Primitive.Item>
   );
 }
 
@@ -96,7 +103,7 @@ function CopyButton({ id }: { id: string }) {
       className={cn(
         buttonVariants({
           variant: 'ghost',
-          className: 'text-fd-muted-foreground me-2',
+          className: 'me-2 text-fd-muted-foreground',
         }),
       )}
       onClick={onClick}

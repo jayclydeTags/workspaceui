@@ -569,6 +569,29 @@
       ]
     },
     {
+      "name": "reset-password",
+      "type": "registry:block",
+      "title": "Reset Password",
+      "description": "Set-a-new-password form with a live strength meter, confirm-match validation, an expired-link state, and a password-updated confirmation.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "button",
+        "card",
+        "field",
+        "input",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/reset-password/page.tsx",
+          "type": "registry:page",
+          "target": "app/reset-password/page.tsx"
+        }
+      ]
+    },
+    {
       "name": "settings-01",
       "type": "registry:block",
       "title": "Settings 01",

@@ -120,6 +120,9 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
   "forgot-password": [
     { name: "page.tsx", path: "app/forgot-password/page.tsx", src: "page.tsx" },
   ],
+  "reset-password": [
+    { name: "page.tsx", path: "app/reset-password/page.tsx", src: "page.tsx" },
+  ],
   "two-factor-challenge": [
     {
       name: "page.tsx",

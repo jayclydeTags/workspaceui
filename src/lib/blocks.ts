@@ -10,6 +10,7 @@ import { ForgotPassword } from "@/registry/bases/base/blocks/forgot-password/pag
 import { InvoiceDetail01 } from "@/registry/bases/base/blocks/invoice-detail-01/page"
 import { Login } from "@/registry/bases/base/blocks/login/page"
 import { OtpVerify } from "@/registry/bases/base/blocks/otp-verify/page"
+import { ResetPassword } from "@/registry/bases/base/blocks/reset-password/page"
 import { TwoFactorChallenge } from "@/registry/bases/base/blocks/two-factor-challenge/page"
 import { Register } from "@/registry/bases/base/blocks/register/page"
 import { PayrollRun01 } from "@/registry/bases/base/blocks/payroll-run-01/page"
@@ -167,6 +168,14 @@ export const blocks: BlockMeta[] = [
       "Request a password-reset link by email — field validation, pending state, and a neutral check-your-email confirmation that doesn't leak account existence.",
     category: "Authentication",
     Component: ForgotPassword,
+  },
+  {
+    slug: "reset-password",
+    title: "Reset Password",
+    description:
+      "Set-a-new-password form with a live strength meter, confirm-match validation, an expired-link state, and a password-updated confirmation.",
+    category: "Authentication",
+    Component: ResetPassword,
   },
   {
     slug: "two-factor-challenge",

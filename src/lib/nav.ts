@@ -181,6 +181,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Request a password-reset link by email — field validation, pending state, and a neutral check-your-email confirmation that doesn't leak account existence.",
           },
+          {
+            title: "Reset Password",
+            href: "/blocks/reset-password",
+            description:
+              "Set-a-new-password form with a live strength meter, confirm-match validation, an expired-link state, and a password-updated confirmation.",
+          },
         ],
       },
       {

@@ -117,6 +117,9 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
   "otp-verify": [
     { name: "page.tsx", path: "app/otp-verify/page.tsx", src: "page.tsx" },
   ],
+  "forgot-password": [
+    { name: "page.tsx", path: "app/forgot-password/page.tsx", src: "page.tsx" },
+  ],
   "two-factor-challenge": [
     {
       name: "page.tsx",

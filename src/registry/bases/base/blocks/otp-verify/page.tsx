@@ -91,7 +91,7 @@ export function OtpVerify() {
       <div className="flex min-h-full items-center justify-center p-6">
         <Card className="w-full max-w-sm">
           <CardHeader className="items-center text-center">
-            <div className="flex size-11 items-center justify-center rounded-full bg-muted">
+            <div className="flex size-11 items-center mx-auto justify-center rounded-full bg-muted">
               <ShieldCheck className="size-5" />
             </div>
             <CardTitle className="mt-2">Enter verification code</CardTitle>

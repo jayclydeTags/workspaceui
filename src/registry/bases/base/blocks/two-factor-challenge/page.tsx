@@ -84,7 +84,7 @@ export function TwoFactorChallenge() {
       <div className="flex min-h-full items-center justify-center p-6">
         <Card className="w-full max-w-sm">
           <CardHeader className="items-center text-center">
-            <div className="flex size-11 items-center justify-center rounded-full bg-muted">
+            <div className="mx-auto flex size-11 items-center justify-center rounded-full bg-muted">
               {mode === "totp" ? (
                 <Smartphone className="size-5" />
               ) : (

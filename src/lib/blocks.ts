@@ -6,6 +6,7 @@ import { ApprovalBoard01 } from "@/registry/bases/base/blocks/approval-board-01/
 import { ActivityFeed01 } from "@/registry/bases/base/blocks/activity-feed-01/page"
 import { ActivityLog01 } from "@/registry/bases/base/blocks/activity-log-01/page"
 import { Dashboard01 } from "@/registry/bases/base/blocks/dashboard-01/page"
+import { ForgotPassword } from "@/registry/bases/base/blocks/forgot-password/page"
 import { InvoiceDetail01 } from "@/registry/bases/base/blocks/invoice-detail-01/page"
 import { Login } from "@/registry/bases/base/blocks/login/page"
 import { OtpVerify } from "@/registry/bases/base/blocks/otp-verify/page"
@@ -158,6 +159,14 @@ export const blocks: BlockMeta[] = [
       "One-time passcode entry with a 6-digit segmented input, auto-verify on complete, incorrect-code error, and a countdown-gated resend.",
     category: "Authentication",
     Component: OtpVerify,
+  },
+  {
+    slug: "forgot-password",
+    title: "Forgot Password",
+    description:
+      "Request a password-reset link by email — field validation, pending state, and a neutral check-your-email confirmation that doesn't leak account existence.",
+    category: "Authentication",
+    Component: ForgotPassword,
   },
   {
     slug: "two-factor-challenge",

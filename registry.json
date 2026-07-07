@@ -546,6 +546,29 @@
       ]
     },
     {
+      "name": "forgot-password",
+      "type": "registry:block",
+      "title": "Forgot Password",
+      "description": "Request a password-reset link by email — field validation, pending state, and a neutral check-your-email confirmation that doesn't leak account existence.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "button",
+        "card",
+        "field",
+        "input",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/forgot-password/page.tsx",
+          "type": "registry:page",
+          "target": "app/forgot-password/page.tsx"
+        }
+      ]
+    },
+    {
       "name": "settings-01",
       "type": "registry:block",
       "title": "Settings 01",

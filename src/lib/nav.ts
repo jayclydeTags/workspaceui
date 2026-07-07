@@ -173,6 +173,17 @@ export const blocksNav: NavSection[] = [
         ],
       },
       {
+        title: "Password",
+        items: [
+          {
+            title: "Forgot Password",
+            href: "/blocks/forgot-password",
+            description:
+              "Request a password-reset link by email — field validation, pending state, and a neutral check-your-email confirmation that doesn't leak account existence.",
+          },
+        ],
+      },
+      {
         title: "Two-Factor & OTP",
         items: [
           {

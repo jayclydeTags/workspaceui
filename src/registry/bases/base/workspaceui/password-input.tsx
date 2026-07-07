@@ -106,7 +106,7 @@ export function PasswordInput({
           </span>
         </div>
       )}
-      {showChecklist && current && (
+      {showChecklist && (
         <ul className="flex flex-col gap-1" aria-live="polite">
           {passwordRequirements.map(({ label, test }) => {
             const met = test(current)

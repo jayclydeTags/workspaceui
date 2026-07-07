@@ -47,8 +47,10 @@ describe("PasswordInput", () => {
   it("renders a live requirements checklist that flips as rules are met", async () => {
     const user = userEvent.setup()
     render(<PasswordInput aria-label="Password" showChecklist />)
-    // Nothing typed yet — checklist hidden.
-    expect(screen.queryByText("A number")).not.toBeInTheDocument()
+    // Shown from the start — every rule reads "not met" before typing.
+    expect(screen.getByText("A number").closest("li")).toHaveTextContent(
+      /not met$/
+    )
 
     const input = screen.getByLabelText("Password")
     await user.type(input, "abc")

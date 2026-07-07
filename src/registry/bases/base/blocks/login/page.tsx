@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { CheckCircle2, Loader2, TriangleAlert } from "lucide-react"
 
+import { Alert, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -82,13 +83,10 @@ export function Login() {
             <form onSubmit={onSubmit} noValidate>
               <FieldGroup>
                 {status === "error" && (
-                  <div
-                    role="alert"
-                    className="flex items-center gap-2 rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive"
-                  >
-                    <TriangleAlert className="size-4 shrink-0" />
-                    Incorrect email or password.
-                  </div>
+                  <Alert variant="destructive">
+                    <TriangleAlert />
+                    <AlertTitle>Incorrect email or password.</AlertTitle>
+                  </Alert>
                 )}
 
                 <Field data-invalid={!!fieldErrors.email}>

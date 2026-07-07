@@ -531,6 +531,7 @@
         "lucide-react"
       ],
       "registryDependencies": [
+        "alert",
         "button",
         "card",
         "checkbox",

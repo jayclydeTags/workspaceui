@@ -24,6 +24,20 @@ export function scorePassword(pw: string) {
 
 const STRENGTH = ["Too weak", "Weak", "Good", "Strong"] as const
 
+// Indexed by score (0–3). Index 0 is unused — nothing is filled at score 0.
+const STRENGTH_BAR = [
+  "",
+  "bg-destructive",
+  "bg-amber-500",
+  "bg-emerald-600 dark:bg-emerald-400",
+] as const
+const STRENGTH_TEXT = [
+  "text-muted-foreground",
+  "text-destructive",
+  "text-amber-600 dark:text-amber-500",
+  "text-emerald-600 dark:text-emerald-400",
+] as const
+
 /** The rules the checklist validates against, in display order. Exported so the
  *  same set can gate submission (`passwordRequirements.every((r) => r.test(pw))`). */
 export const passwordRequirements = [
@@ -96,12 +110,14 @@ export function PasswordInput({
                 key={i}
                 className={cn(
                   "h-1 flex-1 rounded-full",
-                  i < strength ? "bg-primary" : "bg-muted"
+                  i < strength ? STRENGTH_BAR[strength] : "bg-muted"
                 )}
               />
             ))}
           </div>
-          <span className="text-xs text-muted-foreground tabular-nums">
+          <span
+            className={cn("text-xs tabular-nums", STRENGTH_TEXT[strength])}
+          >
             {STRENGTH[strength]}
           </span>
         </div>

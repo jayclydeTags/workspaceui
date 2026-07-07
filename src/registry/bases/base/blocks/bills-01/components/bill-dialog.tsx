@@ -20,12 +20,12 @@ import {
 import {
   emptyDraft,
   isValid,
-  type Department,
-  type DepartmentDraft,
-  type DepartmentStatus,
+  type Bill,
+  type BillDraft,
+  type BillStatus,
 } from "../data"
 
-export function DepartmentDialog({
+export function BillDialog({
   open,
   onOpenChange,
   editing,
@@ -33,11 +33,11 @@ export function DepartmentDialog({
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
-  /** The department being edited, or `null` when creating a new one. */
-  editing: Department | null
-  onSubmit: (draft: DepartmentDraft) => void
+  /** The bill being edited, or `null` when creating a new one. */
+  editing: Bill | null
+  onSubmit: (draft: BillDraft) => void
 }) {
-  const [draft, setDraft] = React.useState<DepartmentDraft>(emptyDraft)
+  const [draft, setDraft] = React.useState<BillDraft>(emptyDraft)
 
   // Seed the form whenever the dialog opens for a create or a specific edit —
   // one form handles both, keyed off whether `editing` is set. Adjusted during
@@ -50,9 +50,10 @@ export function DepartmentDialog({
       setDraft(
         editing
           ? {
-              name: editing.name,
-              code: editing.code,
-              manager: editing.manager,
+              vendor: editing.vendor,
+              billNumber: editing.billNumber,
+              dueDate: editing.dueDate,
+              amount: editing.amount,
               status: editing.status,
             }
           : emptyDraft()
@@ -60,7 +61,7 @@ export function DepartmentDialog({
     }
   }
 
-  const patch = (changes: Partial<DepartmentDraft>) =>
+  const patch = (changes: Partial<BillDraft>) =>
     setDraft((prev) => ({ ...prev, ...changes }))
 
   function submit(e: React.FormEvent) {
@@ -74,58 +75,68 @@ export function DepartmentDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            {editing ? "Edit department" : "New department"}
-          </DialogTitle>
+          <DialogTitle>{editing ? "Edit bill" : "New bill"}</DialogTitle>
         </DialogHeader>
-        <form id="department-form" onSubmit={submit}>
+        <form id="bill-form" onSubmit={submit}>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="dept-name">Name</FieldLabel>
+              <FieldLabel htmlFor="bill-vendor">Vendor</FieldLabel>
               <Input
-                id="dept-name"
-                value={draft.name}
-                onChange={(e) => patch({ name: e.target.value })}
-                placeholder="e.g. Engineering"
+                id="bill-vendor"
+                value={draft.vendor}
+                onChange={(e) => patch({ vendor: e.target.value })}
+                placeholder="e.g. Acme Supply Co."
                 required
               />
             </Field>
             <Field>
-              <FieldLabel htmlFor="dept-code">Code</FieldLabel>
+              <FieldLabel htmlFor="bill-number">Bill number</FieldLabel>
               <Input
-                id="dept-code"
-                value={draft.code}
-                onChange={(e) =>
-                  patch({ code: e.target.value.toUpperCase() })
-                }
-                placeholder="e.g. ENG"
+                id="bill-number"
+                value={draft.billNumber}
+                onChange={(e) => patch({ billNumber: e.target.value })}
+                placeholder="e.g. B-1001"
                 required
               />
             </Field>
             <Field>
-              <FieldLabel htmlFor="dept-manager">Manager</FieldLabel>
+              <FieldLabel htmlFor="bill-due-date">Due date</FieldLabel>
               <Input
-                id="dept-manager"
-                value={draft.manager}
-                onChange={(e) => patch({ manager: e.target.value })}
-                placeholder="e.g. Sarah Chen"
+                id="bill-due-date"
+                type="date"
+                value={draft.dueDate}
+                onChange={(e) => patch({ dueDate: e.target.value })}
                 required
               />
             </Field>
             <Field>
-              <FieldLabel htmlFor="dept-status">Status</FieldLabel>
+              <FieldLabel htmlFor="bill-amount">Amount ($)</FieldLabel>
+              <Input
+                id="bill-amount"
+                type="number"
+                min="0"
+                step="0.01"
+                value={draft.amount || ""}
+                onChange={(e) => patch({ amount: Number(e.target.value) })}
+                required
+              />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="bill-status">Status</FieldLabel>
               <Select
                 value={draft.status}
                 onValueChange={(v) =>
-                  patch({ status: (v as DepartmentStatus) ?? "active" })
+                  patch({ status: (v as BillStatus) ?? "draft" })
                 }
               >
-                <SelectTrigger id="dept-status">
+                <SelectTrigger id="bill-status">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="archived">Archived</SelectItem>
+                  <SelectItem value="draft">Draft</SelectItem>
+                  <SelectItem value="open">Open</SelectItem>
+                  <SelectItem value="paid">Paid</SelectItem>
+                  <SelectItem value="overdue">Overdue</SelectItem>
                 </SelectContent>
               </Select>
             </Field>
@@ -139,8 +150,8 @@ export function DepartmentDialog({
           >
             Cancel
           </Button>
-          <Button type="submit" form="department-form" disabled={!isValid(draft)}>
-            {editing ? "Save changes" : "Create department"}
+          <Button type="submit" form="bill-form" disabled={!isValid(draft)}>
+            {editing ? "Save changes" : "Create bill"}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -20,12 +20,12 @@ import {
 import {
   emptyDraft,
   isValid,
-  type Department,
-  type DepartmentDraft,
-  type DepartmentStatus,
+  type Employee,
+  type EmployeeDraft,
+  type EmployeeStatus,
 } from "../data"
 
-export function DepartmentDialog({
+export function EmployeeDialog({
   open,
   onOpenChange,
   editing,
@@ -33,11 +33,11 @@ export function DepartmentDialog({
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
-  /** The department being edited, or `null` when creating a new one. */
-  editing: Department | null
-  onSubmit: (draft: DepartmentDraft) => void
+  /** The employee being edited, or `null` when creating a new one. */
+  editing: Employee | null
+  onSubmit: (draft: EmployeeDraft) => void
 }) {
-  const [draft, setDraft] = React.useState<DepartmentDraft>(emptyDraft)
+  const [draft, setDraft] = React.useState<EmployeeDraft>(emptyDraft)
 
   // Seed the form whenever the dialog opens for a create or a specific edit —
   // one form handles both, keyed off whether `editing` is set. Adjusted during
@@ -51,16 +51,18 @@ export function DepartmentDialog({
         editing
           ? {
               name: editing.name,
-              code: editing.code,
-              manager: editing.manager,
+              email: editing.email,
+              department: editing.department,
+              title: editing.title,
               status: editing.status,
+              hireDate: editing.hireDate,
             }
           : emptyDraft()
       )
     }
   }
 
-  const patch = (changes: Partial<DepartmentDraft>) =>
+  const patch = (changes: Partial<EmployeeDraft>) =>
     setDraft((prev) => ({ ...prev, ...changes }))
 
   function submit(e: React.FormEvent) {
@@ -74,58 +76,75 @@ export function DepartmentDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            {editing ? "Edit department" : "New department"}
-          </DialogTitle>
+          <DialogTitle>{editing ? "Edit employee" : "New employee"}</DialogTitle>
         </DialogHeader>
-        <form id="department-form" onSubmit={submit}>
+        <form id="employee-form" onSubmit={submit}>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="dept-name">Name</FieldLabel>
+              <FieldLabel htmlFor="employee-name">Name</FieldLabel>
               <Input
-                id="dept-name"
+                id="employee-name"
                 value={draft.name}
                 onChange={(e) => patch({ name: e.target.value })}
-                placeholder="e.g. Engineering"
-                required
-              />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="dept-code">Code</FieldLabel>
-              <Input
-                id="dept-code"
-                value={draft.code}
-                onChange={(e) =>
-                  patch({ code: e.target.value.toUpperCase() })
-                }
-                placeholder="e.g. ENG"
-                required
-              />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="dept-manager">Manager</FieldLabel>
-              <Input
-                id="dept-manager"
-                value={draft.manager}
-                onChange={(e) => patch({ manager: e.target.value })}
                 placeholder="e.g. Sarah Chen"
                 required
               />
             </Field>
             <Field>
-              <FieldLabel htmlFor="dept-status">Status</FieldLabel>
+              <FieldLabel htmlFor="employee-email">Email</FieldLabel>
+              <Input
+                id="employee-email"
+                type="email"
+                value={draft.email}
+                onChange={(e) => patch({ email: e.target.value })}
+                placeholder="e.g. sarah.chen@acme.co"
+                required
+              />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="employee-title">Title</FieldLabel>
+              <Input
+                id="employee-title"
+                value={draft.title}
+                onChange={(e) => patch({ title: e.target.value })}
+                placeholder="e.g. Senior Engineer"
+              />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="employee-department">Department</FieldLabel>
+              <Input
+                id="employee-department"
+                value={draft.department}
+                onChange={(e) => patch({ department: e.target.value })}
+                placeholder="e.g. Engineering"
+                required
+              />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="employee-hire-date">Hire date</FieldLabel>
+              <Input
+                id="employee-hire-date"
+                type="date"
+                value={draft.hireDate}
+                onChange={(e) => patch({ hireDate: e.target.value })}
+                required
+              />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="employee-status">Status</FieldLabel>
               <Select
                 value={draft.status}
                 onValueChange={(v) =>
-                  patch({ status: (v as DepartmentStatus) ?? "active" })
+                  patch({ status: (v as EmployeeStatus) ?? "onboarding" })
                 }
               >
-                <SelectTrigger id="dept-status">
+                <SelectTrigger id="employee-status">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="onboarding">Onboarding</SelectItem>
                   <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="archived">Archived</SelectItem>
+                  <SelectItem value="terminated">Terminated</SelectItem>
                 </SelectContent>
               </Select>
             </Field>
@@ -139,8 +158,8 @@ export function DepartmentDialog({
           >
             Cancel
           </Button>
-          <Button type="submit" form="department-form" disabled={!isValid(draft)}>
-            {editing ? "Save changes" : "Create department"}
+          <Button type="submit" form="employee-form" disabled={!isValid(draft)}>
+            {editing ? "Save changes" : "Create employee"}
           </Button>
         </DialogFooter>
       </DialogContent>

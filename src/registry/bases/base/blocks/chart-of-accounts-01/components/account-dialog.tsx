@@ -18,14 +18,18 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import {
+  ACCOUNT_TYPE_LABEL,
   emptyDraft,
   isValid,
-  type Department,
-  type DepartmentDraft,
-  type DepartmentStatus,
+  type Account,
+  type AccountDraft,
+  type AccountStatus,
+  type AccountType,
 } from "../data"
 
-export function DepartmentDialog({
+const ACCOUNT_TYPES = Object.keys(ACCOUNT_TYPE_LABEL) as AccountType[]
+
+export function AccountDialog({
   open,
   onOpenChange,
   editing,
@@ -33,11 +37,11 @@ export function DepartmentDialog({
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
-  /** The department being edited, or `null` when creating a new one. */
-  editing: Department | null
-  onSubmit: (draft: DepartmentDraft) => void
+  /** The account being edited, or `null` when creating a new one. */
+  editing: Account | null
+  onSubmit: (draft: AccountDraft) => void
 }) {
-  const [draft, setDraft] = React.useState<DepartmentDraft>(emptyDraft)
+  const [draft, setDraft] = React.useState<AccountDraft>(emptyDraft)
 
   // Seed the form whenever the dialog opens for a create or a specific edit —
   // one form handles both, keyed off whether `editing` is set. Adjusted during
@@ -50,9 +54,9 @@ export function DepartmentDialog({
       setDraft(
         editing
           ? {
-              name: editing.name,
               code: editing.code,
-              manager: editing.manager,
+              name: editing.name,
+              type: editing.type,
               status: editing.status,
             }
           : emptyDraft()
@@ -60,7 +64,7 @@ export function DepartmentDialog({
     }
   }
 
-  const patch = (changes: Partial<DepartmentDraft>) =>
+  const patch = (changes: Partial<AccountDraft>) =>
     setDraft((prev) => ({ ...prev, ...changes }))
 
   function submit(e: React.FormEvent) {
@@ -74,53 +78,59 @@ export function DepartmentDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            {editing ? "Edit department" : "New department"}
-          </DialogTitle>
+          <DialogTitle>{editing ? "Edit account" : "New account"}</DialogTitle>
         </DialogHeader>
-        <form id="department-form" onSubmit={submit}>
+        <form id="account-form" onSubmit={submit}>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="dept-name">Name</FieldLabel>
+              <FieldLabel htmlFor="account-code">Code</FieldLabel>
               <Input
-                id="dept-name"
+                id="account-code"
+                value={draft.code}
+                onChange={(e) => patch({ code: e.target.value })}
+                placeholder="e.g. 1000"
+                required
+              />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="account-name">Name</FieldLabel>
+              <Input
+                id="account-name"
                 value={draft.name}
                 onChange={(e) => patch({ name: e.target.value })}
-                placeholder="e.g. Engineering"
+                placeholder="e.g. Cash"
                 required
               />
             </Field>
             <Field>
-              <FieldLabel htmlFor="dept-code">Code</FieldLabel>
-              <Input
-                id="dept-code"
-                value={draft.code}
-                onChange={(e) =>
-                  patch({ code: e.target.value.toUpperCase() })
+              <FieldLabel htmlFor="account-type">Type</FieldLabel>
+              <Select
+                value={draft.type}
+                onValueChange={(v) =>
+                  patch({ type: (v as AccountType) ?? "asset" })
                 }
-                placeholder="e.g. ENG"
-                required
-              />
+              >
+                <SelectTrigger id="account-type">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {ACCOUNT_TYPES.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {ACCOUNT_TYPE_LABEL[type]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </Field>
             <Field>
-              <FieldLabel htmlFor="dept-manager">Manager</FieldLabel>
-              <Input
-                id="dept-manager"
-                value={draft.manager}
-                onChange={(e) => patch({ manager: e.target.value })}
-                placeholder="e.g. Sarah Chen"
-                required
-              />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="dept-status">Status</FieldLabel>
+              <FieldLabel htmlFor="account-status">Status</FieldLabel>
               <Select
                 value={draft.status}
                 onValueChange={(v) =>
-                  patch({ status: (v as DepartmentStatus) ?? "active" })
+                  patch({ status: (v as AccountStatus) ?? "active" })
                 }
               >
-                <SelectTrigger id="dept-status">
+                <SelectTrigger id="account-status">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -139,8 +149,8 @@ export function DepartmentDialog({
           >
             Cancel
           </Button>
-          <Button type="submit" form="department-form" disabled={!isValid(draft)}>
-            {editing ? "Save changes" : "Create department"}
+          <Button type="submit" form="account-form" disabled={!isValid(draft)}>
+            {editing ? "Save changes" : "Create account"}
           </Button>
         </DialogFooter>
       </DialogContent>

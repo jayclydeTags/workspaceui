@@ -118,6 +118,24 @@ export const blocksNav: NavSection[] = [
               "Payroll run summary with per-employee payslips — gross, deductions, and net pay.",
           },
           {
+            title: "Employee 01",
+            href: "/blocks/employee-01",
+            description:
+              "Employee directory with create/edit dialog form, row-action menu, and a delete confirmation.",
+          },
+          {
+            title: "Deductions & Benefits 01",
+            href: "/blocks/deductions-benefits-01",
+            description:
+              "Deduction and benefit plan list with create/edit dialog form, row-action menu, and a delete confirmation.",
+          },
+          {
+            title: "Tax Tables 01",
+            href: "/blocks/tax-tables-01",
+            description:
+              "Searchable tax bracket reference table filterable by jurisdiction, with income range and rate per filing status.",
+          },
+          {
             title: "Payroll Tasks",
             href: "/blocks/payroll-tasks",
             description:
@@ -214,6 +232,36 @@ export const blocksNav: NavSection[] = [
             href: "/blocks/purchase-order-form-01",
             description:
               "Three-step wizard for creating a purchase order — vendor details, line items, and review.",
+          },
+          {
+            title: "Chart of Accounts 01",
+            href: "/blocks/chart-of-accounts-01",
+            description:
+              "Chart of accounts table with create/edit dialog form, row-action menu, and a delete confirmation.",
+          },
+          {
+            title: "Bills 01",
+            href: "/blocks/bills-01",
+            description:
+              "Accounts-payable bills list with create/edit dialog form, row-action menu, and a delete confirmation.",
+          },
+          {
+            title: "Payments 01",
+            href: "/blocks/payments-01",
+            description:
+              "Payments list with create/edit dialog form, row-action menu, and a delete confirmation.",
+          },
+          {
+            title: "Journal Entries 01",
+            href: "/blocks/journal-entries-01",
+            description:
+              "Journal entry list with a dynamic debit/credit line-item dialog that validates the entry balances before it can be saved.",
+          },
+          {
+            title: "Bank Reconciliation 01",
+            href: "/blocks/bank-reconciliation-01",
+            description:
+              "Bank reconciliation checklist — mark transactions cleared against a statement balance, with live statement/cleared/difference summary cards.",
           },
         ],
       },

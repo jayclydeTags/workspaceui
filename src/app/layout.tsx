@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import type { Metadata } from "next"
-import { ThemeProvider, themeScript } from "@/components/theme-provider"
+import { ThemeProvider } from "@/components/theme-provider"
 
 import { SiteHeader } from "@/components/site-header"
 
@@ -21,8 +21,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth" className={cn("font-sans", geist.variable)}>
       <body>
-        {/* Server-rendered no-flash theme init; sets the class before hydration. */}
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        {/* No-flash theme init: external (src) script so it runs before paint
+            without tripping React 19's inline-"script tag while rendering" warning.
+            Source lives in public/theme-init.js. */}
+        <script src="/theme-init.js" />
         <ThemeProvider>
           <SiteHeader />
           {children}

@@ -5,13 +5,9 @@ import * as React from "react"
 type Theme = "light" | "dark" | "system"
 type Resolved = "light" | "dark"
 
+// No-flash init lives in public/theme-init.js (loaded before paint by the
+// layout). Keep this storage key in sync with that file.
 const STORAGE_KEY = "theme"
-
-// No-flash script: runs from the static HTML in <body> before paint, so the
-// correct theme class is set before React hydrates. Rendered by the server
-// layout (an RSC), never by a client component — which is what avoids React
-// 19's "script tag while rendering" warning that next-themes tripped.
-export const themeScript = `(function(){try{var e=localStorage.getItem("${STORAGE_KEY}")||"system";var d=e==="dark"||(e==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);var r=document.documentElement;r.classList.toggle("dark",d);r.style.colorScheme=d?"dark":"light"}catch(e){}})()`
 
 interface ThemeContextValue {
   theme: Theme

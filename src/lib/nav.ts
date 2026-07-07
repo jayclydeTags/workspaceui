@@ -65,6 +65,12 @@ export const blocksNav: NavSection[] = [
         title: "Dashboard",
         items: [
           {
+            title: "Dashboard",
+            href: "/blocks/dashboard",
+            description:
+              "Icon-collapsible sidebar with the Workspace component; tabs render inside Page.",
+          },
+          {
             title: "Dashboard 01",
             href: "/blocks/dashboard-01",
             description:

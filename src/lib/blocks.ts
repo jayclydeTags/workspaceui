@@ -49,6 +49,7 @@ import { ChartOfAccounts } from "@/registry/bases/base/blocks/chart-of-accounts/
 import { Bills } from "@/registry/bases/base/blocks/bills/page"
 import { Payments } from "@/registry/bases/base/blocks/payments/page"
 import { Products } from "@/registry/bases/base/blocks/products/page"
+import { StockLevels } from "@/registry/bases/base/blocks/stock-levels/page"
 import { Warehouses } from "@/registry/bases/base/blocks/warehouses/page"
 import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/page"
 import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
@@ -365,6 +366,14 @@ export const blocks: BlockMeta[] = [
       "Warehouse list with capacity utilization, create/edit dialog form, row-action menu, and a delete confirmation.",
     category: "Inventory",
     Component: Warehouses,
+  },
+  {
+    slug: "stock-levels",
+    title: "Stock Levels",
+    description:
+      "On-hand stock per SKU and warehouse — searchable, with derived low/out-of-stock badges and a stock-take adjustment dialog.",
+    category: "Inventory",
+    Component: StockLevels,
   },
   {
     slug: "approval-board",

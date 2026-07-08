@@ -280,6 +280,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Warehouse list with capacity utilization, create/edit dialog form, row-action menu, and a delete confirmation.",
           },
+          {
+            title: "Stock Levels",
+            href: "/blocks/stock-levels",
+            description:
+              "On-hand stock per SKU and warehouse — searchable, with derived low/out-of-stock badges and a stock-take adjustment dialog.",
+          },
         ],
       },
       {

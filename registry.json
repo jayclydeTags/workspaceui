@@ -1097,6 +1097,41 @@
       ]
     },
     {
+      "name": "stock-levels",
+      "type": "registry:block",
+      "title": "Stock Levels",
+      "description": "On-hand stock per SKU and warehouse — searchable, with derived low/out-of-stock badges and a stock-take adjustment dialog.",
+      "registryDependencies": [
+        "badge",
+        "button",
+        "dialog",
+        "empty",
+        "field",
+        "input",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/stock-levels/page.tsx",
+          "type": "registry:page",
+          "target": "app/stock-levels/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/stock-levels/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/stock-levels/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/stock-levels/components/adjust-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "bills",
       "type": "registry:block",
       "title": "Bills",

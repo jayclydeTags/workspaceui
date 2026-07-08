@@ -1171,6 +1171,50 @@
       ]
     },
     {
+      "name": "deals-pipeline",
+      "type": "registry:block",
+      "title": "Deals Pipeline",
+      "description": "Drag-and-drop deal pipeline with per-stage value, a probability-weighted forecast, and win rate over closed deals.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "alert-dialog",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "field",
+        "input",
+        "select",
+        "utils",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/deals-pipeline/page.tsx",
+          "type": "registry:page",
+          "target": "app/deals-pipeline/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/deals-pipeline/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/deals-pipeline/components/stage-column.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/deals-pipeline/components/deal-card.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/deals-pipeline/components/deal-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "accounts",
       "type": "registry:block",
       "title": "Accounts",

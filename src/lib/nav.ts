@@ -373,6 +373,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Account book with tier filter, ARR roll-up, health derived from contact recency, and delete blocked while deals are open.",
           },
+          {
+            title: "Deals Pipeline",
+            href: "/blocks/deals-pipeline",
+            description:
+              "Drag-and-drop deal pipeline with per-stage value, a probability-weighted forecast, and win rate over closed deals.",
+          },
         ],
       },
       {

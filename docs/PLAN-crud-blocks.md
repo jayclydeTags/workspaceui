@@ -91,11 +91,11 @@ reuse the universal blocks from §0.
 - [x] Milestones — `milestones` *(state derived from due date + scope)*
 - [x] Team / assignees — `project-team` *(last lead can't be removed or demoted)*
 
-### CRM
+### CRM  *(done)*
 - [x] Leads — `leads` *(convert gated on qualified)*
 - [x] Contacts — `contacts` *(one primary per account)*
 - [x] Accounts — `accounts` *(health from contact recency; delete blocked on open deals)*
-- [ ] Deals / pipeline
+- [x] Deals / pipeline — `deals-pipeline` *(weighted forecast; Kanban)*
 - [ ] Activities *(reuse `activity-feed`)*
 
 ---

@@ -63,6 +63,7 @@ import { ProjectTeam } from "@/registry/bases/base/blocks/project-team/page"
 import { Leads } from "@/registry/bases/base/blocks/leads/page"
 import { Contacts } from "@/registry/bases/base/blocks/contacts/page"
 import { Accounts } from "@/registry/bases/base/blocks/accounts/page"
+import { DealsPipeline } from "@/registry/bases/base/blocks/deals-pipeline/page"
 import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/page"
 import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
@@ -482,6 +483,14 @@ export const blocks: BlockMeta[] = [
       "Account book with tier filter, ARR roll-up, health derived from contact recency, and delete blocked while deals are open.",
     category: "CRM",
     Component: Accounts,
+  },
+  {
+    slug: "deals-pipeline",
+    title: "Deals Pipeline",
+    description:
+      "Drag-and-drop deal pipeline with per-stage value, a probability-weighted forecast, and win rate over closed deals.",
+    category: "CRM",
+    Component: DealsPipeline,
   },
   {
     slug: "approval-board",

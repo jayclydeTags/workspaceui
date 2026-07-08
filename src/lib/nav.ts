@@ -274,6 +274,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Product / SKU catalog list with create/edit dialog form, row-action menu, and a delete confirmation.",
           },
+          {
+            title: "Warehouses",
+            href: "/blocks/warehouses",
+            description:
+              "Warehouse list with capacity utilization, create/edit dialog form, row-action menu, and a delete confirmation.",
+          },
         ],
       },
       {

@@ -49,6 +49,7 @@ import { ChartOfAccounts } from "@/registry/bases/base/blocks/chart-of-accounts/
 import { Bills } from "@/registry/bases/base/blocks/bills/page"
 import { Payments } from "@/registry/bases/base/blocks/payments/page"
 import { Products } from "@/registry/bases/base/blocks/products/page"
+import { Warehouses } from "@/registry/bases/base/blocks/warehouses/page"
 import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/page"
 import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
@@ -356,6 +357,14 @@ export const blocks: BlockMeta[] = [
       "Product / SKU catalog list with create/edit dialog form, row-action menu, and a delete confirmation.",
     category: "Inventory",
     Component: Products,
+  },
+  {
+    slug: "warehouses",
+    title: "Warehouses",
+    description:
+      "Warehouse list with capacity utilization, create/edit dialog form, row-action menu, and a delete confirmation.",
+    category: "Inventory",
+    Component: Warehouses,
   },
   {
     slug: "approval-board",

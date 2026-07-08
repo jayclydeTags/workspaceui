@@ -344,6 +344,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Milestone tracker with task-scope progress and a state derived from the due date — completed, overdue, at risk, or on track.",
           },
+          {
+            title: "Project Team",
+            href: "/blocks/project-team",
+            description:
+              "Project roster with roles, weekly allocation, and guards that keep one lead on the project and nobody booked past a full week.",
+          },
         ],
       },
       {

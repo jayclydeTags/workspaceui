@@ -59,6 +59,7 @@ import { Projects } from "@/registry/bases/base/blocks/projects/page"
 import { TaskBoard } from "@/registry/bases/base/blocks/task-board/page"
 import { Timesheets } from "@/registry/bases/base/blocks/timesheets/page"
 import { Milestones } from "@/registry/bases/base/blocks/milestones/page"
+import { ProjectTeam } from "@/registry/bases/base/blocks/project-team/page"
 import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/page"
 import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
@@ -446,6 +447,14 @@ export const blocks: BlockMeta[] = [
       "Milestone tracker with task-scope progress and a state derived from the due date — completed, overdue, at risk, or on track.",
     category: "Project management",
     Component: Milestones,
+  },
+  {
+    slug: "project-team",
+    title: "Project Team",
+    description:
+      "Project roster with roles, weekly allocation, and guards that keep one lead on the project and nobody booked past a full week.",
+    category: "Project management",
+    Component: ProjectTeam,
   },
   {
     slug: "approval-board",

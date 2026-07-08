@@ -84,12 +84,12 @@ reuse the universal blocks from §0.
 - [x] Attendance — `attendance` *(status derived from punches)*
 - [x] Performance reviews — `performance-reviews` *(can't complete an unrated review)*
 
-### Project management
+### Project management  *(done)*
 - [x] Projects — `projects`
 - [x] Tasks / Kanban board — `task-board`
 - [x] Timesheets — `timesheets` *(draft → submitted → approved; locked after submit)*
 - [x] Milestones — `milestones` *(state derived from due date + scope)*
-- [ ] Team / assignees
+- [x] Team / assignees — `project-team` *(last lead can't be removed or demoted)*
 
 ### CRM
 - [ ] Leads

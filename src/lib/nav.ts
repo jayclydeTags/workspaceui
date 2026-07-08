@@ -332,6 +332,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Drag-and-drop Kanban board for project tasks — to do / in progress / review / done, with priority, assignee, and a create/edit dialog.",
           },
+          {
+            title: "Timesheets",
+            href: "/blocks/timesheets",
+            description:
+              "Time entries per project with billable-utilization summary and a draft → submitted → approved lifecycle that locks an entry once submitted.",
+          },
         ],
       },
       {

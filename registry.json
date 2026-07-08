@@ -1015,6 +1015,47 @@
       ]
     },
     {
+      "name": "products",
+      "type": "registry:block",
+      "title": "Products",
+      "description": "Product / SKU catalog list with create/edit dialog form, row-action menu, and a delete confirmation.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "alert-dialog",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/products/page.tsx",
+          "type": "registry:page",
+          "target": "app/products/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/products/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/products/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/products/components/product-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "bills",
       "type": "registry:block",
       "title": "Bills",

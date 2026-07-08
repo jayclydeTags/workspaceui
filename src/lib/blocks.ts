@@ -48,6 +48,7 @@ import { PurchaseOrderForm } from "@/registry/bases/base/blocks/purchase-order-f
 import { ChartOfAccounts } from "@/registry/bases/base/blocks/chart-of-accounts/page"
 import { Bills } from "@/registry/bases/base/blocks/bills/page"
 import { Payments } from "@/registry/bases/base/blocks/payments/page"
+import { Products } from "@/registry/bases/base/blocks/products/page"
 import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/page"
 import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
@@ -347,6 +348,14 @@ export const blocks: BlockMeta[] = [
       "Bank reconciliation checklist — mark transactions cleared against a statement balance, with live statement/cleared/difference summary cards.",
     category: "Finance",
     Component: BankReconciliation,
+  },
+  {
+    slug: "products",
+    title: "Products",
+    description:
+      "Product / SKU catalog list with create/edit dialog form, row-action menu, and a delete confirmation.",
+    category: "Inventory",
+    Component: Products,
   },
   {
     slug: "approval-board",

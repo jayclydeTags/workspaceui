@@ -266,6 +266,17 @@ export const blocksNav: NavSection[] = [
         ],
       },
       {
+        title: "Inventory",
+        items: [
+          {
+            title: "Products",
+            href: "/blocks/products",
+            description:
+              "Product / SKU catalog list with create/edit dialog form, row-action menu, and a delete confirmation.",
+          },
+        ],
+      },
+      {
         title: "Operations",
         items: [
           {

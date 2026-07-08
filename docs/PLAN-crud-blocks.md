@@ -123,12 +123,12 @@ reuse the universal blocks from §0.
 - [ ] Customers / sites
 - [ ] Service reports
 
-### Loan / lending
+### Loan / lending  *(done)*
 - [x] Loan applications — `loan-applications` *(approve blocked above the DTI ceiling)*
 - [x] Borrowers — `borrowers` *(KYC gates eligibility; risk grade from score)*
 - [x] Repayment schedule — `repayment-schedule` *(amortisation derived, not stored; pay in order)*
 - [x] Disbursements — `disbursements` *(tranches can't overdraw approved principal)*
-- [ ] Collateral
+- [x] Collateral — `collateral` *(no lien perfection on a stale appraisal)*
 
 ### Booking / scheduling
 - [ ] Appointments / bookings (calendar)

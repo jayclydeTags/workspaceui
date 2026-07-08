@@ -68,6 +68,7 @@ import { LoanApplications } from "@/registry/bases/base/blocks/loan-applications
 import { Borrowers } from "@/registry/bases/base/blocks/borrowers/page"
 import { RepaymentSchedule } from "@/registry/bases/base/blocks/repayment-schedule/page"
 import { Disbursements } from "@/registry/bases/base/blocks/disbursements/page"
+import { CollateralRegister } from "@/registry/bases/base/blocks/collateral/page"
 import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/page"
 import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
@@ -527,6 +528,14 @@ export const blocks: BlockMeta[] = [
       "Loan disbursement tranches with a loan filter, release/fail settlement, and scheduling blocked from overdrawing the approved principal.",
     category: "Lending",
     Component: Disbursements,
+  },
+  {
+    slug: "collateral",
+    title: "Collateral",
+    description:
+      "Pledged-asset register with per-type advance rates, lien perfection blocked on a stale appraisal, and an under-secured loan warning.",
+    category: "Lending",
+    Component: CollateralRegister,
   },
   {
     slug: "approval-board",

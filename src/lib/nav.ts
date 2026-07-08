@@ -408,6 +408,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Loan disbursement tranches with a loan filter, release/fail settlement, and scheduling blocked from overdrawing the approved principal.",
           },
+          {
+            title: "Collateral",
+            href: "/blocks/collateral",
+            description:
+              "Pledged-asset register with per-type advance rates, lien perfection blocked on a stale appraisal, and an under-secured loan warning.",
+          },
         ],
       },
       {

@@ -1171,6 +1171,48 @@
       ]
     },
     {
+      "name": "collateral",
+      "type": "registry:block",
+      "title": "Collateral",
+      "description": "Pledged-asset register with per-type advance rates, lien perfection blocked on a stale appraisal, and an under-secured loan warning.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "alert",
+        "alert-dialog",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/collateral/page.tsx",
+          "type": "registry:page",
+          "target": "app/collateral/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/collateral/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/collateral/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/collateral/components/collateral-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "disbursements",
       "type": "registry:block",
       "title": "Disbursements",

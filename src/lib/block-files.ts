@@ -131,6 +131,20 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/movement-dialog.tsx",
     },
   ],
+  "collateral": [
+    { name: "page.tsx", path: "app/collateral/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/collateral/data.ts", src: "data.ts" },
+    {
+      name: "data-table.tsx",
+      path: "components/blocks/collateral/components/data-table.tsx",
+      src: "components/data-table.tsx",
+    },
+    {
+      name: "collateral-dialog.tsx",
+      path: "components/blocks/collateral/components/collateral-dialog.tsx",
+      src: "components/collateral-dialog.tsx",
+    },
+  ],
   "disbursements": [
     { name: "page.tsx", path: "app/disbursements/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/disbursements/data.ts", src: "data.ts" },

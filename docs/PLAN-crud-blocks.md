@@ -126,7 +126,7 @@ reuse the universal blocks from §0.
 ### Loan / lending
 - [x] Loan applications — `loan-applications` *(approve blocked above the DTI ceiling)*
 - [x] Borrowers — `borrowers` *(KYC gates eligibility; risk grade from score)*
-- [ ] Repayment schedule
+- [x] Repayment schedule — `repayment-schedule` *(amortisation derived, not stored; pay in order)*
 - [ ] Disbursements
 - [ ] Collateral
 

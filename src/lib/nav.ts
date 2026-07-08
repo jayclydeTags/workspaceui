@@ -396,6 +396,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Borrower register with search, risk grade derived from credit score, KYC gating on eligibility, and delete blocked while loans are active.",
           },
+          {
+            title: "Repayment Schedule",
+            href: "/blocks/repayment-schedule",
+            description:
+              "Amortisation table derived from the loan terms — per-instalment interest/principal split, derived paid/due/overdue status, and in-order payment recording.",
+          },
         ],
       },
       {

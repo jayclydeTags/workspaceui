@@ -66,6 +66,7 @@ import { Accounts } from "@/registry/bases/base/blocks/accounts/page"
 import { DealsPipeline } from "@/registry/bases/base/blocks/deals-pipeline/page"
 import { LoanApplications } from "@/registry/bases/base/blocks/loan-applications/page"
 import { Borrowers } from "@/registry/bases/base/blocks/borrowers/page"
+import { RepaymentSchedule } from "@/registry/bases/base/blocks/repayment-schedule/page"
 import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/page"
 import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
@@ -509,6 +510,14 @@ export const blocks: BlockMeta[] = [
       "Borrower register with search, risk grade derived from credit score, KYC gating on eligibility, and delete blocked while loans are active.",
     category: "Lending",
     Component: Borrowers,
+  },
+  {
+    slug: "repayment-schedule",
+    title: "Repayment Schedule",
+    description:
+      "Amortisation table derived from the loan terms — per-instalment interest/principal split, derived paid/due/overdue status, and in-order payment recording.",
+    category: "Lending",
+    Component: RepaymentSchedule,
   },
   {
     slug: "approval-board",

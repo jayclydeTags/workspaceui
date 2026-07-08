@@ -1171,6 +1171,35 @@
       ]
     },
     {
+      "name": "repayment-schedule",
+      "type": "registry:block",
+      "title": "Repayment Schedule",
+      "description": "Amortisation table derived from the loan terms — per-instalment interest/principal split, derived paid/due/overdue status, and in-order payment recording.",
+      "registryDependencies": [
+        "alert-dialog",
+        "badge",
+        "button",
+        "empty",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/repayment-schedule/page.tsx",
+          "type": "registry:page",
+          "target": "app/repayment-schedule/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/repayment-schedule/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/repayment-schedule/components/schedule-table.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "borrowers",
       "type": "registry:block",
       "title": "Borrowers",

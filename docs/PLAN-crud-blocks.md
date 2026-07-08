@@ -94,7 +94,7 @@ reuse the universal blocks from §0.
 ### CRM
 - [x] Leads — `leads` *(convert gated on qualified)*
 - [x] Contacts — `contacts` *(one primary per account)*
-- [ ] Accounts
+- [x] Accounts — `accounts` *(health from contact recency; delete blocked on open deals)*
 - [ ] Deals / pipeline
 - [ ] Activities *(reuse `activity-feed`)*
 

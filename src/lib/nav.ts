@@ -367,6 +367,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Contact book with search, one-primary-per-account enforced on promote, and a warning for accounts left without a primary.",
           },
+          {
+            title: "Accounts",
+            href: "/blocks/accounts",
+            description:
+              "Account book with tier filter, ARR roll-up, health derived from contact recency, and delete blocked while deals are open.",
+          },
         ],
       },
       {

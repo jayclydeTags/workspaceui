@@ -1171,6 +1171,47 @@
       ]
     },
     {
+      "name": "accounts",
+      "type": "registry:block",
+      "title": "Accounts",
+      "description": "Account book with tier filter, ARR roll-up, health derived from contact recency, and delete blocked while deals are open.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "alert-dialog",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/accounts/page.tsx",
+          "type": "registry:page",
+          "target": "app/accounts/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/accounts/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/accounts/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/accounts/components/account-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "contacts",
       "type": "registry:block",
       "title": "Contacts",

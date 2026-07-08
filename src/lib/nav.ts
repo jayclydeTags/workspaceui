@@ -326,6 +326,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Project portfolio list with a status filter, progress bars, overdue due-date highlighting, and create/edit/delete.",
           },
+          {
+            title: "Task Board",
+            href: "/blocks/task-board",
+            description:
+              "Drag-and-drop Kanban board for project tasks — to do / in progress / review / done, with priority, assignee, and a create/edit dialog.",
+          },
         ],
       },
       {

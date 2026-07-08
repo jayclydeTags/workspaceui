@@ -86,7 +86,7 @@ reuse the universal blocks from §0.
 
 ### Project management
 - [x] Projects — `projects`
-- [ ] Tasks / Kanban board
+- [x] Tasks / Kanban board — `task-board`
 - [ ] Timesheets
 - [ ] Milestones
 - [ ] Team / assignees

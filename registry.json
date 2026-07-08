@@ -1171,6 +1171,51 @@
       ]
     },
     {
+      "name": "task-board",
+      "type": "registry:block",
+      "title": "Task Board",
+      "description": "Drag-and-drop Kanban board for project tasks — to do / in progress / review / done, with priority, assignee, and a create/edit dialog.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "alert-dialog",
+        "avatar",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "field",
+        "input",
+        "select",
+        "utils",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/task-board/page.tsx",
+          "type": "registry:page",
+          "target": "app/task-board/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/task-board/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/task-board/components/task-column.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/task-board/components/task-card.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/task-board/components/task-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "projects",
       "type": "registry:block",
       "title": "Projects",

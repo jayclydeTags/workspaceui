@@ -56,6 +56,7 @@ import { LeaveRequests } from "@/registry/bases/base/blocks/leave-requests/page"
 import { Attendance } from "@/registry/bases/base/blocks/attendance/page"
 import { PerformanceReviews } from "@/registry/bases/base/blocks/performance-reviews/page"
 import { Projects } from "@/registry/bases/base/blocks/projects/page"
+import { TaskBoard } from "@/registry/bases/base/blocks/task-board/page"
 import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/page"
 import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
@@ -419,6 +420,14 @@ export const blocks: BlockMeta[] = [
       "Project portfolio list with a status filter, progress bars, overdue due-date highlighting, and create/edit/delete.",
     category: "Project management",
     Component: Projects,
+  },
+  {
+    slug: "task-board",
+    title: "Task Board",
+    description:
+      "Drag-and-drop Kanban board for project tasks — to do / in progress / review / done, with priority, assignee, and a create/edit dialog.",
+    category: "Project management",
+    Component: TaskBoard,
   },
   {
     slug: "approval-board",

@@ -286,6 +286,12 @@ export const blocksNav: NavSection[] = [
             description:
               "On-hand stock per SKU and warehouse — searchable, with derived low/out-of-stock badges and a stock-take adjustment dialog.",
           },
+          {
+            title: "Stock Movements",
+            href: "/blocks/stock-movements",
+            description:
+              "Append-only stock ledger — receipts, shipments, adjustments, and transfers with a type filter, running net change, and a record-movement dialog.",
+          },
         ],
       },
       {

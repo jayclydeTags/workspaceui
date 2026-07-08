@@ -70,12 +70,12 @@ reuse the universal blocks from §0.
 - [x] Payments — `payments`
 - [x] Bank reconciliation — `bank-reconciliation`
 
-### Inventory
-- [ ] Products / SKUs
-- [ ] Stock levels
-- [ ] Warehouses
-- [ ] Purchase orders *(reuse `purchase-order-form`)*
-- [ ] Stock movements
+### Inventory  *(done)*
+- [x] Products / SKUs — `products`
+- [x] Stock levels — `stock-levels` *(adjust-only; rows derive from product × warehouse)*
+- [x] Warehouses — `warehouses`
+- [x] Purchase orders *(reuse `purchase-order-form`)*
+- [x] Stock movements — `stock-movements` *(append-only ledger; no edit/delete)*
 
 ### HRIS
 - [x] Departments — `department`

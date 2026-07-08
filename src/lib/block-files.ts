@@ -117,6 +117,20 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/adjust-dialog.tsx",
     },
   ],
+  "stock-movements": [
+    { name: "page.tsx", path: "app/stock-movements/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/stock-movements/data.ts", src: "data.ts" },
+    {
+      name: "data-table.tsx",
+      path: "components/blocks/stock-movements/components/data-table.tsx",
+      src: "components/data-table.tsx",
+    },
+    {
+      name: "movement-dialog.tsx",
+      path: "components/blocks/stock-movements/components/movement-dialog.tsx",
+      src: "components/movement-dialog.tsx",
+    },
+  ],
   "bills": [
     { name: "page.tsx", path: "app/bills/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/bills/data.ts", src: "data.ts" },

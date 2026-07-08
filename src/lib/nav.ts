@@ -338,6 +338,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Time entries per project with billable-utilization summary and a draft → submitted → approved lifecycle that locks an entry once submitted.",
           },
+          {
+            title: "Milestones",
+            href: "/blocks/milestones",
+            description:
+              "Milestone tracker with task-scope progress and a state derived from the due date — completed, overdue, at risk, or on track.",
+          },
         ],
       },
       {

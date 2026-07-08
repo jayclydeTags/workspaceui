@@ -58,6 +58,7 @@ import { PerformanceReviews } from "@/registry/bases/base/blocks/performance-rev
 import { Projects } from "@/registry/bases/base/blocks/projects/page"
 import { TaskBoard } from "@/registry/bases/base/blocks/task-board/page"
 import { Timesheets } from "@/registry/bases/base/blocks/timesheets/page"
+import { Milestones } from "@/registry/bases/base/blocks/milestones/page"
 import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/page"
 import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
@@ -437,6 +438,14 @@ export const blocks: BlockMeta[] = [
       "Time entries per project with billable-utilization summary and a draft → submitted → approved lifecycle that locks an entry once submitted.",
     category: "Project management",
     Component: Timesheets,
+  },
+  {
+    slug: "milestones",
+    title: "Milestones",
+    description:
+      "Milestone tracker with task-scope progress and a state derived from the due date — completed, overdue, at risk, or on track.",
+    category: "Project management",
+    Component: Milestones,
   },
   {
     slug: "approval-board",

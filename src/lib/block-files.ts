@@ -131,6 +131,20 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/movement-dialog.tsx",
     },
   ],
+  "milestones": [
+    { name: "page.tsx", path: "app/milestones/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/milestones/data.ts", src: "data.ts" },
+    {
+      name: "data-table.tsx",
+      path: "components/blocks/milestones/components/data-table.tsx",
+      src: "components/data-table.tsx",
+    },
+    {
+      name: "milestone-dialog.tsx",
+      path: "components/blocks/milestones/components/milestone-dialog.tsx",
+      src: "components/milestone-dialog.tsx",
+    },
+  ],
   "timesheets": [
     { name: "page.tsx", path: "app/timesheets/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/timesheets/data.ts", src: "data.ts" },

@@ -88,7 +88,7 @@ reuse the universal blocks from §0.
 - [x] Projects — `projects`
 - [x] Tasks / Kanban board — `task-board`
 - [x] Timesheets — `timesheets` *(draft → submitted → approved; locked after submit)*
-- [ ] Milestones
+- [x] Milestones — `milestones` *(state derived from due date + scope)*
 - [ ] Team / assignees
 
 ### CRM

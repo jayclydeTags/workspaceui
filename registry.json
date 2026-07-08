@@ -1171,6 +1171,47 @@
       ]
     },
     {
+      "name": "leads",
+      "type": "registry:block",
+      "title": "Leads",
+      "description": "Lead pipeline with a stage filter, hot-lead scoring, qualification rate, and a convert action gated on the lead being qualified.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "alert-dialog",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/leads/page.tsx",
+          "type": "registry:page",
+          "target": "app/leads/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/leads/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/leads/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/leads/components/lead-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "project-team",
       "type": "registry:block",
       "title": "Project Team",

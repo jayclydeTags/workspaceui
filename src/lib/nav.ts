@@ -353,6 +353,17 @@ export const blocksNav: NavSection[] = [
         ],
       },
       {
+        title: "CRM",
+        items: [
+          {
+            title: "Leads",
+            href: "/blocks/leads",
+            description:
+              "Lead pipeline with a stage filter, hot-lead scoring, qualification rate, and a convert action gated on the lead being qualified.",
+          },
+        ],
+      },
+      {
         title: "Operations",
         items: [
           {

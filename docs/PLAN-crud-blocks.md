@@ -92,7 +92,7 @@ reuse the universal blocks from §0.
 - [x] Team / assignees — `project-team` *(last lead can't be removed or demoted)*
 
 ### CRM
-- [ ] Leads
+- [x] Leads — `leads` *(convert gated on qualified)*
 - [ ] Contacts
 - [ ] Accounts
 - [ ] Deals / pipeline

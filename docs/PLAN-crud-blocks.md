@@ -85,7 +85,7 @@ reuse the universal blocks from §0.
 - [x] Performance reviews — `performance-reviews` *(can't complete an unrated review)*
 
 ### Project management
-- [ ] Projects
+- [x] Projects — `projects`
 - [ ] Tasks / Kanban board
 - [ ] Timesheets
 - [ ] Milestones

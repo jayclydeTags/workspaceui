@@ -318,6 +318,17 @@ export const blocksNav: NavSection[] = [
         ],
       },
       {
+        title: "Project management",
+        items: [
+          {
+            title: "Projects",
+            href: "/blocks/projects",
+            description:
+              "Project portfolio list with a status filter, progress bars, overdue due-date highlighting, and create/edit/delete.",
+          },
+        ],
+      },
+      {
         title: "Operations",
         items: [
           {

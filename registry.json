@@ -1171,6 +1171,47 @@
       ]
     },
     {
+      "name": "projects",
+      "type": "registry:block",
+      "title": "Projects",
+      "description": "Project portfolio list with a status filter, progress bars, overdue due-date highlighting, and create/edit/delete.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "alert-dialog",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/projects/page.tsx",
+          "type": "registry:page",
+          "target": "app/projects/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/projects/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/projects/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/projects/components/project-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "performance-reviews",
       "type": "registry:block",
       "title": "Performance Reviews",

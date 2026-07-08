@@ -52,6 +52,7 @@ import { Products } from "@/registry/bases/base/blocks/products/page"
 import { StockLevels } from "@/registry/bases/base/blocks/stock-levels/page"
 import { StockMovements } from "@/registry/bases/base/blocks/stock-movements/page"
 import { Warehouses } from "@/registry/bases/base/blocks/warehouses/page"
+import { LeaveRequests } from "@/registry/bases/base/blocks/leave-requests/page"
 import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/page"
 import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
@@ -383,6 +384,14 @@ export const blocks: BlockMeta[] = [
       "Append-only stock ledger — receipts, shipments, adjustments, and transfers with a type filter, running net change, and a record-movement dialog.",
     category: "Inventory",
     Component: StockMovements,
+  },
+  {
+    slug: "leave-requests",
+    title: "Leave Requests",
+    description:
+      "Leave request list with a status filter, approve/reject row actions, a submit-request dialog, and a delete confirmation.",
+    category: "HRIS",
+    Component: LeaveRequests,
   },
   {
     slug: "approval-board",

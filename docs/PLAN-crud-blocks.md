@@ -80,7 +80,7 @@ reuse the universal blocks from §0.
 ### HRIS
 - [x] Departments — `department`
 - [x] Employees — `employee` *(shared with Payroll)*
-- [ ] Leave requests
+- [x] Leave requests — `leave-requests` *(approve/reject; no edit — decisions amend)*
 - [ ] Attendance
 - [ ] Performance reviews
 

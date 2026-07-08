@@ -1171,6 +1171,48 @@
       ]
     },
     {
+      "name": "leave-requests",
+      "type": "registry:block",
+      "title": "Leave Requests",
+      "description": "Leave request list with a status filter, approve/reject row actions, a submit-request dialog, and a delete confirmation.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "alert-dialog",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "table",
+        "textarea",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/leave-requests/page.tsx",
+          "type": "registry:page",
+          "target": "app/leave-requests/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/leave-requests/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/leave-requests/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/leave-requests/components/request-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "bills",
       "type": "registry:block",
       "title": "Bills",

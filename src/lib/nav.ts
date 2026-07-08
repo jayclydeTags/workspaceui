@@ -295,6 +295,17 @@ export const blocksNav: NavSection[] = [
         ],
       },
       {
+        title: "HRIS",
+        items: [
+          {
+            title: "Leave Requests",
+            href: "/blocks/leave-requests",
+            description:
+              "Leave request list with a status filter, approve/reject row actions, a submit-request dialog, and a delete confirmation.",
+          },
+        ],
+      },
+      {
         title: "Operations",
         items: [
           {

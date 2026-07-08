@@ -61,6 +61,7 @@ import { Timesheets } from "@/registry/bases/base/blocks/timesheets/page"
 import { Milestones } from "@/registry/bases/base/blocks/milestones/page"
 import { ProjectTeam } from "@/registry/bases/base/blocks/project-team/page"
 import { Leads } from "@/registry/bases/base/blocks/leads/page"
+import { Contacts } from "@/registry/bases/base/blocks/contacts/page"
 import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/page"
 import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
@@ -464,6 +465,14 @@ export const blocks: BlockMeta[] = [
       "Lead pipeline with a stage filter, hot-lead scoring, qualification rate, and a convert action gated on the lead being qualified.",
     category: "CRM",
     Component: Leads,
+  },
+  {
+    slug: "contacts",
+    title: "Contacts",
+    description:
+      "Contact book with search, one-primary-per-account enforced on promote, and a warning for accounts left without a primary.",
+    category: "CRM",
+    Component: Contacts,
   },
   {
     slug: "approval-board",

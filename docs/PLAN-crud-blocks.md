@@ -93,7 +93,7 @@ reuse the universal blocks from §0.
 
 ### CRM
 - [x] Leads — `leads` *(convert gated on qualified)*
-- [ ] Contacts
+- [x] Contacts — `contacts` *(one primary per account)*
 - [ ] Accounts
 - [ ] Deals / pipeline
 - [ ] Activities *(reuse `activity-feed`)*

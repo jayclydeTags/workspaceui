@@ -1171,6 +1171,49 @@
       ]
     },
     {
+      "name": "borrowers",
+      "type": "registry:block",
+      "title": "Borrowers",
+      "description": "Borrower register with search, risk grade derived from credit score, KYC gating on eligibility, and delete blocked while loans are active.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "alert-dialog",
+        "avatar",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "input-group",
+        "select",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/borrowers/page.tsx",
+          "type": "registry:page",
+          "target": "app/borrowers/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/borrowers/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/borrowers/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/borrowers/components/borrower-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "loan-applications",
       "type": "registry:block",
       "title": "Loan Applications",

@@ -390,6 +390,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Loan application queue with amortised monthly payment, debt-to-income assessment, and approval blocked above the DTI ceiling.",
           },
+          {
+            title: "Borrowers",
+            href: "/blocks/borrowers",
+            description:
+              "Borrower register with search, risk grade derived from credit score, KYC gating on eligibility, and delete blocked while loans are active.",
+          },
         ],
       },
       {

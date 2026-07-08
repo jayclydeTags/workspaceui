@@ -303,6 +303,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Leave request list with a status filter, approve/reject row actions, a submit-request dialog, and a delete confirmation.",
           },
+          {
+            title: "Attendance",
+            href: "/blocks/attendance",
+            description:
+              "Daily attendance log with a date filter, punch-derived present/late/absent status, total hours, and create/edit/delete.",
+          },
         ],
       },
       {

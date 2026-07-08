@@ -53,6 +53,7 @@ import { StockLevels } from "@/registry/bases/base/blocks/stock-levels/page"
 import { StockMovements } from "@/registry/bases/base/blocks/stock-movements/page"
 import { Warehouses } from "@/registry/bases/base/blocks/warehouses/page"
 import { LeaveRequests } from "@/registry/bases/base/blocks/leave-requests/page"
+import { Attendance } from "@/registry/bases/base/blocks/attendance/page"
 import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/page"
 import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
@@ -392,6 +393,14 @@ export const blocks: BlockMeta[] = [
       "Leave request list with a status filter, approve/reject row actions, a submit-request dialog, and a delete confirmation.",
     category: "HRIS",
     Component: LeaveRequests,
+  },
+  {
+    slug: "attendance",
+    title: "Attendance",
+    description:
+      "Daily attendance log with a date filter, punch-derived present/late/absent status, total hours, and create/edit/delete.",
+    category: "HRIS",
+    Component: Attendance,
   },
   {
     slug: "approval-board",

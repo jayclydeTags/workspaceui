@@ -81,7 +81,7 @@ reuse the universal blocks from §0.
 - [x] Departments — `department`
 - [x] Employees — `employee` *(shared with Payroll)*
 - [x] Leave requests — `leave-requests` *(approve/reject; no edit — decisions amend)*
-- [ ] Attendance
+- [x] Attendance — `attendance` *(status derived from punches)*
 - [ ] Performance reviews
 
 ### Project management

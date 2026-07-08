@@ -309,6 +309,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Daily attendance log with a date filter, punch-derived present/late/absent status, total hours, and create/edit/delete.",
           },
+          {
+            title: "Performance Reviews",
+            href: "/blocks/performance-reviews",
+            description:
+              "Performance review list with star ratings, a status filter, average-rating summary, and a create/edit dialog that blocks completing an unrated review.",
+          },
         ],
       },
       {

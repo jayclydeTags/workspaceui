@@ -1171,6 +1171,49 @@
       ]
     },
     {
+      "name": "performance-reviews",
+      "type": "registry:block",
+      "title": "Performance Reviews",
+      "description": "Performance review list with star ratings, a status filter, average-rating summary, and a create/edit dialog that blocks completing an unrated review.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "alert-dialog",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "table",
+        "textarea",
+        "utils",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/performance-reviews/page.tsx",
+          "type": "registry:page",
+          "target": "app/performance-reviews/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/performance-reviews/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/performance-reviews/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/performance-reviews/components/review-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "attendance",
       "type": "registry:block",
       "title": "Attendance",

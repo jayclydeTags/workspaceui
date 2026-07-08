@@ -77,12 +77,12 @@ reuse the universal blocks from §0.
 - [x] Purchase orders *(reuse `purchase-order-form`)*
 - [x] Stock movements — `stock-movements` *(append-only ledger; no edit/delete)*
 
-### HRIS
+### HRIS  *(done)*
 - [x] Departments — `department`
 - [x] Employees — `employee` *(shared with Payroll)*
 - [x] Leave requests — `leave-requests` *(approve/reject; no edit — decisions amend)*
 - [x] Attendance — `attendance` *(status derived from punches)*
-- [ ] Performance reviews
+- [x] Performance reviews — `performance-reviews` *(can't complete an unrated review)*
 
 ### Project management
 - [ ] Projects

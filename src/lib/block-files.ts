@@ -145,6 +145,29 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/collateral-dialog.tsx",
     },
   ],
+  "bin-location-map": [
+    {
+      name: "page.tsx",
+      path: "app/bin-location-map/page.tsx",
+      src: "page.tsx",
+    },
+    { name: "data.ts", path: "app/bin-location-map/data.ts", src: "data.ts" },
+    {
+      name: "bin-grid.tsx",
+      path: "components/blocks/bin-location-map/components/bin-grid.tsx",
+      src: "components/bin-grid.tsx",
+    },
+    {
+      name: "bin-sheet.tsx",
+      path: "components/blocks/bin-location-map/components/bin-sheet.tsx",
+      src: "components/bin-sheet.tsx",
+    },
+    {
+      name: "bin-dialog.tsx",
+      path: "components/blocks/bin-location-map/components/bin-dialog.tsx",
+      src: "components/bin-dialog.tsx",
+    },
+  ],
   "disbursements": [
     { name: "page.tsx", path: "app/disbursements/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/disbursements/data.ts", src: "data.ts" },

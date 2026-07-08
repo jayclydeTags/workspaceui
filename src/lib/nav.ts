@@ -417,6 +417,17 @@ export const blocksNav: NavSection[] = [
         ],
       },
       {
+        title: "Warehouse",
+        items: [
+          {
+            title: "Bin / Location Map",
+            href: "/blocks/bin-location-map",
+            description:
+              "Warehouse floor-plan grid of storage bins — assign or clear stock per bin, gated on capacity, single-SKU occupancy, and blocked/quarantine status.",
+          },
+        ],
+      },
+      {
         title: "Operations",
         items: [
           {

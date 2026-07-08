@@ -69,6 +69,7 @@ import { Borrowers } from "@/registry/bases/base/blocks/borrowers/page"
 import { RepaymentSchedule } from "@/registry/bases/base/blocks/repayment-schedule/page"
 import { Disbursements } from "@/registry/bases/base/blocks/disbursements/page"
 import { CollateralRegister } from "@/registry/bases/base/blocks/collateral/page"
+import { BinLocationMap } from "@/registry/bases/base/blocks/bin-location-map/page"
 import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/page"
 import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
@@ -536,6 +537,14 @@ export const blocks: BlockMeta[] = [
       "Pledged-asset register with per-type advance rates, lien perfection blocked on a stale appraisal, and an under-secured loan warning.",
     category: "Lending",
     Component: CollateralRegister,
+  },
+  {
+    slug: "bin-location-map",
+    title: "Bin / Location Map",
+    description:
+      "Warehouse floor-plan grid of storage bins — assign or clear stock per bin, gated on capacity, single-SKU occupancy, and blocked/quarantine status.",
+    category: "Warehouse",
+    Component: BinLocationMap,
   },
   {
     slug: "approval-board",

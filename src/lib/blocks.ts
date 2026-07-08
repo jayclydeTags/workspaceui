@@ -67,6 +67,7 @@ import { DealsPipeline } from "@/registry/bases/base/blocks/deals-pipeline/page"
 import { LoanApplications } from "@/registry/bases/base/blocks/loan-applications/page"
 import { Borrowers } from "@/registry/bases/base/blocks/borrowers/page"
 import { RepaymentSchedule } from "@/registry/bases/base/blocks/repayment-schedule/page"
+import { Disbursements } from "@/registry/bases/base/blocks/disbursements/page"
 import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/page"
 import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
@@ -518,6 +519,14 @@ export const blocks: BlockMeta[] = [
       "Amortisation table derived from the loan terms — per-instalment interest/principal split, derived paid/due/overdue status, and in-order payment recording.",
     category: "Lending",
     Component: RepaymentSchedule,
+  },
+  {
+    slug: "disbursements",
+    title: "Disbursements",
+    description:
+      "Loan disbursement tranches with a loan filter, release/fail settlement, and scheduling blocked from overdrawing the approved principal.",
+    category: "Lending",
+    Component: Disbursements,
   },
   {
     slug: "approval-board",

@@ -402,6 +402,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Amortisation table derived from the loan terms — per-instalment interest/principal split, derived paid/due/overdue status, and in-order payment recording.",
           },
+          {
+            title: "Disbursements",
+            href: "/blocks/disbursements",
+            description:
+              "Loan disbursement tranches with a loan filter, release/fail settlement, and scheduling blocked from overdrawing the approved principal.",
+          },
         ],
       },
       {

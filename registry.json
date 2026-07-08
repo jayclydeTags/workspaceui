@@ -1171,6 +1171,47 @@
       ]
     },
     {
+      "name": "loan-applications",
+      "type": "registry:block",
+      "title": "Loan Applications",
+      "description": "Loan application queue with amortised monthly payment, debt-to-income assessment, and approval blocked above the DTI ceiling.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "alert-dialog",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/loan-applications/page.tsx",
+          "type": "registry:page",
+          "target": "app/loan-applications/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/loan-applications/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/loan-applications/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/loan-applications/components/application-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "deals-pipeline",
       "type": "registry:block",
       "title": "Deals Pipeline",

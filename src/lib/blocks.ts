@@ -64,6 +64,7 @@ import { Leads } from "@/registry/bases/base/blocks/leads/page"
 import { Contacts } from "@/registry/bases/base/blocks/contacts/page"
 import { Accounts } from "@/registry/bases/base/blocks/accounts/page"
 import { DealsPipeline } from "@/registry/bases/base/blocks/deals-pipeline/page"
+import { LoanApplications } from "@/registry/bases/base/blocks/loan-applications/page"
 import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/page"
 import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
@@ -491,6 +492,14 @@ export const blocks: BlockMeta[] = [
       "Drag-and-drop deal pipeline with per-stage value, a probability-weighted forecast, and win rate over closed deals.",
     category: "CRM",
     Component: DealsPipeline,
+  },
+  {
+    slug: "loan-applications",
+    title: "Loan Applications",
+    description:
+      "Loan application queue with amortised monthly payment, debt-to-income assessment, and approval blocked above the DTI ceiling.",
+    category: "Lending",
+    Component: LoanApplications,
   },
   {
     slug: "approval-board",

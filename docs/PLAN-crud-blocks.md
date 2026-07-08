@@ -124,7 +124,7 @@ reuse the universal blocks from §0.
 - [ ] Service reports
 
 ### Loan / lending
-- [ ] Loan applications
+- [x] Loan applications — `loan-applications` *(approve blocked above the DTI ceiling)*
 - [ ] Borrowers
 - [ ] Repayment schedule
 - [ ] Disbursements

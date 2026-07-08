@@ -382,6 +382,17 @@ export const blocksNav: NavSection[] = [
         ],
       },
       {
+        title: "Lending",
+        items: [
+          {
+            title: "Loan Applications",
+            href: "/blocks/loan-applications",
+            description:
+              "Loan application queue with amortised monthly payment, debt-to-income assessment, and approval blocked above the DTI ceiling.",
+          },
+        ],
+      },
+      {
         title: "Operations",
         items: [
           {

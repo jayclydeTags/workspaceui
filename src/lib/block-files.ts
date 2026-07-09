@@ -231,6 +231,20 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/approval-sheet.tsx",
     },
   ],
+  shipments: [
+    { name: "page.tsx", path: "app/shipments/page.tsx", src: "page.tsx" },
+    { name: "data.ts", path: "app/shipments/data.ts", src: "data.ts" },
+    {
+      name: "data-table.tsx",
+      path: "components/blocks/shipments/components/data-table.tsx",
+      src: "components/data-table.tsx",
+    },
+    {
+      name: "shipment-sheet.tsx",
+      path: "components/blocks/shipments/components/shipment-sheet.tsx",
+      src: "components/shipment-sheet.tsx",
+    },
+  ],
   disbursements: [
     { name: "page.tsx", path: "app/disbursements/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/disbursements/data.ts", src: "data.ts" },

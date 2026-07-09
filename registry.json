@@ -13,12 +13,7 @@
         "react-resizable-panels",
         "lucide-react"
       ],
-      "registryDependencies": [
-        "resizable",
-        "badge",
-        "button",
-        "utils"
-      ],
+      "registryDependencies": ["resizable", "badge", "button", "utils"],
       "files": [
         {
           "path": "src/registry/bases/base/workspaceui/workspace.tsx",
@@ -40,10 +35,7 @@
       "title": "Page",
       "description": "Page shell with an optional header (title/subtitle, breadcrumbs, visual, badge, actions) and a content area that can be padded.",
       "dependencies": [],
-      "registryDependencies": [
-        "breadcrumb",
-        "utils"
-      ],
+      "registryDependencies": ["breadcrumb", "utils"],
       "files": [
         {
           "path": "src/registry/bases/base/workspaceui/page.tsx",
@@ -56,13 +48,8 @@
       "type": "registry:ui",
       "title": "Password Input",
       "description": "Password field with a show/hide visibility toggle and an optional live strength meter. Exports a scorePassword heuristic. Wraps InputGroup; works controlled or uncontrolled.",
-      "dependencies": [
-        "lucide-react"
-      ],
-      "registryDependencies": [
-        "input-group",
-        "utils"
-      ],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["input-group", "utils"],
       "files": [
         {
           "path": "src/registry/bases/base/workspaceui/password-input.tsx",
@@ -151,10 +138,7 @@
       "type": "registry:block",
       "title": "Data Table",
       "description": "Generic TanStack data table \u2014 sortable columns, column filter, column visibility, row selection, and pagination.",
-      "dependencies": [
-        "@tanstack/react-table",
-        "lucide-react"
-      ],
+      "dependencies": ["@tanstack/react-table", "lucide-react"],
       "registryDependencies": [
         "badge",
         "button",
@@ -189,9 +173,7 @@
       "type": "registry:block",
       "title": "Bulk Actions Toolbar",
       "description": "Row selection with select-all and a contextual toolbar for bulk export/delete, with a confirm dialog for the destructive action.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "button",
@@ -221,9 +203,7 @@
       "type": "registry:block",
       "title": "Confirm Dialog",
       "description": "Reusable confirm-before-you-act dialog for destructive actions \u2014 controlled open state, custom title/description/labels, destructive styling.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "button",
@@ -247,9 +227,7 @@
       "type": "registry:block",
       "title": "Search + Filter Bar",
       "description": "Search box with faceted Select filters and a clear-all action over a filtered result list with live count.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "badge",
         "button",
@@ -304,9 +282,7 @@
       "type": "registry:block",
       "title": "Record Form Dialog",
       "description": "Standalone create/edit dialog \u2014 one form handles both add and update, seeded from the record being edited.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "avatar",
         "badge",
@@ -339,9 +315,7 @@
       "type": "registry:block",
       "title": "Record Detail",
       "description": "Read-only single-record view \u2014 header with avatar/status badge and grouped label/value field sections, no tabs.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "avatar",
         "badge",
@@ -366,9 +340,7 @@
       "type": "registry:block",
       "title": "Master-Detail",
       "description": "Resizable list + detail split pane \u2014 select a row on the left to view its fields on the right, with an empty state when nothing's selected.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "badge",
         "empty",
@@ -392,9 +364,7 @@
       "type": "registry:block",
       "title": "Department",
       "description": "Departments table with create/edit dialog form, row-action menu, and a delete confirmation.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "badge",
         "button",
@@ -432,9 +402,7 @@
       "type": "registry:block",
       "title": "Employee",
       "description": "Employee directory with create/edit dialog form, row-action menu, and a delete confirmation.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "badge",
@@ -473,9 +441,7 @@
       "type": "registry:block",
       "title": "Deductions & Benefits",
       "description": "Deduction and benefit plan list with create/edit dialog form, row-action menu, and a delete confirmation.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "badge",
@@ -539,9 +505,7 @@
       "type": "registry:block",
       "title": "Import / Export",
       "description": "CSV import wizard \u2014 paste or load data, map columns to entity fields with a live preview, then import. Includes a CSV export action.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "button",
         "empty",
@@ -568,9 +532,7 @@
       "type": "registry:block",
       "title": "File Upload",
       "description": "Attachments panel \u2014 click-or-drag dropzone, per-file upload/error states, type icons, retry, and remove.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "attachment",
         "button",
@@ -595,9 +557,7 @@
       "type": "registry:block",
       "title": "Notifications Inbox",
       "description": "Notification inbox with All/Unread tabs, per-type icons, unread indicators, mark-one-read on click, and mark-all-read.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "badge",
         "button",
@@ -646,9 +606,7 @@
       "type": "registry:block",
       "title": "Audit Log",
       "description": "Field-level audit trail \u2014 who changed what field, with before \u2192 after values, actor avatars, and search/action filters.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "avatar",
         "badge",
@@ -750,9 +708,7 @@
       "type": "registry:block",
       "title": "Dashboard 01",
       "description": "Collapsible sidebar nav paired with the Workspace component. Sidebar items open tabs; repeat clicks focus the existing tab.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "jayclydeTags/workspaceui/workspace",
         "sidebar",
@@ -779,9 +735,7 @@
       "type": "registry:block",
       "title": "Dashboard",
       "description": "Icon-collapsible sidebar (trigger lives in the sidebar) paired with the Workspace component; each tab renders inside the Page component.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "jayclydeTags/workspaceui/workspace",
         "jayclydeTags/workspaceui/page",
@@ -809,9 +763,7 @@
       "type": "registry:block",
       "title": "Activity Log",
       "description": "Filterable activity log with a responsive datatable \u2014 collapses to cards on narrow panes.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "avatar",
         "badge",
@@ -845,9 +797,7 @@
       "type": "registry:block",
       "title": "Activity Feed",
       "description": "Grouped activity timeline with type/user filters and running stats.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "avatar",
         "button",
@@ -871,9 +821,7 @@
       "type": "registry:block",
       "title": "Access Control",
       "description": "Manage role permissions across resources with a per-role permission matrix.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "badge",
         "button",
@@ -905,9 +853,7 @@
       "type": "registry:block",
       "title": "Invoice Detail",
       "description": "Master-detail invoice workspace \u2014 select a row to open its line items in a new tab.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "badge",
         "input-group",
@@ -940,9 +886,7 @@
       "type": "registry:block",
       "title": "Purchase Order Form",
       "description": "Three-step wizard for creating a purchase order \u2014 vendor details, line items, and review.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "button",
         "empty",
@@ -978,9 +922,7 @@
       "type": "registry:block",
       "title": "Chart of Accounts",
       "description": "Chart of accounts table with create/edit dialog form, row-action menu, and a delete confirmation.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "badge",
@@ -1019,9 +961,7 @@
       "type": "registry:block",
       "title": "Products",
       "description": "Product / SKU catalog list with create/edit dialog form, row-action menu, and a delete confirmation.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "badge",
@@ -1060,9 +1000,7 @@
       "type": "registry:block",
       "title": "Warehouses",
       "description": "Warehouse list with capacity utilization, create/edit dialog form, row-action menu, and a delete confirmation.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "badge",
@@ -1136,9 +1074,7 @@
       "type": "registry:block",
       "title": "Stock Movements",
       "description": "Append-only stock ledger — receipts, shipments, adjustments, and transfers with a type filter, running net change, and a record-movement dialog.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "badge",
         "button",
@@ -1175,9 +1111,7 @@
       "type": "registry:block",
       "title": "Collateral",
       "description": "Pledged-asset register with per-type advance rates, lien perfection blocked on a stale appraisal, and an under-secured loan warning.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert",
         "alert-dialog",
@@ -1217,9 +1151,7 @@
       "type": "registry:block",
       "title": "Bin / Location Map",
       "description": "Warehouse floor-plan grid of storage bins — assign or clear stock per bin, gated on capacity, single-SKU occupancy, and blocked/quarantine status.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert",
         "alert-dialog",
@@ -1379,13 +1311,49 @@
       ]
     },
     {
+      "name": "shipments",
+      "type": "registry:block",
+      "title": "Shipments",
+      "description": "Outbound fulfilment records that ship a completed pick — a partially-picked order can never ship, a carrier and tracking number are required before a shipment moves to shipped, and a shipment already in transit can no longer be cancelled. Status is derived from the record, never stored: cancelled outranks exception outranks delivered outranks shipped.",
+      "dependencies": [],
+      "registryDependencies": [
+        "alert",
+        "badge",
+        "button",
+        "input",
+        "select",
+        "separator",
+        "sheet",
+        "table",
+        "jayclydeTags/workspaceui/outbound-picking",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/shipments/page.tsx",
+          "type": "registry:page",
+          "target": "app/shipments/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/shipments/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/shipments/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/shipments/components/shipment-sheet.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "disbursements",
       "type": "registry:block",
       "title": "Disbursements",
       "description": "Loan disbursement tranches with a loan filter, release/fail settlement, and scheduling blocked from overdrawing the approved principal.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "badge",
@@ -1453,9 +1421,7 @@
       "type": "registry:block",
       "title": "Borrowers",
       "description": "Borrower register with search, risk grade derived from credit score, KYC gating on eligibility, and delete blocked while loans are active.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "avatar",
@@ -1496,9 +1462,7 @@
       "type": "registry:block",
       "title": "Loan Applications",
       "description": "Loan application queue with amortised monthly payment, debt-to-income assessment, and approval blocked above the DTI ceiling.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "badge",
@@ -1537,9 +1501,7 @@
       "type": "registry:block",
       "title": "Deals Pipeline",
       "description": "Drag-and-drop deal pipeline with per-stage value, a probability-weighted forecast, and win rate over closed deals.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "badge",
@@ -1581,9 +1543,7 @@
       "type": "registry:block",
       "title": "Accounts",
       "description": "Account book with tier filter, ARR roll-up, health derived from contact recency, and delete blocked while deals are open.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "badge",
@@ -1622,9 +1582,7 @@
       "type": "registry:block",
       "title": "Contacts",
       "description": "Contact book with search, one-primary-per-account enforced on promote, and a warning for accounts left without a primary.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert",
         "alert-dialog",
@@ -1666,9 +1624,7 @@
       "type": "registry:block",
       "title": "Leads",
       "description": "Lead pipeline with a stage filter, hot-lead scoring, qualification rate, and a convert action gated on the lead being qualified.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "badge",
@@ -1707,9 +1663,7 @@
       "type": "registry:block",
       "title": "Project Team",
       "description": "Project roster with roles, weekly allocation, and guards that keep one lead on the project and nobody booked past a full week.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "avatar",
@@ -1749,9 +1703,7 @@
       "type": "registry:block",
       "title": "Milestones",
       "description": "Milestone tracker with task-scope progress and a state derived from the due date — completed, overdue, at risk, or on track.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "badge",
@@ -1789,9 +1741,7 @@
       "type": "registry:block",
       "title": "Timesheets",
       "description": "Time entries per project with billable-utilization summary and a draft → submitted → approved lifecycle that locks an entry once submitted.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "badge",
@@ -1831,9 +1781,7 @@
       "type": "registry:block",
       "title": "Task Board",
       "description": "Drag-and-drop Kanban board for project tasks — to do / in progress / review / done, with priority, assignee, and a create/edit dialog.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "avatar",
@@ -1876,9 +1824,7 @@
       "type": "registry:block",
       "title": "Projects",
       "description": "Project portfolio list with a status filter, progress bars, overdue due-date highlighting, and create/edit/delete.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "badge",
@@ -1917,9 +1863,7 @@
       "type": "registry:block",
       "title": "Performance Reviews",
       "description": "Performance review list with star ratings, a status filter, average-rating summary, and a create/edit dialog that blocks completing an unrated review.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "badge",
@@ -1960,9 +1904,7 @@
       "type": "registry:block",
       "title": "Attendance",
       "description": "Daily attendance log with a date filter, punch-derived present/late/absent status, total hours, and create/edit/delete.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "badge",
@@ -2001,9 +1943,7 @@
       "type": "registry:block",
       "title": "Leave Requests",
       "description": "Leave request list with a status filter, approve/reject row actions, a submit-request dialog, and a delete confirmation.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "badge",
@@ -2043,9 +1983,7 @@
       "type": "registry:block",
       "title": "Bills",
       "description": "Accounts-payable bills list with create/edit dialog form, row-action menu, and a delete confirmation.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "badge",
@@ -2084,9 +2022,7 @@
       "type": "registry:block",
       "title": "Payments",
       "description": "Payments list with create/edit dialog form, row-action menu, and a delete confirmation.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "badge",
@@ -2125,9 +2061,7 @@
       "type": "registry:block",
       "title": "Journal Entries",
       "description": "Journal entry list with a dynamic debit/credit line-item dialog that validates the entry balances before it can be saved.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "badge",
@@ -2221,9 +2155,7 @@
       "type": "registry:block",
       "title": "Account Locked",
       "description": "Account-locked screen after too many failed sign-in attempts \u2014 shows the locked email, a lockout countdown, and reset/support actions.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "button",
         "card",
@@ -2242,9 +2174,7 @@
       "type": "registry:block",
       "title": "Session Expired",
       "description": "Re-authentication prompt after an idle timeout \u2014 quick password re-entry for the current user, incorrect-password error, and a switch-user action.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "button",
         "card",
@@ -2265,9 +2195,7 @@
       "type": "registry:block",
       "title": "Login",
       "description": "Email and password sign-in form \u2014 inline field validation, invalid-credentials banner, pending state, remember-me, and forgot-password/sign-up links.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert",
         "button",
@@ -2291,9 +2219,7 @@
       "type": "registry:block",
       "title": "Login (Social)",
       "description": "Sign-in with Google/GitHub SSO buttons over an email-and-password form \u2014 provider divider, inline validation, invalid-credentials banner, and pending state.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "button",
         "card",
@@ -2316,13 +2242,8 @@
       "type": "registry:block",
       "title": "Magic Link Sent",
       "description": "Passwordless check-your-email confirmation after requesting a magic sign-in link \u2014 expiry note, cooldown-gated resend, and change-email action.",
-      "dependencies": [
-        "lucide-react"
-      ],
-      "registryDependencies": [
-        "button",
-        "jayclydeTags/workspaceui/page"
-      ],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["button", "jayclydeTags/workspaceui/page"],
       "files": [
         {
           "path": "src/registry/bases/base/blocks/magic-link-sent/page.tsx",
@@ -2336,9 +2257,7 @@
       "type": "registry:block",
       "title": "Register",
       "description": "Account sign-up form with a live password-strength meter, field validation, terms agreement, and a verify-your-email confirmation state.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "button",
         "card",
@@ -2361,13 +2280,8 @@
       "type": "registry:block",
       "title": "Verify Email",
       "description": "Post-registration confirm-your-email pending screen \u2014 cooldown-gated resend and a transition to the email-confirmed success state.",
-      "dependencies": [
-        "lucide-react"
-      ],
-      "registryDependencies": [
-        "button",
-        "jayclydeTags/workspaceui/page"
-      ],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["button", "jayclydeTags/workspaceui/page"],
       "files": [
         {
           "path": "src/registry/bases/base/blocks/verify-email/page.tsx",
@@ -2381,9 +2295,7 @@
       "type": "registry:block",
       "title": "OTP Verify",
       "description": "One-time passcode entry with a 6-digit segmented input, auto-verify on complete, incorrect-code error, and a countdown-gated resend.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "button",
         "card",
@@ -2403,10 +2315,7 @@
       "type": "registry:block",
       "title": "Two-Factor Challenge",
       "description": "Post-password 2FA step \u2014 authenticator-app code entry with auto-verify, a recovery-code fallback, trust-this-device option, and error states.",
-      "dependencies": [
-        "lucide-react",
-        "motion"
-      ],
+      "dependencies": ["lucide-react", "motion"],
       "registryDependencies": [
         "button",
         "card",
@@ -2429,9 +2338,7 @@
       "type": "registry:block",
       "title": "Two-Factor Setup",
       "description": "Authenticator enrollment \u2014 QR code, copyable manual setup key, and a 6-digit verify step with error and enabled states.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "button",
         "card",
@@ -2451,9 +2358,7 @@
       "type": "registry:block",
       "title": "Recovery Codes",
       "description": "Backup-code display with copy, download, and regenerate actions, gated behind an \"I've saved them\" acknowledgement before continuing.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "button",
         "card",
@@ -2474,9 +2379,7 @@
       "type": "registry:block",
       "title": "Forgot Password",
       "description": "Request a password-reset link by email \u2014 field validation, pending state, and a neutral check-your-email confirmation that doesn't leak account existence.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "button",
         "card",
@@ -2497,9 +2400,7 @@
       "type": "registry:block",
       "title": "Reset Password",
       "description": "Set-a-new-password form with a live strength meter, confirm-match validation, an expired-link state, and a password-updated confirmation.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "button",
         "card",
@@ -2520,9 +2421,7 @@
       "type": "registry:block",
       "title": "Change Password",
       "description": "Authenticated in-app password change \u2014 current-password re-auth check, new-password strength meter, confirm-match validation, and a changed confirmation.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "button",
         "card",
@@ -2543,9 +2442,7 @@
       "type": "registry:block",
       "title": "Unauthorized 403",
       "description": "Signed-in-but-forbidden screen \u2014 explains the missing permission, offers a request-access action with a sent confirmation, and a back link.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "button",
         "card",
@@ -2564,9 +2461,7 @@
       "type": "registry:block",
       "title": "Upgrade Required",
       "description": "Plan-gated feature screen \u2014 a signed-in user hits a Pro-only feature, with the perks it unlocks, an upgrade action, and an ask-an-admin fallback that confirms once sent.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "button",
         "card",
@@ -2585,9 +2480,7 @@
       "type": "registry:block",
       "title": "Forbidden Workspace",
       "description": "Wrong-tenant screen \u2014 signed in but not a member of this workspace, with a switcher to workspaces you belong to and a switch-account action.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "avatar",
         "button",
@@ -2607,9 +2500,7 @@
       "type": "registry:block",
       "title": "Pending Approval",
       "description": "Account-under-review status screen \u2014 explains the pending admin approval, the notification email, and check-status/sign-out actions.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "button",
         "card",
@@ -2628,9 +2519,7 @@
       "type": "registry:block",
       "title": "Account Suspended",
       "description": "Suspended-account screen \u2014 shows the suspension reason and offers an appeal action with a submitted confirmation plus a contact-support link.",
-      "dependencies": [
-        "lucide-react"
-      ],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
         "button",
         "card",

@@ -73,6 +73,7 @@ import { BinLocationMap } from "@/registry/bases/base/blocks/bin-location-map/pa
 import { InboundReceiving } from "@/registry/bases/base/blocks/inbound-receiving/page"
 import { OutboundPicking } from "@/registry/bases/base/blocks/outbound-picking/page"
 import { InventoryAdjustments } from "@/registry/bases/base/blocks/inventory-adjustments/page"
+import { Shipments } from "@/registry/bases/base/blocks/shipments/page"
 import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/page"
 import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
@@ -572,6 +573,14 @@ export const blocks: BlockMeta[] = [
       "Bin-level count-correction workflow — an absolute physical count raised against a bin with a reason code, where damage/shrinkage may only reduce a count, variance over 10% needs approval before it posts, and a bin held by a pick or receipt is locked. Approval posts to the bin in one step and emits a SKU/warehouse/delta record for stock levels.",
     category: "Warehouse",
     Component: InventoryAdjustments,
+  },
+  {
+    slug: "shipments",
+    title: "Shipments",
+    description:
+      "Outbound fulfilment records that ship a completed pick — a partially-picked order can never ship, a carrier and tracking number are required before a shipment moves to shipped, and a shipment already in transit can no longer be cancelled. Status is derived from the record, never stored: cancelled outranks exception outranks delivered outranks shipped.",
+    category: "Warehouse",
+    Component: Shipments,
   },
   {
     slug: "approval-board",

@@ -1334,6 +1334,51 @@
       ]
     },
     {
+      "name": "inventory-adjustments",
+      "type": "registry:block",
+      "title": "Inventory Adjustments",
+      "description": "Bin-level count-correction workflow — an absolute physical count raised against a bin with a reason code, where damage/shrinkage may only reduce a count, variance over 10% needs approval before it posts, and a bin held by a pick or receipt is locked. Approval posts to the bin in one step and emits a SKU/warehouse/delta record for stock levels.",
+      "dependencies": [],
+      "registryDependencies": [
+        "alert",
+        "badge",
+        "button",
+        "dialog",
+        "field",
+        "input",
+        "select",
+        "separator",
+        "sheet",
+        "table",
+        "textarea",
+        "jayclydeTags/workspaceui/bin-location-map",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/inventory-adjustments/page.tsx",
+          "type": "registry:page",
+          "target": "app/inventory-adjustments/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/inventory-adjustments/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/inventory-adjustments/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/inventory-adjustments/components/request-dialog.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/inventory-adjustments/components/approval-sheet.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "disbursements",
       "type": "registry:block",
       "title": "Disbursements",

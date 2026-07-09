@@ -437,6 +437,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Claim and fulfil pick lists that draw stock out of bins for an outbound order — blocked picking on a closed/cancelled order, per-line allocations across bins capped at on-hand, short-pick handling, and a picker-claim gate. Emits a pickId + picked-quantity completion record for Shipments.",
           },
+          {
+            title: "Inventory Adjustments",
+            href: "/blocks/inventory-adjustments",
+            description:
+              "Bin-level count-correction workflow — an absolute physical count raised against a bin with a reason code, where damage/shrinkage may only reduce a count, variance over 10% needs approval before it posts, and a bin held by a pick or receipt is locked. Approval posts to the bin in one step and emits a SKU/warehouse/delta record for stock levels.",
+          },
         ],
       },
       {
@@ -560,7 +566,7 @@ export const blocksNav: NavSection[] = [
             title: "Recovery Codes",
             href: "/blocks/recovery-codes",
             description:
-              "Backup-code display with copy, download, and regenerate actions, gated behind an \"I've saved them\" acknowledgement before continuing.",
+              'Backup-code display with copy, download, and regenerate actions, gated behind an "I\'ve saved them" acknowledgement before continuing.',
           },
           {
             title: "OTP Verify",

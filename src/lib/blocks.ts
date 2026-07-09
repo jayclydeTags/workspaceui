@@ -72,6 +72,7 @@ import { CollateralRegister } from "@/registry/bases/base/blocks/collateral/page
 import { BinLocationMap } from "@/registry/bases/base/blocks/bin-location-map/page"
 import { InboundReceiving } from "@/registry/bases/base/blocks/inbound-receiving/page"
 import { OutboundPicking } from "@/registry/bases/base/blocks/outbound-picking/page"
+import { InventoryAdjustments } from "@/registry/bases/base/blocks/inventory-adjustments/page"
 import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/page"
 import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
@@ -565,6 +566,14 @@ export const blocks: BlockMeta[] = [
     Component: OutboundPicking,
   },
   {
+    slug: "inventory-adjustments",
+    title: "Inventory Adjustments",
+    description:
+      "Bin-level count-correction workflow — an absolute physical count raised against a bin with a reason code, where damage/shrinkage may only reduce a count, variance over 10% needs approval before it posts, and a bin held by a pick or receipt is locked. Approval posts to the bin in one step and emits a SKU/warehouse/delta record for stock levels.",
+    category: "Warehouse",
+    Component: InventoryAdjustments,
+  },
+  {
     slug: "approval-board",
     title: "Approval Board",
     description:
@@ -640,7 +649,7 @@ export const blocks: BlockMeta[] = [
     slug: "recovery-codes",
     title: "Recovery Codes",
     description:
-      "Backup-code display with copy, download, and regenerate actions, gated behind an \"I've saved them\" acknowledgement before continuing.",
+      'Backup-code display with copy, download, and regenerate actions, gated behind an "I\'ve saved them" acknowledgement before continuing.',
     category: "Authentication",
     Component: RecoveryCodes,
   },

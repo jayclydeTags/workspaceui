@@ -13,7 +13,7 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
     { name: "page.tsx", path: "app/payroll-run/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/payroll-run/data.ts", src: "data.ts" },
   ],
-  "employee": [
+  employee: [
     { name: "page.tsx", path: "app/employee/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/employee/data.ts", src: "data.ts" },
     {
@@ -75,7 +75,7 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/account-dialog.tsx",
     },
   ],
-  "products": [
+  products: [
     { name: "page.tsx", path: "app/products/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/products/data.ts", src: "data.ts" },
     {
@@ -89,7 +89,7 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/product-dialog.tsx",
     },
   ],
-  "warehouses": [
+  warehouses: [
     { name: "page.tsx", path: "app/warehouses/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/warehouses/data.ts", src: "data.ts" },
     {
@@ -131,7 +131,7 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/movement-dialog.tsx",
     },
   ],
-  "collateral": [
+  collateral: [
     { name: "page.tsx", path: "app/collateral/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/collateral/data.ts", src: "data.ts" },
     {
@@ -204,7 +204,34 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/pick-sheet.tsx",
     },
   ],
-  "disbursements": [
+  "inventory-adjustments": [
+    {
+      name: "page.tsx",
+      path: "app/inventory-adjustments/page.tsx",
+      src: "page.tsx",
+    },
+    {
+      name: "data.ts",
+      path: "app/inventory-adjustments/data.ts",
+      src: "data.ts",
+    },
+    {
+      name: "data-table.tsx",
+      path: "components/blocks/inventory-adjustments/components/data-table.tsx",
+      src: "components/data-table.tsx",
+    },
+    {
+      name: "request-dialog.tsx",
+      path: "components/blocks/inventory-adjustments/components/request-dialog.tsx",
+      src: "components/request-dialog.tsx",
+    },
+    {
+      name: "approval-sheet.tsx",
+      path: "components/blocks/inventory-adjustments/components/approval-sheet.tsx",
+      src: "components/approval-sheet.tsx",
+    },
+  ],
+  disbursements: [
     { name: "page.tsx", path: "app/disbursements/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/disbursements/data.ts", src: "data.ts" },
     {
@@ -231,7 +258,7 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/schedule-table.tsx",
     },
   ],
-  "borrowers": [
+  borrowers: [
     { name: "page.tsx", path: "app/borrowers/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/borrowers/data.ts", src: "data.ts" },
     {
@@ -282,7 +309,7 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/deal-dialog.tsx",
     },
   ],
-  "accounts": [
+  accounts: [
     { name: "page.tsx", path: "app/accounts/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/accounts/data.ts", src: "data.ts" },
     {
@@ -296,7 +323,7 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/account-dialog.tsx",
     },
   ],
-  "contacts": [
+  contacts: [
     { name: "page.tsx", path: "app/contacts/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/contacts/data.ts", src: "data.ts" },
     {
@@ -310,7 +337,7 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/contact-dialog.tsx",
     },
   ],
-  "leads": [
+  leads: [
     { name: "page.tsx", path: "app/leads/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/leads/data.ts", src: "data.ts" },
     {
@@ -338,7 +365,7 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/member-dialog.tsx",
     },
   ],
-  "milestones": [
+  milestones: [
     { name: "page.tsx", path: "app/milestones/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/milestones/data.ts", src: "data.ts" },
     {
@@ -352,7 +379,7 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/milestone-dialog.tsx",
     },
   ],
-  "timesheets": [
+  timesheets: [
     { name: "page.tsx", path: "app/timesheets/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/timesheets/data.ts", src: "data.ts" },
     {
@@ -385,7 +412,7 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/task-dialog.tsx",
     },
   ],
-  "projects": [
+  projects: [
     { name: "page.tsx", path: "app/projects/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/projects/data.ts", src: "data.ts" },
     {
@@ -421,7 +448,7 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/review-dialog.tsx",
     },
   ],
-  "attendance": [
+  attendance: [
     { name: "page.tsx", path: "app/attendance/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/attendance/data.ts", src: "data.ts" },
     {
@@ -449,7 +476,7 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/request-dialog.tsx",
     },
   ],
-  "bills": [
+  bills: [
     { name: "page.tsx", path: "app/bills/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/bills/data.ts", src: "data.ts" },
     {
@@ -463,7 +490,7 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/bill-dialog.tsx",
     },
   ],
-  "payments": [
+  payments: [
     { name: "page.tsx", path: "app/payments/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/payments/data.ts", src: "data.ts" },
     {
@@ -520,16 +547,32 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
     { name: "data.ts", path: "app/payslip-detail/data.ts", src: "data.ts" },
   ],
   "compensation-table": [
-    { name: "page.tsx", path: "app/compensation-table/page.tsx", src: "page.tsx" },
+    {
+      name: "page.tsx",
+      path: "app/compensation-table/page.tsx",
+      src: "page.tsx",
+    },
     { name: "data.ts", path: "app/compensation-table/data.ts", src: "data.ts" },
   ],
   "payroll-calendar": [
-    { name: "page.tsx", path: "app/payroll-calendar/page.tsx", src: "page.tsx" },
+    {
+      name: "page.tsx",
+      path: "app/payroll-calendar/page.tsx",
+      src: "page.tsx",
+    },
     { name: "data.ts", path: "app/payroll-calendar/data.ts", src: "data.ts" },
   ],
   "offcycle-payment-form": [
-    { name: "page.tsx", path: "app/offcycle-payment-form/page.tsx", src: "page.tsx" },
-    { name: "data.ts", path: "app/offcycle-payment-form/data.ts", src: "data.ts" },
+    {
+      name: "page.tsx",
+      path: "app/offcycle-payment-form/page.tsx",
+      src: "page.tsx",
+    },
+    {
+      name: "data.ts",
+      path: "app/offcycle-payment-form/data.ts",
+      src: "data.ts",
+    },
   ],
   department: [
     { name: "page.tsx", path: "app/department/page.tsx", src: "page.tsx" },
@@ -554,8 +597,16 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
     { name: "data.ts", path: "app/file-upload/data.ts", src: "data.ts" },
   ],
   "notifications-inbox": [
-    { name: "page.tsx", path: "app/notifications-inbox/page.tsx", src: "page.tsx" },
-    { name: "data.ts", path: "app/notifications-inbox/data.ts", src: "data.ts" },
+    {
+      name: "page.tsx",
+      path: "app/notifications-inbox/page.tsx",
+      src: "page.tsx",
+    },
+    {
+      name: "data.ts",
+      path: "app/notifications-inbox/data.ts",
+      src: "data.ts",
+    },
   ],
   "comments-thread": [
     { name: "page.tsx", path: "app/comments-thread/page.tsx", src: "page.tsx" },
@@ -588,7 +639,11 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
     },
   ],
   "search-filter-bar": [
-    { name: "page.tsx", path: "app/search-filter-bar/page.tsx", src: "page.tsx" },
+    {
+      name: "page.tsx",
+      path: "app/search-filter-bar/page.tsx",
+      src: "page.tsx",
+    },
     { name: "data.ts", path: "app/search-filter-bar/data.ts", src: "data.ts" },
     {
       name: "filter-bar.tsx",
@@ -597,8 +652,16 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
     },
   ],
   "bulk-actions-toolbar": [
-    { name: "page.tsx", path: "app/bulk-actions-toolbar/page.tsx", src: "page.tsx" },
-    { name: "data.ts", path: "app/bulk-actions-toolbar/data.ts", src: "data.ts" },
+    {
+      name: "page.tsx",
+      path: "app/bulk-actions-toolbar/page.tsx",
+      src: "page.tsx",
+    },
+    {
+      name: "data.ts",
+      path: "app/bulk-actions-toolbar/data.ts",
+      src: "data.ts",
+    },
     {
       name: "bulk-toolbar.tsx",
       path: "components/blocks/bulk-actions-toolbar/components/bulk-toolbar.tsx",
@@ -610,7 +673,11 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
     { name: "data.ts", path: "app/detail-tabs/data.ts", src: "data.ts" },
   ],
   "record-form-dialog": [
-    { name: "page.tsx", path: "app/record-form-dialog/page.tsx", src: "page.tsx" },
+    {
+      name: "page.tsx",
+      path: "app/record-form-dialog/page.tsx",
+      src: "page.tsx",
+    },
     { name: "data.ts", path: "app/record-form-dialog/data.ts", src: "data.ts" },
     {
       name: "contact-dialog.tsx",
@@ -689,8 +756,16 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
     },
   ],
   "purchase-order-form": [
-    { name: "page.tsx", path: "app/purchase-order-form/page.tsx", src: "page.tsx" },
-    { name: "data.ts", path: "app/purchase-order-form/data.ts", src: "data.ts" },
+    {
+      name: "page.tsx",
+      path: "app/purchase-order-form/page.tsx",
+      src: "page.tsx",
+    },
+    {
+      name: "data.ts",
+      path: "app/purchase-order-form/data.ts",
+      src: "data.ts",
+    },
     {
       name: "step-indicator.tsx",
       path: "components/blocks/purchase-order-form/components/step-indicator.tsx",
@@ -742,10 +817,18 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
     { name: "page.tsx", path: "app/change-password/page.tsx", src: "page.tsx" },
   ],
   "unauthorized-403": [
-    { name: "page.tsx", path: "app/unauthorized-403/page.tsx", src: "page.tsx" },
+    {
+      name: "page.tsx",
+      path: "app/unauthorized-403/page.tsx",
+      src: "page.tsx",
+    },
   ],
   "upgrade-required": [
-    { name: "page.tsx", path: "app/upgrade-required/page.tsx", src: "page.tsx" },
+    {
+      name: "page.tsx",
+      path: "app/upgrade-required/page.tsx",
+      src: "page.tsx",
+    },
   ],
   "forbidden-workspace": [
     {
@@ -755,7 +838,11 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
     },
   ],
   "pending-approval": [
-    { name: "page.tsx", path: "app/pending-approval/page.tsx", src: "page.tsx" },
+    {
+      name: "page.tsx",
+      path: "app/pending-approval/page.tsx",
+      src: "page.tsx",
+    },
   ],
   "account-suspended": [
     {
@@ -772,7 +859,11 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
     },
   ],
   "two-factor-setup": [
-    { name: "page.tsx", path: "app/two-factor-setup/page.tsx", src: "page.tsx" },
+    {
+      name: "page.tsx",
+      path: "app/two-factor-setup/page.tsx",
+      src: "page.tsx",
+    },
   ],
   "recovery-codes": [
     { name: "page.tsx", path: "app/recovery-codes/page.tsx", src: "page.tsx" },
@@ -783,7 +874,7 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
   "session-expired": [
     { name: "page.tsx", path: "app/session-expired/page.tsx", src: "page.tsx" },
   ],
-  "settings": [
+  settings: [
     { name: "page.tsx", path: "app/settings/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/settings/data.ts", src: "data.ts" },
     {

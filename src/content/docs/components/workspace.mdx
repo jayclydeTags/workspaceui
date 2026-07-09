@@ -376,6 +376,132 @@ export function MyWorkspace() {
   )
 }`} />
 
+### Unsaved changes
+
+Mark a tab `dirty` and its close button becomes a dot until you hover it. Return
+`false` from `onBeforeCloseTab` to veto the close — returning a `Promise<boolean>`
+lets you await a confirmation dialog. Type in `draft.md`, then try to close it.
+
+Because `closePane` discards every tab at once, the guard runs for each tab it
+would drop — pinned ones included — and a single veto aborts the whole pane close.
+
+<ComponentPreview name="workspace-dirty-tabs" code={`import * as React from "react"
+import { FileText } from "lucide-react"
+
+import { Textarea } from "@/components/ui/textarea"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { Workspace, type WorkspaceHandle } from "@/components/ui/workspace"
+
+export function Demo() {
+  const workspace = React.useRef<WorkspaceHandle>(null)
+  const [text, setText] = React.useState<Record<string, string>>({})
+
+  // The guard is async, so it parks a resolver and opens the dialog.
+  // The dialog's buttons settle it — that's what un-blocks the pending close.
+  const decision = React.useRef<((discard: boolean) => void) | null>(null)
+  const [pendingTitle, setPendingTitle] = React.useState<string | null>(null)
+
+  const settle = (discard: boolean) => {
+    decision.current?.(discard)
+    decision.current = null
+    setPendingTitle(null)
+  }
+
+  return (
+    <>
+      <Workspace
+        ref={workspace}
+        initialPanes={[
+          {
+            id: "main",
+            tabs: [
+              { id: "draft", title: "draft.md", icon: <FileText /> },
+              { id: "notes", title: "notes.md", icon: <FileText /> },
+            ],
+          },
+        ]}
+        onBeforeCloseTab={(_paneId, _tabId, tab) => {
+          if (!tab.dirty) return true
+          setPendingTitle(tab.title)
+          return new Promise<boolean>((resolve) => {
+            decision.current = resolve
+          })
+        }}
+        renderTabContent={(paneId, tabId) => (
+          <Textarea
+            value={text[tabId] ?? ""}
+            onChange={(e) => {
+              setText((prev) => ({ ...prev, [tabId]: e.target.value }))
+              workspace.current?.updateTab(paneId, tabId, { dirty: true })
+            }}
+          />
+        )}
+      />
+
+      {/* Dismissing any other way (Escape) must still settle the promise,
+          or the pending close would hang forever. */}
+      <AlertDialog open={pendingTitle !== null} onOpenChange={(open) => { if (!open) settle(false) }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Discard changes to {pendingTitle}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This tab has unsaved changes. Closing it will lose them.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => settle(false)}>Keep editing</AlertDialogCancel>
+            <AlertDialogAction onClick={() => settle(true)}>Discard</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  )
+}`} />
+
+### Saving and restoring the layout
+
+`serialize()` captures the column, pane, and tab structure; `restore()` rebuilds
+it. The snapshot holds ids only, so `restore` takes a `resolveTab` callback to
+look each tab back up — icons and `onAddTab` handlers live in your lookup, not in
+the snapshot. Split a pane by dragging a tab to an edge, save, rearrange, restore.
+
+<ComponentPreview name="workspace-persistence" code={`import * as React from "react"
+import { Home, FolderOpen, Terminal } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
+import { Workspace, type WorkspaceHandle, type WorkspaceSnapshot, type WorkspaceTabDef } from "@/components/ui/workspace"
+
+// A snapshot holds tab ids, so restore needs somewhere to look them up.
+// Icons live here, not in the snapshot — a ReactNode can't be JSON.
+const TABS: Record<string, WorkspaceTabDef> = {
+  home: { id: "home", title: "Home", icon: <Home /> },
+  files: { id: "files", title: "Files", icon: <FolderOpen /> },
+  terminal: { id: "terminal", title: "Terminal", icon: <Terminal /> },
+}
+
+export function Demo() {
+  const workspace = React.useRef<WorkspaceHandle>(null)
+  const [saved, setSaved] = React.useState<WorkspaceSnapshot | null>(null)
+
+  return (
+    <>
+      <Button onClick={() => setSaved(workspace.current!.serialize())}>Save layout</Button>
+      <Button
+        disabled={saved === null}
+        onClick={() => workspace.current!.restore(saved!, (id) => TABS[id])}
+      >
+        Restore
+      </Button>
+
+      <Workspace
+        ref={workspace}
+        initialPanes={[{ id: "main", tabs: [TABS.home!, TABS.files!, TABS.terminal!] }]}
+        renderTabContent={(_paneId, tabId) => <div>{TABS[tabId]?.title ?? tabId}</div>}
+      />
+    </>
+  )
+}`} />
+
 ### Custom fallback
 
 The \`fallback\` prop configures what shows when every pane is closed. Close the tab below to reveal it.

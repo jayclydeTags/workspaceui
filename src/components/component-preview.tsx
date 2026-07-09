@@ -1,6 +1,8 @@
 import { ComponentPreviewShell } from "@/components/component-preview-shell"
 import { WorkspaceLiveDemo } from "@/registry/bases/base/examples/workspace-live"
 import { WorkspaceSinglePaneDemo } from "@/registry/bases/base/examples/workspace-single-pane"
+import { WorkspaceDirtyTabsDemo } from "@/registry/bases/base/examples/workspace-dirty-tabs"
+import { WorkspacePersistenceDemo } from "@/registry/bases/base/examples/workspace-persistence"
 import {
   WorkspaceTabsDemo,
   WorkspaceSplitDemo,
@@ -39,6 +41,8 @@ const previewComponents: Record<string, React.ReactNode> = {
   "workspace-programmatic": <WorkspaceProgrammaticDemo />,
   "workspace-context": <WorkspaceContextDemo />,
   "workspace-fallback": <WorkspaceFallbackDemo />,
+  "workspace-dirty-tabs": <WorkspaceDirtyTabsDemo />,
+  "workspace-persistence": <WorkspacePersistenceDemo />,
   page: <PageLiveDemo />,
   "page-default": <PageDefaultDemo />,
   "page-with-subtitle": <PageWithSubtitleDemo />,

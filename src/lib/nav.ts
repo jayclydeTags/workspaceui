@@ -425,6 +425,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Warehouse floor-plan grid of storage bins — assign or clear stock per bin, gated on capacity, single-SKU occupancy, and blocked/quarantine status.",
           },
+          {
+            title: "Inbound / Receiving",
+            href: "/blocks/inbound-receiving",
+            description:
+              "Record stock arriving against a purchase order and put it away into bins — blocked receiving on a closed/cancelled PO, a QC gate before stock counts as available, and capacity-checked put-away reusing the bin/location-map contract.",
+          },
         ],
       },
       {

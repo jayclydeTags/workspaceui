@@ -168,6 +168,24 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/bin-dialog.tsx",
     },
   ],
+  "inbound-receiving": [
+    {
+      name: "page.tsx",
+      path: "app/inbound-receiving/page.tsx",
+      src: "page.tsx",
+    },
+    { name: "data.ts", path: "app/inbound-receiving/data.ts", src: "data.ts" },
+    {
+      name: "data-table.tsx",
+      path: "components/blocks/inbound-receiving/components/data-table.tsx",
+      src: "components/data-table.tsx",
+    },
+    {
+      name: "receipt-sheet.tsx",
+      path: "components/blocks/inbound-receiving/components/receipt-sheet.tsx",
+      src: "components/receipt-sheet.tsx",
+    },
+  ],
   "disbursements": [
     { name: "page.tsx", path: "app/disbursements/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/disbursements/data.ts", src: "data.ts" },

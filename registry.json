@@ -1260,6 +1260,43 @@
       ]
     },
     {
+      "name": "inbound-receiving",
+      "type": "registry:block",
+      "title": "Inbound / Receiving",
+      "description": "Record stock arriving against a purchase order and put it away into bins — blocked receiving on a closed/cancelled PO, a QC gate before stock counts as available, and capacity-checked put-away reusing the bin/location-map contract.",
+      "dependencies": [],
+      "registryDependencies": [
+        "alert",
+        "badge",
+        "button",
+        "input",
+        "select",
+        "sheet",
+        "table",
+        "jayclydeTags/workspaceui/bin-location-map",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/inbound-receiving/page.tsx",
+          "type": "registry:page",
+          "target": "app/inbound-receiving/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/inbound-receiving/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/inbound-receiving/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/inbound-receiving/components/receipt-sheet.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "disbursements",
       "type": "registry:block",
       "title": "Disbursements",

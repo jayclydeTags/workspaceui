@@ -70,6 +70,7 @@ import { RepaymentSchedule } from "@/registry/bases/base/blocks/repayment-schedu
 import { Disbursements } from "@/registry/bases/base/blocks/disbursements/page"
 import { CollateralRegister } from "@/registry/bases/base/blocks/collateral/page"
 import { BinLocationMap } from "@/registry/bases/base/blocks/bin-location-map/page"
+import { InboundReceiving } from "@/registry/bases/base/blocks/inbound-receiving/page"
 import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/page"
 import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
@@ -545,6 +546,14 @@ export const blocks: BlockMeta[] = [
       "Warehouse floor-plan grid of storage bins — assign or clear stock per bin, gated on capacity, single-SKU occupancy, and blocked/quarantine status.",
     category: "Warehouse",
     Component: BinLocationMap,
+  },
+  {
+    slug: "inbound-receiving",
+    title: "Inbound / Receiving",
+    description:
+      "Record stock arriving against a purchase order and put it away into bins — blocked receiving on a closed/cancelled PO, a QC gate before stock counts as available, and capacity-checked put-away reusing the bin/location-map contract.",
+    category: "Warehouse",
+    Component: InboundReceiving,
   },
   {
     slug: "approval-board",

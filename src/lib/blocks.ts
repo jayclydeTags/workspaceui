@@ -71,6 +71,7 @@ import { Disbursements } from "@/registry/bases/base/blocks/disbursements/page"
 import { CollateralRegister } from "@/registry/bases/base/blocks/collateral/page"
 import { BinLocationMap } from "@/registry/bases/base/blocks/bin-location-map/page"
 import { InboundReceiving } from "@/registry/bases/base/blocks/inbound-receiving/page"
+import { OutboundPicking } from "@/registry/bases/base/blocks/outbound-picking/page"
 import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/page"
 import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
@@ -554,6 +555,14 @@ export const blocks: BlockMeta[] = [
       "Record stock arriving against a purchase order and put it away into bins — blocked receiving on a closed/cancelled PO, a QC gate before stock counts as available, and capacity-checked put-away reusing the bin/location-map contract.",
     category: "Warehouse",
     Component: InboundReceiving,
+  },
+  {
+    slug: "outbound-picking",
+    title: "Outbound / Picking",
+    description:
+      "Claim and fulfil pick lists that draw stock out of bins for an outbound order — blocked picking on a closed/cancelled order, per-line allocations across bins capped at on-hand, short-pick handling, and a picker-claim gate. Emits a pickId + picked-quantity completion record for Shipments.",
+    category: "Warehouse",
+    Component: OutboundPicking,
   },
   {
     slug: "approval-board",

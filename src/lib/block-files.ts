@@ -186,6 +186,24 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/receipt-sheet.tsx",
     },
   ],
+  "outbound-picking": [
+    {
+      name: "page.tsx",
+      path: "app/outbound-picking/page.tsx",
+      src: "page.tsx",
+    },
+    { name: "data.ts", path: "app/outbound-picking/data.ts", src: "data.ts" },
+    {
+      name: "data-table.tsx",
+      path: "components/blocks/outbound-picking/components/data-table.tsx",
+      src: "components/data-table.tsx",
+    },
+    {
+      name: "pick-sheet.tsx",
+      path: "components/blocks/outbound-picking/components/pick-sheet.tsx",
+      src: "components/pick-sheet.tsx",
+    },
+  ],
   "disbursements": [
     { name: "page.tsx", path: "app/disbursements/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/disbursements/data.ts", src: "data.ts" },

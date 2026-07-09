@@ -1297,6 +1297,43 @@
       ]
     },
     {
+      "name": "outbound-picking",
+      "type": "registry:block",
+      "title": "Outbound / Picking",
+      "description": "Claim and fulfil pick lists that draw stock out of bins for an outbound order — blocked picking on a closed/cancelled order, per-line allocations across bins capped at on-hand, short-pick handling, and a picker-claim gate. Emits a pickId + picked-quantity completion record for Shipments.",
+      "dependencies": [],
+      "registryDependencies": [
+        "alert",
+        "badge",
+        "button",
+        "input",
+        "select",
+        "sheet",
+        "table",
+        "jayclydeTags/workspaceui/bin-location-map",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/outbound-picking/page.tsx",
+          "type": "registry:page",
+          "target": "app/outbound-picking/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/outbound-picking/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/outbound-picking/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/outbound-picking/components/pick-sheet.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "disbursements",
       "type": "registry:block",
       "title": "Disbursements",

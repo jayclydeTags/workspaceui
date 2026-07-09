@@ -431,6 +431,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Record stock arriving against a purchase order and put it away into bins — blocked receiving on a closed/cancelled PO, a QC gate before stock counts as available, and capacity-checked put-away reusing the bin/location-map contract.",
           },
+          {
+            title: "Outbound / Picking",
+            href: "/blocks/outbound-picking",
+            description:
+              "Claim and fulfil pick lists that draw stock out of bins for an outbound order — blocked picking on a closed/cancelled order, per-line allocations across bins capped at on-hand, short-pick handling, and a picker-claim gate. Emits a pickId + picked-quantity completion record for Shipments.",
+          },
         ],
       },
       {

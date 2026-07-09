@@ -56,6 +56,24 @@ interface WorkspaceLayout {
   columns: PaneColumn[]
 }
 
+// ── Snapshot ───────────────────────────────────────────────────────────────
+
+interface PaneSnapshot {
+  id: string
+  tabIds: string[]
+  activeTabId: string
+}
+
+/**
+ * Serializable shape of the workspace layout. Holds ids only — a tab's `icon`
+ * is a ReactNode and its `onAddTab` a function, so neither survives JSON.
+ * Rehydrate with {@link WorkspaceHandle.restore}, passing a resolver that maps
+ * a tab id back to a full tab.
+ */
+export interface WorkspaceSnapshot {
+  columns: { id: string; topPane: PaneSnapshot; bottomPane?: PaneSnapshot }[]
+}
+
 // ── Drag types ─────────────────────────────────────────────────────────────
 
 type SnapZone = "left" | "right" | "top" | "bottom"
@@ -112,6 +130,16 @@ export type WorkspaceHandle = Omit<
   "panes" | "isShowingFallback" | "lastActivePaneId"
 > & {
   readonly lastActivePaneId: string | null
+  /** Capture the current column/pane/tab structure for persistence. */
+  serialize: () => WorkspaceSnapshot
+  /**
+   * Rebuild the layout from a snapshot. `resolveTab` maps a tab id back to a
+   * full tab; tabs it can't resolve are dropped, as are panes left empty.
+   */
+  restore: (
+    snapshot: WorkspaceSnapshot,
+    resolveTab: (tabId: string) => WorkspaceTabDef | undefined,
+  ) => void
 }
 
 // ── Workspace ──────────────────────────────────────────────────────────────
@@ -125,6 +153,16 @@ export interface WorkspaceProps {
    */
   renderTabContent: (paneId: string, activeTabId: string) => React.ReactNode
   /**
+   * Vetoes a tab close by returning `false` (or a promise of it) — use it to
+   * prompt on unsaved changes. Consulted for every tab a `closePane` would
+   * discard; a single veto aborts the whole pane close.
+   */
+  onBeforeCloseTab?: (
+    paneId: string,
+    tabId: string,
+    tab: WorkspaceTabDef,
+  ) => boolean | Promise<boolean>
+  /**
    * Content shown when all panes are closed.
    * Falls back to a built-in placeholder when omitted.
    */
@@ -137,6 +175,7 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
     {
       initialPanes = [],
       renderTabContent,
+      onBeforeCloseTab,
       fallback,
       className,
     },
@@ -145,6 +184,31 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
     const [layout, setLayout] = React.useState<WorkspaceLayout>(() => ({
       columns: initialPanes.map((p) => ({ id: p.id, topPane: toPaneState(p) })),
     }))
+
+    // Read the live layout from callbacks that must inspect it *before* the
+    // setLayout updater runs (the close guard is async — it can't do its work
+    // inside a reducer).
+    const layoutRef = React.useRef(layout)
+    React.useEffect(() => {
+      layoutRef.current = layout
+    }, [layout])
+
+    // Held in a ref so closeTab/closePane keep a stable identity across renders
+    // even when the consumer passes an inline guard.
+    const beforeCloseRef = React.useRef(onBeforeCloseTab)
+    React.useEffect(() => {
+      beforeCloseRef.current = onBeforeCloseTab
+    }, [onBeforeCloseTab])
+
+    /** Resolves to false if the guard vetoes closing `tabId`. */
+    const mayCloseTab = React.useCallback(
+      async (paneId: string, tab: WorkspaceTabDef) => {
+        const guard = beforeCloseRef.current
+        if (!guard) return true
+        return (await guard(paneId, tab.id, tab)) !== false
+      },
+      [],
+    )
 
     const [lastActivePaneId, setLastActivePaneId] = React.useState<string | null>(
       () => initialPanes[0]?.id ?? null,
@@ -216,7 +280,12 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
       [],
     )
 
-    const closeTab = React.useCallback((paneId: string, tabId: string) => {
+    const closeTab = React.useCallback(async (paneId: string, tabId: string) => {
+      const target = findPaneInLayout(layoutRef.current, paneId)
+      const targetTab = target?.pane.tabs.find((t) => t.id === tabId)
+      if (!targetTab || targetTab.pinned) return
+      if (!(await mayCloseTab(paneId, targetTab))) return
+
       setLayout((prev) => {
         const found = findPaneInLayout(prev, paneId)
         if (!found) return prev
@@ -235,7 +304,7 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
           : pane.activeTabId
         return mapPane(prev, paneId, (p) => ({ ...p, tabs: next, activeTabId: newActiveId }))
       })
-    }, [])
+    }, [mayCloseTab])
 
     const activateTab = React.useCallback((paneId: string, tabId: string) => {
       setLastActivePaneId(paneId)
@@ -264,9 +333,19 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
       })
     }, [])
 
-    const closePane = React.useCallback((paneId: string) => {
-      setLayout((prev) => removePane(prev, paneId))
-    }, [])
+    const closePane = React.useCallback(
+      async (paneId: string) => {
+        const found = findPaneInLayout(layoutRef.current, paneId)
+        if (!found) return
+        // Closing a pane discards every tab in it, pinned ones included — so
+        // each gets the guard, and any single veto aborts the whole close.
+        for (const tab of found.pane.tabs) {
+          if (!(await mayCloseTab(paneId, tab))) return
+        }
+        setLayout((prev) => removePane(prev, paneId))
+      },
+      [mayCloseTab],
+    )
 
     const registerTabStrip = React.useCallback((paneId: string, el: HTMLElement | null) => {
       if (el) tabStripRefs.current.set(paneId, el)
@@ -598,6 +677,43 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
       [handlePointerMove, handlePointerUp, handlePointerCancel],
     )
 
+    // ── Persistence ────────────────────────────────────────────────────────
+
+    const serialize = React.useCallback(
+      (): WorkspaceSnapshot => ({
+        columns: layoutRef.current.columns.map((col) => ({
+          id: col.id,
+          topPane: snapshotPane(col.topPane),
+          ...(col.bottomPane ? { bottomPane: snapshotPane(col.bottomPane) } : {}),
+        })),
+      }),
+      // ponytail: panel sizes are left to react-resizable-panels' own
+      // autoSaveId — no reason to persist them twice.
+      [],
+    )
+
+    const restore = React.useCallback(
+      (
+        snapshot: WorkspaceSnapshot,
+        resolveTab: (tabId: string) => WorkspaceTabDef | undefined,
+      ) => {
+        const columns = snapshot.columns.reduce<PaneColumn[]>((acc, col) => {
+          const topPane = restorePane(col.topPane, resolveTab)
+          const bottomPane = col.bottomPane
+            ? restorePane(col.bottomPane, resolveTab)
+            : undefined
+          // A pane whose tabs all failed to resolve is dropped; if that leaves
+          // the column empty the column goes too, and a surviving bottom pane
+          // is promoted — same invariant removePane() maintains.
+          if (topPane) acc.push({ id: col.id, topPane, bottomPane: bottomPane ?? undefined })
+          else if (bottomPane) acc.push({ id: col.id, topPane: bottomPane })
+          return acc
+        }, [])
+        setLayout(normalizeColumnSizes({ columns }))
+      },
+      [],
+    )
+
     const registerPane = React.useCallback((paneId: string, el: HTMLElement | null) => {
       if (el) {
         paneRefs.current.set(paneId, el)
@@ -618,8 +734,10 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
         updateTab,
         openPane,
         closePane,
+        serialize,
+        restore,
       }),
-      [resolvedLastActivePaneId, openTabInPane, closeTab, activateTab, updateTab, openPane, closePane],
+      [resolvedLastActivePaneId, openTabInPane, closeTab, activateTab, updateTab, openPane, closePane, serialize, restore],
     )
 
     // ── Contexts ───────────────────────────────────────────────────────────
@@ -692,6 +810,25 @@ function toPaneState(p: WorkspacePaneDef): PaneState {
     minSize: p.minSize,
     onAddTab: p.onAddTab,
   }
+}
+
+function snapshotPane(p: PaneState): PaneSnapshot {
+  return { id: p.id, tabIds: p.tabs.map((t) => t.id), activeTabId: p.activeTabId }
+}
+
+/** Rebuild a pane from a snapshot, or null when none of its tabs resolve. */
+function restorePane(
+  snap: PaneSnapshot,
+  resolveTab: (tabId: string) => WorkspaceTabDef | undefined,
+): PaneState | null {
+  const tabs = snap.tabIds
+    .map(resolveTab)
+    .filter((t): t is WorkspaceTabDef => t != null)
+  if (tabs.length === 0) return null
+  const activeTabId = tabs.some((t) => t.id === snap.activeTabId)
+    ? snap.activeTabId
+    : tabs[0]!.id
+  return { id: snap.id, tabs, activeTabId }
 }
 
 /** Find a pane anywhere in the layout. Returns the pane, its column ID, and its slot. */

@@ -412,4 +412,113 @@ describe("Workspace", () => {
       expect(after[1]).toHaveTextContent("b")
     })
   })
+
+  describe("onBeforeCloseTab", () => {
+    it("keeps the tab open when the guard vetoes", async () => {
+      const user = userEvent.setup()
+      const onBeforeCloseTab = vi.fn().mockResolvedValue(false)
+      renderWorkspace([pane("p1", ["a", "b"])], undefined, { onBeforeCloseTab })
+
+      await user.click(screen.getByRole("button", { name: "Close a" }))
+
+      expect(onBeforeCloseTab).toHaveBeenCalledWith("p1", "a", expect.objectContaining({ id: "a" }))
+      expect(screen.getByRole("tab", { name: /a/ })).toBeInTheDocument()
+    })
+
+    it("closes the tab when the guard allows", async () => {
+      const user = userEvent.setup()
+      renderWorkspace([pane("p1", ["a", "b"])], undefined, {
+        onBeforeCloseTab: () => true,
+      })
+
+      await user.click(screen.getByRole("button", { name: "Close a" }))
+
+      expect(screen.queryByRole("tab", { name: /a/ })).not.toBeInTheDocument()
+    })
+
+    it("aborts a pane close when any one of its tabs vetoes", async () => {
+      const ref = React.createRef<WorkspaceHandle>()
+      // Only the second tab is dirty — the pane must survive regardless.
+      const onBeforeCloseTab = (_p: string, tabId: string) => tabId !== "b"
+      renderWorkspace([pane("p1", ["a", "b"])], ref, { onBeforeCloseTab })
+
+      await act(async () => {
+        await ref.current!.closePane("p1")
+      })
+
+      expect(screen.getByRole("tab", { name: /a/ })).toBeInTheDocument()
+    })
+
+    it("guards pinned tabs on pane close, though they resist individual close", async () => {
+      const ref = React.createRef<WorkspaceHandle>()
+      const onBeforeCloseTab = vi.fn().mockReturnValue(true)
+      renderWorkspace(
+        [{ id: "p1", tabs: [{ id: "a", title: "a", pinned: true }] }],
+        ref,
+        { onBeforeCloseTab },
+      )
+
+      await act(async () => {
+        await ref.current!.closePane("p1")
+      })
+
+      expect(onBeforeCloseTab).toHaveBeenCalledWith("p1", "a", expect.objectContaining({ id: "a" }))
+      expect(screen.queryByRole("tab", { name: /a/ })).not.toBeInTheDocument()
+    })
+  })
+
+  describe("serialize / restore", () => {
+    const resolve = (id: string) => ({ id, title: id })
+
+    it("round-trips columns, tabs, and the active tab", async () => {
+      const ref = React.createRef<WorkspaceHandle>()
+      renderWorkspace([pane("p1", ["a", "b"]), pane("p2", ["c"])], ref)
+
+      act(() => ref.current!.activateTab("p1", "b"))
+      const snapshot = ref.current!.serialize()
+
+      expect(snapshot.columns).toHaveLength(2)
+      expect(snapshot.columns[0]!.topPane).toEqual({
+        id: "p1",
+        tabIds: ["a", "b"],
+        activeTabId: "b",
+      })
+
+      // Mutate away from the snapshot, then restore it.
+      await act(async () => {
+        await ref.current!.closePane("p2")
+      })
+      act(() => ref.current!.restore(snapshot, resolve))
+
+      expect(ref.current!.serialize()).toEqual(snapshot)
+      expect(screen.getByTestId("content-b")).toBeInTheDocument()
+    })
+
+    it("drops unresolvable tabs and the panes they empty", () => {
+      const ref = React.createRef<WorkspaceHandle>()
+      renderWorkspace([pane("p1", ["a"]), pane("p2", ["gone"])], ref)
+
+      const snapshot = ref.current!.serialize()
+      act(() => ref.current!.restore(snapshot, (id) => (id === "gone" ? undefined : resolve(id))))
+
+      const after = ref.current!.serialize()
+      expect(after.columns).toHaveLength(1)
+      expect(after.columns[0]!.topPane.id).toBe("p1")
+    })
+
+    it("falls back to the first tab when the active one no longer resolves", () => {
+      const ref = React.createRef<WorkspaceHandle>()
+      renderWorkspace([pane("p1", ["a", "b"])], ref)
+
+      act(() => ref.current!.activateTab("p1", "b"))
+      const snapshot = ref.current!.serialize()
+      act(() => ref.current!.restore(snapshot, (id) => (id === "b" ? undefined : resolve(id))))
+
+      expect(ref.current!.serialize().columns[0]!.topPane).toEqual({
+        id: "p1",
+        tabIds: ["a"],
+        activeTabId: "a",
+      })
+    })
+  })
 })

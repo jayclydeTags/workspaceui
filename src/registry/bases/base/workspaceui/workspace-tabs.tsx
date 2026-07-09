@@ -18,6 +18,8 @@ export interface WorkspaceTab {
   badge?: number
   /** Pinned tabs cannot be closed — no close button is rendered. */
   pinned?: boolean
+  /** Unsaved changes: shows a dot instead of the close button until hovered. */
+  dirty?: boolean
 }
 
 export interface WorkspaceTabsProps {
@@ -192,7 +194,11 @@ function WorkspaceTabs({
                     <div
                       role="button"
                       tabIndex={-1}
-                      aria-label={`Close ${tab.title}`}
+                      aria-label={
+                        tab.dirty
+                          ? `Close ${tab.title} (unsaved changes)`
+                          : `Close ${tab.title}`
+                      }
                       onPointerDown={(e) => e.stopPropagation()}
                       onClick={(e) => {
                         e.stopPropagation()
@@ -210,9 +216,21 @@ function WorkspaceTabs({
                         "text-foreground/40 hover:bg-foreground/10 hover:text-foreground",
                         "opacity-0 transition-all group-hover:opacity-100",
                         isActive && "opacity-50 group-hover:opacity-100",
+                        // A dirty tab always shows its dot, even unhovered/inactive.
+                        tab.dirty && "opacity-100",
                       )}
                     >
-                      <X className="size-3" />
+                      {tab.dirty ? (
+                        <>
+                          <span
+                            aria-hidden
+                            className="size-2 rounded-full bg-foreground/60 group-hover:hidden"
+                          />
+                          <X className="hidden size-3 group-hover:block" />
+                        </>
+                      ) : (
+                        <X className="size-3" />
+                      )}
                     </div>
                   )}
 

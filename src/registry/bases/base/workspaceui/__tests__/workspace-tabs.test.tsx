@@ -228,4 +228,30 @@ describe("WorkspaceTabs", () => {
       )
     })
   })
+
+  describe("dirty tabs", () => {
+    it("marks the close control as unsaved and still closes on click", async () => {
+      const user = userEvent.setup()
+      const onTabClose = vi.fn()
+      renderTabs({
+        tabs: [tab("a", "Alpha", { dirty: true }), tab("b", "Beta")],
+        onTabClose,
+      })
+
+      const close = screen.getByRole("button", { name: "Close Alpha (unsaved changes)" })
+      await user.click(close)
+      expect(onTabClose).toHaveBeenCalledWith("a")
+
+      // A clean tab keeps the plain label.
+      expect(screen.getByRole("button", { name: "Close Beta" })).toBeInTheDocument()
+    })
+
+    it("renders no close control for a pinned tab, dirty or not", () => {
+      renderTabs({
+        tabs: [tab("a", "Alpha", { dirty: true, pinned: true })],
+        onTabClose: vi.fn(),
+      })
+      expect(screen.queryByRole("button", { name: /Close Alpha/ })).not.toBeInTheDocument()
+    })
+  })
 })

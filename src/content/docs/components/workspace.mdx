@@ -410,6 +410,8 @@ export function MyWorkspace() {
 - **Snap-zone splitting** — drag a tab to an edge to split: left/right adds a new column, top/bottom adds a new row within the column.
 - **Escape to cancel** — pressing Escape during a drag cancels the operation without committing a drop.
 - **Resizable panels** — panel columns are resizable via drag handles, with configurable min sizes.
+- **Unsaved-change guard** — mark a tab `dirty` to swap its close button for a dot, and return `false` from `onBeforeCloseTab` to veto the close.
+- **Layout persistence** — `serialize()` / `restore()` on the `WorkspaceHandle` round-trip the column, pane, and tab structure through storage.
 - **Imperative handle** — attach a `WorkspaceHandle` ref to control panes and tabs programmatically from outside the component.
 - **Context hook** — any component rendered inside `<Workspace>` can call `useWorkspace()` to read state or open/close panes and tabs.
 - **Custom fallback** — configure the view shown when all panes are closed via the `fallback` prop.
@@ -422,6 +424,7 @@ export function MyWorkspace() {
   type={{
     initialPanes: { type: "WorkspacePaneDef[]", default: "[]", description: "Initial pane/tab configuration rendered on mount." },
     renderTabContent: { type: "(paneId: string, tabId: string) => ReactNode", required: true, description: "Renders content for the active tab in each pane. Called on every render — keep it fast." },
+    onBeforeCloseTab: { type: "(paneId: string, tabId: string, tab: WorkspaceTabDef) => boolean | Promise<boolean>", description: "Return false to veto a tab close — use it to prompt on unsaved changes. Consulted for every tab a closePane would discard; one veto aborts the whole pane close." },
     fallback: { type: "ReactNode", description: "Shown when all panes are closed. Defaults to a built-in placeholder." },
     className: { type: "string", description: "Additional CSS classes applied to the root element." },
   }}
@@ -442,6 +445,21 @@ Used in `initialPanes` and `openPane()`.
   }}
 />
 
+### WorkspaceTabDef
+
+A single tab. Re-exported alias of `WorkspaceTab` from `workspace-tabs`.
+
+<TypeTable
+  type={{
+    id: { type: "string", required: true, description: "Unique identifier for this tab." },
+    title: { type: "string", required: true, description: "Label shown in the tab strip." },
+    icon: { type: "ReactNode", description: "Rendered before the title, sized to 14px." },
+    badge: { type: "number", description: "Unread count. Values above 99 render as “99+”; 0 and undefined render nothing." },
+    pinned: { type: "boolean", default: "false", description: "Pinned tabs cannot be closed or dragged, and render no close button." },
+    dirty: { type: "boolean", default: "false", description: "Unsaved changes: the tab shows a dot instead of its close button until hovered. Pair with onBeforeCloseTab to prompt before discarding." },
+  }}
+/>
+
 ### useWorkspace()
 
 Context hook available to any component rendered inside `<Workspace>`.
@@ -452,26 +470,50 @@ Context hook available to any component rendered inside `<Workspace>`.
     isShowingFallback: { type: "boolean", description: "True when all panes are closed and the fallback is visible." },
     lastActivePaneId: { type: "string | null", description: "ID of the most recently focused pane." },
     openTabInPane: { type: "(paneId, tab) => void", description: "Opens or focuses a tab in the specified pane." },
-    closeTab: { type: "(paneId, tabId) => void", description: "Closes a tab. Removes the pane if it was the last tab." },
+    closeTab: { type: "(paneId, tabId) => void", description: "Closes a tab, subject to onBeforeCloseTab. Removes the pane if it was the last tab." },
     activateTab: { type: "(paneId, tabId) => void", description: "Switches the active tab in a pane." },
     updateTab: { type: "(paneId, tabId, patch) => void", description: "Patches tab properties (e.g. update badge count)." },
     openPane: { type: "(pane: WorkspacePaneDef) => void", description: "Adds a new pane column. No-op if the pane ID already exists." },
-    closePane: { type: "(paneId) => void", description: "Removes a pane and all its tabs." },
+    closePane: { type: "(paneId) => void", description: "Removes a pane and all its tabs, subject to onBeforeCloseTab." },
   }}
 />
 
 ### WorkspaceHandle
 
-Imperative ref API. Attach via `ref` on `<Workspace>`. Same methods as `useWorkspace()` minus read-only pane state.
+Imperative ref API. Attach via `ref` on `<Workspace>`. Same methods as `useWorkspace()`, minus read-only pane state and plus layout persistence.
 
 <TypeTable
   type={{
     lastActivePaneId: { type: "string | null", description: "ID of the most recently focused pane." },
     openTabInPane: { type: "(paneId, tab) => void", description: "Opens or focuses a tab in the specified pane." },
-    closeTab: { type: "(paneId, tabId) => void", description: "Closes a tab. Removes the pane if it was the last tab." },
+    closeTab: { type: "(paneId, tabId) => void", description: "Closes a tab, subject to onBeforeCloseTab. Removes the pane if it was the last tab." },
     activateTab: { type: "(paneId, tabId) => void", description: "Switches the active tab in a pane." },
     updateTab: { type: "(paneId, tabId, patch) => void", description: "Patches tab properties (e.g. update badge count)." },
     openPane: { type: "(pane: WorkspacePaneDef) => void", description: "Adds a new pane column. No-op if the pane ID already exists." },
-    closePane: { type: "(paneId) => void", description: "Removes a pane and all its tabs." },
+    closePane: { type: "(paneId) => void", description: "Removes a pane and all its tabs, subject to onBeforeCloseTab." },
+    serialize: { type: "() => WorkspaceSnapshot", description: "Captures the current column/pane/tab structure for persistence." },
+    restore: { type: "(snapshot, resolveTab) => void", description: "Rebuilds the layout from a snapshot. resolveTab maps a tab id back to a full tab." },
   }}
 />
+
+### WorkspaceSnapshot
+
+A JSON-safe view of the layout: column, pane, and tab **ids** only. A tab's
+`icon` is a `ReactNode` and a pane's `onAddTab` a function, so neither survives
+a round-trip through storage — `restore` takes a `resolveTab` callback to
+rehydrate each tab from its id. Tabs that don't resolve are dropped, along with
+any pane they'd leave empty. Panel *sizes* aren't part of the snapshot.
+
+```tsx
+const workspace = React.useRef<WorkspaceHandle>(null)
+
+React.useEffect(() => {
+  const saved = localStorage.getItem("workspace")
+  if (saved) workspace.current?.restore(JSON.parse(saved), (id) => TABS[id])
+
+  const save = () =>
+    localStorage.setItem("workspace", JSON.stringify(workspace.current?.serialize()))
+  window.addEventListener("beforeunload", save)
+  return () => window.removeEventListener("beforeunload", save)
+}, [])
+```

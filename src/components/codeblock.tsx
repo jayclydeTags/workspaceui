@@ -10,7 +10,7 @@ import {
   useMemo,
   useRef,
 } from 'react';
-import { cn } from '../lib/cn';
+import { cn } from "@/lib/utils";
 import { useCopyButton } from '@fumadocs/base-ui/utils/use-copy-button';
 import { Button } from './ui/button';
 import { useTranslations } from '@fuma-translate/react';

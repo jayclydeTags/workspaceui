@@ -11,7 +11,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { cn } from '../lib/cn';
+import { cn } from "@/lib/utils";
 import {
   Tabs as TabsRoot,
   TabsList as TabsListPrimitive,

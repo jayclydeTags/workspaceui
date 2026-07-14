@@ -6,7 +6,7 @@
 import { Accordion as Primitive } from '@base-ui/react/accordion';
 import { Check, ChevronRight, LinkIcon } from 'lucide-react';
 import { type ComponentProps, type ReactNode, useEffect, useRef, useState } from 'react';
-import { cn } from '../lib/cn';
+import { cn } from "@/lib/utils";
 import { useCopyButton } from '@fumadocs/base-ui/utils/use-copy-button';
 import { buttonVariants } from './ui/button';
 import { mergeRefs } from '../lib/merge-refs';

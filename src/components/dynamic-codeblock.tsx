@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, use } from "react"
-import { cn } from "@/lib/cn"
+import { cn } from "@/lib/utils"
 import { CodeBlock, Pre, type CodeBlockProps } from "@/components/codeblock"
 import { useShikiDynamic } from "fumadocs-core/highlight/shiki/react"
 import { defaultShikiFactory } from "fumadocs-core/highlight/shiki/full"

@@ -3,7 +3,7 @@
 import { cva } from 'class-variance-authority';
 import { FileIcon, FolderIcon, FolderOpen } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useState } from 'react';
-import { cn } from '../lib/cn';
+import { cn } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible';
 
 const itemVariants = cva(

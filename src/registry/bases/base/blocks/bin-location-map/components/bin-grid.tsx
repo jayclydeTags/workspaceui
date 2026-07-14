@@ -6,18 +6,18 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty"
 import { type Bin } from "../data"
 import {
-  FloorPlanVariant,
-  RackElevationVariant,
-  ZoneHeatmapVariant,
+  DetailedFloorVariant,
+  FloorPlanSlotsVariant,
+  MapPlusElevationVariant,
 } from "./bin-floor-variants"
 
-// PROTOTYPE SWITCHER — three warehouse-floor variants gated by ?variant=.
+// PROTOTYPE SWITCHER — three variations on the A+B fusion gated by ?variant=.
 // Once a winner is picked, keep just that variant's render and delete the
 // switcher + the losing variants (see bin-floor-variants.tsx header).
 const VARIANTS = [
-  { key: "A", name: "Floor plan (aisles + docks)", render: FloorPlanVariant },
-  { key: "B", name: "Rack elevation (side view)", render: RackElevationVariant },
-  { key: "C", name: "Zoned heatmap", render: ZoneHeatmapVariant },
+  { key: "A", name: "Floor plan · rack-slot loads", render: FloorPlanSlotsVariant },
+  { key: "B", name: "Map + side elevation strip", render: MapPlusElevationVariant },
+  { key: "C", name: "Detailed floor (SKU on slot)", render: DetailedFloorVariant },
 ] as const
 
 function useVariant(): [string, (key: string) => void] {

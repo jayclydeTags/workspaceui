@@ -10,24 +10,24 @@ Preview: `pnpm dev` → `/blocks/preview/bin-location-map?variant=A` (or B / C).
 ← / → arrow keys cycle. All bin interactions (click → detail sheet, assign,
 status hatching, heat colours) work in every variant.
 
-## Variants
+## Variants — round 2 (A+B fusion, per user pick)
 
-- **A — Floor plan (aisles + docks).** Top-down map: rack runs (R1/R2), a labelled
-  aisle lane between them, receiving/shipping walls, dock doors along the outbound
-  edge, dotted floor. Reads most like a physical warehouse map.
-- **B — Rack elevation (side view).** Each column is a shelving bay framed by
-  uprights/beams, rows become levels (L1/L2), fill drawn as pallet load height.
-  Reads like looking at racking from the side.
-- **C — Zoned heatmap.** Floor split into functional column-band zones (Fast pick /
-  Bulk reserve / Overflow) with an occupancy heat legend. Best for "where's my
-  capacity" at a glance.
+User liked round-1 A (top-down floor plan) and B (side elevation) and asked to
+combine them. All three below keep A's warehouse shell (walls, R labels, aisle
+lanes, receiving/shipping, dock doors) and fold in B's stock-height read:
 
-Shared: green/amber/red occupancy heat, hatched overlay for blocked/quarantine.
+- **A — Floor plan · rack-slot loads.** Each position is a rack slot with the load
+  rising from the floor edge (stock height = fill %). Overview map.
+- **B — Map + side elevation strip.** Top-down footprint row PLUS a side-profile
+  strip of load-height bars on a floor line under each rack run. Dual projection.
+- **C — Detailed floor (SKU on slot).** Same fusion as A but taller slots surface
+  the SKU inline — a working operator view rather than an overview.
+
+Shared: green/amber/red occupancy heat, hatched overlay for blocked/quarantine,
+cell track capped at `minmax(4rem,7rem)` so slots no longer stretch on wide screens.
 
 ## Verdict
 
-_PENDING — waiting on user pick._ Likely "A for the map with the heat legend from C."
+_PENDING — waiting on user pick among A / B / C above._
 Once chosen: fold the winner into `bin-grid.tsx`, delete `bin-floor-variants.tsx`,
-the losing variants, and the switcher. Tune cell density for the winner (A and C
-cells stretch large on wide containers — cap with a `max-w`/fixed track instead of
-`1fr`).
+the losing variants, and the switcher.

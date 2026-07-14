@@ -38,6 +38,7 @@ export function BinDialog({
   onOpenChange,
   editing,
   defaultWarehouse,
+  seed,
   bins,
   onSubmit,
 }: {
@@ -46,6 +47,8 @@ export function BinDialog({
   /** The bin being edited, or `null` when adding a new one. */
   editing: Bin | null
   defaultWarehouse: string
+  /** When adding, pre-fill the grid position (from a floor quick-add button). */
+  seed?: { row: number; col: number } | null
   /** All bins, used to reject a duplicate grid position. */
   bins: Bin[]
   onSubmit: (draft: BinDraft) => void
@@ -54,13 +57,17 @@ export function BinDialog({
     emptyDraft(defaultWarehouse)
   )
 
-  const openKey = open ? (editing?.id ?? "new") : null
+  // Include the seed position in the key so two different quick-add buttons
+  // reseed the form even though both are "new".
+  const openKey = open
+    ? (editing?.id ?? (seed ? `new-${seed.row}-${seed.col}` : "new"))
+    : null
   const [seededKey, setSeededKey] = React.useState<string | null>(null)
   if (openKey !== seededKey) {
     setSeededKey(openKey)
     if (openKey !== null) {
       const { code, warehouse, row, col, capacity, status } =
-        editing ?? emptyDraft(defaultWarehouse)
+        editing ?? { ...emptyDraft(defaultWarehouse), ...seed }
       setDraft({ code, warehouse, row, col, capacity, status })
     }
   }

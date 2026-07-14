@@ -27,7 +27,7 @@ import {
   type Bin,
   type BinDraft,
 } from "./data"
-import { BinGrid } from "./components/bin-grid"
+import { BinGrid, FloorLegend } from "./components/bin-grid"
 import { BinSheet } from "./components/bin-sheet"
 import { BinDialog } from "./components/bin-dialog"
 
@@ -37,7 +37,14 @@ export function BinLocationMap() {
   const [selectedId, setSelectedId] = React.useState<string | null>(null)
   const [formOpen, setFormOpen] = React.useState(false)
   const [editing, setEditing] = React.useState<Bin | null>(null)
+  const [addSeed, setAddSeed] = React.useState<{ row: number; col: number } | null>(null)
   const [deleting, setDeleting] = React.useState<Bin | null>(null)
+
+  function openAdd(seed: { row: number; col: number } | null) {
+    setEditing(null)
+    setAddSeed(seed)
+    setFormOpen(true)
+  }
 
   const selected = bins.find((b) => b.id === selectedId) ?? null
   const occupiedCount = bins.filter(isOccupied).length
@@ -81,13 +88,7 @@ export function BinLocationMap() {
       className="@container overflow-hidden"
       hasPadding
       actions={
-        <Button
-          size="sm"
-          onClick={() => {
-            setEditing(null)
-            setFormOpen(true)
-          }}
-        >
+        <Button size="sm" onClick={() => openAdd(null)}>
           <PlusIcon data-icon="inline-start" />
           Add bin
         </Button>
@@ -98,13 +99,16 @@ export function BinLocationMap() {
         onValueChange={(v) => v && setWarehouse(v)}
         className="h-full"
       >
-        <TabsList>
-          {WAREHOUSES.map((w) => (
-            <TabsTrigger key={w} value={w}>
-              {w}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <TabsList>
+            {WAREHOUSES.map((w) => (
+              <TabsTrigger key={w} value={w}>
+                {w}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <FloorLegend />
+        </div>
         {WAREHOUSES.map((w) => {
           const warehouseBins = bins.filter((b) => b.warehouse === w)
           const unavailable = warehouseBins.filter((b) => b.status !== "active")
@@ -122,7 +126,11 @@ export function BinLocationMap() {
                   </AlertDescription>
                 </Alert>
               )}
-              <BinGrid bins={warehouseBins} onSelect={(bin) => setSelectedId(bin.id)} />
+              <BinGrid
+                bins={warehouseBins}
+                onSelect={(bin) => setSelectedId(bin.id)}
+                onAdd={openAdd}
+              />
             </TabsContent>
           )
         })}
@@ -147,6 +155,7 @@ export function BinLocationMap() {
         onOpenChange={setFormOpen}
         editing={editing}
         defaultWarehouse={warehouse}
+        seed={addSeed}
         bins={bins}
         onSubmit={saveBin}
       />

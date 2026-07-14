@@ -132,9 +132,9 @@ describe("BinLocationMap", () => {
     const user = userEvent.setup()
     render(<BinLocationMap />)
 
-    expect(screen.getByRole("button", { name: "Bin CEN-A1" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: /^Bin CEN-A1,/ })).toBeInTheDocument()
     await user.click(screen.getByRole("tab", { name: "WH-NW" }))
-    expect(await screen.findByRole("button", { name: "Bin NW-A1" })).toBeInTheDocument()
+    expect(await screen.findByRole("button", { name: /^Bin NW-A1,/ })).toBeInTheDocument()
   })
 
   it("flags unavailable bins in the active warehouse", () => {
@@ -147,7 +147,7 @@ describe("BinLocationMap", () => {
     const user = userEvent.setup()
     render(<BinLocationMap />)
 
-    await user.click(screen.getByRole("button", { name: "Bin CEN-A3" }))
+    await user.click(screen.getByRole("button", { name: /^Bin CEN-A3,/ }))
     expect(await screen.findByRole("heading", { name: "CEN-A3" })).toBeInTheDocument()
 
     await user.type(screen.getByLabelText("Quantity"), "50")
@@ -161,7 +161,7 @@ describe("BinLocationMap", () => {
     render(<BinLocationMap />)
 
     // CEN-A1 already holds 180/200 SKU-1001.
-    await user.click(screen.getByRole("button", { name: "Bin CEN-A1" }))
+    await user.click(screen.getByRole("button", { name: /^Bin CEN-A1,/ }))
     await user.type(screen.getByLabelText("Quantity"), "50")
 
     expect(screen.getByText("Only 20 units of room left.")).toBeInTheDocument()
@@ -172,7 +172,7 @@ describe("BinLocationMap", () => {
     const user = userEvent.setup()
     render(<BinLocationMap />)
 
-    await user.click(screen.getByRole("button", { name: "Bin CEN-A1" }))
+    await user.click(screen.getByRole("button", { name: /^Bin CEN-A1,/ }))
     await user.click(await screen.findByRole("button", { name: "Clear bin" }))
 
     expect(screen.getByText("0/200 used")).toBeInTheDocument()
@@ -203,19 +203,36 @@ describe("BinLocationMap", () => {
     await user.type(screen.getByLabelText("Capacity"), "100")
     await user.click(screen.getByRole("button", { name: "Add bin" }))
 
-    expect(screen.getByRole("button", { name: "Bin CEN-C1" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: /^Bin CEN-C1,/ })).toBeInTheDocument()
+  })
+
+  it("quick-adds a bin by clicking an empty floor slot, pre-seeding its position", async () => {
+    const user = userEvent.setup()
+    render(<BinLocationMap />)
+
+    // WH-CEN row 0 fills cols 0–3; the margin ghost slot sits at row 0, col 4.
+    await user.click(
+      screen.getByRole("button", { name: "Add slot at row 1, column 5" })
+    )
+    expect(screen.getByLabelText("Row")).toHaveValue(0)
+    expect(screen.getByLabelText("Column")).toHaveValue(4)
+
+    await user.type(screen.getByLabelText("Code"), "CEN-A5")
+    await user.click(screen.getByRole("button", { name: "Add bin" }))
+
+    expect(screen.getByRole("button", { name: /^Bin CEN-A5,/ })).toBeInTheDocument()
   })
 
   it("deletes a bin after confirmation", async () => {
     const user = userEvent.setup()
     render(<BinLocationMap />)
 
-    await user.click(screen.getByRole("button", { name: "Bin CEN-A3" }))
+    await user.click(screen.getByRole("button", { name: /^Bin CEN-A3,/ }))
     await user.click(await screen.findByRole("button", { name: "Delete bin" }))
 
     const dialog = screen.getByRole("alertdialog")
     await user.click(within(dialog).getByRole("button", { name: "Delete" }))
 
-    expect(screen.queryByRole("button", { name: "Bin CEN-A3" })).not.toBeInTheDocument()
+    expect(screen.queryByRole("button", { name: /^Bin CEN-A3,/ })).not.toBeInTheDocument()
   })
 })

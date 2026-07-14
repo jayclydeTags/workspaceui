@@ -1,58 +1,41 @@
-import { Badge } from "@/components/ui/badge"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
+"use client"
+
+import * as React from "react"
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty"
-import { fillPct, type Bin } from "../data"
+import { type Bin } from "../data"
+import {
+  FloorPlanVariant,
+  RackElevationVariant,
+  ZoneHeatmapVariant,
+} from "./bin-floor-variants"
 
-const STATUS_BADGE_VARIANT: Record<
-  Exclude<Bin["status"], "active">,
-  "outline" | "secondary"
-> = {
-  blocked: "outline",
-  quarantine: "secondary",
-}
+// PROTOTYPE SWITCHER — three warehouse-floor variants gated by ?variant=.
+// Once a winner is picked, keep just that variant's render and delete the
+// switcher + the losing variants (see bin-floor-variants.tsx header).
+const VARIANTS = [
+  { key: "A", name: "Floor plan (aisles + docks)", render: FloorPlanVariant },
+  { key: "B", name: "Rack elevation (side view)", render: RackElevationVariant },
+  { key: "C", name: "Zoned heatmap", render: ZoneHeatmapVariant },
+] as const
 
-function BinCell({ bin, onSelect }: { bin: Bin; onSelect: (bin: Bin) => void }) {
-  const pct = fillPct(bin)
+function useVariant(): [string, (key: string) => void] {
+  const [variant, setVariant] = React.useState("A")
 
-  return (
-    <Tooltip>
-      <TooltipTrigger
-        render={
-          <button
-            type="button"
-            onClick={() => onSelect(bin)}
-            aria-label={`Bin ${bin.code}`}
-            className="relative flex aspect-square flex-col items-center justify-center gap-1 rounded-md border bg-card p-1 transition-colors hover:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            style={{ gridRow: bin.row + 1, gridColumn: bin.col + 1 }}
-          />
-        }
-      >
-        {bin.status !== "active" && (
-          <Badge
-            variant={STATUS_BADGE_VARIANT[bin.status]}
-            className="absolute -top-2 -right-2 px-1 text-[9px]"
-          >
-            {bin.status}
-          </Badge>
-        )}
-        <span className="w-full truncate text-center text-[10px] font-medium">
-          {bin.code}
-        </span>
-        <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
-          <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
-        </div>
-      </TooltipTrigger>
-      <TooltipContent>
-        {bin.code} · {bin.status} · {bin.qty}/{bin.capacity}
-        {bin.sku ? ` · ${bin.sku}` : " · empty"}
-      </TooltipContent>
-    </Tooltip>
-  )
+  React.useEffect(() => {
+    const v = new URLSearchParams(window.location.search).get("variant")
+    if (v && VARIANTS.some((x) => x.key === v)) setVariant(v)
+  }, [])
+
+  const set = React.useCallback((key: string) => {
+    setVariant(key)
+    const url = new URL(window.location.href)
+    url.searchParams.set("variant", key)
+    window.history.replaceState(null, "", url)
+  }, [])
+
+  return [variant, set]
 }
 
 export function BinGrid({
@@ -62,6 +45,32 @@ export function BinGrid({
   bins: Bin[]
   onSelect: (bin: Bin) => void
 }) {
+  const [variant, setVariant] = useVariant()
+
+  const index = Math.max(
+    0,
+    VARIANTS.findIndex((v) => v.key === variant)
+  )
+  const active = VARIANTS[index]
+  const cycle = React.useCallback(
+    (dir: number) =>
+      setVariant(VARIANTS[(index + dir + VARIANTS.length) % VARIANTS.length].key),
+    [index, setVariant]
+  )
+
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === "production") return
+    function onKey(e: KeyboardEvent) {
+      const el = document.activeElement as HTMLElement | null
+      if (el && /^(INPUT|TEXTAREA)$/.test(el.tagName)) return
+      if (el?.isContentEditable) return
+      if (e.key === "ArrowLeft") cycle(-1)
+      if (e.key === "ArrowRight") cycle(1)
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [cycle])
+
   if (bins.length === 0) {
     return (
       <Empty>
@@ -75,22 +84,35 @@ export function BinGrid({
     )
   }
 
-  const rows = Math.max(...bins.map((b) => b.row)) + 1
-  const cols = Math.max(...bins.map((b) => b.col)) + 1
+  const Render = active.render
 
   return (
-    <TooltipProvider>
-      <div
-        className="grid gap-2"
-        style={{
-          gridTemplateColumns: `repeat(${cols}, minmax(4rem, 1fr))`,
-          gridTemplateRows: `repeat(${rows}, minmax(4rem, 1fr))`,
-        }}
-      >
-        {bins.map((bin) => (
-          <BinCell key={bin.id} bin={bin} onSelect={onSelect} />
-        ))}
-      </div>
-    </TooltipProvider>
+    <>
+      <Render bins={bins} onSelect={onSelect} />
+
+      {process.env.NODE_ENV !== "production" && (
+        <div className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-1 rounded-full border bg-background/95 px-1.5 py-1 text-xs shadow-lg backdrop-blur">
+          <button
+            type="button"
+            aria-label="Previous variant"
+            onClick={() => cycle(-1)}
+            className="flex size-6 items-center justify-center rounded-full hover:bg-muted"
+          >
+            <ChevronLeftIcon className="size-4" />
+          </button>
+          <span className="px-2 font-medium tabular-nums">
+            {active.key} — {active.name}
+          </span>
+          <button
+            type="button"
+            aria-label="Next variant"
+            onClick={() => cycle(1)}
+            className="flex size-6 items-center justify-center rounded-full hover:bg-muted"
+          >
+            <ChevronRightIcon className="size-4" />
+          </button>
+        </div>
+      )}
+    </>
   )
 }

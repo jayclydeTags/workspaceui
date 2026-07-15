@@ -2,7 +2,7 @@ import { createSearchAPI } from "fumadocs-core/search/server"
 
 import { source } from "@/lib/source"
 import { blocksNav } from "@/lib/nav"
-import { templates } from "@/lib/templates"
+import { templates, templateUrl } from "@/lib/templates"
 
 // Static export: staticGET builds the index at `next build` and the client
 // (RootProvider search type "static") fetches it. Replaces the custom
@@ -53,7 +53,7 @@ const server = createSearchAPI("advanced", {
       )
     ),
     ...templates.map((t) =>
-      entry(`/templates/${t.slug}`, t.title, t.description, `${t.type}. ${t.category}`)
+      entry(templateUrl(t.slug), t.title, t.description, `${t.type}. ${t.category}`)
     ),
   ],
 })

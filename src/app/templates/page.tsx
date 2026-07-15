@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 
-import { templates } from "@/lib/templates"
+import { templates, templateUrl } from "@/lib/templates"
 
 export const metadata: Metadata = { title: "Templates" }
 
@@ -17,7 +17,7 @@ export default function TemplatesIndex() {
 
         <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {templates.map((t) => (
-            <Link key={t.slug} href={`/templates/${t.slug}`} className="group block">
+            <Link key={t.slug} href={templateUrl(t.slug)} className="group block">
               <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-border bg-muted/30 transition group-hover:border-primary/40">
                 <img
                   src={t.screenshots[0]}

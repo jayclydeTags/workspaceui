@@ -36,7 +36,11 @@ export function getTemplate(slug: string): TemplateMeta | undefined {
   return templates.find((t) => t.slug === slug)
 }
 
-// Download path is derived from the slug, never stored — avoids drift.
+// Detail-page and download paths are derived from the slug, never stored — avoids drift.
+export function templateUrl(slug: string): string {
+  return `/templates/${slug}`
+}
+
 export function templateZipPath(slug: string): string {
   return `/templates/${slug}.zip`
 }

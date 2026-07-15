@@ -13,7 +13,9 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     // Standalone starter projects carry their own tests/toolchain — never run by the root suite.
-    exclude: [...configDefaults.exclude, "templates/**"],
+    // `.claude/**` holds gitignored scratch worktrees (full repo copies with their own
+    // node_modules); scanning their duplicated test files breaks the run on a stale React.
+    exclude: [...configDefaults.exclude, "templates/**", ".claude/**"],
     // userEvent-driven dialog tests can exceed the 5s default under full-suite
     // parallel load (they pass in isolation). ponytail: raise the ceiling.
     testTimeout: 15000,

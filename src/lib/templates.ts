@@ -36,15 +36,6 @@ export function getTemplate(slug: string): TemplateMeta | undefined {
   return templates.find((t) => t.slug === slug)
 }
 
-// Detail-page and download paths are derived from the slug, never stored — avoids drift.
-export function templateUrl(slug: string): string {
-  return `/templates/${slug}`
-}
-
-export function templateZipPath(slug: string): string {
-  return `/templates/${slug}.zip`
-}
-
 // A `pages` entry is "Route → source-block"; the block half is optional (a page
 // not composed from a WorkspaceUI block, like a hand-rolled landing). Split on
 // the arrow so the detail page can show each route and where it comes from —

@@ -3,7 +3,8 @@ import { join } from "path"
 
 import { describe, expect, it } from "vitest"
 
-import { templates, templateUrl, templateZipPath } from "@/lib/templates"
+import { templates } from "@/lib/templates"
+import { templateUrl, templateZipPath } from "@/lib/template-url"
 
 // vitest runs from the repo root, so process.cwd() is the repo root — same
 // assumption templates.ts makes when it fs-reads the manifests.

@@ -3,7 +3,8 @@
 import { useState } from "react"
 import Link from "next/link"
 
-import { templateUrl, type TemplateMeta } from "@/lib/templates"
+import type { TemplateMeta } from "@/lib/templates"
+import { templateUrl } from "@/lib/template-url"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 

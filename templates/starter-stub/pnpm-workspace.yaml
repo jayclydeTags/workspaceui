@@ -1,0 +1,4 @@
+# Marks this starter as its own pnpm root so `pnpm install` stays self-contained
+# and never walks up into a parent workspace.
+allowBuilds:
+  esbuild: true

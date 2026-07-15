@@ -6,7 +6,8 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
   // Generated output — never our code to lint.
-  globalIgnores(['dist', 'out', '.next', '.source', '.react-router']),
+  // `templates/` holds standalone starter projects with their own toolchain — not ours to lint.
+  globalIgnores(['dist', 'out', '.next', '.source', '.react-router', 'templates']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [

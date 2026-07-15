@@ -33,9 +33,14 @@ coverage
 .playwright-mcp
 .playwright-cli
 *.png
+# Template screenshots are committed site assets — negate the global *.png ignore for them.
+!public/templates/**/*.png
 
 # Fumadocs
 public/api/search.json
+
+# Templates catalog — per-template zips are generated at (pre)build, never committed.
+public/templates/*.zip
 
 # NextJs
 .next

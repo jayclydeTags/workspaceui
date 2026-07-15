@@ -1,6 +1,6 @@
 import path from "path"
 import react from "@vitejs/plugin-react"
-import { defineConfig } from "vitest/config"
+import { configDefaults, defineConfig } from "vitest/config"
 
 // Standalone Vitest config (Next has no vite.config). No tests import .mdx or
 // .source, so the fumadocs-mdx plugin isn't needed here.
@@ -12,6 +12,8 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
+    // Standalone starter projects carry their own tests/toolchain — never run by the root suite.
+    exclude: [...configDefaults.exclude, "templates/**"],
     // userEvent-driven dialog tests can exceed the 5s default under full-suite
     // parallel load (they pass in isolation). ponytail: raise the ceiling.
     testTimeout: 15000,

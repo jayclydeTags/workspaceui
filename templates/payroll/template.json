@@ -1,0 +1,36 @@
+{
+  "slug": "payroll",
+  "type": "Application",
+  "title": "Payroll",
+  "description": "A frontend-only payroll application shell — collapsible sidebar and a tabbed workspace over 11 screens, composed from WorkspaceUI's payroll blocks. Runs on mock data with no backend.",
+  "category": "Payroll",
+  "techStack": ["Next.js 16", "React 19", "Tailwind CSS v4", "shadcn/ui"],
+  "createdDate": "2026-07-15",
+  "updatedDate": "2026-07-15",
+  "features": [
+    "Collapsible app sidebar with icon-rail mode",
+    "Tabbed workspace — open screens accumulate as tabs you can switch and close",
+    "Light and dark theming out of the box (next/font, no-flash init)",
+    "11 screens covering the full payroll workflow",
+    "Frontend-only with mock data — no backend or persistence",
+    "Static export — deploy the built `out/` anywhere"
+  ],
+  "pages": [
+    "Sign in",
+    "Overview",
+    "Employees",
+    "Payroll Runs",
+    "Payslips",
+    "Compensation",
+    "Deductions & Benefits",
+    "Tax Tables",
+    "Payroll Calendar",
+    "Off-cycle Payment",
+    "Settings"
+  ],
+  "screenshots": [
+    "/templates/payroll/overview.png",
+    "/templates/payroll/payroll-runs.png",
+    "/templates/payroll/dark.png"
+  ]
+}

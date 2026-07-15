@@ -28,6 +28,7 @@ function loadTemplates(): TemplateMeta[] {
   return readdirSync(TEMPLATES_DIR, { withFileTypes: true })
     .filter((e) => e.isDirectory() && existsSync(join(TEMPLATES_DIR, e.name, "template.json")))
     .map((e) => JSON.parse(readFileSync(join(TEMPLATES_DIR, e.name, "template.json"), "utf-8")) as TemplateMeta)
+    .sort((a, b) => a.title.localeCompare(b.title))
 }
 
 export const templates: TemplateMeta[] = loadTemplates()

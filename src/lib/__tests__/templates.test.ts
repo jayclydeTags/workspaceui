@@ -41,6 +41,10 @@ describe("templates metadata", () => {
     expect(templates.length).toBeGreaterThan(0)
   })
 
+  it("includes the payroll template in the catalog", () => {
+    expect(templates.some((template) => template.slug === "payroll")).toBe(true)
+  })
+
   it("has unique slugs", () => {
     const slugs = templates.map((t) => t.slug)
     expect(new Set(slugs).size).toBe(slugs.length)

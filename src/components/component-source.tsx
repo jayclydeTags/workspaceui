@@ -20,7 +20,10 @@ interface ComponentSourceProps {
 export function ComponentSource({ name, filename }: ComponentSourceProps) {
   const file = files[name]
   if (!file) return null
-  const src = readFileSync(join(process.cwd(), file), "utf-8")
+  const src = readFileSync(
+    join(/*turbopackIgnore: true*/ process.cwd(), file),
+    "utf-8"
+  )
   return (
     <DynamicCodeBlock
       lang="tsx"

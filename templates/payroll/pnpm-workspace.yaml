@@ -1,0 +1,9 @@
+# Marks this template as its own pnpm root so `pnpm install` stays self-contained
+# and never walks up into a parent workspace.
+onlyBuiltDependencies:
+  - "@tailwindcss/oxide"
+  - esbuild
+# sharp is pulled in transitively by Next but unused here (images are
+# unoptimized), so its build script is intentionally skipped.
+ignoredBuiltDependencies:
+  - sharp

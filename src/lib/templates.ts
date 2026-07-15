@@ -40,3 +40,12 @@ export function getTemplate(slug: string): TemplateMeta | undefined {
 export function templateZipPath(slug: string): string {
   return `/templates/${slug}.zip`
 }
+
+// A `pages` entry is "Route → source-block"; the block half is optional (a page
+// not composed from a WorkspaceUI block, like a hand-rolled landing). Split on
+// the arrow so the detail page can show each route and where it comes from —
+// no schema change, just formatting of the existing string field.
+export function parsePage(entry: string): { route: string; block?: string } {
+  const [route, block] = entry.split("→").map((s) => s.trim())
+  return block ? { route, block } : { route }
+}

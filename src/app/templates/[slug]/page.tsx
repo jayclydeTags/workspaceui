@@ -2,7 +2,8 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
-import { getTemplate, parsePage, templateZipPath, templates } from "@/lib/templates"
+import { getTemplate, parsePage, templates } from "@/lib/templates"
+import { templateZipPath } from "@/lib/template-url"
 import { Badge } from "@/components/ui/badge"
 import { Screenshots } from "./screenshots"
 

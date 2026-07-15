@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 
 import type { TemplateMeta } from "@/lib/templates"
+import { templateUrl } from "@/lib/template-url"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
@@ -37,7 +38,7 @@ export function TemplatesGallery({ templates }: { templates: TemplateMeta[] }) {
 
       <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
         {visible.map((t) => (
-          <Link key={t.slug} href={`/templates/${t.slug}`} className="group block">
+          <Link key={t.slug} href={templateUrl(t.slug)} className="group block">
             <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-border bg-muted/30 transition group-hover:border-primary/40">
               <img
                 src={t.screenshots[0]}

@@ -4,6 +4,7 @@ import { join } from "path"
 import { describe, expect, it } from "vitest"
 
 import { templates } from "@/lib/templates"
+import { templateUrl, templateZipPath } from "@/lib/template-url"
 
 // vitest runs from the repo root, so process.cwd() is the repo root — same
 // assumption templates.ts makes when it fs-reads the manifests.
@@ -125,4 +126,21 @@ describe("templates metadata", () => {
       }
     }
   )
+})
+
+// The detail URL and zip path are derived from the slug in one place so the
+// nav link, the gallery, and the search index can't drift apart. Guard the
+// derivation and that every real manifest slug produces a valid detail path.
+describe("template url helpers", () => {
+  it("derives the detail page and zip paths from a slug", () => {
+    expect(templateUrl("starter-stub")).toBe("/templates/starter-stub")
+    expect(templateZipPath("starter-stub")).toBe("/templates/starter-stub.zip")
+  })
+
+  it("maps every template to its detail route", () => {
+    expect(templates.length).toBeGreaterThan(0)
+    for (const t of templates) {
+      expect(templateUrl(t.slug)).toBe(`/templates/${t.slug}`)
+    }
+  })
 })

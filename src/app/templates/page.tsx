@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Templates" }
 
 export default function TemplatesIndex() {
   return (
-    <div className="overflow-y-auto px-6 py-8">
+    <div className="px-6 py-8">
       <div className="mx-auto max-w-6xl">
         <h1 className="text-2xl font-semibold tracking-tight">Templates</h1>
         <p className="mt-1 text-sm text-muted-foreground">

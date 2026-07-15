@@ -21,7 +21,7 @@ export default async function TemplatePage({ params }: PageProps) {
   if (!template) notFound()
 
   return (
-    <div className="overflow-y-auto px-6 py-8">
+    <div className="px-6 py-8">
       <div className="mx-auto max-w-6xl">
         <Link href="/templates" className="text-sm text-muted-foreground hover:text-foreground">
           ← Templates

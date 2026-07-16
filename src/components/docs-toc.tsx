@@ -15,7 +15,9 @@ export function DocsPageLayout({
   return (
     <AnchorProvider toc={toc} single>
       <div className="mx-auto flex w-full max-w-(--fd-layout-width,90rem) gap-10 px-4 py-8 xl:px-8">
-        <article className="min-w-0 flex-1">{children}</article>
+        <article className="min-w-0 flex-1 flex items-center flex-col">
+          {children}
+        </article>
         {toc.length > 0 && (
           <aside className="fd-scroll-container sticky top-24 hidden h-[calc(100svh-8rem)] w-56 shrink-0 overflow-y-auto xl:block">
             <p className="mb-3 text-sm font-medium">On This Page</p>

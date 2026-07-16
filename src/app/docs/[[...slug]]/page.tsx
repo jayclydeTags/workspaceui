@@ -29,13 +29,14 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <DocsPageLayout toc={page.data.toc}>
-      <h1 className="text-3xl font-bold tracking-tight">{page.data.title}</h1>
-      {page.data.description && (
-        <p className="mt-2 text-lg text-muted-foreground">
-          {page.data.description}
-        </p>
-      )}
-      <div className="mt-8">
+      
+      <div className="typeset typeset-docs max-w-[42em]">
+        <h1 className="text-3xl font-bold tracking-tight">{page.data.title}</h1>
+        {page.data.description && (
+          <p className="mt-2 text-lg text-muted-foreground">
+            {page.data.description}
+          </p>
+        )}
         <MDX components={mdxComponents} />
       </div>
     </DocsPageLayout>

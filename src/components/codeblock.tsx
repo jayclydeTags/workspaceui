@@ -91,7 +91,7 @@ export function CodeBlock({
         !inTab && 'my-4 bg-muted/40 rounded-xl border',
         keepBackground && 'bg-(--shiki-light-bg) dark:bg-(--shiki-dark-bg)',
 
-        'shiki relative not-prose overflow-hidden text-sm',
+        'shiki relative not-prose not-typeset overflow-hidden text-sm',
         props.className,
       )}
     >

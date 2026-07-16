@@ -10,6 +10,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group"
+import { Progress } from "@/components/ui/progress"
 
 // ponytail: strength is a 0–3 heuristic (length + character classes), enough to
 // drive the meter and gate weak passwords. Swap for zxcvbn if real entropy
@@ -25,7 +26,14 @@ export function scorePassword(pw: string) {
 const STRENGTH = ["Too weak", "Weak", "Good", "Strong"] as const
 
 // Indexed by score (0–3). Index 0 is unused — nothing is filled at score 0.
-const STRENGTH_BAR = ["", "bg-destructive", "bg-warning", "bg-success"] as const
+// Targets Progress's indicator via its data-slot, since the component
+// doesn't expose an indicatorClassName prop.
+const STRENGTH_INDICATOR = [
+  "",
+  "[&_[data-slot=progress-indicator]]:bg-destructive",
+  "[&_[data-slot=progress-indicator]]:bg-warning",
+  "[&_[data-slot=progress-indicator]]:bg-success",
+] as const
 const STRENGTH_TEXT = [
   "text-muted-foreground",
   "text-destructive",
@@ -117,21 +125,11 @@ export function PasswordInput({
           className="flex items-center gap-2"
           aria-live="polite"
         >
-          <div
-            className="flex flex-1 gap-1"
-            role="img"
+          <Progress
+            value={(strength / 3) * 100}
             aria-label={`Password strength: ${STRENGTH[strength]}`}
-          >
-            {[0, 1, 2].map((i) => (
-              <div
-                key={i}
-                className={cn(
-                  "h-1 flex-1 rounded-full",
-                  i < strength ? STRENGTH_BAR[strength] : "bg-muted"
-                )}
-              />
-            ))}
-          </div>
+            className={cn("flex-1 gap-0", STRENGTH_INDICATOR[strength])}
+          />
           <span
             className={cn("text-xs tabular-nums", STRENGTH_TEXT[strength])}
             aria-hidden="true"

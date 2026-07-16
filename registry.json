@@ -49,7 +49,7 @@
       "title": "Password Input",
       "description": "Password field with a show/hide visibility toggle and an optional live strength meter. Exports a scorePassword heuristic. Wraps InputGroup; works controlled or uncontrolled.",
       "dependencies": ["lucide-react"],
-      "registryDependencies": ["input-group", "utils"],
+      "registryDependencies": ["input-group", "progress", "utils"],
       "files": [
         {
           "path": "src/registry/bases/base/workspaceui/password-input.tsx",

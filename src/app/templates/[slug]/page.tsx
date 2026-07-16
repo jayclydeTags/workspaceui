@@ -4,6 +4,7 @@ import { notFound } from "next/navigation"
 
 import { getTemplate, parsePage, templates } from "@/lib/templates"
 import { templateZipPath } from "@/lib/template-url"
+import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Screenshots } from "./screenshots"
 
@@ -45,23 +46,26 @@ export default async function TemplatePage({ params }: PageProps) {
           </div>
 
           <aside className="lg:col-start-2 lg:row-start-1 lg:row-span-3">
-            <a
-              href={templateZipPath(template.slug)}
-              download
-              className="flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-            >
-              Download .zip
-            </a>
             {template.liveDemoUrl && (
               <a
                 href={template.liveDemoUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-2 flex w-full items-center justify-center rounded-md border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-muted"
+                className="flex w-full items-center justify-center rounded-md border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-muted"
               >
                 Live demo ↗
               </a>
             )}
+            <a
+              href={templateZipPath(template.slug)}
+              download
+              className={cn(
+                "flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90",
+                template.liveDemoUrl && "mt-2"
+              )}
+            >
+              Download .zip
+            </a>
 
             <dl className="mt-6 space-y-3 border-t border-border pt-6 text-sm">
               <div className="flex justify-between gap-4">

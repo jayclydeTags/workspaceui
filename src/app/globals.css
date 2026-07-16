@@ -19,7 +19,7 @@
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: var(--font-sans);
-  --font-mono: 'Geist Mono Variable', monospace;
+  --font-mono: "Geist Mono Variable", monospace;
   /* fd-* tokens: vendored components (codeblock, tabs, accordion, type-table,
      steps) reference these directly via Tailwind's bg-fd- /text-fd- classes. */
   --color-fd-background: var(--background);
@@ -45,6 +45,8 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -87,6 +89,8 @@
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
+  --success: oklch(0.596 0.145 163.225);
+  --warning: oklch(0.769 0.188 70.08);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
@@ -124,6 +128,8 @@
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
+  --success: oklch(0.765 0.177 163.223);
+  --warning: oklch(0.769 0.188 70.08);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
@@ -165,7 +171,12 @@
     @apply font-sans;
     scroll-behavior: smooth;
   }
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     scroll-margin-top: 5rem;
   }
   .shiki {
@@ -200,7 +211,8 @@
     font-size: 0.75rem;
     font-weight: 500;
   }
-  button:not(:disabled), [role="button"]:not(:disabled) {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
     cursor: pointer;
   }
 }

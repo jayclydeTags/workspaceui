@@ -25,17 +25,12 @@ export function scorePassword(pw: string) {
 const STRENGTH = ["Too weak", "Weak", "Good", "Strong"] as const
 
 // Indexed by score (0–3). Index 0 is unused — nothing is filled at score 0.
-const STRENGTH_BAR = [
-  "",
-  "bg-destructive",
-  "bg-amber-500",
-  "bg-emerald-600 dark:bg-emerald-400",
-] as const
+const STRENGTH_BAR = ["", "bg-destructive", "bg-warning", "bg-success"] as const
 const STRENGTH_TEXT = [
   "text-muted-foreground",
   "text-destructive",
-  "text-amber-600 dark:text-amber-500",
-  "text-emerald-600 dark:text-emerald-400",
+  "text-warning",
+  "text-success",
 ] as const
 
 /** The rules the checklist validates against, in display order. Exported so the
@@ -48,8 +43,10 @@ export const passwordRequirements = [
   { label: "A symbol", test: (pw: string) => /[^A-Za-z0-9]/.test(pw) },
 ] as const
 
-export interface PasswordInputProps
-  extends Omit<React.ComponentProps<"input">, "type"> {
+export interface PasswordInputProps extends Omit<
+  React.ComponentProps<"input">,
+  "type"
+> {
   /** Show a live strength meter below the input. Use only on new-password fields. */
   showStrength?: boolean
   /** Show a live requirements checklist below the input. Use only on new-password fields. */
@@ -74,6 +71,13 @@ export function PasswordInput({
   const current = isControlled ? String(value) : internal
   const strength = scorePassword(current)
 
+  const strengthId = React.useId()
+  const checklistId = React.useId()
+  const describedBy =
+    [showStrength && strengthId, showChecklist && checklistId]
+      .filter(Boolean)
+      .join(" ") || undefined
+
   return (
     <>
       <InputGroup>
@@ -86,6 +90,11 @@ export function PasswordInput({
             onChange?.(e)
           }}
           {...props}
+          aria-describedby={
+            [props["aria-describedby"], describedBy]
+              .filter(Boolean)
+              .join(" ") || undefined
+          }
         />
         <InputGroupAddon align="inline-end">
           <InputGroupButton
@@ -103,8 +112,16 @@ export function PasswordInput({
         </InputGroupAddon>
       </InputGroup>
       {showStrength && current && (
-        <div className="flex items-center gap-2" aria-live="polite">
-          <div className="flex flex-1 gap-1">
+        <div
+          id={strengthId}
+          className="flex items-center gap-2"
+          aria-live="polite"
+        >
+          <div
+            className="flex flex-1 gap-1"
+            role="img"
+            aria-label={`Password strength: ${STRENGTH[strength]}`}
+          >
             {[0, 1, 2].map((i) => (
               <div
                 key={i}
@@ -117,13 +134,18 @@ export function PasswordInput({
           </div>
           <span
             className={cn("text-xs tabular-nums", STRENGTH_TEXT[strength])}
+            aria-hidden="true"
           >
             {STRENGTH[strength]}
           </span>
         </div>
       )}
       {showChecklist && (
-        <ul className="flex flex-col gap-1" aria-live="polite">
+        <ul
+          id={checklistId}
+          className="m-0 flex flex-col gap-1 p-0"
+          aria-live="polite"
+        >
           {passwordRequirements.map(({ label, test }) => {
             const met = test(current)
             return (
@@ -131,15 +153,13 @@ export function PasswordInput({
                 key={label}
                 className={cn(
                   "flex items-center gap-1.5 text-xs",
-                  met
-                    ? "text-emerald-600 dark:text-emerald-400"
-                    : "text-destructive"
+                  met ? "text-success" : "text-destructive"
                 )}
               >
                 {met ? (
-                  <Check className="size-3.5 shrink-0" />
+                  <Check className="size-3.5 shrink-0" aria-hidden="true" />
                 ) : (
-                  <X className="size-3.5 shrink-0" />
+                  <X className="size-3.5 shrink-0" aria-hidden="true" />
                 )}
                 <span>{label}</span>
                 <span className="sr-only">{met ? "— met" : "— not met"}</span>

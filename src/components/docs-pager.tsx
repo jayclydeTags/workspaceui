@@ -3,7 +3,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 
 import { nav } from "@/lib/nav"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 
 const flatNav = nav.flatMap((section) => section.items ?? [])
 
@@ -18,7 +17,6 @@ export function DocsPager({ slug }: { slug?: string[] }) {
 
   return (
     <div className="mt-10 w-full">
-      <Separator />
       <div className="mt-6 flex items-center justify-between gap-4">
         {prev ? (
           <Button

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation"
 import { source } from "@/lib/source"
 import { mdxComponents } from "@/lib/mdx-components"
 import { DocsPageLayout } from "@/components/docs-toc"
+import { DocsPager } from "@/components/docs-pager"
 
 type PageProps = { params: Promise<{ slug?: string[] }> }
 
@@ -38,6 +39,7 @@ export default async function Page({ params }: PageProps) {
           </p>
         )}
         <MDX components={mdxComponents} />
+        <DocsPager slug={slug} />
       </div>
     </DocsPageLayout>
   )

@@ -6,13 +6,15 @@ import { Button } from "@/components/ui/button"
 
 const flatNav = nav.flatMap((section) => section.items ?? [])
 
-export function DocsPager({ slug }: { slug?: string[] }) {
+export function getAdjacentDocs(slug?: string[]) {
   const href = `/docs/${(slug ?? []).join("/")}`
   const index = flatNav.findIndex((item) => item.href === href)
-  if (index === -1) return null
+  if (index === -1) return { prev: undefined, next: undefined }
+  return { prev: flatNav[index - 1], next: flatNav[index + 1] }
+}
 
-  const prev = flatNav[index - 1]
-  const next = flatNav[index + 1]
+export function DocsPager({ slug }: { slug?: string[] }) {
+  const { prev, next } = getAdjacentDocs(slug)
   if (!prev && !next) return null
 
   return (

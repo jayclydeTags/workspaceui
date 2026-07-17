@@ -1,5 +1,6 @@
 ---
 title: Workspace
+description: Self-contained multi-pane workspace with tab drag/drop, cross-pane transfers, and snap-zone splitting. Exposes a `useWorkspace` context hook and a `WorkspaceHandle` ref for programmatic control.
 ---
 
 export const PREVIEW_CODE = `import { LayoutDashboard, FileText, Settings } from "lucide-react"
@@ -61,8 +62,6 @@ export const WORKSPACE_TREE = {
     { name: "fallback (shown when all panes closed)" },
   ],
 }
-
-Self-contained multi-pane workspace with tab drag/drop, cross-pane transfers, and snap-zone splitting. Exposes a `useWorkspace` context hook and a `WorkspaceHandle` ref for programmatic control.
 
 <ComponentPreview name="workspace" code={PREVIEW_CODE} />
 

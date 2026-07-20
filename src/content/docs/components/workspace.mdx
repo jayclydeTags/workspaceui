@@ -534,6 +534,7 @@ export function MyWorkspace() {
 - **Cross-pane drag and drop** — drag a tab from one pane and drop it into another to transfer it.
 - **Snap-zone splitting** — drag a tab to an edge to split: left/right adds a new column, top/bottom adds a new row within the column.
 - **Escape to cancel** — pressing Escape during a drag cancels the operation without committing a drop.
+- **Tab search** — each tab strip opens a dropdown listing every tab in that pane, with the active one checked; picking one activates it. Handy once tabs overflow and scroll out of view. Always available — there's no prop to configure it.
 - **Resizable panels** — panel columns are resizable via drag handles, with configurable min sizes.
 - **Unsaved-change guard** — mark a tab `dirty` to swap its close button for a dot, and return `false` from `onBeforeCloseTab` to veto the close.
 - **Layout persistence** — `serialize()` / `restore()` on the `WorkspaceHandle` round-trip the column, pane, and tab structure through storage.

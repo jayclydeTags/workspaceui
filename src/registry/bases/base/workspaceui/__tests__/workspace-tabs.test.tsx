@@ -153,6 +153,28 @@ describe("WorkspaceTabs", () => {
     })
   })
 
+  describe("tab-search dropdown", () => {
+    it("lists every open tab and activates the one clicked", async () => {
+      const onTabChange = vi.fn()
+      renderTabs({ onTabChange })
+
+      await userEvent.click(screen.getByRole("button", { name: "Search tabs" }))
+
+      const items = await screen.findAllByRole("menuitem")
+      expect(items.map((i) => i.textContent)).toEqual(["Alpha", "Beta"])
+
+      await userEvent.click(items[1])
+      expect(onTabChange).toHaveBeenCalledWith("b")
+    })
+
+    it("is not rendered when there are no tabs", () => {
+      renderTabs({ tabs: [], activeTabId: "" })
+      expect(
+        screen.queryByRole("button", { name: "Search tabs" }),
+      ).not.toBeInTheDocument()
+    })
+  })
+
   describe("drag wiring", () => {
     // Guards the Base UI <Tabs.Tab> swap: the drag onPointerDown must still
     // reach startDrag. Base UI owns the button, so this proves it forwards

@@ -404,6 +404,12 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
           if (!targetFound) return layoutAfterRemove
 
           return mapPane(layoutAfterRemove, targetPaneId, (p) => {
+            // The target may already hold this tab — same id means the same
+            // logical tab, so the move collapses into activating the copy
+            // that's already there. Inserting would duplicate the React key.
+            if (p.tabs.some((t) => t.id === draggedTab.id)) {
+              return { ...p, activeTabId: draggedTab.id }
+            }
             const tabs = [...p.tabs]
             tabs.splice(Math.min(toIndex, tabs.length), 0, draggedTab)
             return { ...p, tabs, activeTabId: draggedTab.id }

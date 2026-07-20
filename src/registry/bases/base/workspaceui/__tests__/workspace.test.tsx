@@ -590,5 +590,27 @@ describe("Workspace", () => {
       }
     })
 
+    it("collapses a move onto a tab the target pane already holds", async () => {
+      const restoreLayout = stubLayout()
+      try {
+        const user = userEvent.setup()
+        const ref = React.createRef<WorkspaceHandle>()
+        // Same tab id open in both panes — the same document in two places.
+        renderWorkspace([pane("p1", ["docs", "a"]), pane("p2", ["docs", "b"])], ref)
+
+        await user.click(screen.getAllByRole("button", { name: "Tab menu" })[0]!)
+        await user.click(await screen.findByRole("menuitem", { name: "Move to docs" }))
+
+        const columns = ref.current!.serialize().columns
+        // Left behind in the source, and NOT duplicated in the target —
+        // duplicate ids would collide as React keys and wedge the render loop.
+        expect(columns[0]!.topPane.tabIds).toEqual(["a"])
+        expect(columns[1]!.topPane.tabIds).toEqual(["docs", "b"])
+        expect(columns[1]!.topPane.activeTabId).toBe("docs")
+      } finally {
+        restoreLayout()
+      }
+    })
+
   })
 })

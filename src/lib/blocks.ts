@@ -15,6 +15,7 @@ import { DataTable01 } from "@/registry/bases/base/blocks/data-table/page"
 import { Department } from "@/registry/bases/base/blocks/department/page"
 import { DetailTabs } from "@/registry/bases/base/blocks/detail-tabs/page"
 import { Dashboard01 } from "@/registry/bases/base/blocks/dashboard-01/page"
+import { DashboardRail } from "@/registry/bases/base/blocks/dashboard-rail/page"
 import { FileUpload } from "@/registry/bases/base/blocks/file-upload/page"
 import { ForbiddenWorkspace } from "@/registry/bases/base/blocks/forbidden-workspace/page"
 import { ForgotPassword } from "@/registry/bases/base/blocks/forgot-password/page"
@@ -285,6 +286,14 @@ export const blocks: BlockMeta[] = [
     description: "Collapsible sidebar nav paired with the Workspace component.",
     category: "Dashboard",
     Component: Dashboard01,
+  },
+  {
+    slug: "dashboard-rail",
+    title: "Dashboard Rail",
+    description:
+      "Fixed icon-only app rail (logo, app switcher, settings, profile) beside a collapsible nav sidebar and the Workspace component.",
+    category: "Dashboard",
+    Component: DashboardRail,
   },
   {
     slug: "activity-log",

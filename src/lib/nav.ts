@@ -182,6 +182,12 @@ export const blocksNav: NavSection[] = [
             description:
               "Collapsible sidebar nav paired with the Workspace component.",
           },
+          {
+            title: "Dashboard Rail",
+            href: "/blocks/dashboard-rail",
+            description:
+              "Fixed icon app rail beside a collapsible nav sidebar and the Workspace component.",
+          },
         ],
       },
       {

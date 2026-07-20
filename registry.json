@@ -731,6 +731,42 @@
       ]
     },
     {
+      "name": "dashboard-rail",
+      "type": "registry:block",
+      "title": "Dashboard Rail",
+      "description": "Dual-sidebar shell: a fixed icon-only app rail (logo, app switcher, settings, profile) beside a collapsible nav sidebar, paired with the Workspace component.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "jayclydeTags/workspaceui/workspace",
+        "sidebar",
+        "sheet",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/dashboard-rail/page.tsx",
+          "type": "registry:page",
+          "target": "app/dashboard-rail/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/dashboard-rail/components/dashboard-sidebar.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/dashboard-rail/components/app-rail.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/dashboard-rail/components/nav-sidebar.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/dashboard-rail/components/dashboard-content.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "dashboard",
       "type": "registry:block",
       "title": "Dashboard",

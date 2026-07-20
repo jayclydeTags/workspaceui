@@ -733,6 +733,29 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/dashboard-content.tsx",
     },
   ],
+  "dashboard-rail": [
+    { name: "page.tsx", path: "app/dashboard-rail/page.tsx", src: "page.tsx" },
+    {
+      name: "dashboard-sidebar.tsx",
+      path: "components/blocks/dashboard-rail/components/dashboard-sidebar.tsx",
+      src: "components/dashboard-sidebar.tsx",
+    },
+    {
+      name: "app-rail.tsx",
+      path: "components/blocks/dashboard-rail/components/app-rail.tsx",
+      src: "components/app-rail.tsx",
+    },
+    {
+      name: "nav-sidebar.tsx",
+      path: "components/blocks/dashboard-rail/components/nav-sidebar.tsx",
+      src: "components/nav-sidebar.tsx",
+    },
+    {
+      name: "dashboard-content.tsx",
+      path: "components/blocks/dashboard-rail/components/dashboard-content.tsx",
+      src: "components/dashboard-content.tsx",
+    },
+  ],
   "activity-log": [
     { name: "page.tsx", path: "app/activity-log/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/activity-log/data.ts", src: "data.ts" },

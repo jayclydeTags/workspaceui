@@ -5,7 +5,7 @@ import { createPortal } from "react-dom"
 
 import { cn } from "@/lib/utils"
 import { WorkspaceTabs, type WorkspaceTab } from "@/registry/bases/base/workspaceui/workspace-tabs"
-import { WorkspaceDragContext, useWorkspaceDrag, type WorkspaceDragContextValue } from "@/registry/bases/base/workspaceui/workspace-context"
+import { WorkspaceDragContext, useWorkspaceDrag, type WorkspaceDragContextValue, type WorkspaceSnapZone } from "@/registry/bases/base/workspaceui/workspace-context"
 import {
   ResizableHandle,
   ResizablePanel,
@@ -76,13 +76,15 @@ export interface WorkspaceSnapshot {
 
 // ── Drag types ─────────────────────────────────────────────────────────────
 
-type SnapZone = "left" | "right" | "top" | "bottom"
+type SnapZone = WorkspaceSnapZone
 
 interface DragSession {
   tabId: string
   tabTitle: string
   sourcePaneId: string
   pointerId: number
+  /** The element holding pointer capture — released if the drag is cancelled. */
+  captureEl: Element | null
   startX: number
   startY: number
   didThreshold: boolean
@@ -218,6 +220,10 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
       setLastActivePaneId(paneId)
     }, [])
 
+    // Layout changes are otherwise silent to a screen reader: panes rearrange
+    // with no focus move and no visible-text change to notice.
+    const [announcement, setAnnouncement] = React.useState("")
+
     // Flat pane view for context consumers — derived, no extra state.
     const panes = React.useMemo(
       () =>
@@ -243,6 +249,9 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
     const snapStateRef = React.useRef<SnapState | null>(null)
     const [tabDropTarget, setTabDropTarget] = React.useState<TabDropTarget | null>(null)
     const tabDropTargetRef = React.useRef<TabDropTarget | null>(null)
+    // Monotonic counter, not Date.now(): two splits in the same millisecond
+    // would collide, and a clock-derived id is non-deterministic in tests.
+    const paneIdSeq = React.useRef(0)
     const paneRefs = React.useRef<Map<string, HTMLElement>>(new Map())
     const tabStripRefs = React.useRef<Map<string, HTMLElement>>(new Map())
 
@@ -435,7 +444,7 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
           }
 
           // 3. Create new pane for the dragged tab
-          const newPaneId = `${tabId}-pane-${Date.now()}`
+          const newPaneId = `${tabId}-pane-${++paneIdSeq.current}`
           const newPane: PaneState = {
             id: newPaneId,
             tabs: [draggedTab],
@@ -522,6 +531,38 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
       [],
     )
 
+    // ── Keyboard equivalents of the drag gestures ──────────────────────────
+    // Splitting and moving a tab were pointer-only. These wrap the same layout
+    // mutations the drop handler uses, so the tab menu can offer them too.
+
+    const paneTargets = React.useMemo(
+      () => panes.map((p) => ({ id: p.id, label: paneLabel(p) })),
+      [panes],
+    )
+
+    const splitTab = React.useCallback(
+      (paneId: string, tabId: string, zone: SnapZone) => {
+        const title = tabTitleIn(layoutRef.current, paneId, tabId)
+        // Source and target are the same pane: split it against its own edge.
+        executeSplit(paneId, tabId, paneId, zone)
+        const axis = zone === "left" || zone === "right" ? "column" : "row"
+        setAnnouncement(`Moved ${title} to a new ${axis}.`)
+      },
+      [executeSplit],
+    )
+
+    const moveTab = React.useCallback(
+      (fromPaneId: string, tabId: string, toPaneId: string) => {
+        const current = layoutRef.current
+        const title = tabTitleIn(current, fromPaneId, tabId)
+        const target = findPaneInLayout(current, toPaneId)
+        if (!target) return
+        moveTabToPane(fromPaneId, tabId, toPaneId, target.pane.tabs.length)
+        setAnnouncement(`Moved ${title} to ${paneLabel(target.pane)}.`)
+      },
+      [moveTabToPane],
+    )
+
     // ── Pointer event handlers ─────────────────────────────────────────────
 
     const handlePointerMove = React.useCallback((e: PointerEvent) => {
@@ -533,6 +574,11 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
         const dy = e.clientY - session.startY
         if (Math.hypot(dx, dy) < 4) return
         session.didThreshold = true
+        // Promote to a real drag only here. Doing this in startDrag meant a
+        // plain click mounted every pane's snap overlay and flipped the cursor.
+        setIsDragging(true)
+        setGhostTitle(session.tabTitle)
+        document.body.style.cursor = "grabbing"
       }
 
       setGhostPos({ x: e.clientX, y: e.clientY })
@@ -627,14 +673,23 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
       document.body.style.cursor = ""
 
       if (session && session.didThreshold) {
+        const current = layoutRef.current
+        const title = session.tabTitle
         if (tabDrop) {
           if (tabDrop.targetPaneId === session.sourcePaneId) {
             reorderTabInPane(session.sourcePaneId, session.tabId, tabDrop.insertIndex)
+            setAnnouncement(`Moved ${title} to position ${tabDrop.insertIndex + 1}.`)
           } else {
             moveTabToPane(session.sourcePaneId, session.tabId, tabDrop.targetPaneId, tabDrop.insertIndex)
+            const target = findPaneInLayout(current, tabDrop.targetPaneId)
+            setAnnouncement(
+              `Moved ${title} to ${target ? paneLabel(target.pane) : "another pane"}.`,
+            )
           }
         } else if (snap) {
           executeSplit(session.sourcePaneId, session.tabId, snap.targetPaneId, snap.zone)
+          const axis = snap.zone === "left" || snap.zone === "right" ? "column" : "row"
+          setAnnouncement(`Moved ${title} to a new ${axis}.`)
         }
       }
     }, [executeSplit, reorderTabInPane, moveTabToPane, setSnapStateSynced, setTabDropTargetSynced])
@@ -642,6 +697,11 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
     const handlePointerCancel = React.useCallback(() => {
       dragAbortController.current?.abort()
       dragAbortController.current = null
+      const session = dragSession.current
+      // A real pointerup releases capture for us; an Escape-cancel does not.
+      if (session?.captureEl?.hasPointerCapture(session.pointerId)) {
+        session.captureEl.releasePointerCapture(session.pointerId)
+      }
       dragSession.current = null
       setIsDragging(false)
       setGhostPos(null)
@@ -652,19 +712,19 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
     }, [setSnapStateSynced, setTabDropTargetSynced])
 
     const startDrag = React.useCallback(
-      (sourcePaneId: string, tabId: string, tabTitle: string, pointerId: number, x: number, y: number) => {
+      (sourcePaneId: string, tabId: string, tabTitle: string, event: React.PointerEvent<Element>) => {
+        const captureEl = event.currentTarget
+        captureEl.setPointerCapture(event.pointerId)
         dragSession.current = {
           tabId,
           tabTitle,
           sourcePaneId,
-          pointerId,
-          startX: x,
-          startY: y,
+          pointerId: event.pointerId,
+          captureEl,
+          startX: event.clientX,
+          startY: event.clientY,
           didThreshold: false,
         }
-        setIsDragging(true)
-        setGhostTitle(tabTitle)
-        document.body.style.cursor = "grabbing"
         const ac = new AbortController()
         dragAbortController.current = ac
         document.addEventListener("pointermove", handlePointerMove, { signal: ac.signal })
@@ -760,8 +820,8 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
     )
 
     const dragCtx = React.useMemo<WorkspaceDragContextValue>(
-      () => ({ isDragging, snapState, tabDropTarget, registerPane, registerTabStrip, startDrag, setLastActivePane }),
-      [isDragging, snapState, tabDropTarget, registerPane, registerTabStrip, startDrag, setLastActivePane],
+      () => ({ isDragging, snapState, tabDropTarget, registerPane, registerTabStrip, startDrag, setLastActivePane, paneTargets, splitTab, moveTab }),
+      [isDragging, snapState, tabDropTarget, registerPane, registerTabStrip, startDrag, setLastActivePane, paneTargets, splitTab, moveTab],
     )
 
     // ── Render ─────────────────────────────────────────────────────────────
@@ -792,6 +852,9 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
                 y={ghostPos.y}
               />
             )}
+            <div aria-live="polite" role="status" className="sr-only">
+              {announcement}
+            </div>
           </div>
         </WorkspaceDragContext.Provider>
       </WorkspaceContext.Provider>
@@ -829,6 +892,17 @@ function restorePane(
     ? snap.activeTabId
     : tabs[0]!.id
   return { id: snap.id, tabs, activeTabId }
+}
+
+/** A pane has no name of its own — its active tab is what a user would call it. */
+function paneLabel(pane: PaneState): string {
+  return pane.tabs.find((t) => t.id === pane.activeTabId)?.title ?? pane.id
+}
+
+function tabTitleIn(layout: WorkspaceLayout, paneId: string, tabId: string): string {
+  return (
+    findPaneInLayout(layout, paneId)?.pane.tabs.find((t) => t.id === tabId)?.title ?? "Tab"
+  )
 }
 
 /** Find a pane anywhere in the layout. Returns the pane, its column ID, and its slot. */

@@ -10,7 +10,10 @@ import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useWorkspaceDragOptional } from "@/registry/bases/base/workspaceui/workspace-context"
@@ -78,6 +81,17 @@ function WorkspaceTabs({
       ? dragCtx.tabDropTarget.insertIndex
       : null
 
+  // Split and move are otherwise drag-only, i.e. unreachable by keyboard. The
+  // menu is the keyboard path — and the discoverable one for everyone else.
+  const activeTab = tabs.find((t) => t.id === activeTabId)
+  const canRearrange =
+    dragCtx != null && paneId != null && activeTab != null && !activeTab.pinned
+  const moveTargets = canRearrange
+    ? dragCtx.paneTargets.filter((p) => p.id !== paneId)
+    : []
+  // Splitting a pane's only tab would just rebuild the same pane elsewhere.
+  const canSplit = canRearrange && tabs.length > 1
+
   return (
     // Tabs.Root/List/Tab/Panel supply roving focus, Home/End/Arrow nav, and
     // the tab/tablist/tabpanel aria wiring. Styling, drag, badge, and close
@@ -97,7 +111,8 @@ function WorkspaceTabs({
         // tab can't overlap it, since the scrolling tab list clips vertically.
         className="flex shrink-0 items-end bg-muted"
       >
-        {/* Tab-search dropdown — lists every open tab in this strip. */}
+        {/* Tab menu — every open tab in this strip, plus split/move for the
+            active one (the keyboard route to what dragging does). */}
         {tabs.length > 0 && (
           <DropdownMenu>
             <DropdownMenuTrigger
@@ -105,7 +120,7 @@ function WorkspaceTabs({
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  aria-label="Search tabs"
+                  aria-label="Tab menu"
                   // self-center (not the strip's items-end) so it sits on the
                   // tabs' centreline; hover matches the inactive tabs'.
                   className="ml-1 shrink-0 self-center rounded-[8px] text-foreground/50 hover:bg-foreground/5"
@@ -138,6 +153,49 @@ function WorkspaceTabs({
                   />
                 </DropdownMenuItem>
               ))}
+
+              {(canSplit || moveTargets.length > 0) && activeTab != null && (
+                <>
+                  <DropdownMenuSeparator />
+                  {/* Grouped so the label names what these actions act on —
+                      Base UI also requires a Group parent for the label. */}
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="text-muted-foreground">
+                      {activeTab.title}
+                    </DropdownMenuLabel>
+                    {canSplit && (
+                      <>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            dragCtx!.splitTab(paneId!, activeTab.id, "right")
+                          }
+                        >
+                          Split right
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            dragCtx!.splitTab(paneId!, activeTab.id, "bottom")
+                          }
+                        >
+                          Split down
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                    {/* Flat rather than a submenu: a workspace has few panes,
+                        and this drops a whole traversal step for keyboard. */}
+                    {moveTargets.map((target) => (
+                      <DropdownMenuItem
+                        key={target.id}
+                        onClick={() =>
+                          dragCtx!.moveTab(paneId!, activeTab.id, target.id)
+                        }
+                      >
+                        Move to {target.label}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuGroup>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         )}
@@ -160,9 +218,25 @@ function WorkspaceTabs({
                   onPointerDown={(e) => {
                     if (tab.pinned || !paneId || !dragCtx) return
                     onTabChange(tab.id)
-                    e.currentTarget.setPointerCapture(e.pointerId)
+                    // preventDefault suppresses text selection *and* the focus
+                    // that pointerdown would normally do — so focus by hand, or
+                    // Base UI's roving focus never engages after a click.
                     e.preventDefault()
-                    dragCtx.startDrag(paneId, tab.id, tab.title, e.pointerId, e.clientX, e.clientY)
+                    e.currentTarget.focus()
+                    dragCtx.startDrag(paneId, tab.id, tab.title, e)
+                  }}
+                  onKeyDown={(e) => {
+                    // Close from the tab itself: the close affordance is a
+                    // tabIndex={-1} div (can't be a button inside a button), so
+                    // this is the only keyboard path to it.
+                    if (
+                      onTabClose != null &&
+                      !tab.pinned &&
+                      (e.key === "Delete" || e.key === "Backspace")
+                    ) {
+                      e.preventDefault()
+                      onTabClose(tab.id)
+                    }
                   }}
                   className={cn(
                     // Layout & sizing
@@ -214,13 +288,6 @@ function WorkspaceTabs({
                         e.stopPropagation()
                         onTabClose(tab.id)
                       }}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          onTabClose(tab.id)
-                        }
-                      }}
                       className={cn(
                         "flex size-4 shrink-0 items-center justify-center rounded",
                         "text-foreground/40 hover:bg-foreground/10 hover:text-foreground",
@@ -243,7 +310,6 @@ function WorkspaceTabs({
                       )}
                     </div>
                   )}
-
                 </Tabs.Tab>
               </React.Fragment>
             )

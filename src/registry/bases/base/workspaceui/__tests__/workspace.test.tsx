@@ -40,6 +40,39 @@ function renderWorkspace(
   )
 }
 
+/**
+ * jsdom gives every element a 0×0 box at (0, 0). One pane's worth of UI still
+ * works, but as soon as two panes are on screen userEvent can no longer decide
+ * what a click landed on and silently drops it — which is why anything needing
+ * a menu in a multi-pane workspace has to run under this.
+ *
+ * Hands out one stable, distinct box per element. Per-element `mockRect` spies
+ * still win: those set an own property, and this only replaces the prototype.
+ * Returns a restore function; not global, since the drag tests below depend on
+ * unmocked elements reading as 0×0.
+ */
+function stubLayout() {
+  const original = Element.prototype.getBoundingClientRect
+  const boxes = new WeakMap<Element, DOMRect>()
+  let seen = 0
+  Element.prototype.getBoundingClientRect = function () {
+    let box = boxes.get(this)
+    if (!box) {
+      const top = seen++ * 20
+      box = {
+        x: 0, y: top, left: 0, top, right: 200, bottom: top + 20,
+        width: 200, height: 20,
+        toJSON: () => ({}),
+      } as DOMRect
+      boxes.set(this, box)
+    }
+    return box
+  }
+  return () => {
+    Element.prototype.getBoundingClientRect = original
+  }
+}
+
 // ── Drag helpers ───────────────────────────────────────────────────────────
 
 function mockRect(el: Element, r: Partial<Omit<DOMRect, "toJSON">>) {
@@ -520,5 +553,42 @@ describe("Workspace", () => {
         activeTabId: "a",
       })
     })
+  })
+  describe("keyboard rearrange and announcements", () => {
+    // The split/move gestures were pointer-only, and rearranging panes is
+    // silent to a screen reader — the menu is the keyboard path, the live
+    // region is what reports the result.
+    it("splits a pane from the tab menu and announces it", async () => {
+      const user = userEvent.setup()
+      const ref = React.createRef<WorkspaceHandle>()
+      renderWorkspace([pane("p1", ["a", "b"])], ref)
+
+      await user.click(screen.getByRole("button", { name: "Tab menu" }))
+      await user.click(await screen.findByRole("menuitem", { name: "Split right" }))
+
+      expect(ref.current!.serialize().columns).toHaveLength(2)
+      expect(screen.getByRole("status")).toHaveTextContent("Moved a to a new column.")
+    })
+
+    it("moves a tab into another pane from the tab menu and announces it", async () => {
+      const restoreLayout = stubLayout()
+      try {
+        const user = userEvent.setup()
+        const ref = React.createRef<WorkspaceHandle>()
+        renderWorkspace([pane("p1", ["a", "b"]), pane("p2", ["c"])], ref)
+
+        // Panes have no name of their own — they are labelled by their active tab.
+        await user.click(screen.getAllByRole("button", { name: "Tab menu" })[0]!)
+        await user.click(await screen.findByRole("menuitem", { name: "Move to c" }))
+
+        const columns = ref.current!.serialize().columns
+        expect(columns).toHaveLength(2)
+        expect(columns[1]!.topPane.tabIds).toEqual(["c", "a"])
+        expect(screen.getByRole("status")).toHaveTextContent("Moved a to c.")
+      } finally {
+        restoreLayout()
+      }
+    })
+
   })
 })

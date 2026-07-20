@@ -14,6 +14,25 @@ const tab = (id: string, title: string, extra?: object) => ({
   ...extra,
 })
 
+/** A drag context with everything stubbed; override just what a test asserts on. */
+function makeDragCtx(
+  overrides: Partial<WorkspaceDragContextValue> = {},
+): WorkspaceDragContextValue {
+  return {
+    isDragging: false,
+    snapState: null,
+    tabDropTarget: null,
+    registerPane: vi.fn(),
+    registerTabStrip: vi.fn(),
+    startDrag: vi.fn(),
+    setLastActivePane: vi.fn(),
+    paneTargets: [],
+    splitTab: vi.fn(),
+    moveTab: vi.fn(),
+    ...overrides,
+  }
+}
+
 function renderTabs(
   overrides: Partial<React.ComponentProps<typeof WorkspaceTabs>> = {},
 ) {
@@ -158,7 +177,7 @@ describe("WorkspaceTabs", () => {
       const onTabChange = vi.fn()
       renderTabs({ onTabChange })
 
-      await userEvent.click(screen.getByRole("button", { name: "Search tabs" }))
+      await userEvent.click(screen.getByRole("button", { name: "Tab menu" }))
 
       const items = await screen.findAllByRole("menuitem")
       expect(items.map((i) => i.textContent)).toEqual(["Alpha", "Beta"])
@@ -170,8 +189,91 @@ describe("WorkspaceTabs", () => {
     it("is not rendered when there are no tabs", () => {
       renderTabs({ tabs: [], activeTabId: "" })
       expect(
-        screen.queryByRole("button", { name: "Search tabs" }),
+        screen.queryByRole("button", { name: "Tab menu" }),
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe("keyboard rearrange menu", () => {
+    // Split and move used to be drag-only. These cover the keyboard route.
+    function renderWithCtx(
+      ctx: WorkspaceDragContextValue,
+      props: Partial<React.ComponentProps<typeof WorkspaceTabs>> = {},
+    ) {
+      return render(
+        <WorkspaceDragContext.Provider value={ctx}>
+          <WorkspaceTabs
+            tabs={[tab("a", "Alpha"), tab("b", "Beta")]}
+            activeTabId="a"
+            onTabChange={vi.fn()}
+            paneId="pane-1"
+            {...props}
+          >
+            <div>content</div>
+          </WorkspaceTabs>
+        </WorkspaceDragContext.Provider>,
+      )
+    }
+
+    it("splits the active tab from the menu", async () => {
+      const splitTab = vi.fn()
+      renderWithCtx(makeDragCtx({ splitTab }))
+
+      await userEvent.click(screen.getByRole("button", { name: "Tab menu" }))
+      await userEvent.click(await screen.findByRole("menuitem", { name: "Split down" }))
+
+      expect(splitTab).toHaveBeenCalledWith("pane-1", "a", "bottom")
+    })
+
+    it("moves the active tab to another pane, offering every pane but its own", async () => {
+      const moveTab = vi.fn()
+      renderWithCtx(
+        makeDragCtx({
+          moveTab,
+          paneTargets: [
+            { id: "pane-1", label: "Alpha" },
+            { id: "pane-2", label: "Gamma" },
+          ],
+        }),
+      )
+
+      await userEvent.click(screen.getByRole("button", { name: "Tab menu" }))
+
+      // Its own pane is not offered as a move target.
+      expect(
+        screen.queryByRole("menuitem", { name: "Move to Alpha" }),
+      ).not.toBeInTheDocument()
+      await userEvent.click(
+        await screen.findByRole("menuitem", { name: "Move to Gamma" }),
+      )
+
+      expect(moveTab).toHaveBeenCalledWith("pane-1", "a", "pane-2")
+    })
+
+    it("offers no split for a pane holding a single tab", async () => {
+      renderWithCtx(makeDragCtx(), { tabs: [tab("a", "Alpha")] })
+
+      await userEvent.click(screen.getByRole("button", { name: "Tab menu" }))
+      await screen.findByRole("menuitem", { name: "Alpha" })
+      expect(screen.queryByRole("menuitem", { name: "Split right" })).not.toBeInTheDocument()
+    })
+
+    it("offers no rearrange actions for a pinned active tab", async () => {
+      renderWithCtx(makeDragCtx({ paneTargets: [{ id: "pane-2", label: "Gamma" }] }), {
+        tabs: [tab("a", "Alpha", { pinned: true }), tab("b", "Beta")],
+      })
+
+      await userEvent.click(screen.getByRole("button", { name: "Tab menu" }))
+      await screen.findByRole("menuitem", { name: "Beta" })
+      expect(screen.queryByRole("menuitem", { name: "Split right" })).not.toBeInTheDocument()
+      expect(screen.queryByRole("menuitem", { name: /^Move to/ })).not.toBeInTheDocument()
+    })
+
+    it("offers no rearrange actions outside a Workspace", async () => {
+      renderTabs()
+      await userEvent.click(screen.getByRole("button", { name: "Tab menu" }))
+      await screen.findByRole("menuitem", { name: "Alpha" })
+      expect(screen.queryByRole("menuitem", { name: "Split right" })).not.toBeInTheDocument()
     })
   })
 
@@ -180,15 +282,7 @@ describe("WorkspaceTabs", () => {
     // reach startDrag. Base UI owns the button, so this proves it forwards
     // our handler rather than swallowing it.
     function dragCtx(startDrag: WorkspaceDragContextValue["startDrag"]) {
-      return {
-        isDragging: false,
-        snapState: null,
-        tabDropTarget: null,
-        registerPane: vi.fn(),
-        registerTabStrip: vi.fn(),
-        startDrag,
-        setLastActivePane: vi.fn(),
-      } satisfies WorkspaceDragContextValue
+      return makeDragCtx({ startDrag })
     }
 
     it("calls startDrag on pointer down when a paneId and drag context exist", async () => {
@@ -213,9 +307,8 @@ describe("WorkspaceTabs", () => {
         "pane-1",
         "b",
         "Beta",
-        expect.any(Number),
-        expect.any(Number),
-        expect.any(Number),
+        // The pointerdown event itself — startDrag owns the pointer capture.
+        expect.objectContaining({ pointerId: expect.any(Number) }),
       )
     })
 
@@ -274,6 +367,55 @@ describe("WorkspaceTabs", () => {
         onTabClose: vi.fn(),
       })
       expect(screen.queryByRole("button", { name: /Close Alpha/ })).not.toBeInTheDocument()
+    })
+  })
+
+  describe("keyboard", () => {
+    it("closes the focused tab on Delete and Backspace", async () => {
+      const user = userEvent.setup()
+      const onTabClose = vi.fn()
+      renderTabs({ onTabClose })
+
+      screen.getByRole("tab", { name: "Alpha" }).focus()
+      await user.keyboard("{Delete}")
+      expect(onTabClose).toHaveBeenCalledWith("a")
+
+      onTabClose.mockClear()
+      await user.keyboard("{Backspace}")
+      expect(onTabClose).toHaveBeenCalledWith("a")
+    })
+
+    it("does not close a pinned tab on Delete", async () => {
+      const user = userEvent.setup()
+      const onTabClose = vi.fn()
+      renderTabs({ tabs: [tab("a", "Alpha", { pinned: true })], onTabClose })
+
+      screen.getByRole("tab", { name: "Alpha" }).focus()
+      await user.keyboard("{Delete}")
+      expect(onTabClose).not.toHaveBeenCalled()
+    })
+
+    it("focuses the tab on pointerdown so roving focus engages", async () => {
+      const user = userEvent.setup()
+      const dragCtx = makeDragCtx()
+
+      render(
+        <WorkspaceDragContext.Provider value={dragCtx}>
+          <WorkspaceTabs
+            tabs={[tab("a", "Alpha"), tab("b", "Beta")]}
+            activeTabId="a"
+            onTabChange={vi.fn()}
+            paneId="pane-1"
+          >
+            <div>content</div>
+          </WorkspaceTabs>
+        </WorkspaceDragContext.Provider>,
+      )
+
+      // pointerdown preventDefault()s (to suppress selection during a drag),
+      // which would otherwise swallow the focus the tab needs.
+      await user.click(screen.getByRole("tab", { name: "Alpha" }))
+      expect(screen.getByRole("tab", { name: "Alpha" })).toHaveFocus()
     })
   })
 })

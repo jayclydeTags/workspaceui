@@ -137,16 +137,18 @@ Components import each other via `@/components/workspaceui/...`.
 ## Component architecture
 
 ### workspace-tabs.tsx
-- Props: `tabs: WorkspaceTab[]`, `activeTabId`, `onTabChange`, `onTabClose?`, `onAddTab?`
-- `WorkspaceTab`: `{ id, title, icon?, badge?, pinned? }`
-- Renders macOS-style curved tab connectors via `LeftConnector`/`RightConnector` (SVG clip-path)
-- Exposes `onTabDragStart`/`tabDropInsertIndex` for cross-pane drag support consumed by `workspace.tsx`
+- Props: `tabs: WorkspaceTab[]`, `activeTabId`, `onTabChange`, `onTabClose?`, `onAddTab?`, `paneId?`
+- `WorkspaceTab`: `{ id, title, icon?, badge?, pinned?, dirty? }`
+- Base UI `Tabs.Root/List/Tab/Panel` owns the a11y engine (roving focus, Home/End/Arrow, tab/tablist/tabpanel wiring); styling, drag, badge, and close are ours
+- Drag and the keyboard split/move menu both come from `useWorkspaceDragOptional()` — the component still renders standalone when that context is absent
+- Close is `Delete`/`Backspace` on the focused tab: the close affordance is a `tabIndex={-1}` div, since a button can't nest inside Base UI's tab button
 
 ### workspace.tsx
 - Column-based layout using `react-resizable-panels`; each column holds one top pane + optional bottom pane
 - Two contexts:
   - **`WorkspaceContext`** — pane/tab state and methods (`openTabInPane`, `closeTab`, `activateTab`, `updateTab`, `openPane`, `closePane`). Access via `useWorkspace()`.
-  - **`WorkspaceDragContext`** — drag session tracking, snap zones, drop-target state
+  - **`WorkspaceDragContext`** (`workspace-context.tsx`) — drag session tracking, snap zones, drop-target state, plus the keyboard equivalents (`paneTargets`, `splitTab`, `moveTab`) that the tab menu calls. Those wrap the same mutations the drop handler uses, so pointer and keyboard can't drift apart. `startDrag` takes the pointerdown event and owns pointer capture, so an Escape-cancel can release it.
+- Layout changes are announced through an `aria-live` region — rearranging panes moves no focus and changes no visible text
 - **`WorkspaceHandle`** ref — imperative API (same methods as context minus read-only state); attach via `ref` prop for programmatic control from outside the component
 - `renderTabContent(paneId, tabId)` — called on every render for the active tab in each pane; keep it fast
 - Fallback content shown when all panes are closed (configurable via `fallback` prop)
@@ -165,8 +167,16 @@ Use `src/content/docs/components/workspace.mdx` and `src/registry/bases/base/exa
 ## Testing
 
 Vitest with jsdom. `src/test/setup.ts` provides:
-- `ResizeObserver` polyfill (required by `react-resizable-panels`)
-- `setPointerCapture`/`releasePointerCapture` mocks (required by drag handlers)
+- `ResizeObserver` stub (required by `react-resizable-panels`)
+- `setPointerCapture`/`releasePointerCapture`/`hasPointerCapture` mocks (required by drag handlers). Stateful, not no-ops, so capture round-trips are observable — the Escape-cancel path asserts capture is released.
+
+jsdom has no layout: every element reports a 0×0 box at (0, 0). Single-pane UI
+still works, but once two panes are on screen userEvent can't hit-test a click
+and silently drops it. Tests needing a menu in a multi-pane workspace must run
+under `stubLayout()` in `__tests__/workspace.test.tsx`, which hands out one
+stable non-zero box per element. It's scoped rather than global on purpose: the
+drag tests depend on unmocked elements reading as 0×0, and `mockRect()` spies
+still win over it (own property vs. prototype).
 
 Tests live in `src/registry/bases/base/workspaceui/__tests__/`.
 

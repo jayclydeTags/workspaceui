@@ -534,13 +534,16 @@ export function MyWorkspace() {
 - **Cross-pane drag and drop** — drag a tab from one pane and drop it into another to transfer it.
 - **Snap-zone splitting** — drag a tab to an edge to split: left/right adds a new column, top/bottom adds a new row within the column.
 - **Escape to cancel** — pressing Escape during a drag cancels the operation without committing a drop.
-- **Tab search** — each tab strip opens a dropdown listing every tab in that pane, with the active one checked; picking one activates it. Handy once tabs overflow and scroll out of view. Always available — there's no prop to configure it.
+- **Tab menu** — each tab strip opens a dropdown listing every tab in that pane, with the active one checked; picking one activates it. Handy once tabs overflow and scroll out of view. Below the list it offers **Split right**, **Split down**, and **Move to _pane_** for the active tab. Always available — there's no prop to configure it.
+- **Keyboard rearranging** — splitting and moving a tab are reachable without a pointer: the tab menu's split and move items run the same operations as a drag. Panes have no name of their own, so move targets are labelled by each pane's active tab. Split is offered only when the pane holds more than one tab, and neither is offered for a `pinned` tab — matching the drag rules.
+- **Keyboard tab close** — press <kbd>Delete</kbd> or <kbd>Backspace</kbd> on a focused tab to close it, subject to `onBeforeCloseTab`. Pinned tabs ignore it.
 - **Resizable panels** — panel columns are resizable via drag handles, with configurable min sizes.
 - **Unsaved-change guard** — mark a tab `dirty` to swap its close button for a dot, and return `false` from `onBeforeCloseTab` to veto the close.
 - **Layout persistence** — `serialize()` / `restore()` on the `WorkspaceHandle` round-trip the column, pane, and tab structure through storage.
 - **Imperative handle** — attach a `WorkspaceHandle` ref to control panes and tabs programmatically from outside the component.
 - **Context hook** — any component rendered inside `<Workspace>` can call `useWorkspace()` to read state or open/close panes and tabs.
 - **Custom fallback** — configure the view shown when all panes are closed via the `fallback` prop.
+- **Announced layout changes** — splits, cross-pane moves, and reorders are reported through an `aria-live` region, since rearranging panes moves no focus and changes no visible text a screen reader would otherwise notice. Fires for both the drag and keyboard paths.
 
 ## API Reference
 

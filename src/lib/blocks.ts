@@ -26,6 +26,7 @@ import { LoginSocial } from "@/registry/bases/base/blocks/login-social/page"
 import { MagicLinkSent } from "@/registry/bases/base/blocks/magic-link-sent/page"
 import { MasterDetail } from "@/registry/bases/base/blocks/master-detail/page"
 import { NotificationsInbox } from "@/registry/bases/base/blocks/notifications-inbox/page"
+import { NotificationCenter } from "@/registry/bases/base/blocks/notification-center/page"
 import { OtpVerify } from "@/registry/bases/base/blocks/otp-verify/page"
 import { PendingApproval } from "@/registry/bases/base/blocks/pending-approval/page"
 import { RecordDetail } from "@/registry/bases/base/blocks/record-detail/page"
@@ -263,6 +264,14 @@ export const blocks: BlockMeta[] = [
       "Notification inbox with All/Unread tabs, per-type icons, unread indicators, mark-one-read on click, and mark-all-read.",
     category: "Communication",
     Component: NotificationsInbox,
+  },
+  {
+    slug: "notification-center",
+    title: "Notification Center",
+    description:
+      "Notification center with a header bell dropdown (unread badge capped at 9+, 5 most recent, mark-all-read) and a full page filtered by read state, severity, and date range with 20-per-page pagination.",
+    category: "Communication",
+    Component: NotificationCenter,
   },
   {
     slug: "comments-thread",

@@ -13,7 +13,13 @@
         "react-resizable-panels",
         "lucide-react"
       ],
-      "registryDependencies": ["resizable", "badge", "dropdown-menu", "button", "utils"],
+      "registryDependencies": [
+        "resizable",
+        "badge",
+        "dropdown-menu",
+        "button",
+        "utils"
+      ],
       "files": [
         {
           "path": "src/registry/bases/base/workspaceui/workspace.tsx",
@@ -573,6 +579,42 @@
         },
         {
           "path": "src/registry/bases/base/blocks/notifications-inbox/data.ts",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "notification-center",
+      "type": "registry:block",
+      "title": "Notification Center",
+      "description": "Notification center with a header bell dropdown (unread badge capped at 9+, 5 most recent, mark-all-read) and a full page filtered by read state, severity, and date range with 20-per-page pagination.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "badge",
+        "button",
+        "dropdown-menu",
+        "empty",
+        "input",
+        "label",
+        "utils",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/notification-center/page.tsx",
+          "type": "registry:page",
+          "target": "app/notification-center/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/notification-center/components/notification-bell.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/notification-center/components/notification-item.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/notification-center/data.ts",
           "type": "registry:block"
         }
       ]

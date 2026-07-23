@@ -622,6 +622,28 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "data.ts",
     },
   ],
+  "notification-center": [
+    {
+      name: "page.tsx",
+      path: "app/notification-center/page.tsx",
+      src: "page.tsx",
+    },
+    {
+      name: "notification-bell.tsx",
+      path: "components/blocks/notification-center/components/notification-bell.tsx",
+      src: "components/notification-bell.tsx",
+    },
+    {
+      name: "notification-item.tsx",
+      path: "components/blocks/notification-center/components/notification-item.tsx",
+      src: "components/notification-item.tsx",
+    },
+    {
+      name: "data.ts",
+      path: "app/notification-center/data.ts",
+      src: "data.ts",
+    },
+  ],
   "comments-thread": [
     { name: "page.tsx", path: "app/comments-thread/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/comments-thread/data.ts", src: "data.ts" },

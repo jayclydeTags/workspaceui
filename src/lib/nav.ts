@@ -101,6 +101,12 @@ export const blocksNav: NavSection[] = [
               "Notification inbox with All/Unread tabs, per-type icons, unread indicators, mark-one-read on click, and mark-all-read.",
           },
           {
+            title: "Notification Center",
+            href: "/blocks/notification-center",
+            description:
+              "Notification center with a header bell dropdown (unread badge capped at 9+, 5 most recent, mark-all-read) and a full page filtered by read state, severity, and date range with 20-per-page pagination.",
+          },
+          {
             title: "Comments Thread",
             href: "/blocks/comments-thread",
             description:

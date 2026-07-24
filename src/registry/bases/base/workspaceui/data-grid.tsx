@@ -460,9 +460,6 @@ export function DataGrid<TData>({
         <TableHeader>
           {headerGroups.map((headerGroup) => (
             <TableRow key={headerGroup.id}>
-              {hasDeleteColumn && (
-                <TableHead aria-hidden="true" className="w-10" />
-              )}
               {headerGroup.headers.map((header) => (
                 <TableHead key={header.id}>
                   {header.isPlaceholder
@@ -473,6 +470,9 @@ export function DataGrid<TData>({
                       )}
                 </TableHead>
               ))}
+              {hasDeleteColumn && (
+                <TableHead aria-hidden="true" className="w-10" />
+              )}
             </TableRow>
           ))}
         </TableHeader>
@@ -490,32 +490,6 @@ export function DataGrid<TData>({
             rows.map((row, r) => (
               <React.Fragment key={row.id}>
                 <TableRow className="group/row">
-                  {hasDeleteColumn && (
-                    <TableCell className="w-10 p-0 text-center align-top">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger
-                          render={
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              aria-label={`Row ${r + 1} actions`}
-                              className="size-7 opacity-0 group-hover/row:opacity-100 focus-visible:opacity-100 data-[popup-open]:opacity-100"
-                            >
-                              <MoreHorizontalIcon className="size-3.5" />
-                            </Button>
-                          }
-                        />
-                        <DropdownMenuContent align="start">
-                          <DropdownMenuItem
-                            variant="destructive"
-                            onClick={() => setDeleteTarget(row.id)}
-                          >
-                            Delete row
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  )}
                   {row.getVisibleCells().map((cell, c) => {
                     const key = cellKey(r, c)
                     const isFocused = focusCoord.r === r && focusCoord.c === c
@@ -606,18 +580,49 @@ export function DataGrid<TData>({
                       </TableCell>
                     )
                   })}
+                  {hasDeleteColumn && (
+                    <TableCell className="w-10 p-0 text-center align-top">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger
+                          render={
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              aria-label={`Row ${r + 1} actions`}
+                              className="size-7 opacity-0 group-hover/row:opacity-100 focus-visible:opacity-100 data-[popup-open]:opacity-100"
+                            >
+                              <MoreHorizontalIcon className="size-3.5" />
+                            </Button>
+                          }
+                        />
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            variant="destructive"
+                            onClick={() => setDeleteTarget(row.id)}
+                          >
+                            Delete row
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  )}
                 </TableRow>
                 {onRowAdd && r < rowCount - 1 && (
-                  <TableRow className="group/gap h-2 border-none hover:bg-transparent">
+                  // Zero layout height at rest — the row must not add
+                  // permanent space between every pair of rows. The "+" is a
+                  // real, absolutely-positioned hit target straddling the
+                  // row boundary (8px into each neighbor), invisible until
+                  // hovered or focused, so it doesn't disturb normal spacing.
+                  <TableRow className="h-0 border-none hover:bg-transparent">
                     <TableCell
                       colSpan={totalColCount}
-                      className="relative h-2 p-0"
+                      className="relative h-0 p-0"
                     >
                       <button
                         type="button"
                         aria-label={`Insert row after row ${r + 1}`}
                         onClick={() => handleRowAdd(row.id)}
-                        className="absolute inset-x-0 top-1/2 z-10 flex -translate-y-1/2 items-center justify-center opacity-0 transition-opacity group-hover/gap:opacity-100 focus-visible:opacity-100"
+                        className="absolute inset-x-0 top-0 z-10 flex h-4 -translate-y-1/2 items-center justify-center opacity-0 transition-opacity hover:opacity-100 focus-visible:opacity-100"
                       >
                         <span className="flex size-5 items-center justify-center rounded-full border bg-background shadow-sm">
                           <PlusIcon className="size-3" />

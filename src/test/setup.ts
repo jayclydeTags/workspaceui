@@ -4,44 +4,54 @@ import "@testing-library/jest-dom"
 // rather than a no-op (like the pointer-capture mocks below) so container-width
 // branches — data-grid's narrow card list, data-filter's sheet toolbar — are
 // testable at all: `resizeTo(el, 320)` fires a width at an observed element.
-const observed = new Map<Element, Set<ResizeObserverCallback>>()
+// A WeakMap (like that mock) because observed elements are usually detached by
+// the time a test ends and nothing clears the registry, keyed on the observer
+// instance rather than the callback so two observers sharing one function
+// reference can't unobserve each other.
+type StubObserver = { callback: ResizeObserverCallback; elements: Set<Element> }
+const observers = new WeakMap<Element, Set<StubObserver>>()
 
 window.ResizeObserver = class ResizeObserver {
-  callback: ResizeObserverCallback
+  private self: StubObserver
   constructor(callback: ResizeObserverCallback) {
-    this.callback = callback
+    this.self = { callback, elements: new Set() }
   }
   observe(el: Element) {
-    const cbs = observed.get(el) ?? new Set<ResizeObserverCallback>()
-    cbs.add(this.callback)
-    observed.set(el, cbs)
+    const set = observers.get(el) ?? new Set<StubObserver>()
+    set.add(this.self)
+    observers.set(el, set)
+    this.self.elements.add(el)
   }
   unobserve(el: Element) {
-    observed.get(el)?.delete(this.callback)
+    observers.get(el)?.delete(this.self)
+    this.self.elements.delete(el)
   }
   disconnect() {
-    for (const cbs of observed.values()) cbs.delete(this.callback)
+    for (const el of this.self.elements) observers.get(el)?.delete(this.self)
+    this.self.elements.clear()
   }
 }
 
 /**
  * Fire a width at an element being observed by a ResizeObserver, synchronously
- * invoking every callback watching it. Also pins the element's box so a
- * component that measures on mount (getBoundingClientRect) agrees with the
- * observer. Height is left at 0 — nothing here keys off it.
+ * invoking every callback watching it. Height is left at 0 — nothing keys off
+ * it. Does not touch the element's box: faking layout is `stubLayout()`'s job
+ * (see workspace.test.tsx), and a second source of own-property rects would
+ * silently outrank its prototype stub.
  */
 export function resizeTo(el: Element, width: number) {
-  const rect = { x: 0, y: 0, top: 0, left: 0, bottom: 0, height: 0, width, right: width } // prettier-ignore
-  el.getBoundingClientRect = () => rect as DOMRect
+  // All three box arrays are populated: a consumer reading contentBoxSize
+  // instead of borderBoxSize shouldn't crash on an undefined index.
+  const box = [{ inlineSize: width, blockSize: 0 }]
   const entry = {
     target: el,
-    contentRect: rect as DOMRectReadOnly,
-    borderBoxSize: [{ inlineSize: width, blockSize: 0 }],
-    contentBoxSize: [{ inlineSize: width, blockSize: 0 }],
-    devicePixelContentBoxSize: [{ inlineSize: width, blockSize: 0 }],
+    contentRect: DOMRectReadOnly.fromRect({ width }),
+    borderBoxSize: box,
+    contentBoxSize: box,
+    devicePixelContentBoxSize: box,
   } as ResizeObserverEntry
-  for (const cb of observed.get(el) ?? [])
-    cb([entry], null as unknown as ResizeObserver)
+  for (const o of observers.get(el) ?? [])
+    o.callback([entry], null as unknown as ResizeObserver)
 }
 
 // jsdom does not implement the pointer capture APIs the tab drag handler uses.

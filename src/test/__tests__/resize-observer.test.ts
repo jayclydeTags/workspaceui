@@ -16,7 +16,21 @@ describe("ResizeObserver test stub", () => {
     expect(entries[0].target).toBe(el)
     expect(entries[0].contentRect.width).toBe(320)
     expect(entries[0].borderBoxSize[0].inlineSize).toBe(320)
-    expect(el.getBoundingClientRect().width).toBe(320)
+  })
+
+  it("keys observers by instance, not by callback identity", () => {
+    const el = document.createElement("div")
+    const cb = vi.fn()
+    const a = new ResizeObserver(cb)
+    const b = new ResizeObserver(cb)
+    a.observe(el)
+    b.observe(el)
+
+    a.disconnect()
+    resizeTo(el, 320)
+
+    // b is still observing, so exactly one call — not zero.
+    expect(cb).toHaveBeenCalledTimes(1)
   })
 
   it("stops driving after unobserve and disconnect", () => {

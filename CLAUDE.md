@@ -17,6 +17,7 @@ pnpm test:coverage    # vitest run --coverage
 ```
 
 ### Running a single test file
+
 ```bash
 pnpm vitest run src/registry/bases/base/workspaceui/__tests__/workspace-tabs.test.tsx
 ```
@@ -63,11 +64,13 @@ workspaceui/
 ```
 
 ### UI architecture: no fumadocs-ui
+
 The docs/marketing/blocks chrome is hand-built on **fumadocs-core** (headless:
 `source`/page-tree, `search/client`+`search/server`, `toc`, `highlight`) and the
 project's own shadcn/ui primitives (`src/components/ui/*`) — not
 `fumadocs-ui`'s pre-built `HomeLayout`/`DocsLayout`/`DocsPage`/`RootProvider`/
 `DynamicCodeBlock` components, which this repo doesn't depend on at all.
+
 - **`SiteHeader`** (`src/components/site-header.tsx`) is mounted once in the
   root layout and shared by every route (marketing, docs, blocks) — it's not
   per-route-group chrome.
@@ -93,6 +96,7 @@ project's own shadcn/ui primitives (`src/components/ui/*`) — not
   `accordion.tsx`/`type-table.tsx` still reference those classes.
 
 ### Next.js rendering notes
+
 - **Server vs client**: pages/layouts are React Server Components by default;
   anything with hooks, state, or event handlers needs `"use client"` at the top
   (all the interactive `components/`, `examples/`, and `blocks/` are marked).
@@ -129,14 +133,15 @@ The repo must be public and have `registry.json` at its root; the CLI resolves i
 ## Path aliases
 
 | Alias | Resolves to |
-|---|---|
-| `@/*` | `./src/*` |
+| ----- | ----------- |
+| `@/*` | `./src/*`   |
 
 Components import each other via `@/components/workspaceui/...`.
 
 ## Component architecture
 
 ### workspace-tabs.tsx
+
 - Props: `tabs: WorkspaceTab[]`, `activeTabId`, `onTabChange`, `onTabClose?`, `onAddTab?`, `paneId?`
 - `WorkspaceTab`: `{ id, title, icon?, badge?, pinned?, dirty? }`
 - Base UI `Tabs.Root/List/Tab/Panel` owns the a11y engine (roving focus, Home/End/Arrow, tab/tablist/tabpanel wiring); styling, drag, badge, and close are ours
@@ -144,6 +149,7 @@ Components import each other via `@/components/workspaceui/...`.
 - Close is `Delete`/`Backspace` on the focused tab: the close affordance is a `tabIndex={-1}` div, since a button can't nest inside Base UI's tab button
 
 ### workspace.tsx
+
 - Column-based layout using `react-resizable-panels`; each column holds one top pane + optional bottom pane
 - Two contexts:
   - **`WorkspaceContext`** — pane/tab state and methods (`openTabInPane`, `closeTab`, `activateTab`, `updateTab`, `openPane`, `closePane`). Access via `useWorkspace()`.
@@ -157,6 +163,7 @@ Components import each other via `@/components/workspaceui/...`.
 ## Documentation
 
 Every component in `src/registry/bases/base/workspaceui/` must have a matching fumadocs page:
+
 - `src/content/docs/components/<component>.mdx` — install (CLI + manual `<ComponentSource>`), usage, and a `<TypeTable>` API reference
 - A live demo in `src/registry/bases/base/examples/<component>-live.tsx`, registered in `previewComponents` in `src/components/component-preview.tsx`, and referenced via `<ComponentPreview name="<component>" code={...} />` in the mdx
 - The component's name added to the `pages` array in `src/content/docs/components/meta.json` (validated by `registry-docs.test.ts`), **and** a sidebar entry in the `Components` section of `src/lib/nav.ts` (this is what actually renders the docs sidebar — see "UI architecture" above)
@@ -167,7 +174,8 @@ Use `src/content/docs/components/workspace.mdx` and `src/registry/bases/base/exa
 ## Testing
 
 Vitest with jsdom. `src/test/setup.ts` provides:
-- `ResizeObserver` stub (required by `react-resizable-panels`)
+
+- `ResizeObserver` stub (required by `react-resizable-panels`). Stateful: it records observed elements per observer instance, and the exported `resizeTo(el, width)` helper synchronously fires that width at every observer watching `el` — the only way to reach a container-width branch, since jsdom never resizes anything. It deliberately does _not_ fake the element's box; that's `stubLayout()`'s job (below).
 - `setPointerCapture`/`releasePointerCapture`/`hasPointerCapture` mocks (required by drag handlers). Stateful, not no-ops, so capture round-trips are observable — the Escape-cancel path asserts capture is released.
 
 jsdom has no layout: every element reports a 0×0 box at (0, 0). Single-pane UI
@@ -178,7 +186,8 @@ stable non-zero box per element. It's scoped rather than global on purpose: the
 drag tests depend on unmocked elements reading as 0×0, and `mockRect()` spies
 still win over it (own property vs. prototype).
 
-Tests live in `src/registry/bases/base/workspaceui/__tests__/`.
+Component tests live in `src/registry/bases/base/workspaceui/__tests__/`; the
+shared test setup has its own tests in `src/test/__tests__/`.
 
 New component or block, or a prop change on an existing one: see [`.claude/rules/component-testing.md`](.claude/rules/component-testing.md) — needs a component-level test, a `registry.json` entry, and doc/sidebar entries (the latter two are validated automatically by `src/registry/__tests__/registry.test.ts` and `registry-docs.test.ts`).
 

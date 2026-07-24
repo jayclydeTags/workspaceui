@@ -1,7 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { flexRender, type Table as TanstackTable } from "@tanstack/react-table"
+import {
+  flexRender,
+  type Column,
+  type Table as TanstackTable,
+} from "@tanstack/react-table"
 import { MoreHorizontalIcon, PlusIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -77,6 +81,13 @@ function clamp(n: number, lo: number, hi: number) {
 
 function normalizeErrorMessage(err: unknown): string {
   return err instanceof Error ? err.message : String(err)
+}
+
+// A cell's committed value, coerced for display in the (string-only, so far)
+// text control — null/undefined read as empty rather than the literal
+// "null"/"undefined".
+function cellDisplayValue(value: unknown): string {
+  return value == null ? "" : String(value)
 }
 
 function withKey<T>(map: Map<string, T>, key: string, value: T) {
@@ -206,9 +217,11 @@ export function DataGrid<TData>({
     cellRefs.current.get(cellKey(r, c))?.focus()
   }
 
-  function getColumnLabel(columnId: string): string {
-    const header = table.getColumn(columnId)?.columnDef.header
-    return typeof header === "string" ? header : columnId
+  // Takes the column the caller already has, rather than columnId + a
+  // table.getColumn() lookup back through the table.
+  function getColumnLabel(column: Column<TData, unknown>): string {
+    const header = column.columnDef.header
+    return typeof header === "string" ? header : column.id
   }
 
   // Fires once the consumer hands back a grown row set after onRowAdd —
@@ -253,6 +266,7 @@ export function DataGrid<TData>({
   async function runCommit(
     rowId: string,
     columnId: string,
+    columnLabel: string,
     value: string,
     coord: Coord
   ) {
@@ -265,9 +279,7 @@ export function DataGrid<TData>({
       setCommits((prev) =>
         withKey(prev, key, { value, pending: false, error: message })
       )
-      setLiveMessage(
-        `${getColumnLabel(columnId)}, row ${coord.r + 1}: ${message}`
-      )
+      setLiveMessage(`${columnLabel}, row ${coord.r + 1}: ${message}`)
     }
   }
 
@@ -281,7 +293,7 @@ export function DataGrid<TData>({
     if (!cell || err != null) return
 
     const committed = cell.getValue()
-    const committedStr = committed == null ? "" : String(committed)
+    const committedStr = cellDisplayValue(committed)
     // Dedup against the last *successful* commit (the table's own data),
     // never the last attempted value — so retrying a rejected edit with the
     // same value fires onCellEdit again instead of no-opping.
@@ -290,7 +302,10 @@ export function DataGrid<TData>({
     const key = cellKey(r, c)
     const value = buffer
     setCommits((prev) => withKey(prev, key, { value, pending: true }))
-    void runCommit(row.id, cell.column.id, value, { r, c })
+    void runCommit(row.id, cell.column.id, getColumnLabel(cell.column), value, {
+      r,
+      c,
+    })
   }
 
   function cancelEdit() {
@@ -325,8 +340,7 @@ export function DataGrid<TData>({
     }
 
     const committed = cell.getValue()
-    const fallback =
-      commit?.value ?? (committed == null ? "" : String(committed))
+    const fallback = commit?.value ?? cellDisplayValue(committed)
     const initial = seed ?? fallback
     setFocusCoord({ r, c })
     setEditCoord({ r, c })
@@ -539,8 +553,7 @@ export function DataGrid<TData>({
                                 value={
                                   isEditing
                                     ? buffer
-                                    : (commit?.value ??
-                                      (value == null ? "" : String(value)))
+                                    : (commit?.value ?? cellDisplayValue(value))
                                 }
                                 readOnly={!isEditing}
                                 disabled={isPending}

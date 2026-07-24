@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react"
+import { render, screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 import {
@@ -62,6 +62,28 @@ function renderGrid(overrides: Partial<{ data: Person[] }> = {}) {
 function getCell(rowIndex: number, colIndex: number) {
   const cells = screen.getAllByRole("gridcell")
   return cells[rowIndex * 2 + colIndex]!
+}
+
+function deferred<T>() {
+  let resolve!: (value: T) => void
+  let reject!: (reason?: unknown) => void
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res
+    reject = rej
+  })
+  return { promise, resolve, reject }
+}
+
+async function typeAndCommit(
+  cell: HTMLElement,
+  user: ReturnType<typeof userEvent.setup>,
+  text: string
+) {
+  await user.click(cell)
+  const input = within(cell).getByRole("textbox")
+  await user.clear(input)
+  await user.type(input, text)
+  await user.tab()
 }
 
 describe("DataGrid", () => {
@@ -241,6 +263,144 @@ describe("DataGrid", () => {
       await user.tab()
       expect(onCellEdit).not.toHaveBeenCalled()
       expect(input).toHaveFocus()
+    })
+  })
+
+  describe("async commit contract", () => {
+    it("shows a spinner and disables the control while the commit is pending", async () => {
+      const user = userEvent.setup()
+      const { promise, resolve } = deferred<void>()
+      const onCellEdit = vi.fn<OnCellEdit>().mockReturnValue(promise)
+      render(<Harness onCellEdit={onCellEdit} />)
+      const cell = getCell(0, 0)
+
+      await typeAndCommit(cell, user, "Updated")
+
+      expect(onCellEdit).toHaveBeenCalledWith("1", "name", "Updated")
+      expect(within(cell).getByRole("textbox")).toBeDisabled()
+      expect(cell.querySelector('[data-slot="spinner"]')).toBeInTheDocument()
+
+      resolve()
+      await waitFor(() =>
+        expect(within(cell).getByRole("textbox")).not.toBeDisabled()
+      )
+      expect(
+        cell.querySelector('[data-slot="spinner"]')
+      ).not.toBeInTheDocument()
+    })
+
+    it("keeps the typed value on rejection and shows the error with the invalid-cell treatment", async () => {
+      const user = userEvent.setup()
+      const onCellEdit = vi
+        .fn<OnCellEdit>()
+        .mockRejectedValue(new Error("Server rejected"))
+      render(<Harness onCellEdit={onCellEdit} />)
+      const cell = getCell(0, 0)
+
+      await typeAndCommit(cell, user, "Updated")
+
+      await waitFor(() =>
+        expect(within(cell).getByRole("textbox")).toHaveAttribute(
+          "aria-invalid",
+          "true"
+        )
+      )
+      const input = within(cell).getByRole("textbox")
+      expect(input).toHaveValue("Updated")
+      expect(input).not.toBeDisabled()
+      const describedBy = input.getAttribute("aria-describedby")
+      expect(describedBy).toBeTruthy()
+      expect(document.getElementById(describedBy!)).toHaveTextContent(
+        "Server rejected"
+      )
+    })
+
+    it("announces the rejection through aria-live with the cell's location, and stays silent while pending", async () => {
+      const user = userEvent.setup()
+      const { promise, reject } = deferred<void>()
+      const onCellEdit = vi.fn<OnCellEdit>().mockReturnValue(promise)
+      const { container } = render(<Harness onCellEdit={onCellEdit} />)
+      const liveRegion = container.querySelector('[aria-live="polite"]')!
+      const cell = getCell(0, 0)
+
+      await typeAndCommit(cell, user, "Updated")
+      expect(liveRegion).toHaveTextContent("")
+
+      reject(new Error("Server rejected"))
+      await waitFor(() =>
+        expect(liveRegion).toHaveTextContent("Name, row 1: Server rejected")
+      )
+    })
+
+    it("catches a synchronous throw the same way as a rejected promise", async () => {
+      const user = userEvent.setup()
+      const onCellEdit = vi.fn<OnCellEdit>().mockImplementation(() => {
+        throw new Error("Sync boom")
+      })
+      render(<Harness onCellEdit={onCellEdit} />)
+      const cell = getCell(0, 0)
+
+      await typeAndCommit(cell, user, "Updated")
+
+      await waitFor(() =>
+        expect(within(cell).getByRole("textbox")).toHaveAttribute(
+          "aria-invalid",
+          "true"
+        )
+      )
+      const input = within(cell).getByRole("textbox")
+      expect(input).toHaveValue("Updated")
+      const describedBy = input.getAttribute("aria-describedby")
+      expect(document.getElementById(describedBy!)).toHaveTextContent(
+        "Sync boom"
+      )
+    })
+
+    it("retries a rejected commit when the same value is committed again", async () => {
+      const user = userEvent.setup()
+      const onCellEdit = vi
+        .fn<OnCellEdit>()
+        .mockRejectedValueOnce(new Error("Server rejected"))
+        .mockResolvedValueOnce(undefined)
+      render(<Harness onCellEdit={onCellEdit} />)
+      const cell = getCell(0, 0)
+
+      await typeAndCommit(cell, user, "Updated")
+      await waitFor(() =>
+        expect(within(cell).getByRole("textbox")).toHaveAttribute(
+          "aria-invalid",
+          "true"
+        )
+      )
+      expect(onCellEdit).toHaveBeenCalledTimes(1)
+
+      // Re-enter edit mode without changing the value and commit again —
+      // dedup compares against the last *successful* commit, so an unchanged
+      // retry still fires rather than no-opping.
+      await user.click(cell)
+      const retryInput = within(cell).getByRole("textbox")
+      expect(retryInput).toHaveValue("Updated")
+      await user.tab()
+
+      await waitFor(() => expect(onCellEdit).toHaveBeenCalledTimes(2))
+      expect(onCellEdit).toHaveBeenNthCalledWith(2, "1", "name", "Updated")
+      await waitFor(() =>
+        expect(within(cell).getByRole("textbox")).not.toHaveAttribute(
+          "aria-invalid"
+        )
+      )
+    })
+
+    it("does not commit when the value is unchanged from the last successful commit", async () => {
+      const user = userEvent.setup()
+      const onCellEdit = vi.fn<OnCellEdit>()
+      render(<Harness onCellEdit={onCellEdit} />)
+      const cell = getCell(0, 0)
+
+      await user.click(cell)
+      await user.tab()
+
+      expect(onCellEdit).not.toHaveBeenCalled()
     })
   })
 })

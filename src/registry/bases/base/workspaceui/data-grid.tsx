@@ -5,6 +5,7 @@ import { flexRender, type Table as TanstackTable } from "@tanstack/react-table"
 
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
+import { Spinner } from "@/components/ui/spinner"
 import {
   Table,
   TableBody,
@@ -49,6 +50,32 @@ function clamp(n: number, lo: number, hi: number) {
   return Math.min(Math.max(n, lo), hi)
 }
 
+function normalizeErrorMessage(err: unknown): string {
+  return err instanceof Error ? err.message : String(err)
+}
+
+function withKey<T>(map: Map<string, T>, key: string, value: T) {
+  const next = new Map(map)
+  next.set(key, value)
+  return next
+}
+
+function withoutKey<T>(map: Map<string, T>, key: string) {
+  const next = new Map(map)
+  next.delete(key)
+  return next
+}
+
+// A cell's in-flight or rejected commit — the typed value it's holding on
+// screen, whether it's still pending, and (once rejected) the error to show.
+// One entry per cell key so pending/value/error can't drift out of sync with
+// each other.
+interface CellCommit {
+  value: string
+  pending: boolean
+  error?: string
+}
+
 // ponytail: "required" is the only rule until a real validation hook lands —
 // enough to exercise the aria-invalid / aria-describedby wiring end to end
 // for the one type this walking skeleton implements.
@@ -71,6 +98,14 @@ export function DataGrid<TData>({
   const [buffer, setBuffer] = React.useState("")
   const [error, setError] = React.useState<string | null>(null)
 
+  // Async commit state, keyed by "r-c" — independent of editCoord so a
+  // commit can stay pending (or errored) on a cell after focus has moved on.
+  // Cleared entirely on success, since the table's own data takes back over.
+  const [commits, setCommits] = React.useState<Map<string, CellCommit>>(
+    new Map()
+  )
+  const [liveMessage, setLiveMessage] = React.useState("")
+
   const cellRefs = React.useRef(new Map<string, HTMLTableCellElement>())
   const inputRefs = React.useRef(new Map<string, HTMLInputElement>())
   // Enter/Tab/Escape move focus themselves after resolving the cell (commit
@@ -91,6 +126,34 @@ export function DataGrid<TData>({
     cellRefs.current.get(cellKey(r, c))?.focus()
   }
 
+  function getColumnLabel(columnId: string): string {
+    const header = table.getColumn(columnId)?.columnDef.header
+    return typeof header === "string" ? header : columnId
+  }
+
+  // Always treats onCellEdit as async: a synchronous throw and a rejected
+  // promise both land here, through the same try/catch.
+  async function runCommit(
+    rowId: string,
+    columnId: string,
+    value: string,
+    coord: Coord
+  ) {
+    const key = cellKey(coord.r, coord.c)
+    try {
+      await onCellEdit(rowId, columnId, value)
+      setCommits((prev) => withoutKey(prev, key))
+    } catch (err) {
+      const message = normalizeErrorMessage(err)
+      setCommits((prev) =>
+        withKey(prev, key, { value, pending: false, error: message })
+      )
+      setLiveMessage(
+        `${getColumnLabel(columnId)}, row ${coord.r + 1}: ${message}`
+      )
+    }
+  }
+
   function commitEdit() {
     if (!editCoord) return
     const { r, c } = editCoord
@@ -98,30 +161,44 @@ export function DataGrid<TData>({
     const cell = row?.getVisibleCells()[c]
     const err = validateText(buffer)
     setEditCoord(null)
-    // ponytail: fire-and-forget — pending/error commit states (spinner,
-    // rejection message, retry) are the async commit contract's job, a later
-    // ticket. An invalid value is simply never sent; a rejection here is
-    // swallowed rather than surfaced.
-    if (cell && err == null) {
-      Promise.resolve(onCellEdit(row.id, cell.column.id, buffer)).catch(
-        () => {}
-      )
-    }
+    if (!cell || err != null) return
+
+    const committed = cell.getValue()
+    const committedStr = committed == null ? "" : String(committed)
+    // Dedup against the last *successful* commit (the table's own data),
+    // never the last attempted value — so retrying a rejected edit with the
+    // same value fires onCellEdit again instead of no-opping.
+    if (buffer === committedStr) return
+
+    const key = cellKey(r, c)
+    const value = buffer
+    setCommits((prev) => withKey(prev, key, { value, pending: true }))
+    void runCommit(row.id, cell.column.id, value, { r, c })
   }
 
   function cancelEdit() {
     if (!editCoord) return
     const { r, c } = editCoord
+    const key = cellKey(r, c)
     setEditCoord(null)
     setBuffer("")
     setError(null)
-    cellRefs.current.get(cellKey(r, c))?.focus()
+    // Escape abandons the in-progress attempt entirely, including a
+    // previously rejected one — back to the last value the table actually
+    // has.
+    setCommits((prev) => withoutKey(prev, key))
+    cellRefs.current.get(key)?.focus()
   }
 
   function beginEdit(r: number, c: number, seed?: string) {
     const row = rows[r]
     const cell = row?.getVisibleCells()[c]
     if (!cell) return
+    const key = cellKey(r, c)
+    const commit = commits.get(key)
+    // A pending commit's control is disabled — don't let a second edit
+    // stack on top of an unresolved one.
+    if (commit?.pending) return
 
     // Switching directly from one editing cell to another: resolve the old
     // one first so its value isn't silently dropped.
@@ -131,12 +208,14 @@ export function DataGrid<TData>({
     }
 
     const committed = cell.getValue()
-    const initial = seed ?? (committed == null ? "" : String(committed))
+    const fallback =
+      commit?.value ?? (committed == null ? "" : String(committed))
+    const initial = seed ?? fallback
     setFocusCoord({ r, c })
     setEditCoord({ r, c })
     setBuffer(initial)
     setError(validateText(initial))
-    inputRefs.current.get(cellKey(r, c))?.focus()
+    inputRefs.current.get(key)?.focus()
   }
 
   function onCellClick(r: number, c: number) {
@@ -273,17 +352,27 @@ export function DataGrid<TData>({
             rows.map((row, r) => (
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell, c) => {
+                  const key = cellKey(r, c)
                   const isFocused = focusCoord.r === r && focusCoord.c === c
                   const isEditing = editCoord?.r === r && editCoord?.c === c
-                  const showError = isEditing && error != null
+                  const commit = commits.get(key)
+                  const isPending = commit?.pending ?? false
+                  // While editing, only the live validation error shows —
+                  // once committed (successfully or not), a rejection uses
+                  // the same red-text-under-the-cell treatment instead.
+                  const displayError = isEditing
+                    ? error
+                    : (commit?.error ?? null)
+                  const showError = displayError != null
                   const isTextColumn =
                     cell.column.columnDef.meta?.type === "text"
                   const value = cell.getValue()
+                  const cellErrorId = `${errorId}-${key}`
 
                   return (
                     <TableCell
                       key={cell.id}
-                      ref={setMapRef(cellRefs, cellKey(r, c))}
+                      ref={setMapRef(cellRefs, key)}
                       role="gridcell"
                       tabIndex={isFocused ? 0 : -1}
                       onFocus={() => setFocusCoord({ r, c })}
@@ -293,35 +382,52 @@ export function DataGrid<TData>({
                     >
                       {isTextColumn ? (
                         <>
-                          <Input
-                            ref={setMapRef(inputRefs, cellKey(r, c))}
-                            value={
-                              isEditing
-                                ? buffer
-                                : value == null
-                                  ? ""
-                                  : String(value)
-                            }
-                            readOnly={!isEditing}
-                            tabIndex={-1}
-                            aria-invalid={showError || undefined}
-                            aria-describedby={showError ? errorId : undefined}
-                            onMouseDown={(e) => {
-                              if (!isEditing) e.preventDefault()
-                            }}
-                            onChange={isEditing ? onEditInputChange : undefined}
-                            onKeyDown={
-                              isEditing ? onEditInputKeyDown : undefined
-                            }
-                            onBlur={isEditing ? onEditInputBlur : undefined}
-                            className="h-auto rounded-none border-none bg-transparent px-2 py-2 shadow-none hover:bg-accent/30 focus-visible:bg-background focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset dark:bg-transparent"
-                          />
+                          <div className="relative">
+                            <Input
+                              ref={setMapRef(inputRefs, key)}
+                              value={
+                                isEditing
+                                  ? buffer
+                                  : (commit?.value ??
+                                    (value == null ? "" : String(value)))
+                              }
+                              readOnly={!isEditing}
+                              disabled={isPending}
+                              tabIndex={-1}
+                              aria-invalid={showError || undefined}
+                              aria-describedby={
+                                showError ? cellErrorId : undefined
+                              }
+                              onMouseDown={(e) => {
+                                if (!isEditing) e.preventDefault()
+                              }}
+                              onChange={
+                                isEditing ? onEditInputChange : undefined
+                              }
+                              onKeyDown={
+                                isEditing ? onEditInputKeyDown : undefined
+                              }
+                              onBlur={isEditing ? onEditInputBlur : undefined}
+                              className={cn(
+                                "h-auto rounded-none border-none bg-transparent px-2 py-2 shadow-none hover:bg-accent/30 focus-visible:bg-background focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset dark:bg-transparent",
+                                isPending && "pr-7"
+                              )}
+                            />
+                            {isPending && (
+                              <Spinner
+                                role="presentation"
+                                aria-hidden="true"
+                                aria-label={undefined}
+                                className="absolute top-1/2 right-2 size-3.5 -translate-y-1/2"
+                              />
+                            )}
+                          </div>
                           {showError && (
                             <span
-                              id={errorId}
+                              id={cellErrorId}
                               className="block px-2 pb-1.5 text-xs text-destructive"
                             >
-                              {error}
+                              {displayError}
                             </span>
                           )}
                         </>
@@ -341,8 +447,10 @@ export function DataGrid<TData>({
           )}
         </TableBody>
       </Table>
-      {/* Reserved for the async-commit ticket's error announcements. */}
-      <div aria-live="polite" className="sr-only" />
+      {/* Commit errors only — silent on pending and on success. */}
+      <div aria-live="polite" className="sr-only">
+        {liveMessage}
+      </div>
     </div>
   )
 }

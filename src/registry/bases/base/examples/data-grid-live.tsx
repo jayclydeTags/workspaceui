@@ -42,7 +42,13 @@ export function DataGridLiveDemo() {
   return (
     <DataGrid
       table={table}
-      onCellEdit={(rowId, columnId, value) => {
+      onCellEdit={async (rowId, columnId, value) => {
+        // Simulated network latency so the pending spinner is visible; type
+        // "error" into a cell to see the rejection path.
+        await new Promise((resolve) => setTimeout(resolve, 600))
+        if (typeof value === "string" && value.toLowerCase() === "error") {
+          throw new Error("The server rejected this value.")
+        }
         setData((prev) =>
           prev.map((row) =>
             row.id === rowId ? { ...row, [columnId]: value } : row

@@ -35,9 +35,14 @@ getRowId: (row) => row.id,
 })
 
 return (
+
 <DataGrid
 table={table}
-onCellEdit={(rowId, columnId, value) => {
+onCellEdit={async (rowId, columnId, value) => {
+await new Promise((resolve) => setTimeout(resolve, 600))
+if (typeof value === "string" && value.toLowerCase() === "error") {
+throw new Error("The server rejected this value.")
+}
 setData((prev) =>
 prev.map((row) => (row.id === rowId ? { ...row, [columnId]: value } : row))
 )
@@ -50,10 +55,10 @@ prev.map((row) => (row.id === rowId ? { ...row, [columnId]: value } : row))
 
 This is the walking skeleton of a larger data-grid: the public API, the
 `column.meta` type contract ([Data Grid Types](/docs/components/data-grid-types)),
-and the full keyboard model are final — only the `text` column type has a
-working editor so far. `number`, `currency`, `select`, `boolean`, `date`,
-`multiSelect`, and `user` land in later components without changing this one's
-props.
+the full keyboard model, and the async commit contract are final — only the
+`text` column type has a working editor so far. `number`, `currency`,
+`select`, `boolean`, `date`, `multiSelect`, and `user` land in later
+components without changing this one's props.
 
 ## Installation
 
@@ -139,6 +144,16 @@ without a `meta.type` render through their normal TanStack `cell` definition
 - **Roving tabindex** — exactly one gridcell sits in the page's tab order at
   a time; tabbing into the grid from elsewhere lands on that cell, not every
   cell in it.
+- **Async commit contract** — `onCellEdit` is always awaited and wrapped in
+  the grid's own try/catch, so a synchronous throw and a rejected promise are
+  handled identically. A commit shows an inline spinner and disables the
+  control immediately, with no delay threshold. On rejection the typed value
+  stays on screen — it never reverts — and the error renders with the same
+  invalid-cell treatment as a validation error. Committing the same value
+  again after a rejection retries it: dedup compares against the last
+  _successfully_ committed value, not the last attempted one. Commit errors
+  are announced through a reserved `aria-live` region with the cell's
+  location; the region stays silent on pending and on success.
 
 ## API Reference
 

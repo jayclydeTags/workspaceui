@@ -487,9 +487,32 @@ export function DataGrid<TData>({
               </TableCell>
             </TableRow>
           ) : (
-            rows.map((row, r) => (
-              <React.Fragment key={row.id}>
-                <TableRow className="group/row">
+            rows.map((row, r) => {
+              // Renders in whichever cell ends up last in the row (the
+              // delete kebab's when present, else the last data cell) —
+              // never its own <tr>. A near-zero-height row is still a real
+              // table row, and browsers floor a table row/cell's rendered
+              // height at ~1px regardless of an explicit height:0, which
+              // reads as a second hairline next to the row's own border.
+              // Positioned absolutely against the *row* (the cell that
+              // hosts it stays position:static), so it spans full width and
+              // hangs off the row's real border with no extra DOM row.
+              const showInsertAfter = onRowAdd && r < rowCount - 1
+              const insertAfterButton = showInsertAfter && (
+                <button
+                  type="button"
+                  aria-label={`Insert row after row ${r + 1}`}
+                  onClick={() => handleRowAdd(row.id)}
+                  className="absolute inset-x-0 bottom-0 z-10 flex h-4 translate-y-1/2 items-center justify-center opacity-0 transition-opacity group-hover/row:opacity-100 focus-visible:opacity-100"
+                >
+                  <span className="flex size-5 items-center justify-center rounded-full border bg-background shadow-sm">
+                    <PlusIcon className="size-3" />
+                  </span>
+                </button>
+              )
+
+              return (
+                <TableRow key={row.id} className="group/row relative">
                   {row.getVisibleCells().map((cell, c) => {
                     const key = cellKey(r, c)
                     const isFocused = focusCoord.r === r && focusCoord.c === c
@@ -507,6 +530,7 @@ export function DataGrid<TData>({
                       cell.column.columnDef.meta?.type === "text"
                     const value = cell.getValue()
                     const cellErrorId = `${errorId}-${key}`
+                    const isLastCell = !hasDeleteColumn && c === colCount - 1
 
                     return (
                       <TableCell
@@ -577,6 +601,7 @@ export function DataGrid<TData>({
                             )}
                           </div>
                         )}
+                        {isLastCell && insertAfterButton}
                       </TableCell>
                     )
                   })}
@@ -604,35 +629,12 @@ export function DataGrid<TData>({
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
+                      {insertAfterButton}
                     </TableCell>
                   )}
                 </TableRow>
-                {onRowAdd && r < rowCount - 1 && (
-                  // Zero layout height at rest — the row must not add
-                  // permanent space between every pair of rows. The "+" is a
-                  // real, absolutely-positioned hit target straddling the
-                  // row boundary (8px into each neighbor), invisible until
-                  // hovered or focused, so it doesn't disturb normal spacing.
-                  <TableRow className="h-0 border-none hover:bg-transparent">
-                    <TableCell
-                      colSpan={totalColCount}
-                      className="relative h-0 p-0"
-                    >
-                      <button
-                        type="button"
-                        aria-label={`Insert row after row ${r + 1}`}
-                        onClick={() => handleRowAdd(row.id)}
-                        className="absolute inset-x-0 top-0 z-10 flex h-4 -translate-y-1/2 items-center justify-center opacity-0 transition-opacity hover:opacity-100 focus-visible:opacity-100"
-                      >
-                        <span className="flex size-5 items-center justify-center rounded-full border bg-background shadow-sm">
-                          <PlusIcon className="size-3" />
-                        </span>
-                      </button>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </React.Fragment>
-            ))
+              )
+            })
           )}
           {onRowAdd && (
             <TableRow className="border-none">

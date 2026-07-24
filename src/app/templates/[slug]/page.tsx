@@ -1,10 +1,9 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { Check, ChevronLeft, Download, ExternalLink } from "lucide-react"
+import { Check, ChevronLeft, ExternalLink } from "lucide-react"
 
 import { getTemplate, parsePage, templates } from "@/lib/templates"
-import { templateZipPath } from "@/lib/template-url"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -69,16 +68,8 @@ export default async function TemplatePage({ params }: PageProps) {
                 <ExternalLink />
               </Button>
             )}
-            <Button
-              className={cn("w-full", template.liveDemoUrl && "mt-2")}
-              nativeButton={false}
-              render={<a href={templateZipPath(template.slug)} download />}
-            >
-              <Download />
-              Download .zip
-            </Button>
 
-            <dl className="mt-6 space-y-3 border-t border-border pt-6 text-sm">
+            <dl className={cn("space-y-3 text-sm", template.liveDemoUrl ? "mt-6 border-t border-border pt-6" : "")}>
               <div className="flex justify-between gap-4">
                 <dt className="text-muted-foreground">Type</dt>
                 <dd className="text-right font-medium">{template.type}</dd>

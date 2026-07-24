@@ -39,9 +39,6 @@ coverage
 # Fumadocs
 public/api/search.json
 
-# Templates catalog — per-template zips are generated at (pre)build, never committed.
-public/templates/*.zip
-
 # NextJs
 .next
 out

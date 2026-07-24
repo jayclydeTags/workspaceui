@@ -2,7 +2,7 @@ import { existsSync, readFileSync, readdirSync } from "fs"
 import { join } from "path"
 
 export interface TemplateMeta {
-  slug: string // directory name; also derives the zip path and detail URL
+  slug: string // manifest file basename; also derives the detail URL
   type: string // top-level catalog axis: Application | Website | Landing page
   title: string
   description: string
@@ -16,18 +16,25 @@ export interface TemplateMeta {
   liveDemoUrl?: string // optional; detail page hides the demo action when absent
 }
 
-// Standalone starter projects live at the repo-top-level `templates/<slug>/`,
-// each carrying a colocated `template.json`. This aggregator fs-reads every
-// manifest at build time (Turbopack can't do raw imports — same pattern as the
-// blocks source reads) and exposes the typed list to the catalog UI. It holds
-// no hand-maintained data itself, so adding a template needs no edit here.
-const TEMPLATES_DIR = join(process.cwd(), "templates")
+// Template manifests live as `src/lib/templates/<slug>.json`. This aggregator
+// fs-reads every manifest at build time (Turbopack can't do raw imports — same
+// pattern as the blocks source reads) and exposes the typed list to the catalog
+// UI. It holds no hand-maintained data itself, so adding a template needs no
+// edit here — drop in a new JSON file.
+// ponytail: plain JSON for now; migrate to a fumadocs content collection when
+// template pages need MDX bodies.
+const TEMPLATES_DIR = join(process.cwd(), "src", "lib", "templates")
 
 function loadTemplates(): TemplateMeta[] {
   if (!existsSync(TEMPLATES_DIR)) return []
-  return readdirSync(TEMPLATES_DIR, { withFileTypes: true })
-    .filter((e) => e.isDirectory() && existsSync(join(TEMPLATES_DIR, e.name, "template.json")))
-    .map((e) => JSON.parse(readFileSync(join(TEMPLATES_DIR, e.name, "template.json"), "utf-8")) as TemplateMeta)
+  return readdirSync(TEMPLATES_DIR)
+    .filter((name) => name.endsWith(".json"))
+    .map(
+      (name) =>
+        JSON.parse(
+          readFileSync(join(TEMPLATES_DIR, name), "utf-8")
+        ) as TemplateMeta
+    )
     .sort((a, b) => a.title.localeCompare(b.title))
 }
 

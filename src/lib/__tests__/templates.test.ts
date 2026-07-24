@@ -4,7 +4,7 @@ import { join } from "path"
 import { describe, expect, it } from "vitest"
 
 import { templates } from "@/lib/templates"
-import { templateUrl, templateZipPath } from "@/lib/template-url"
+import { templateUrl } from "@/lib/template-url"
 
 // vitest runs from the repo root, so process.cwd() is the repo root — same
 // assumption templates.ts makes when it fs-reads the manifests.
@@ -97,18 +97,15 @@ describe("templates metadata", () => {
   )
 
   it.each(templates)(
-    "$slug: directory matches the slug and contains a package.json",
+    "$slug: manifest file basename matches the slug",
     (template) => {
-      const dir = join(REPO_ROOT, "templates", template.slug)
-      // slug is read from template.json but must equal the containing dir name —
+      // slug is read from the manifest but must equal its file basename —
       // this existence check fails when they drift.
       expect(
-        existsSync(dir),
-        `templates/${template.slug}/ does not exist (slug/dir mismatch?)`
-      ).toBe(true)
-      expect(
-        existsSync(join(dir, "package.json")),
-        `templates/${template.slug}/package.json is missing`
+        existsSync(
+          join(REPO_ROOT, "src", "lib", "templates", `${template.slug}.json`)
+        ),
+        `src/lib/templates/${template.slug}.json does not exist (slug/filename mismatch?)`
       ).toBe(true)
     }
   )
@@ -132,13 +129,12 @@ describe("templates metadata", () => {
   )
 })
 
-// The detail URL and zip path are derived from the slug in one place so the
-// nav link, the gallery, and the search index can't drift apart. Guard the
-// derivation and that every real manifest slug produces a valid detail path.
+// The detail URL is derived from the slug in one place so the nav link, the
+// gallery, and the search index can't drift apart. Guard the derivation and
+// that every real manifest slug produces a valid detail path.
 describe("template url helpers", () => {
-  it("derives the detail page and zip paths from a slug", () => {
+  it("derives the detail page path from a slug", () => {
     expect(templateUrl("starter-stub")).toBe("/templates/starter-stub")
-    expect(templateZipPath("starter-stub")).toBe("/templates/starter-stub.zip")
   })
 
   it("maps every template to its detail route", () => {

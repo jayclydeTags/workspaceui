@@ -11,8 +11,7 @@ export default function TemplatesIndex() {
       <div className="mx-auto max-w-6xl">
         <h1 className="text-2xl font-semibold tracking-tight">Templates</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Complete, frontend-only app-shell starters. Browse a template, then download a zip
-          you can install and run on its own.
+          Complete, frontend-only app-shell starters composed from WorkspaceUI blocks.
         </p>
 
         <TemplatesGallery templates={templates} />

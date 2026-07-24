@@ -1,5 +1,12 @@
 {
   "title": "Components",
   "defaultOpen": true,
-  "pages": ["index", "workspace", "page", "password-input"]
+  "pages": [
+    "index",
+    "workspace",
+    "page",
+    "password-input",
+    "data-grid-types",
+    "data-grid"
+  ]
 }

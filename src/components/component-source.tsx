@@ -10,6 +10,8 @@ const files: Record<string, string> = {
   "workspace-context": `${REGISTRY}/workspace-context.tsx`,
   workspace: `${REGISTRY}/workspace.tsx`,
   page: `${REGISTRY}/page.tsx`,
+  "data-grid": `${REGISTRY}/data-grid.tsx`,
+  "data-grid-types": `${REGISTRY}/data-grid-types.ts`,
 }
 
 interface ComponentSourceProps {

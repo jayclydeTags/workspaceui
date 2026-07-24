@@ -1,0 +1,54 @@
+"use client"
+
+import * as React from "react"
+import {
+  type ColumnDef,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table"
+
+import { DataGrid } from "@/registry/bases/base/workspaceui/data-grid"
+
+interface Contact {
+  id: string
+  name: string
+  email: string
+}
+
+const initialData: Contact[] = [
+  { id: "1", name: "Ada Lovelace", email: "ada@example.com" },
+  { id: "2", name: "Grace Hopper", email: "grace@example.com" },
+  { id: "3", name: "Katherine Johnson", email: "katherine@example.com" },
+]
+
+const columns: ColumnDef<Contact>[] = [
+  { accessorKey: "name", header: "Name", meta: { type: "text" } },
+  { accessorKey: "email", header: "Email", meta: { type: "text" } },
+]
+
+export function DataGridLiveDemo() {
+  const [data, setData] = React.useState(initialData)
+
+  // useReactTable() intentionally returns fresh functions each render; see
+  // data-table.tsx's identical eslint-disable for the same reason.
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getRowId: (row) => row.id,
+  })
+
+  return (
+    <DataGrid
+      table={table}
+      onCellEdit={(rowId, columnId, value) => {
+        setData((prev) =>
+          prev.map((row) =>
+            row.id === rowId ? { ...row, [columnId]: value } : row
+          )
+        )
+      }}
+    />
+  )
+}

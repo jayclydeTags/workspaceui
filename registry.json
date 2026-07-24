@@ -64,6 +64,39 @@
       ]
     },
     {
+      "name": "data-grid-types",
+      "type": "registry:ui",
+      "title": "Data Grid Types",
+      "description": "column.meta type contract shared by data-grid and data-filter — the eight-type column union plus per-type meta fields, declared via TanStack's own module augmentation.",
+      "dependencies": ["@tanstack/react-table"],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "src/registry/bases/base/workspaceui/data-grid-types.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "data-grid",
+      "type": "registry:ui",
+      "title": "Data Grid",
+      "description": "Editable grid over a consumer-owned useReactTable() instance. Every cell renders its live control, borderless and transparent at rest; click or type to edit, blur or Enter to commit. Full spreadsheet keyboard model over role=\"grid\" with roving tabindex. Only the text column type is implemented so far.",
+      "dependencies": ["@tanstack/react-table"],
+      "registryDependencies": [
+        "jayclydeTags/workspaceui/data-grid-types",
+        "table",
+        "input",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/workspaceui/data-grid.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "payroll-run",
       "type": "registry:block",
       "title": "Payroll Run",

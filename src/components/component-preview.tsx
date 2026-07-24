@@ -25,6 +25,7 @@ import {
   PageFullDemo,
 } from "@/registry/bases/base/examples/page-sample"
 import { PasswordInputLiveDemo } from "@/registry/bases/base/examples/password-input-live"
+import { DataGridLiveDemo } from "@/registry/bases/base/examples/data-grid-live"
 import {
   PasswordInputDefaultDemo,
   PasswordInputStrengthDemo,
@@ -57,6 +58,7 @@ const previewComponents: Record<string, React.ReactNode> = {
   "password-input-default": <PasswordInputDefaultDemo />,
   "password-input-strength": <PasswordInputStrengthDemo />,
   "password-input-checklist": <PasswordInputChecklistDemo />,
+  "data-grid": <DataGridLiveDemo />,
 }
 
 interface ComponentPreviewProps {
@@ -65,7 +67,11 @@ interface ComponentPreviewProps {
   className?: string
 }
 
-export function ComponentPreview({ name, code, className }: ComponentPreviewProps) {
+export function ComponentPreview({
+  name,
+  code,
+  className,
+}: ComponentPreviewProps) {
   const preview = previewComponents[name]
   if (!preview) return null
 

@@ -1,0 +1,127 @@
+---
+title: Data Grid Types
+description: The column.meta type contract shared by data-grid and data-filter — declared once through TanStack's own module augmentation so neither component has to re-open it.
+---
+
+`data-grid-types` has no component and no visual output — it's the shared
+`column.meta` type contract that `data-grid` (and, later, `data-filter`) build
+on. Both list it as a `registryDependencies` entry and install it
+automatically.
+
+## Installation
+
+<Tabs items={["CLI", "Manual"]}>
+<Tab value="CLI">
+
+```npm
+npx shadcn@latest add jayclydeTags/workspaceui/data-grid-types
+```
+
+</Tab>
+<Tab value="Manual">
+
+<Steps>
+<Step>
+### Install dependencies
+
+```bash
+npm install @tanstack/react-table
+```
+
+</Step>
+<Step>
+### Copy the file into your project
+
+<ComponentSource name="data-grid-types" />
+</Step>
+</Steps>
+
+</Tab>
+</Tabs>
+
+## Usage
+
+Nothing to import — the file's only job is a side-effecting `declare module
+"@tanstack/react-table"` augmentation of `ColumnMeta`. Once it's part of your
+TypeScript program (installing the file is enough), every `columnDef.meta`
+you write is typed against it:
+
+```tsx
+const columns: ColumnDef<Contact>[] = [
+  { accessorKey: "name", header: "Name", meta: { type: "text" } },
+  {
+    accessorKey: "status",
+    header: "Status",
+    meta: {
+      type: "select",
+      options: [
+        { value: "open", label: "Open" },
+        { value: "closed", label: "Closed" },
+      ],
+    },
+  },
+]
+```
+
+## Column types
+
+Eight types are declared now so `data-grid` and `data-filter` never have to
+re-open the contract. Only **`text`** has a working cell editor today (see
+[Data Grid](/docs/components/data-grid)) — the rest exist so you can type your
+columns now and get the editor for free once a later component ships it.
+
+- `text`, `number`, `currency`, `select`, `boolean`, `date`, `multiSelect`, `user`
+
+## Meta fields
+
+<TypeTable
+  type={{
+    type: {
+      type: "DataGridColumnType",
+      description:
+        "One of the eight column types above. Omit on columns that aren't user-editable (e.g. a selection or actions column).",
+    },
+    options: {
+      type: "DataGridSelectOption[]",
+      description:
+        "Shared by select and multiSelect — the allowed { value, label } choices.",
+    },
+    users: {
+      type: "DataGridUser[]",
+      description:
+        "user columns only — a static list of { id, name, avatarUrl? }. The grid never fetches; async/remote user lists are out of scope.",
+    },
+    maxChips: {
+      type: "number",
+      default: "2",
+      description:
+        "multiSelect only — chips shown before the rest collapse into “+N”.",
+    },
+    summary: {
+      type: "boolean",
+      default: "false",
+      description:
+        "Marks this column as card title/subtitle material for the narrow-container branch.",
+    },
+  }}
+/>
+
+## Exported types
+
+<TypeTable
+  type={{
+    DataGridColumnType: {
+      type: "string union",
+      description:
+        '"text" | "number" | "currency" | "select" | "boolean" | "date" | "multiSelect" | "user"',
+    },
+    DataGridSelectOption: {
+      type: "{ value: string; label: string }",
+      description: "A single select/multiSelect option.",
+    },
+    DataGridUser: {
+      type: "{ id: string; name: string; avatarUrl?: string }",
+      description: "A single user-column entry.",
+    },
+  }}
+/>

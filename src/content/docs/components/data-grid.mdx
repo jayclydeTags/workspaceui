@@ -1,0 +1,164 @@
+---
+title: Data Grid
+description: An editable grid over a consumer-owned useReactTable() instance — every cell renders its live control, borderless at rest, with a full spreadsheet keyboard model over role="grid".
+---
+
+export const PREVIEW_CODE = `import * as React from "react"
+import { type ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table"
+import { DataGrid } from "@/components/ui/data-grid"
+
+interface Contact {
+id: string
+name: string
+email: string
+}
+
+const initialData: Contact[] = [
+{ id: "1", name: "Ada Lovelace", email: "ada@example.com" },
+{ id: "2", name: "Grace Hopper", email: "grace@example.com" },
+{ id: "3", name: "Katherine Johnson", email: "katherine@example.com" },
+]
+
+const columns: ColumnDef<Contact>[] = [
+{ accessorKey: "name", header: "Name", meta: { type: "text" } },
+{ accessorKey: "email", header: "Email", meta: { type: "text" } },
+]
+
+export function MyGrid() {
+  const [data, setData] = React.useState(initialData)
+
+const table = useReactTable({
+data,
+columns,
+getCoreRowModel: getCoreRowModel(),
+getRowId: (row) => row.id,
+})
+
+return (
+<DataGrid
+table={table}
+onCellEdit={(rowId, columnId, value) => {
+setData((prev) =>
+prev.map((row) => (row.id === rowId ? { ...row, [columnId]: value } : row))
+)
+}}
+/>
+)
+}`
+
+<ComponentPreview name="data-grid" code={PREVIEW_CODE} />
+
+This is the walking skeleton of a larger data-grid: the public API, the
+`column.meta` type contract ([Data Grid Types](/docs/components/data-grid-types)),
+and the full keyboard model are final — only the `text` column type has a
+working editor so far. `number`, `currency`, `select`, `boolean`, `date`,
+`multiSelect`, and `user` land in later components without changing this one's
+props.
+
+## Installation
+
+<Tabs items={["CLI", "Manual"]}>
+<Tab value="CLI">
+
+```npm
+npx shadcn@latest add jayclydeTags/workspaceui/data-grid
+```
+
+</Tab>
+<Tab value="Manual">
+
+<Steps>
+<Step>
+### Install dependencies
+
+```bash
+npm install @tanstack/react-table
+```
+
+</Step>
+<Step>
+### Copy the files into your project
+
+`data-grid` depends on `data-grid-types` for the `column.meta` contract:
+
+<ComponentSource name="data-grid-types" />
+<ComponentSource name="data-grid" />
+</Step>
+</Steps>
+
+</Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { DataGrid } from "@/components/ui/data-grid"
+```
+
+```tsx
+const table = useReactTable({
+  data,
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+})
+
+<DataGrid
+  table={table}
+  onCellEdit={(rowId, columnId, value) => {
+    // persist the edit however you like — the grid never owns data
+  }}
+/>
+```
+
+The grid never owns `data` — it renders from the `table` instance you create
+and own, and reports intent through `onCellEdit` only. Declare a column as
+editable by setting `meta: { type: "text" }` on its `ColumnDef`; columns
+without a `meta.type` render through their normal TanStack `cell` definition
+(read-only).
+
+## Features
+
+- **Always-rendered live control** — every `text` cell is a real `Input`,
+  styled borderless and transparent at rest (`hover:bg-accent/30`, a focus
+  ring on focus) so a page of editable cells reads as plain table text, not a
+  form.
+- **Click or type to edit** — clicking a cell or typing a character while it's
+  focused enters edit mode and focuses the inner control. <kbd>F2</kbd> also
+  enters edit mode, preserving the existing value instead of replacing it.
+- **Commit on blur or Enter** — an edit commits when the control blurs or when
+  you press <kbd>Enter</kbd>. <kbd>Escape</kbd> discards the in-progress value
+  and returns focus to the cell.
+- **Live validation** — runs on every keystroke and renders as red text under
+  the cell, wired through `aria-invalid`/`aria-describedby` on the control. An
+  invalid value is never sent to `onCellEdit`.
+- **Full keyboard model over `role="grid"`** — arrow keys move between cells;
+  <kbd>Tab</kbd>/<kbd>Shift+Tab</kbd> move and **wrap** at row ends (a
+  deliberate divergence from generic APG advice, matching spreadsheet
+  convention); <kbd>Enter</kbd>/<kbd>Shift+Enter</kbd> move down/up without
+  entering edit mode.
+- **Roving tabindex** — exactly one gridcell sits in the page's tab order at
+  a time; tabbing into the grid from elsewhere lands on that cell, not every
+  cell in it.
+
+## API Reference
+
+<TypeTable
+  type={{
+    table: {
+      type: "Table<TData>",
+      required: true,
+      description:
+        "A useReactTable() instance you create and own. The grid renders from it and never mutates it directly.",
+    },
+    onCellEdit: {
+      type: "(rowId: string, columnId: string, value: unknown) => void | Promise<void>",
+      required: true,
+      description:
+        "Called with a valid, committed edit. rowId matches TanStack's own Row.id; narrow value using columnId and that column's meta.type.",
+    },
+    className: {
+      type: "string",
+      description: "Additional CSS classes applied to the root element.",
+    },
+  }}
+/>

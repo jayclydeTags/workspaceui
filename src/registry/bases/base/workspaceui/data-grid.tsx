@@ -2,8 +2,26 @@
 
 import * as React from "react"
 import { flexRender, type Table as TanstackTable } from "@tanstack/react-table"
+import { MoreHorizontalIcon, PlusIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import {
@@ -17,6 +35,10 @@ import {
 // Side-effect import: pulls in the column.meta type augmentation this
 // component reads (cell.column.columnDef.meta?.type).
 import "@/registry/bases/base/workspaceui/data-grid-types"
+import type {
+  DataGridColumnType,
+  DataGridSelectOption,
+} from "@/registry/bases/base/workspaceui/data-grid-types"
 
 export interface DataGridProps<TData> {
   table: TanstackTable<TData>
@@ -25,6 +47,9 @@ export interface DataGridProps<TData> {
     columnId: string,
     value: unknown
   ) => void | Promise<void>
+  /** Omit `afterRowId` to append; pass it to insert after that row. */
+  onRowAdd?: (afterRowId?: string) => void | Promise<void>
+  onRowDelete?: (rowId: string) => void | Promise<void>
   className?: string
 }
 
@@ -83,15 +108,61 @@ function validateText(value: string): string | null {
   return value.trim().length === 0 ? "Required" : null
 }
 
+function defaultValueForColumnType(
+  type: DataGridColumnType | undefined,
+  options: DataGridSelectOption[] | undefined
+): unknown {
+  switch (type) {
+    case "number":
+    case "currency":
+      return 0
+    case "boolean":
+      return false
+    case "select":
+      return options?.[0]?.value ?? ""
+    case "multiSelect":
+      return []
+    case "user":
+      return null
+    case "text":
+    case "date":
+    default:
+      return ""
+  }
+}
+
+/**
+ * Per-type default values for a new row — "" for text/date, 0 for
+ * number/currency, false for boolean, the first option for select, [] for
+ * multiSelect, null for user. Columns without a `meta.type` are omitted.
+ * The grid never owns data, so it can't append a row itself: call this from
+ * your own `onRowAdd` to seed the record you construct and insert.
+ */
+export function getDataGridRowDefaults<TData>(
+  table: TanstackTable<TData>
+): Record<string, unknown> {
+  const defaults: Record<string, unknown> = {}
+  for (const column of table.getAllLeafColumns()) {
+    const meta = column.columnDef.meta
+    if (!meta?.type) continue
+    defaults[column.id] = defaultValueForColumnType(meta.type, meta.options)
+  }
+  return defaults
+}
+
 export function DataGrid<TData>({
   table,
   onCellEdit,
+  onRowAdd,
+  onRowDelete,
   className,
 }: DataGridProps<TData>) {
   const headerGroups = table.getHeaderGroups()
   const rows = table.getRowModel().rows
   const colCount = headerGroups[0]?.headers.length ?? 0
   const rowCount = rows.length
+  const hasDeleteColumn = onRowDelete != null
+  const totalColCount = colCount + (hasDeleteColumn ? 1 : 0)
 
   const [focusCoord, setFocusCoord] = React.useState<Coord>({ r: 0, c: 0 })
   const [editCoord, setEditCoord] = React.useState<Coord | null>(null)
@@ -105,6 +176,15 @@ export function DataGrid<TData>({
     new Map()
   )
   const [liveMessage, setLiveMessage] = React.useState("")
+
+  // Set right before calling onRowAdd, consumed once the consumer's data
+  // update lands and rowCount actually grows — that's the only signal the
+  // grid gets back, since it never owns data itself.
+  const [pendingAdd, setPendingAdd] = React.useState<{
+    afterRowId?: string
+  } | null>(null)
+  const prevRowCountRef = React.useRef(rowCount)
+  const [deleteTarget, setDeleteTarget] = React.useState<string | null>(null)
 
   const cellRefs = React.useRef(new Map<string, HTMLTableCellElement>())
   const inputRefs = React.useRef(new Map<string, HTMLInputElement>())
@@ -129,6 +209,43 @@ export function DataGrid<TData>({
   function getColumnLabel(columnId: string): string {
     const header = table.getColumn(columnId)?.columnDef.header
     return typeof header === "string" ? header : columnId
+  }
+
+  // Fires once the consumer hands back a grown row set after onRowAdd —
+  // focuses the new row's first cell, whether it landed at the end (append)
+  // or right after afterRowId (insert).
+  React.useEffect(() => {
+    if (pendingAdd && rowCount > prevRowCountRef.current) {
+      const targetR =
+        pendingAdd.afterRowId == null
+          ? rowCount - 1
+          : clamp(
+              rows.findIndex((row) => row.id === pendingAdd.afterRowId) + 1,
+              0,
+              rowCount - 1
+            )
+      focusTo(targetR, 0)
+      setPendingAdd(null)
+    }
+    prevRowCountRef.current = rowCount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rowCount, pendingAdd])
+
+  // ponytail: row add/delete have no pending/error UI of their own — unlike
+  // onCellEdit, the spec doesn't ask for one. Still clear pendingAdd on
+  // rejection so a later unrelated row-count change can't be mistaken for
+  // this add having landed and steal focus to the wrong row.
+  function handleRowAdd(afterRowId?: string) {
+    if (!onRowAdd) return
+    setPendingAdd({ afterRowId })
+    Promise.resolve(onRowAdd(afterRowId)).catch(() => setPendingAdd(null))
+  }
+
+  function confirmRowDelete() {
+    const rowId = deleteTarget
+    setDeleteTarget(null)
+    if (rowId == null || !onRowDelete) return
+    void Promise.resolve(onRowDelete(rowId)).catch(() => {})
   }
 
   // Always treats onCellEdit as async: a synchronous throw and a rejected
@@ -321,10 +438,17 @@ export function DataGrid<TData>({
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       {/* aria-rowcount includes the header row, per the grid pattern's own convention. */}
-      <Table role="grid" aria-rowcount={rowCount + 1} aria-colcount={colCount}>
+      <Table
+        role="grid"
+        aria-rowcount={rowCount + 1}
+        aria-colcount={totalColCount}
+      >
         <TableHeader>
           {headerGroups.map((headerGroup) => (
             <TableRow key={headerGroup.id}>
+              {hasDeleteColumn && (
+                <TableHead aria-hidden="true" className="w-10" />
+              )}
               {headerGroup.headers.map((header) => (
                 <TableHead key={header.id}>
                   {header.isPlaceholder
@@ -342,7 +466,7 @@ export function DataGrid<TData>({
           {rowCount === 0 ? (
             <TableRow>
               <TableCell
-                colSpan={colCount}
+                colSpan={totalColCount}
                 className="h-24 text-center text-muted-foreground"
               >
                 No results.
@@ -350,103 +474,190 @@ export function DataGrid<TData>({
             </TableRow>
           ) : (
             rows.map((row, r) => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell, c) => {
-                  const key = cellKey(r, c)
-                  const isFocused = focusCoord.r === r && focusCoord.c === c
-                  const isEditing = editCoord?.r === r && editCoord?.c === c
-                  const commit = commits.get(key)
-                  const isPending = commit?.pending ?? false
-                  // While editing, only the live validation error shows —
-                  // once committed (successfully or not), a rejection uses
-                  // the same red-text-under-the-cell treatment instead.
-                  const displayError = isEditing
-                    ? error
-                    : (commit?.error ?? null)
-                  const showError = displayError != null
-                  const isTextColumn =
-                    cell.column.columnDef.meta?.type === "text"
-                  const value = cell.getValue()
-                  const cellErrorId = `${errorId}-${key}`
+              <React.Fragment key={row.id}>
+                <TableRow className="group/row">
+                  {hasDeleteColumn && (
+                    <TableCell className="w-10 p-0 text-center align-top">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger
+                          render={
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              aria-label={`Row ${r + 1} actions`}
+                              className="size-7 opacity-0 group-hover/row:opacity-100 focus-visible:opacity-100 data-[popup-open]:opacity-100"
+                            >
+                              <MoreHorizontalIcon className="size-3.5" />
+                            </Button>
+                          }
+                        />
+                        <DropdownMenuContent align="start">
+                          <DropdownMenuItem
+                            variant="destructive"
+                            onClick={() => setDeleteTarget(row.id)}
+                          >
+                            Delete row
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  )}
+                  {row.getVisibleCells().map((cell, c) => {
+                    const key = cellKey(r, c)
+                    const isFocused = focusCoord.r === r && focusCoord.c === c
+                    const isEditing = editCoord?.r === r && editCoord?.c === c
+                    const commit = commits.get(key)
+                    const isPending = commit?.pending ?? false
+                    // While editing, only the live validation error shows —
+                    // once committed (successfully or not), a rejection uses
+                    // the same red-text-under-the-cell treatment instead.
+                    const displayError = isEditing
+                      ? error
+                      : (commit?.error ?? null)
+                    const showError = displayError != null
+                    const isTextColumn =
+                      cell.column.columnDef.meta?.type === "text"
+                    const value = cell.getValue()
+                    const cellErrorId = `${errorId}-${key}`
 
-                  return (
-                    <TableCell
-                      key={cell.id}
-                      ref={setMapRef(cellRefs, key)}
-                      role="gridcell"
-                      tabIndex={isFocused ? 0 : -1}
-                      onFocus={() => setFocusCoord({ r, c })}
-                      onClick={() => onCellClick(r, c)}
-                      onKeyDown={(e) => onGridCellKeyDown(e, r, c)}
-                      className="p-0 align-top whitespace-normal outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
-                    >
-                      {isTextColumn ? (
-                        <>
-                          <div className="relative">
-                            <Input
-                              ref={setMapRef(inputRefs, key)}
-                              value={
-                                isEditing
-                                  ? buffer
-                                  : (commit?.value ??
-                                    (value == null ? "" : String(value)))
-                              }
-                              readOnly={!isEditing}
-                              disabled={isPending}
-                              tabIndex={-1}
-                              aria-invalid={showError || undefined}
-                              aria-describedby={
-                                showError ? cellErrorId : undefined
-                              }
-                              onMouseDown={(e) => {
-                                if (!isEditing) e.preventDefault()
-                              }}
-                              onChange={
-                                isEditing ? onEditInputChange : undefined
-                              }
-                              onKeyDown={
-                                isEditing ? onEditInputKeyDown : undefined
-                              }
-                              onBlur={isEditing ? onEditInputBlur : undefined}
-                              className={cn(
-                                "h-auto rounded-none border-none bg-transparent px-2 py-2 shadow-none hover:bg-accent/30 focus-visible:bg-background focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset dark:bg-transparent",
-                                isPending && "pr-7"
-                              )}
-                            />
-                            {isPending && (
-                              <Spinner
-                                role="presentation"
-                                aria-hidden="true"
-                                aria-label={undefined}
-                                className="absolute top-1/2 right-2 size-3.5 -translate-y-1/2"
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        ref={setMapRef(cellRefs, key)}
+                        role="gridcell"
+                        tabIndex={isFocused ? 0 : -1}
+                        onFocus={() => setFocusCoord({ r, c })}
+                        onClick={() => onCellClick(r, c)}
+                        onKeyDown={(e) => onGridCellKeyDown(e, r, c)}
+                        className="p-0 align-top whitespace-normal outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                      >
+                        {isTextColumn ? (
+                          <>
+                            <div className="relative">
+                              <Input
+                                ref={setMapRef(inputRefs, key)}
+                                value={
+                                  isEditing
+                                    ? buffer
+                                    : (commit?.value ??
+                                      (value == null ? "" : String(value)))
+                                }
+                                readOnly={!isEditing}
+                                disabled={isPending}
+                                tabIndex={-1}
+                                aria-invalid={showError || undefined}
+                                aria-describedby={
+                                  showError ? cellErrorId : undefined
+                                }
+                                onMouseDown={(e) => {
+                                  if (!isEditing) e.preventDefault()
+                                }}
+                                onChange={
+                                  isEditing ? onEditInputChange : undefined
+                                }
+                                onKeyDown={
+                                  isEditing ? onEditInputKeyDown : undefined
+                                }
+                                onBlur={isEditing ? onEditInputBlur : undefined}
+                                className={cn(
+                                  "h-auto rounded-none border-none bg-transparent px-2 py-2 shadow-none hover:bg-accent/30 focus-visible:bg-background focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset dark:bg-transparent",
+                                  isPending && "pr-7"
+                                )}
                               />
+                              {isPending && (
+                                <Spinner
+                                  role="presentation"
+                                  aria-hidden="true"
+                                  aria-label={undefined}
+                                  className="absolute top-1/2 right-2 size-3.5 -translate-y-1/2"
+                                />
+                              )}
+                            </div>
+                            {showError && (
+                              <span
+                                id={cellErrorId}
+                                className="block px-2 pb-1.5 text-xs text-destructive"
+                              >
+                                {displayError}
+                              </span>
+                            )}
+                          </>
+                        ) : (
+                          <div className="px-2 py-2">
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
                             )}
                           </div>
-                          {showError && (
-                            <span
-                              id={cellErrorId}
-                              className="block px-2 pb-1.5 text-xs text-destructive"
-                            >
-                              {displayError}
-                            </span>
-                          )}
-                        </>
-                      ) : (
-                        <div className="px-2 py-2">
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </div>
-                      )}
+                        )}
+                      </TableCell>
+                    )
+                  })}
+                </TableRow>
+                {onRowAdd && r < rowCount - 1 && (
+                  <TableRow className="group/gap h-2 border-none hover:bg-transparent">
+                    <TableCell
+                      colSpan={totalColCount}
+                      className="relative h-2 p-0"
+                    >
+                      <button
+                        type="button"
+                        aria-label={`Insert row after row ${r + 1}`}
+                        onClick={() => handleRowAdd(row.id)}
+                        className="absolute inset-x-0 top-1/2 z-10 flex -translate-y-1/2 items-center justify-center opacity-0 transition-opacity group-hover/gap:opacity-100 focus-visible:opacity-100"
+                      >
+                        <span className="flex size-5 items-center justify-center rounded-full border bg-background shadow-sm">
+                          <PlusIcon className="size-3" />
+                        </span>
+                      </button>
                     </TableCell>
-                  )
-                })}
-              </TableRow>
+                  </TableRow>
+                )}
+              </React.Fragment>
             ))
+          )}
+          {onRowAdd && (
+            <TableRow className="border-none">
+              <TableCell colSpan={totalColCount} className="p-0">
+                <button
+                  type="button"
+                  onClick={() => handleRowAdd()}
+                  className="flex w-full items-center gap-1.5 px-2 py-2 text-sm text-muted-foreground hover:bg-accent/30 hover:text-foreground"
+                >
+                  <PlusIcon className="size-3.5" />
+                  New row
+                </button>
+              </TableCell>
+            </TableRow>
           )}
         </TableBody>
       </Table>
+      {hasDeleteColumn && (
+        <AlertDialog
+          open={deleteTarget != null}
+          onOpenChange={(open) => {
+            if (!open) setDeleteTarget(null)
+          }}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete row</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action can&apos;t be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                variant="destructive"
+                onClick={confirmRowDelete}
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
       {/* Commit errors only — silent on pending and on success. */}
       <div aria-live="polite" className="sr-only">
         {liveMessage}

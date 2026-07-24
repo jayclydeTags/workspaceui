@@ -5,7 +5,7 @@ description: An editable grid over a consumer-owned useReactTable() instance —
 
 export const PREVIEW_CODE = `import * as React from "react"
 import { type ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table"
-import { DataGrid } from "@/components/ui/data-grid"
+import { DataGrid, getDataGridRowDefaults } from "@/components/ui/data-grid"
 
 interface Contact {
 id: string
@@ -47,6 +47,17 @@ setData((prev) =>
 prev.map((row) => (row.id === rowId ? { ...row, [columnId]: value } : row))
 )
 }}
+onRowAdd={(afterRowId) => {
+const row = { id: crypto.randomUUID(), ...getDataGridRowDefaults(table) } as Contact
+setData((prev) => {
+if (afterRowId == null) return [...prev, row]
+const index = prev.findIndex((r) => r.id === afterRowId)
+return [...prev.slice(0, index + 1), row, ...prev.slice(index + 1)]
+})
+}}
+onRowDelete={(rowId) => {
+setData((prev) => prev.filter((row) => row.id !== rowId))
+}}
 />
 )
 }`
@@ -58,7 +69,9 @@ This is the walking skeleton of a larger data-grid: the public API, the
 the full keyboard model, and the async commit contract are final — only the
 `text` column type has a working editor so far. `number`, `currency`,
 `select`, `boolean`, `date`, `multiSelect`, and `user` land in later
-components without changing this one's props.
+components without changing this one's props. Inline row add and delete
+(this page's `onRowAdd`/`onRowDelete`) are already final and work with any
+column type, since they don't depend on a cell editor existing.
 
 ## Installation
 
@@ -116,10 +129,10 @@ const table = useReactTable({
 ```
 
 The grid never owns `data` — it renders from the `table` instance you create
-and own, and reports intent through `onCellEdit` only. Declare a column as
-editable by setting `meta: { type: "text" }` on its `ColumnDef`; columns
-without a `meta.type` render through their normal TanStack `cell` definition
-(read-only).
+and own, and reports intent through `onCellEdit`, `onRowAdd`, and
+`onRowDelete` only. Declare a column as editable by setting
+`meta: { type: "text" }` on its `ColumnDef`; columns without a `meta.type`
+render through their normal TanStack `cell` definition (read-only).
 
 ## Features
 
@@ -154,6 +167,21 @@ without a `meta.type` render through their normal TanStack `cell` definition
   _successfully_ committed value, not the last attempted one. Commit errors
   are announced through a reserved `aria-live` region with the cell's
   location; the region stays silent on pending and on success.
+- **Inline row add** — passing `onRowAdd` renders a trailing "+ New row"
+  control (appends) and a "+" that appears on hover in the gap between two
+  rows (inserts after that row). Both call `onRowAdd`, distinguished only by
+  whether `afterRowId` is passed, and both autofocus the new row's first cell
+  once it appears. The grid never owns data, so it can't build the row
+  itself — use the exported `getDataGridRowDefaults(table)` to seed one from
+  each column's `meta.type` (`""` for text/date, `0` for number/currency,
+  `false` for boolean, the first option for select, `[]` for multiSelect,
+  `null` for user).
+- **Guarded row delete** — passing `onRowDelete` renders a kebab menu that
+  only appears on hover in a leading column, so the destructive action never
+  sits under the cursor during normal editing. Its "Delete row" item opens a
+  confirmation dialog; `onRowDelete(rowId)` fires only on confirm. There's no
+  optimistic removal and no undo — the row disappears once you hand back data
+  without it.
 
 ## API Reference
 
@@ -170,6 +198,16 @@ without a `meta.type` render through their normal TanStack `cell` definition
       required: true,
       description:
         "Called with a valid, committed edit. rowId matches TanStack's own Row.id; narrow value using columnId and that column's meta.type.",
+    },
+    onRowAdd: {
+      type: "(afterRowId?: string) => void | Promise<void>",
+      description:
+        'Renders the "+ New row" and between-row "+" affordances. Omit `afterRowId` to append; pass it to insert after that row. Both entry points autofocus the new row\'s first cell once it appears — build the row itself with getDataGridRowDefaults().',
+    },
+    onRowDelete: {
+      type: "(rowId: string) => void | Promise<void>",
+      description:
+        'Renders a hover kebab menu in a leading column with a destructive "Delete row" item. Fires only after the built-in confirmation dialog is accepted — there\'s no optimistic removal or undo.',
     },
     className: {
       type: "string",

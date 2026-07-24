@@ -7,7 +7,10 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 
-import { DataGrid } from "@/registry/bases/base/workspaceui/data-grid"
+import {
+  DataGrid,
+  getDataGridRowDefaults,
+} from "@/registry/bases/base/workspaceui/data-grid"
 
 interface Contact {
   id: string
@@ -54,6 +57,20 @@ export function DataGridLiveDemo() {
             row.id === rowId ? { ...row, [columnId]: value } : row
           )
         )
+      }}
+      onRowAdd={(afterRowId) => {
+        const row = {
+          id: crypto.randomUUID(),
+          ...getDataGridRowDefaults(table),
+        } as Contact
+        setData((prev) => {
+          if (afterRowId == null) return [...prev, row]
+          const index = prev.findIndex((r) => r.id === afterRowId)
+          return [...prev.slice(0, index + 1), row, ...prev.slice(index + 1)]
+        })
+      }}
+      onRowDelete={(rowId) => {
+        setData((prev) => prev.filter((row) => row.id !== rowId))
       }}
     />
   )

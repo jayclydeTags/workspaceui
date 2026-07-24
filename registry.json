@@ -81,13 +81,16 @@
       "name": "data-grid",
       "type": "registry:ui",
       "title": "Data Grid",
-      "description": "Editable grid over a consumer-owned useReactTable() instance. Every cell renders its live control, borderless and transparent at rest; click or type to edit, blur or Enter to commit. Async commits show a pending spinner, disable the control, and surface rejection errors inline without reverting the typed value. Full spreadsheet keyboard model over role=\"grid\" with roving tabindex. Only the text column type is implemented so far.",
+      "description": "Editable grid over a consumer-owned useReactTable() instance. Every cell renders its live control, borderless and transparent at rest; click or type to edit, blur or Enter to commit. Async commits show a pending spinner, disable the control, and surface rejection errors inline without reverting the typed value. Full spreadsheet keyboard model over role=\"grid\" with roving tabindex. Only the text column type is implemented so far. Optional onRowAdd/onRowDelete render inline row-add (trailing \"+ New row\" and a between-row hover \"+\") and a hover kebab delete with confirmation.",
       "dependencies": ["@tanstack/react-table"],
       "registryDependencies": [
         "jayclydeTags/workspaceui/data-grid-types",
         "table",
         "input",
         "spinner",
+        "button",
+        "dropdown-menu",
+        "alert-dialog",
         "utils"
       ],
       "files": [

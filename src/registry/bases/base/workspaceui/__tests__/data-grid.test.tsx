@@ -1,3 +1,4 @@
+import * as React from "react"
 import { render, screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
@@ -7,7 +8,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 
-import { DataGrid } from "../data-grid"
+import { DataGrid, getDataGridRowDefaults } from "../data-grid"
 import "../data-grid-types"
 
 interface Person {
@@ -35,9 +36,13 @@ type OnCellEdit = (
 function Harness({
   data = defaultData,
   onCellEdit,
+  onRowAdd,
+  onRowDelete,
 }: {
   data?: Person[]
   onCellEdit: OnCellEdit
+  onRowAdd?: (afterRowId?: string) => void | Promise<void>
+  onRowDelete?: (rowId: string) => void | Promise<void>
 }) {
   // useReactTable() intentionally returns fresh functions each render — see
   // the same eslint-disable precedent in data-table.tsx.
@@ -48,7 +53,46 @@ function Harness({
     getCoreRowModel: getCoreRowModel(),
     getRowId: (row) => row.id,
   })
-  return <DataGrid table={table} onCellEdit={onCellEdit} />
+  return (
+    <DataGrid
+      table={table}
+      onCellEdit={onCellEdit}
+      onRowAdd={onRowAdd}
+      onRowDelete={onRowDelete}
+    />
+  )
+}
+
+let nextNewRowId = 0
+
+// Owns real data state and mutates it the way a consumer would: appends or
+// inserts a row seeded via getDataGridRowDefaults, so the autofocus effect
+// (which fires off an observed rowCount increase) has something real to
+// react to.
+function AddableHarness() {
+  const [data, setData] = React.useState(defaultData)
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getRowId: (row) => row.id,
+  })
+
+  function handleRowAdd(afterRowId?: string) {
+    const row: Person = {
+      id: `new-${nextNewRowId++}`,
+      name: "",
+      role: "",
+    }
+    setData((prev) => {
+      if (afterRowId == null) return [...prev, row]
+      const idx = prev.findIndex((p) => p.id === afterRowId)
+      return [...prev.slice(0, idx + 1), row, ...prev.slice(idx + 1)]
+    })
+  }
+
+  return <DataGrid table={table} onCellEdit={vi.fn()} onRowAdd={handleRowAdd} />
 }
 
 function renderGrid(overrides: Partial<{ data: Person[] }> = {}) {
@@ -401,6 +445,184 @@ describe("DataGrid", () => {
       await user.tab()
 
       expect(onCellEdit).not.toHaveBeenCalled()
+    })
+  })
+
+  describe("row add", () => {
+    it("renders no add affordances when onRowAdd is omitted", () => {
+      renderGrid()
+      expect(
+        screen.queryByRole("button", { name: "New row" })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole("button", { name: /insert row/i })
+      ).not.toBeInTheDocument()
+    })
+
+    it("renders a trailing New row control that appends with no afterRowId", async () => {
+      const user = userEvent.setup()
+      const onRowAdd = vi.fn()
+      render(<Harness onCellEdit={vi.fn()} onRowAdd={onRowAdd} />)
+
+      await user.click(screen.getByRole("button", { name: "New row" }))
+      expect(onRowAdd).toHaveBeenCalledWith(undefined)
+    })
+
+    it("renders a between-row insert control that inserts via afterRowId", async () => {
+      const user = userEvent.setup()
+      const onRowAdd = vi.fn()
+      render(<Harness onCellEdit={vi.fn()} onRowAdd={onRowAdd} />)
+
+      await user.click(
+        screen.getByRole("button", { name: "Insert row after row 1" })
+      )
+      expect(onRowAdd).toHaveBeenCalledWith("1")
+    })
+
+    it("does not render a between-row insert control after the last row", () => {
+      render(<Harness onCellEdit={vi.fn()} onRowAdd={vi.fn()} />)
+      expect(
+        screen.queryByRole("button", { name: "Insert row after row 2" })
+      ).not.toBeInTheDocument()
+    })
+
+    it("autofocuses the new row's first cell when appended", async () => {
+      const user = userEvent.setup()
+      render(<AddableHarness />)
+
+      await user.click(screen.getByRole("button", { name: "New row" }))
+
+      await waitFor(() => {
+        const cells = screen.getAllByRole("gridcell")
+        expect(cells).toHaveLength(6) // 3 rows x 2 cols
+        expect(cells[4]).toHaveFocus()
+      })
+    })
+
+    it("autofocuses the new row's first cell when inserted after a row", async () => {
+      const user = userEvent.setup()
+      render(<AddableHarness />)
+
+      await user.click(
+        screen.getByRole("button", { name: "Insert row after row 1" })
+      )
+
+      await waitFor(() => {
+        const cells = screen.getAllByRole("gridcell")
+        expect(cells).toHaveLength(6) // 3 rows x 2 cols
+        expect(cells[2]).toHaveFocus() // the new row lands at index 1
+      })
+    })
+  })
+
+  describe("row delete", () => {
+    it("renders no kebab menu when onRowDelete is omitted", () => {
+      renderGrid()
+      expect(
+        screen.queryByRole("button", { name: /row 1 actions/i })
+      ).not.toBeInTheDocument()
+    })
+
+    it("calls onRowDelete(rowId) only after confirming in the dialog", async () => {
+      const user = userEvent.setup()
+      const onRowDelete = vi.fn()
+      render(<Harness onCellEdit={vi.fn()} onRowDelete={onRowDelete} />)
+
+      await user.click(screen.getByRole("button", { name: "Row 1 actions" }))
+      await user.click(
+        await screen.findByRole("menuitem", { name: "Delete row" })
+      )
+
+      const dialog = screen.getByRole("alertdialog")
+      await user.click(within(dialog).getByRole("button", { name: "Delete" }))
+
+      expect(onRowDelete).toHaveBeenCalledWith("1")
+    })
+
+    it("does not call onRowDelete when the confirmation is cancelled", async () => {
+      const user = userEvent.setup()
+      const onRowDelete = vi.fn()
+      render(<Harness onCellEdit={vi.fn()} onRowDelete={onRowDelete} />)
+
+      await user.click(screen.getByRole("button", { name: "Row 1 actions" }))
+      await user.click(
+        await screen.findByRole("menuitem", { name: "Delete row" })
+      )
+
+      const dialog = screen.getByRole("alertdialog")
+      await user.click(within(dialog).getByRole("button", { name: "Cancel" }))
+
+      expect(onRowDelete).not.toHaveBeenCalled()
+      expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument()
+    })
+  })
+
+  describe("getDataGridRowDefaults", () => {
+    it("derives defaults per column.meta.type, omitting columns without one", () => {
+      interface Row {
+        id: string
+        text: string
+        num: number
+        currency: number
+        flag: boolean
+        status: string
+        tags: string[]
+        owner: string | null
+        due: string
+        untyped: string
+      }
+
+      const allTypeColumns: ColumnDef<Row>[] = [
+        { accessorKey: "text", header: "Text", meta: { type: "text" } },
+        { accessorKey: "num", header: "Num", meta: { type: "number" } },
+        {
+          accessorKey: "currency",
+          header: "Currency",
+          meta: { type: "currency" },
+        },
+        { accessorKey: "flag", header: "Flag", meta: { type: "boolean" } },
+        {
+          accessorKey: "status",
+          header: "Status",
+          meta: {
+            type: "select",
+            options: [
+              { value: "open", label: "Open" },
+              { value: "closed", label: "Closed" },
+            ],
+          },
+        },
+        {
+          accessorKey: "tags",
+          header: "Tags",
+          meta: { type: "multiSelect" },
+        },
+        { accessorKey: "owner", header: "Owner", meta: { type: "user" } },
+        { accessorKey: "due", header: "Due", meta: { type: "date" } },
+        { accessorKey: "untyped", header: "Untyped" },
+      ]
+
+      function Probe() {
+        // eslint-disable-next-line react-hooks/incompatible-library
+        const table = useReactTable({
+          data: [] as Row[],
+          columns: allTypeColumns,
+          getCoreRowModel: getCoreRowModel(),
+        })
+        expect(getDataGridRowDefaults(table)).toEqual({
+          text: "",
+          num: 0,
+          currency: 0,
+          flag: false,
+          status: "open",
+          tags: [],
+          owner: null,
+          due: "",
+        })
+        return null
+      }
+
+      render(<Probe />)
     })
   })
 })

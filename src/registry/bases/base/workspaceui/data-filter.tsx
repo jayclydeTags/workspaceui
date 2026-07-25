@@ -611,6 +611,17 @@ export function DataFilter<TData>({ table }: DataFilterProps<TData>) {
 
   return (
     <div className="flex flex-wrap items-center gap-1.5">
+      <FilterEditorPopover
+        table={table}
+        availableColumns={pickableColumns}
+        columnId={null}
+        trigger={
+          <Button variant="outline" size="sm">
+            <PlusIcon className="size-4" />
+            Filter
+          </Button>
+        }
+      />
       {activeFilters.map((filter) => {
         const column = table.getColumn(filter.id)
         if (!column) return null
@@ -644,17 +655,6 @@ export function DataFilter<TData>({ table }: DataFilterProps<TData>) {
           </span>
         )
       })}
-      <FilterEditorPopover
-        table={table}
-        availableColumns={pickableColumns}
-        columnId={null}
-        trigger={
-          <Button variant="outline" size="sm">
-            <PlusIcon className="size-4" />
-            Filter
-          </Button>
-        }
-      />
     </div>
   )
 }

@@ -22,6 +22,7 @@ interface Item {
   active: boolean
   joined: string
   tags: string[]
+  assignee: string | null
 }
 
 const data: Item[] = [
@@ -34,6 +35,7 @@ const data: Item[] = [
     active: true,
     joined: "2024-01-10",
     tags: ["a"],
+    assignee: "u1",
   },
   {
     id: "2",
@@ -44,6 +46,7 @@ const data: Item[] = [
     active: false,
     joined: "2024-03-05",
     tags: ["b"],
+    assignee: null,
   },
   {
     id: "3",
@@ -54,6 +57,7 @@ const data: Item[] = [
     active: true,
     joined: "2024-06-20",
     tags: ["a", "b"],
+    assignee: "u2",
   },
 ]
 
@@ -100,12 +104,29 @@ const columns: ColumnDef<Item>[] = [
     meta: { type: "date" },
     filterFn: dataGridFilterFn,
   },
-  // multiSelect is out of scope for this ticket — present in the fixture
-  // only to assert it's excluded from the "+ Filter" column list.
   {
     accessorKey: "tags",
     header: "Tags",
-    meta: { type: "multiSelect" },
+    meta: {
+      type: "multiSelect",
+      options: [
+        { value: "a", label: "A" },
+        { value: "b", label: "B" },
+      ],
+    },
+    filterFn: dataGridFilterFn,
+  },
+  {
+    accessorKey: "assignee",
+    header: "Assignee",
+    meta: {
+      type: "user",
+      users: [
+        { id: "u1", name: "Ann" },
+        { id: "u2", name: "Bob" },
+      ],
+    },
+    filterFn: dataGridFilterFn,
   },
 ]
 
@@ -192,18 +213,6 @@ describe("DataFilter", () => {
   it("renders all rows with no filters active", () => {
     render(<Harness />)
     expect(visibleNames()).toEqual(["Widget", "Gadget", "Gizmo"])
-  })
-
-  it("excludes multiSelect columns from the column-pick list (out of scope this ticket)", async () => {
-    const user = userEvent.setup()
-    render(<Harness />)
-    await openNewFilter(user)
-    expect(
-      await screen.findByRole("option", { name: "Name" })
-    ).toBeInTheDocument()
-    expect(
-      screen.queryByRole("option", { name: "Tags" })
-    ).not.toBeInTheDocument()
   })
 
   describe("text column", () => {
@@ -328,6 +337,117 @@ describe("DataFilter", () => {
       ).toBeInTheDocument()
       // The popover closed immediately — no lingering value step.
       expect(screen.queryByPlaceholderText("Value")).not.toBeInTheDocument()
+    })
+  })
+
+  describe("multiSelect column", () => {
+    it("filters with has any of", async () => {
+      const user = userEvent.setup()
+      render(<Harness />)
+      await openNewFilter(user)
+      await pickColumn(user, "Tags")
+      await pickOperator(user, "has any of")
+      await user.click(await screen.findByRole("option", { name: "A" }))
+      await user.click(screen.getByRole("button", { name: "Apply" }))
+
+      expect(visibleNames()).toEqual(["Widget", "Gizmo"])
+      const pill = chip("Tags has any of A")
+      expect(
+        within(pill).getByRole("button", { name: "has any of" })
+      ).toBeInTheDocument()
+    })
+
+    it("filters with has all of", async () => {
+      const user = userEvent.setup()
+      render(<Harness />)
+      await openNewFilter(user)
+      await pickColumn(user, "Tags")
+      await pickOperator(user, "has all of")
+      await user.click(await screen.findByRole("option", { name: "A" }))
+      await user.click(screen.getByRole("option", { name: "B" }))
+      await user.click(screen.getByRole("button", { name: "Apply" }))
+
+      expect(visibleNames()).toEqual(["Gizmo"])
+    })
+
+    it("filters with has none of", async () => {
+      const user = userEvent.setup()
+      render(<Harness />)
+      await openNewFilter(user)
+      await pickColumn(user, "Tags")
+      await pickOperator(user, "has none of")
+      await user.click(await screen.findByRole("option", { name: "A" }))
+      await user.click(screen.getByRole("button", { name: "Apply" }))
+
+      expect(visibleNames()).toEqual(["Gadget"])
+    })
+
+    it("has no value step for is empty, and no row has an empty tag list", async () => {
+      const user = userEvent.setup()
+      render(<Harness />)
+      await openNewFilter(user)
+      await pickColumn(user, "Tags")
+      await pickOperator(user, "is empty")
+
+      expect(visibleNames()).toEqual([])
+      expect(chip("Tags is empty")).toBeInTheDocument()
+      expect(
+        screen.queryByRole("button", { name: "Apply" })
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  describe("user column", () => {
+    it("filters with is", async () => {
+      const user = userEvent.setup()
+      render(<Harness />)
+      await openNewFilter(user)
+      await pickColumn(user, "Assignee")
+      await pickOperator(user, "is")
+      await user.click(await screen.findByRole("option", { name: "Ann" }))
+
+      expect(visibleNames()).toEqual(["Widget"])
+      expect(chip("Assignee is Ann")).toBeInTheDocument()
+    })
+
+    it("filters with is not", async () => {
+      const user = userEvent.setup()
+      render(<Harness />)
+      await openNewFilter(user)
+      await pickColumn(user, "Assignee")
+      await pickOperator(user, "is not")
+      await user.click(await screen.findByRole("option", { name: "Bob" }))
+
+      expect(visibleNames()).toEqual(["Widget", "Gadget"])
+    })
+
+    it("treats Unassigned as a pickable value, not a dedicated operator", async () => {
+      const user = userEvent.setup()
+      render(<Harness />)
+      await openNewFilter(user)
+      await pickColumn(user, "Assignee")
+      await pickOperator(user, "is")
+      await user.click(
+        await screen.findByRole("option", { name: "Unassigned" })
+      )
+
+      expect(visibleNames()).toEqual(["Gadget"])
+      expect(chip("Assignee is Unassigned")).toBeInTheDocument()
+    })
+
+    it("filters with is any of, including Unassigned in the picked set", async () => {
+      const user = userEvent.setup()
+      render(<Harness />)
+      await openNewFilter(user)
+      await pickColumn(user, "Assignee")
+      await pickOperator(user, "is any of")
+      await user.click(
+        await screen.findByRole("option", { name: "Unassigned" })
+      )
+      await user.click(screen.getByRole("button", { name: "Apply" }))
+
+      expect(visibleNames()).toEqual(["Gadget"])
+      expect(chip("Assignee is any of Unassigned")).toBeInTheDocument()
     })
   })
 

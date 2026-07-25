@@ -91,10 +91,18 @@ const BOOLEAN_OPERATORS: OperatorDef[] = [
   { id: "isFalse", label: "is false" },
 ]
 
-// This ticket implements six of the eight column types; multiSelect and
-// user are a follow-up (they need chip-per-value pickers this ticket
-// doesn't build). A column of either type is simply not offered here yet —
-// better than listing it and having dataGridFilterFn silently no-op on it.
+const MULTI_SELECT_OPERATORS: OperatorDef[] = [
+  { id: "hasAnyOf", label: "has any of" },
+  { id: "hasAllOf", label: "has all of" },
+  { id: "hasNoneOf", label: "has none of" },
+  { id: "isEmpty", label: "is empty" },
+]
+
+// user shares select's operators verbatim — "Unassigned" is a pickable null
+// value in the value step rather than a dedicated operator, which is what
+// lets dataGridFilterFn dispatch both types through one branch below.
+const USER_OPERATORS: OperatorDef[] = SELECT_OPERATORS
+
 const OPERATORS_BY_TYPE: Partial<Record<DataGridColumnType, OperatorDef[]>> = {
   text: TEXT_OPERATORS,
   number: NUMBER_OPERATORS,
@@ -102,21 +110,32 @@ const OPERATORS_BY_TYPE: Partial<Record<DataGridColumnType, OperatorDef[]>> = {
   date: DATE_OPERATORS,
   select: SELECT_OPERATORS,
   boolean: BOOLEAN_OPERATORS,
+  multiSelect: MULTI_SELECT_OPERATORS,
+  user: USER_OPERATORS,
 }
 
 function operatorsForType(type: DataGridColumnType | undefined): OperatorDef[] {
   return (type && OPERATORS_BY_TYPE[type]) ?? []
 }
 
-// boolean's operators encode the value ("is true" / "is false") — every
-// other type's operators need a separate value step.
-function operatorRequiresValue(type: DataGridColumnType | undefined): boolean {
-  return type !== "boolean"
+const MULTI_VALUE_OPERATORS = new Set([
+  "isAnyOf",
+  "hasAnyOf",
+  "hasAllOf",
+  "hasNoneOf",
+])
+
+// Operators that encode the value in their own label ("is true" / "is
+// empty") skip the value step entirely — every other operator needs one.
+function operatorRequiresValue(operator: string | null | undefined): boolean {
+  return (
+    operator !== "isTrue" && operator !== "isFalse" && operator !== "isEmpty"
+  )
 }
 
 function defaultValueForOperator(operator: string): unknown {
   if (operator === "between") return ["", ""]
-  if (operator === "isAnyOf") return []
+  if (MULTI_VALUE_OPERATORS.has(operator)) return []
   return ""
 }
 
@@ -134,6 +153,22 @@ function optionLabel(
   value: string
 ): string {
   return options?.find((o) => o.value === value)?.label ?? value
+}
+
+// select's options list and user's users-plus-Unassigned list, so isAnyOf
+// (shared with user) and the multi-value multiSelect operators can format a
+// picked value without knowing which of the two types they're in.
+function itemLabel<TData>(
+  column: Column<TData, unknown>,
+  value: unknown
+): string {
+  const type = column.columnDef.meta?.type
+  if (type === "user") {
+    if (value == null) return "Unassigned"
+    const user = column.columnDef.meta?.users?.find((u) => u.id === value)
+    return user?.name ?? String(value)
+  }
+  return optionLabel(column.columnDef.meta?.options, value as string)
 }
 
 function operatorLabel(
@@ -157,14 +192,17 @@ function formatValueOnly<TData>(
     return `${lo} and ${hi}`
   }
 
-  if (filter.operator === "isAnyOf" && Array.isArray(filter.value)) {
-    return (filter.value as string[])
-      .map((v) => optionLabel(column.columnDef.meta?.options, v))
+  if (
+    MULTI_VALUE_OPERATORS.has(filter.operator) &&
+    Array.isArray(filter.value)
+  ) {
+    return (filter.value as unknown[])
+      .map((v) => itemLabel(column, v))
       .join(", ")
   }
 
-  if (type === "select" && typeof filter.value === "string") {
-    return optionLabel(column.columnDef.meta?.options, filter.value)
+  if (type === "select" || type === "user") {
+    return itemLabel(column, filter.value)
   }
 
   return displayValue(filter.value)
@@ -179,7 +217,7 @@ function formatFilterSummary<TData>(
   const label = getColumnLabel(column)
   const opLabel = operatorLabel(type, filter.operator)
 
-  if (!operatorRequiresValue(type)) return `${label} ${opLabel}`
+  if (!operatorRequiresValue(filter.operator)) return `${label} ${opLabel}`
   return `${label} ${opLabel} ${formatValueOnly(column, filter)}`
 }
 
@@ -191,7 +229,7 @@ type ValueShape = "single" | "between" | "multi"
 // (eq -> between) resets it, since the old value can't be reinterpreted.
 function valueShapeOf(operator: string): ValueShape {
   if (operator === "between") return "between"
-  if (operator === "isAnyOf") return "multi"
+  if (MULTI_VALUE_OPERATORS.has(operator)) return "multi"
   return "single"
 }
 
@@ -313,7 +351,11 @@ export const dataGridFilterFn: FilterFn<any> = (
           return true
       }
     }
-    case "select": {
+    // select and user differ only in how their value is picked (options vs.
+    // users-plus-null) — the operators mean the same thing for both, so one
+    // branch covers them.
+    case "select":
+    case "user": {
       switch (operator) {
         case "is":
           return cellValue === value
@@ -321,6 +363,30 @@ export const dataGridFilterFn: FilterFn<any> = (
           return cellValue !== value
         case "isAnyOf":
           return Array.isArray(value) && value.includes(cellValue)
+        default:
+          return true
+      }
+    }
+    case "multiSelect": {
+      const cellValues = Array.isArray(cellValue) ? (cellValue as string[]) : []
+      switch (operator) {
+        case "hasAnyOf":
+          return (
+            Array.isArray(value) &&
+            (value as string[]).some((v) => cellValues.includes(v))
+          )
+        case "hasAllOf":
+          return (
+            Array.isArray(value) &&
+            (value as string[]).every((v) => cellValues.includes(v))
+          )
+        case "hasNoneOf":
+          return (
+            Array.isArray(value) &&
+            !(value as string[]).some((v) => cellValues.includes(v))
+          )
+        case "isEmpty":
+          return cellValues.length === 0
         default:
           return true
       }
@@ -391,10 +457,42 @@ function OperatorList({
   )
 }
 
+// select's options, or user's users-plus-Unassigned — the value picker's
+// pickable items, keyed by whichever the column's type actually has.
+// "Unassigned" (null) is a real item here, not a separate operator.
+function pickItemsFor<TData>(
+  column: Column<TData, unknown>,
+  type: DataGridColumnType | undefined
+): { value: unknown; label: string }[] {
+  if (type === "user") {
+    return [
+      { value: null, label: "Unassigned" },
+      ...(column.columnDef.meta?.users ?? []).map((u) => ({
+        value: u.id,
+        label: u.name,
+      })),
+    ]
+  }
+  return (column.columnDef.meta?.options ?? []).map((o) => ({
+    value: o.value,
+    label: o.label,
+  }))
+}
+
+// The Command copy for a picker, keyed by the same type switch as
+// pickItemsFor — one source of truth for "how do we talk about this type's
+// items" instead of a ternary repeated at every Command call site.
+function pickerCopy(type: DataGridColumnType | undefined) {
+  return type === "user"
+    ? { placeholder: "Search people...", empty: "No people." }
+    : { placeholder: "Search options...", empty: "No options." }
+}
+
 // The value-input UI for one operator: a single input for most, two for
-// "is between", a searchable list for select is/is-not, a searchable
-// multi-select for "is any of". Shared by the create-new chain's value step
-// and the chip's standalone value popover.
+// "is between", a searchable list for select/user is/is-not, a searchable
+// multi-select for isAnyOf and multiSelect's hasAnyOf/hasAllOf/hasNoneOf.
+// Shared by the create-new chain's value step and the chip's standalone
+// value popover.
 function ValueEditor<TData>({
   column,
   operator,
@@ -410,32 +508,34 @@ function ValueEditor<TData>({
 }) {
   const type = column.columnDef.meta?.type
 
-  if (operator === "isAnyOf") {
-    const selected = Array.isArray(value) ? (value as string[]) : []
-    function toggle(v: string) {
+  if (MULTI_VALUE_OPERATORS.has(operator)) {
+    const selected = Array.isArray(value) ? (value as unknown[]) : []
+    function toggle(v: unknown) {
       onChange(
-        selected.includes(v)
+        selected.some((x) => x === v)
           ? selected.filter((x) => x !== v)
           : [...selected, v]
       )
     }
+    const items = pickItemsFor(column, type)
+    const copy = pickerCopy(type)
     return (
       <div className="flex flex-col">
         <Command>
-          <CommandInput placeholder="Search options..." />
+          <CommandInput placeholder={copy.placeholder} />
           <CommandList>
-            <CommandEmpty>No options.</CommandEmpty>
+            <CommandEmpty>{copy.empty}</CommandEmpty>
             <CommandGroup>
-              {(column.columnDef.meta?.options ?? []).map((opt) => (
+              {items.map((item) => (
                 <CommandItem
-                  key={opt.value}
-                  value={opt.label}
+                  key={String(item.value)}
+                  value={item.label}
                   data-checked={
-                    selected.includes(opt.value) ? "true" : undefined
+                    selected.some((x) => x === item.value) ? "true" : undefined
                   }
-                  onSelect={() => toggle(opt.value)}
+                  onSelect={() => toggle(item.value)}
                 >
-                  {opt.label}
+                  {item.label}
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -455,20 +555,22 @@ function ValueEditor<TData>({
     )
   }
 
-  if (type === "select") {
+  if (type === "select" || type === "user") {
+    const items = pickItemsFor(column, type)
+    const copy = pickerCopy(type)
     return (
       <Command>
-        <CommandInput placeholder="Search options..." />
+        <CommandInput placeholder={copy.placeholder} />
         <CommandList>
-          <CommandEmpty>No options.</CommandEmpty>
+          <CommandEmpty>{copy.empty}</CommandEmpty>
           <CommandGroup>
-            {(column.columnDef.meta?.options ?? []).map((opt) => (
+            {items.map((item) => (
               <CommandItem
-                key={opt.value}
-                value={opt.label}
-                onSelect={() => onCommit(opt.value)}
+                key={String(item.value)}
+                value={item.label}
+                onSelect={() => onCommit(item.value)}
               >
-                {opt.label}
+                {item.label}
               </CommandItem>
             ))}
           </CommandGroup>
@@ -565,7 +667,7 @@ function FilterEditorPopover<TData>({
     const column = table.getColumn(draftColumnId)
     if (!column) return
     column.setFilterValue(
-      operatorRequiresValue(draftType) ? { operator, value } : { operator }
+      operatorRequiresValue(operator) ? { operator, value } : { operator }
     )
     setOpen(false)
   }
@@ -579,7 +681,7 @@ function FilterEditorPopover<TData>({
 
   function selectOperator(op: string) {
     setDraftOperator(op)
-    if (!operatorRequiresValue(draftType)) {
+    if (!operatorRequiresValue(op)) {
       commitFilter(op, undefined)
       return
     }
@@ -637,7 +739,10 @@ function FilterEditorPopover<TData>({
               value={draftValue}
               onChange={setDraftValue}
               onCommit={(value) =>
-                commitFilter(draftOperator, value ?? draftValue)
+                commitFilter(
+                  draftOperator,
+                  value !== undefined ? value : draftValue
+                )
               }
             />
           </div>
@@ -667,7 +772,7 @@ function OperatorPopover<TData>({
 
   function selectOperator(op: string) {
     if (!column) return
-    if (!operatorRequiresValue(type)) {
+    if (!operatorRequiresValue(op)) {
       column.setFilterValue({ operator: op })
       setOpen(false)
       return
@@ -894,7 +999,7 @@ function NarrowFilterSheet<TData>({
     const column = table.getColumn(draftColumnId)
     if (!column) return
     column.setFilterValue(
-      operatorRequiresValue(draftType) ? { operator, value } : { operator }
+      operatorRequiresValue(operator) ? { operator, value } : { operator }
     )
     resetChain()
   }
@@ -924,7 +1029,7 @@ function NarrowFilterSheet<TData>({
 
   function selectOperator(op: string) {
     setDraftOperator(op)
-    if (!operatorRequiresValue(draftType)) {
+    if (!operatorRequiresValue(op)) {
       commitFilter(op, undefined)
       return
     }
@@ -1033,7 +1138,10 @@ function NarrowFilterSheet<TData>({
               value={draftValue}
               onChange={setDraftValue}
               onCommit={(value) =>
-                commitFilter(draftOperator, value ?? draftValue)
+                commitFilter(
+                  draftOperator,
+                  value !== undefined ? value : draftValue
+                )
               }
             />
           </div>
@@ -1133,7 +1241,7 @@ export function DataFilter<TData>({ table }: DataFilterProps<TData>) {
                 </button>
               }
             />
-            {operatorRequiresValue(type) && (
+            {operatorRequiresValue(filterValue.operator) && (
               <ValuePopover
                 table={table}
                 columnId={filter.id}

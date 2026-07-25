@@ -100,10 +100,11 @@ return (
 `useReactTable()` instance you'd pass to [Data Grid](/docs/components/data-grid)
 — they aren't coupled, and a consumer can use either alone. They share only
 the `table` instance and the `column.meta` type contract from
-[Data Grid Types](/docs/components/data-grid-types). Six of the eight column
-types have a working operator set here — `text`, `number`, `currency`,
-`date`, `select`, and `boolean`. `multiSelect` and `user` land in a follow-up
-without changing this component's props.
+[Data Grid Types](/docs/components/data-grid-types). All eight column types
+have a working operator set here — `text`, `number`, `currency`, `date`,
+`select`, `boolean`, `multiSelect`, and `user`. `user` shares `select`'s
+operators verbatim, with "Unassigned" as a pickable null value rather than a
+dedicated operator.
 
 ## Installation
 

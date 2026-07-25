@@ -2,192 +2,134 @@
 
 import * as React from "react"
 import {
-  type ColumnDef,
   type ColumnFiltersState,
+  type RowSelectionState,
   type SortingState,
-  type VisibilityState,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ChevronDownIcon } from "lucide-react"
+import { Trash2Icon } from "lucide-react"
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { BulkToolbar } from "@/registry/bases/base/workspaceui/bulk-toolbar"
+import { DataFilter } from "@/registry/bases/base/workspaceui/data-filter"
+import { DataGrid } from "@/registry/bases/base/workspaceui/data-grid"
+import type { Payment } from "../data"
+import { columns } from "./columns"
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
-  /** Column id to wire the search box to. */
-  filterColumn?: string
-  filterPlaceholder?: string
+interface DataTableProps {
+  data: Payment[]
 }
 
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-  filterColumn,
-  filterPlaceholder = "Filter…",
-}: DataTableProps<TData, TValue>) {
+export function DataTable({ data: initialData }: DataTableProps) {
+  const [data, setData] = React.useState(initialData)
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
+  const [confirmBulkDelete, setConfirmBulkDelete] = React.useState(false)
 
-  // TanStack Table's useReactTable() intentionally returns fresh functions each
-  // render; React Compiler can't memoize them, and that's expected here — the
-  // table manages its own state via the `state`/`on*Change` wiring below.
+  // useReactTable() intentionally returns fresh functions each render; see
+  // data-grid-live.tsx's identical eslint-disable for the same reason.
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,
+    getRowId: (row) => row.id,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    state: { sorting, columnFilters, columnVisibility, rowSelection },
+    state: { sorting, columnFilters, rowSelection },
   })
 
-  const filterCol = filterColumn ? table.getColumn(filterColumn) : undefined
+  function deleteRow(rowId: string) {
+    setData((prev) => prev.filter((row) => row.id !== rowId))
+  }
+
+  const selectedIds = Object.keys(rowSelection)
 
   return (
-    <div className="flex h-full flex-col gap-4">
-      {/* Toolbar */}
-      <div className="flex items-center gap-2">
-        {filterCol && (
-          <Input
-            placeholder={filterPlaceholder}
-            value={(filterCol.getFilterValue() as string) ?? ""}
-            onChange={(e) => filterCol.setFilterValue(e.target.value)}
-            className="max-w-xs"
-          />
-        )}
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button variant="outline" size="sm" className="ml-auto">
-                Columns
-                <ChevronDownIcon data-icon="inline-end" />
-              </Button>
-            }
-          />
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => (
-                <DropdownMenuCheckboxItem
-                  key={column.id}
-                  className="capitalize"
-                  checked={column.getIsVisible()}
-                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                >
-                  {column.id}
-                </DropdownMenuCheckboxItem>
-              ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      {/* Table */}
-      <div className="flex-1 overflow-auto rounded-md border">
-        <Table>
-          <TableHeader className="sticky top-0 z-10 bg-background">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center text-muted-foreground"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      {/* Footer: selection count + pagination */}
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </span>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
+    <div className="flex h-full flex-col gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        {/* min-w-0 lets this shrink below its content's natural width when
+            BulkToolbar appears; flex-1 is what gives DataFilter's own
+            ResizeObserver a real width to measure instead of shrink-wrapping
+            to its buttons and reading permanently narrow. */}
+        <div className="min-w-0 flex-1">
+          <DataFilter table={table} />
         </div>
+        <BulkToolbar
+          count={selectedIds.length}
+          onClear={() => setRowSelection({})}
+        >
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setConfirmBulkDelete(true)}
+          >
+            <Trash2Icon data-icon="inline-start" />
+            Delete
+          </Button>
+        </BulkToolbar>
       </div>
+
+      <div className="flex-1 overflow-auto">
+        <DataGrid
+          table={table}
+          onCellEdit={(rowId, columnId, value) => {
+            setData((prev) =>
+              prev.map((row) =>
+                row.id === rowId ? { ...row, [columnId]: value } : row
+              )
+            )
+          }}
+          onRowDelete={deleteRow}
+        />
+      </div>
+
+      <AlertDialog open={confirmBulkDelete} onOpenChange={setConfirmBulkDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Delete {selectedIds.length} rows
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This action can&apos;t be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={() => {
+                setConfirmBulkDelete(false)
+                // Reuses the single-row onRowDelete path — there's no
+                // separate bulk-delete callback.
+                selectedIds.forEach(deleteRow)
+                setRowSelection({})
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

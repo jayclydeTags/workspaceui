@@ -209,16 +209,15 @@
       "name": "data-table",
       "type": "registry:block",
       "title": "Data Table",
-      "description": "Generic TanStack data table \u2014 sortable columns, column filter, column visibility, row selection, and pagination.",
+      "description": "Editable data table built on DataGrid, DataFilter, and BulkToolbar \u2014 column filter chips, sorting, inline cell editing, row selection with a contextual bulk-delete toolbar, and a confirm dialog for the destructive action.",
       "dependencies": ["@tanstack/react-table", "lucide-react"],
       "registryDependencies": [
-        "badge",
+        "alert-dialog",
         "button",
-        "checkbox",
-        "dropdown-menu",
-        "input",
-        "table",
-        "jayclydeTags/workspaceui/page"
+        "jayclydeTags/workspaceui/page",
+        "jayclydeTags/workspaceui/data-grid",
+        "jayclydeTags/workspaceui/data-filter",
+        "jayclydeTags/workspaceui/bulk-toolbar"
       ],
       "files": [
         {

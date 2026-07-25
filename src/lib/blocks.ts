@@ -173,7 +173,7 @@ export const blocks: BlockMeta[] = [
     slug: "data-table",
     title: "Data Table",
     description:
-      "Generic TanStack data table — sortable columns, column filter, column visibility, row selection, and pagination.",
+      "Editable data table built on DataGrid, DataFilter, and BulkToolbar — filter chips, sorting, inline cell editing, and a contextual bulk-delete toolbar.",
     category: "CRUD",
     Component: DataTable01,
   },

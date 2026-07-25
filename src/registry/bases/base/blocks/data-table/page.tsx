@@ -2,7 +2,6 @@
 
 import { Page } from "@/registry/bases/base/workspaceui/page"
 import { PAYMENTS } from "./data"
-import { columns } from "./components/columns"
 import { DataTable } from "./components/data-table"
 
 // ponytail: kept the "01" suffix here (unlike its sibling blocks) because the
@@ -15,12 +14,7 @@ export function DataTable01() {
       className="@container overflow-hidden"
       hasPadding
     >
-      <DataTable
-        columns={columns}
-        data={PAYMENTS}
-        filterColumn="email"
-        filterPlaceholder="Filter emails…"
-      />
+      <DataTable data={PAYMENTS} />
     </Page>
   )
 }

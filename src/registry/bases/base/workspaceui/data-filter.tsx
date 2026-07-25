@@ -122,34 +122,63 @@ function optionLabel(
   return options?.find((o) => o.value === value)?.label ?? value
 }
 
+function operatorLabel(
+  type: DataGridColumnType | undefined,
+  operatorId: string
+): string {
+  return (
+    operatorsForType(type).find((o) => o.id === operatorId)?.label ?? operatorId
+  )
+}
+
+/** Just the value half of a chip, e.g. "10 and 40" or "Open, Blocked". */
+function formatValueOnly<TData>(
+  column: Column<TData, unknown>,
+  filter: DataGridFilterValue
+): string {
+  const type = column.columnDef.meta?.type
+
+  if (filter.operator === "between" && Array.isArray(filter.value)) {
+    const [lo, hi] = filter.value as [string, string]
+    return `${lo} and ${hi}`
+  }
+
+  if (filter.operator === "isAnyOf" && Array.isArray(filter.value)) {
+    return (filter.value as string[])
+      .map((v) => optionLabel(column.columnDef.meta?.options, v))
+      .join(", ")
+  }
+
+  if (type === "select" && typeof filter.value === "string") {
+    return optionLabel(column.columnDef.meta?.options, filter.value)
+  }
+
+  return displayValue(filter.value)
+}
+
+/** The full "column operator value" sentence — used as the chip's aria-label. */
 function formatFilterSummary<TData>(
   column: Column<TData, unknown>,
   filter: DataGridFilterValue
 ): string {
   const type = column.columnDef.meta?.type
   const label = getColumnLabel(column)
-  const opDef = operatorsForType(type).find((o) => o.id === filter.operator)
-  const opLabel = opDef?.label ?? filter.operator
+  const opLabel = operatorLabel(type, filter.operator)
 
   if (!operatorRequiresValue(type)) return `${label} ${opLabel}`
+  return `${label} ${opLabel} ${formatValueOnly(column, filter)}`
+}
 
-  if (filter.operator === "between" && Array.isArray(filter.value)) {
-    const [lo, hi] = filter.value as [string, string]
-    return `${label} ${opLabel} ${lo} and ${hi}`
-  }
+type ValueShape = "single" | "between" | "multi"
 
-  if (filter.operator === "isAnyOf" && Array.isArray(filter.value)) {
-    const labels = (filter.value as string[]).map((v) =>
-      optionLabel(column.columnDef.meta?.options, v)
-    )
-    return `${label} ${opLabel} ${labels.join(", ")}`
-  }
-
-  if (type === "select" && typeof filter.value === "string") {
-    return `${label} ${opLabel} ${optionLabel(column.columnDef.meta?.options, filter.value)}`
-  }
-
-  return `${label} ${opLabel} ${displayValue(filter.value)}`
+// Switching operators within a type can change what shape the value needs
+// to be (a plain string vs a [lo, hi] tuple vs a string[]) — same-shape
+// switches (eq -> gt, is -> isNot) keep the existing value; a shape change
+// (eq -> between) resets it, since the old value can't be reinterpreted.
+function valueShapeOf(operator: string): ValueShape {
+  if (operator === "between") return "between"
+  if (operator === "isAnyOf") return "multi"
+  return "single"
 }
 
 // ── dataGridFilterFn ─────────────────────────────────────────────────────
@@ -290,16 +319,185 @@ function FilterBackButton({
   )
 }
 
+// Plain operator buttons, no wrapping div — callers own the layout so a
+// back button (the create-new chain) can share one without double-wrapping.
+function OperatorList({
+  type,
+  selected,
+  onSelect,
+}: {
+  type: DataGridColumnType | undefined
+  selected: string | null
+  onSelect: (operator: string) => void
+}) {
+  return (
+    <>
+      {operatorsForType(type).map((op) => (
+        <button
+          key={op.id}
+          type="button"
+          onClick={() => onSelect(op.id)}
+          className={cn(
+            "rounded-sm px-2 py-1.5 text-left text-sm hover:bg-muted",
+            selected === op.id && "bg-muted"
+          )}
+        >
+          {op.label}
+        </button>
+      ))}
+    </>
+  )
+}
+
+// The value-input UI for one operator: a single input for most, two for
+// "is between", a searchable list for select is/is-not, a searchable
+// multi-select for "is any of". Shared by the create-new chain's value step
+// and the chip's standalone value popover.
+function ValueEditor<TData>({
+  column,
+  operator,
+  value,
+  onChange,
+  onCommit,
+}: {
+  column: Column<TData, unknown>
+  operator: string
+  value: unknown
+  onChange: (value: unknown) => void
+  onCommit: (value?: unknown) => void
+}) {
+  const type = column.columnDef.meta?.type
+
+  if (operator === "isAnyOf") {
+    const selected = Array.isArray(value) ? (value as string[]) : []
+    function toggle(v: string) {
+      onChange(
+        selected.includes(v)
+          ? selected.filter((x) => x !== v)
+          : [...selected, v]
+      )
+    }
+    return (
+      <div className="flex flex-col">
+        <Command>
+          <CommandInput placeholder="Search options..." />
+          <CommandList>
+            <CommandEmpty>No options.</CommandEmpty>
+            <CommandGroup>
+              {(column.columnDef.meta?.options ?? []).map((opt) => (
+                <CommandItem
+                  key={opt.value}
+                  value={opt.label}
+                  data-checked={
+                    selected.includes(opt.value) ? "true" : undefined
+                  }
+                  onSelect={() => toggle(opt.value)}
+                >
+                  {opt.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+        <div className="p-1">
+          <Button
+            size="sm"
+            className="w-full"
+            disabled={selected.length === 0}
+            onClick={() => onCommit()}
+          >
+            Apply
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  if (type === "select") {
+    return (
+      <Command>
+        <CommandInput placeholder="Search options..." />
+        <CommandList>
+          <CommandEmpty>No options.</CommandEmpty>
+          <CommandGroup>
+            {(column.columnDef.meta?.options ?? []).map((opt) => (
+              <CommandItem
+                key={opt.value}
+                value={opt.label}
+                onSelect={() => onCommit(opt.value)}
+              >
+                {opt.label}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </CommandList>
+      </Command>
+    )
+  }
+
+  const inputType =
+    type === "date"
+      ? "date"
+      : type === "number" || type === "currency"
+        ? "number"
+        : "text"
+
+  if (operator === "between") {
+    const [lo, hi] = Array.isArray(value)
+      ? (value as [string, string])
+      : ["", ""]
+    return (
+      <div className="flex flex-col gap-2 p-2">
+        <Input
+          type={inputType}
+          value={lo}
+          placeholder="From"
+          onChange={(e) => onChange([e.target.value, hi])}
+        />
+        <Input
+          type={inputType}
+          value={hi}
+          placeholder="To"
+          onChange={(e) => onChange([lo, e.target.value])}
+        />
+        <Button size="sm" disabled={!lo || !hi} onClick={() => onCommit()}>
+          Apply
+        </Button>
+      </div>
+    )
+  }
+
+  const strValue = typeof value === "string" ? value : ""
+  return (
+    <div className="flex flex-col gap-2 p-2">
+      <Input
+        type={inputType}
+        value={strValue}
+        placeholder="Value"
+        autoFocus
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && strValue) onCommit()
+        }}
+      />
+      <Button size="sm" disabled={!strValue} onClick={() => onCommit()}>
+        Apply
+      </Button>
+    </div>
+  )
+}
+
+// The "+ Filter" trigger's chain: column -> operator -> value, always
+// starting fresh. Editing an already-committed chip goes through
+// OperatorPopover/ValuePopover instead — those write straight to the
+// column's filter value with no intermediate draft/chain state.
 function FilterEditorPopover<TData>({
   table,
   availableColumns,
-  columnId,
   trigger,
 }: {
   table: TanstackTable<TData>
   availableColumns: Column<TData, unknown>[]
-  /** null = building a brand-new filter; a column id = editing its chip. */
-  columnId: string | null
   trigger: React.ReactElement
 }) {
   const [open, setOpen] = React.useState(false)
@@ -307,12 +505,6 @@ function FilterEditorPopover<TData>({
   const [draftColumnId, setDraftColumnId] = React.useState<string | null>(null)
   const [draftOperator, setDraftOperator] = React.useState<string | null>(null)
   const [draftValue, setDraftValue] = React.useState<unknown>(undefined)
-  // The operator/value this chip already had when the popover was opened —
-  // reused so re-picking the same operator restores its value instead of
-  // resetting to an empty draft.
-  const initialFilterRef = React.useRef<DataGridFilterValue | undefined>(
-    undefined
-  )
 
   const draftColumn = draftColumnId ? table.getColumn(draftColumnId) : undefined
   const draftType = draftColumn?.columnDef.meta?.type
@@ -320,35 +512,18 @@ function FilterEditorPopover<TData>({
   function handleOpenChange(next: boolean) {
     setOpen(next)
     if (!next) return
-    if (columnId == null) {
-      setStep("column")
-      setDraftColumnId(null)
-      setDraftOperator(null)
-      setDraftValue(undefined)
-      initialFilterRef.current = undefined
-      return
-    }
-    const current = table.getColumn(columnId)?.getFilterValue() as
-      DataGridFilterValue | undefined
-    const type = table.getColumn(columnId)?.columnDef.meta?.type
-    initialFilterRef.current = current
-    setDraftColumnId(columnId)
-    setDraftOperator(current?.operator ?? null)
-    setDraftValue(current?.value)
-    setStep(operatorRequiresValue(type) ? "value" : "operator")
+    setStep("column")
+    setDraftColumnId(null)
+    setDraftOperator(null)
+    setDraftValue(undefined)
   }
 
-  function commitFilter(operator?: string, value?: unknown) {
-    const op = operator ?? draftOperator
-    const targetColumnId = draftColumnId
-    if (!targetColumnId || !op) return
-    const column = table.getColumn(targetColumnId)
+  function commitFilter(operator: string, value?: unknown) {
+    if (!draftColumnId) return
+    const column = table.getColumn(draftColumnId)
     if (!column) return
-    const val = value !== undefined ? value : draftValue
     column.setFilterValue(
-      operatorRequiresValue(draftType)
-        ? { operator: op, value: val }
-        : { operator: op }
+      operatorRequiresValue(draftType) ? { operator, value } : { operator }
     )
     setOpen(false)
   }
@@ -366,21 +541,8 @@ function FilterEditorPopover<TData>({
       commitFilter(op, undefined)
       return
     }
-    if (initialFilterRef.current && initialFilterRef.current.operator === op) {
-      setDraftValue(initialFilterRef.current.value)
-    } else {
-      setDraftValue(defaultValueForOperator(op))
-    }
+    setDraftValue(defaultValueForOperator(op))
     setStep("value")
-  }
-
-  function toggleAnyOfValue(value: string) {
-    setDraftValue((prev: unknown) => {
-      const arr = Array.isArray(prev) ? (prev as string[]) : []
-      return arr.includes(value)
-        ? arr.filter((v) => v !== value)
-        : [...arr, value]
-    })
   }
 
   return (
@@ -409,177 +571,134 @@ function FilterEditorPopover<TData>({
 
         {step === "operator" && (
           <div className="flex flex-col gap-0.5 p-1">
-            {columnId == null && (
-              <FilterBackButton
-                label={draftColumn ? getColumnLabel(draftColumn) : "Back"}
-                onClick={() => setStep("column")}
-              />
-            )}
-            {operatorsForType(draftType).map((op) => (
-              <button
-                key={op.id}
-                type="button"
-                onClick={() => selectOperator(op.id)}
-                className={cn(
-                  "rounded-sm px-2 py-1.5 text-left text-sm hover:bg-muted",
-                  draftOperator === op.id && "bg-muted"
-                )}
-              >
-                {op.label}
-              </button>
-            ))}
+            <FilterBackButton
+              label={draftColumn ? getColumnLabel(draftColumn) : "Back"}
+              onClick={() => setStep("column")}
+            />
+            <OperatorList
+              type={draftType}
+              selected={draftOperator}
+              onSelect={selectOperator}
+            />
           </div>
         )}
 
-        {step === "value" &&
-          draftOperator &&
-          (() => {
-            const opLabel =
-              operatorsForType(draftType).find((o) => o.id === draftOperator)
-                ?.label ?? draftOperator
+        {step === "value" && draftColumn && draftOperator && (
+          <div className="flex flex-col">
+            <FilterBackButton
+              label={operatorLabel(draftType, draftOperator)}
+              onClick={() => setStep("operator")}
+            />
+            <ValueEditor
+              column={draftColumn}
+              operator={draftOperator}
+              value={draftValue}
+              onChange={setDraftValue}
+              onCommit={(value) =>
+                commitFilter(draftOperator, value ?? draftValue)
+              }
+            />
+          </div>
+        )}
+      </PopoverContent>
+    </Popover>
+  )
+}
 
-            const backButton = (
-              <FilterBackButton
-                label={opLabel}
-                onClick={() => setStep("operator")}
-              />
-            )
+// A chip's operator segment: a dropdown of the operators for its column's
+// type. Picking one writes straight through — no chain, no draft state.
+// Same-shape switches (eq -> gt) keep the existing value; a shape change
+// (eq -> between) resets it to that operator's default.
+function OperatorPopover<TData>({
+  table,
+  columnId,
+  trigger,
+}: {
+  table: TanstackTable<TData>
+  columnId: string
+  trigger: React.ReactElement
+}) {
+  const [open, setOpen] = React.useState(false)
+  const column = table.getColumn(columnId)
+  const type = column?.columnDef.meta?.type
+  const current = column?.getFilterValue() as DataGridFilterValue | undefined
 
-            if (draftOperator === "isAnyOf") {
-              const selected = Array.isArray(draftValue)
-                ? (draftValue as string[])
-                : []
-              return (
-                <div className="flex flex-col">
-                  {backButton}
-                  <Command>
-                    <CommandInput placeholder="Search options..." />
-                    <CommandList>
-                      <CommandEmpty>No options.</CommandEmpty>
-                      <CommandGroup>
-                        {(draftColumn?.columnDef.meta?.options ?? []).map(
-                          (opt) => (
-                            <CommandItem
-                              key={opt.value}
-                              value={opt.label}
-                              data-checked={
-                                selected.includes(opt.value)
-                                  ? "true"
-                                  : undefined
-                              }
-                              onSelect={() => toggleAnyOfValue(opt.value)}
-                            >
-                              {opt.label}
-                            </CommandItem>
-                          )
-                        )}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                  <div className="p-1">
-                    <Button
-                      size="sm"
-                      className="w-full"
-                      disabled={selected.length === 0}
-                      onClick={() => commitFilter()}
-                    >
-                      Apply
-                    </Button>
-                  </div>
-                </div>
-              )
-            }
+  function selectOperator(op: string) {
+    if (!column) return
+    if (!operatorRequiresValue(type)) {
+      column.setFilterValue({ operator: op })
+      setOpen(false)
+      return
+    }
+    const sameShape =
+      current != null && valueShapeOf(current.operator) === valueShapeOf(op)
+    column.setFilterValue({
+      operator: op,
+      value: sameShape ? current.value : defaultValueForOperator(op),
+    })
+    setOpen(false)
+  }
 
-            if (draftType === "select") {
-              return (
-                <div className="flex flex-col">
-                  {backButton}
-                  <Command>
-                    <CommandInput placeholder="Search options..." />
-                    <CommandList>
-                      <CommandEmpty>No options.</CommandEmpty>
-                      <CommandGroup>
-                        {(draftColumn?.columnDef.meta?.options ?? []).map(
-                          (opt) => (
-                            <CommandItem
-                              key={opt.value}
-                              value={opt.label}
-                              onSelect={() =>
-                                commitFilter(draftOperator, opt.value)
-                              }
-                            >
-                              {opt.label}
-                            </CommandItem>
-                          )
-                        )}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </div>
-              )
-            }
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger render={trigger} />
+      <PopoverContent align="start" className="w-48 p-1">
+        <div className="flex flex-col gap-0.5">
+          <OperatorList
+            type={type}
+            selected={current?.operator ?? null}
+            onSelect={selectOperator}
+          />
+        </div>
+      </PopoverContent>
+    </Popover>
+  )
+}
 
-            const inputType =
-              draftType === "date"
-                ? "date"
-                : draftType === "number" || draftType === "currency"
-                  ? "number"
-                  : "text"
+// A chip's value segment: the same ValueEditor as the create-new chain,
+// scoped to the operator the chip already has. Writes through on Apply (or
+// immediately for a single-click pick like select is/is-not).
+function ValuePopover<TData>({
+  table,
+  columnId,
+  trigger,
+}: {
+  table: TanstackTable<TData>
+  columnId: string
+  trigger: React.ReactElement
+}) {
+  const [open, setOpen] = React.useState(false)
+  const column = table.getColumn(columnId)
+  const current = column?.getFilterValue() as DataGridFilterValue | undefined
+  const [draftValue, setDraftValue] = React.useState<unknown>(current?.value)
 
-            if (draftOperator === "between") {
-              const [lo, hi] = Array.isArray(draftValue)
-                ? (draftValue as [string, string])
-                : ["", ""]
-              return (
-                <div className="flex flex-col gap-2 p-2">
-                  {backButton}
-                  <Input
-                    type={inputType}
-                    value={lo}
-                    placeholder="From"
-                    onChange={(e) => setDraftValue([e.target.value, hi])}
-                  />
-                  <Input
-                    type={inputType}
-                    value={hi}
-                    placeholder="To"
-                    onChange={(e) => setDraftValue([lo, e.target.value])}
-                  />
-                  <Button
-                    size="sm"
-                    disabled={!lo || !hi}
-                    onClick={() => commitFilter()}
-                  >
-                    Apply
-                  </Button>
-                </div>
-              )
-            }
+  function handleOpenChange(next: boolean) {
+    setOpen(next)
+    if (next) setDraftValue(current?.value)
+  }
 
-            const value = typeof draftValue === "string" ? draftValue : ""
-            return (
-              <div className="flex flex-col gap-2 p-2">
-                {backButton}
-                <Input
-                  type={inputType}
-                  value={value}
-                  placeholder="Value"
-                  autoFocus
-                  onChange={(e) => setDraftValue(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && value) commitFilter()
-                  }}
-                />
-                <Button
-                  size="sm"
-                  disabled={!value}
-                  onClick={() => commitFilter()}
-                >
-                  Apply
-                </Button>
-              </div>
-            )
-          })()}
+  function commit(value?: unknown) {
+    if (!column || !current) return
+    column.setFilterValue({
+      operator: current.operator,
+      value: value !== undefined ? value : draftValue,
+    })
+    setOpen(false)
+  }
+
+  if (!column || !current) return null
+
+  return (
+    <Popover open={open} onOpenChange={handleOpenChange}>
+      <PopoverTrigger render={trigger} />
+      <PopoverContent align="start" className="w-64 p-0">
+        <ValueEditor
+          column={column}
+          operator={current.operator}
+          value={draftValue}
+          onChange={setDraftValue}
+          onCommit={commit}
+        />
       </PopoverContent>
     </Popover>
   )
@@ -614,7 +733,6 @@ export function DataFilter<TData>({ table }: DataFilterProps<TData>) {
       <FilterEditorPopover
         table={table}
         availableColumns={pickableColumns}
-        columnId={null}
         trigger={
           <Button variant="outline" size="sm">
             <PlusIcon className="size-4" />
@@ -625,30 +743,45 @@ export function DataFilter<TData>({ table }: DataFilterProps<TData>) {
       {activeFilters.map((filter) => {
         const column = table.getColumn(filter.id)
         if (!column) return null
-        const summary = formatFilterSummary(
-          column,
-          filter.value as DataGridFilterValue
-        )
+        const type = column.columnDef.meta?.type
+        const filterValue = filter.value as DataGridFilterValue
+        const valueText = formatValueOnly(column, filterValue)
         return (
           <span
             key={filter.id}
-            className="inline-flex max-w-full items-center gap-1 rounded-full border bg-muted px-2.5 py-1 text-xs"
+            role="group"
+            aria-label={formatFilterSummary(column, filterValue)}
+            className="inline-flex max-w-full items-center divide-x divide-border rounded-full border bg-muted text-xs"
           >
-            <FilterEditorPopover
+            <span className="px-2.5 py-1">{getColumnLabel(column)}</span>
+            <OperatorPopover
               table={table}
-              availableColumns={pickableColumns}
               columnId={filter.id}
               trigger={
-                <button type="button" className="max-w-48 truncate">
-                  {summary}
+                <button type="button" className="px-2.5 py-1 hover:bg-accent">
+                  {operatorLabel(type, filterValue.operator)}
                 </button>
               }
             />
+            {operatorRequiresValue(type) && (
+              <ValuePopover
+                table={table}
+                columnId={filter.id}
+                trigger={
+                  <button
+                    type="button"
+                    className="max-w-32 truncate px-2.5 py-1 hover:bg-accent"
+                  >
+                    {valueText || "Set value"}
+                  </button>
+                }
+              />
+            )}
             <button
               type="button"
               aria-label={`Remove ${getColumnLabel(column)} filter`}
               onClick={() => removeFilter(filter.id)}
-              className="shrink-0 rounded-full p-0.5 hover:bg-accent"
+              className="shrink-0 rounded-e-full p-1.5 hover:bg-accent"
             >
               <XIcon className="size-3" />
             </button>

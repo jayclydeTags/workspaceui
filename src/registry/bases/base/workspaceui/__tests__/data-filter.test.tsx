@@ -131,9 +131,18 @@ function Harness() {
 }
 
 function visibleNames() {
+  // queryAllByRole (not getAllByRole) so an empty result set doesn't throw —
+  // some assertions below deliberately drive a filter to zero matches.
   return within(screen.getByRole("list"))
-    .getAllByRole("listitem")
+    .queryAllByRole("listitem")
     .map((li) => li.textContent)
+}
+
+// A committed chip's [column | operator | value | x] wrapper, found by its
+// aria-label — the same "column operator value" sentence formatFilterSummary
+// produces.
+function chip(summary: string) {
+  return screen.getByRole("group", { name: summary })
 }
 
 async function openNewFilter(user: ReturnType<typeof userEvent.setup>) {
@@ -173,7 +182,7 @@ describe("DataFilter", () => {
   })
 
   describe("text column", () => {
-    it("filters with contains and commits a summary chip", async () => {
+    it("filters with contains and commits a [column | operator | value | x] chip", async () => {
       const user = userEvent.setup()
       render(<Harness />)
       await openNewFilter(user)
@@ -185,8 +194,13 @@ describe("DataFilter", () => {
       await user.click(screen.getByRole("button", { name: "Apply" }))
 
       expect(visibleNames()).toEqual(["Gadget"])
+      const pill = chip("Name contains adg")
+      expect(within(pill).getByText("Name")).toBeInTheDocument()
       expect(
-        screen.getByRole("button", { name: "Name contains adg" })
+        within(pill).getByRole("button", { name: "contains" })
+      ).toBeInTheDocument()
+      expect(
+        within(pill).getByRole("button", { name: "adg" })
       ).toBeInTheDocument()
     })
   })
@@ -264,14 +278,18 @@ describe("DataFilter", () => {
       await user.click(screen.getByRole("button", { name: "Apply" }))
 
       expect(visibleNames()).toEqual(["Widget", "Gizmo"])
+      const pill = chip("Status is any of Open")
       expect(
-        screen.getByRole("button", { name: "Status is any of Open" })
+        within(pill).getByRole("button", { name: "is any of" })
+      ).toBeInTheDocument()
+      expect(
+        within(pill).getByRole("button", { name: "Open" })
       ).toBeInTheDocument()
     })
   })
 
   describe("boolean column", () => {
-    it("has no value step — committing ends at the operator", async () => {
+    it("has no value step — committing ends at the operator, and the chip has no value segment", async () => {
       const user = userEvent.setup()
       render(<Harness />)
       await openNewFilter(user)
@@ -279,8 +297,9 @@ describe("DataFilter", () => {
       await pickOperator(user, "is false")
 
       expect(visibleNames()).toEqual(["Gadget"])
+      const pill = chip("Active is false")
       expect(
-        screen.getByRole("button", { name: "Active is false" })
+        within(pill).getByRole("button", { name: "is false" })
       ).toBeInTheDocument()
       // The popover closed immediately — no lingering value step.
       expect(screen.queryByPlaceholderText("Value")).not.toBeInTheDocument()
@@ -288,7 +307,7 @@ describe("DataFilter", () => {
   })
 
   describe("editing a chip", () => {
-    it("reopens with the existing condition loaded and applies a new value", async () => {
+    it("operator segment opens a dropdown of operators; picking a same-shape one keeps the value", async () => {
       const user = userEvent.setup()
       render(<Harness />)
       await openNewFilter(user)
@@ -300,7 +319,61 @@ describe("DataFilter", () => {
       await user.click(screen.getByRole("button", { name: "Apply" }))
       expect(visibleNames()).toEqual(["Gadget", "Gizmo"])
 
-      await user.click(screen.getByRole("button", { name: "Qty > 10" }))
+      await user.click(
+        within(chip("Qty > 10")).getByRole("button", { name: ">" })
+      )
+      expect(await screen.findByRole("button", { name: "<" })).toBeVisible()
+      await user.click(screen.getByRole("button", { name: "<" }))
+
+      // > and < share the same single-value shape, so "10" carries over.
+      expect(visibleNames()).toEqual(["Widget"])
+      expect(chip("Qty < 10")).toBeInTheDocument()
+    })
+
+    it("operator segment resets the value when switching to a different value shape", async () => {
+      const user = userEvent.setup()
+      render(<Harness />)
+      await openNewFilter(user)
+      await pickColumn(user, "Price")
+      await pickOperator(user, "is between")
+      fireEvent.change(screen.getByPlaceholderText("From"), {
+        target: { value: "10" },
+      })
+      fireEvent.change(screen.getByPlaceholderText("To"), {
+        target: { value: "40" },
+      })
+      await user.click(screen.getByRole("button", { name: "Apply" }))
+      expect(visibleNames()).toEqual(["Gadget"])
+
+      await user.click(
+        within(chip("Price is between 10 and 40")).getByRole("button", {
+          name: "is between",
+        })
+      )
+      await user.click(await screen.findByRole("button", { name: "=" }))
+
+      // between (a tuple) and = (a single value) don't share a shape, so
+      // the old value can't carry over — the value segment resets.
+      expect(
+        screen.getByRole("button", { name: "Set value" })
+      ).toBeInTheDocument()
+    })
+
+    it("value segment reopens with the existing value loaded and applies a new one", async () => {
+      const user = userEvent.setup()
+      render(<Harness />)
+      await openNewFilter(user)
+      await pickColumn(user, "Qty")
+      await pickOperator(user, ">")
+      fireEvent.change(screen.getByPlaceholderText("Value"), {
+        target: { value: "10" },
+      })
+      await user.click(screen.getByRole("button", { name: "Apply" }))
+      expect(visibleNames()).toEqual(["Gadget", "Gizmo"])
+
+      await user.click(
+        within(chip("Qty > 10")).getByRole("button", { name: "10" })
+      )
       const valueInput = await screen.findByPlaceholderText("Value")
       expect(valueInput).toHaveValue(10)
       fireEvent.change(valueInput, { target: { value: "20" } })
@@ -325,7 +398,7 @@ describe("DataFilter", () => {
 
       expect(visibleNames()).toEqual(["Widget", "Gadget", "Gizmo"])
       expect(
-        screen.queryByRole("button", { name: /Active/ })
+        screen.queryByRole("group", { name: /Active/ })
       ).not.toBeInTheDocument()
     })
   })

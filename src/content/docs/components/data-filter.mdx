@@ -185,11 +185,15 @@ it never filters rows itself.
   inputs for "is between", a searchable list for `select` is/is-not, and a
   searchable multi-select for "is any of". `boolean` ends at the operator —
   "is true"/"is false" commit immediately, with no value step at all.
-- **Chips summarize each committed filter** (e.g. "Price is between 10 and
-  50", "Status is any of Open, Blocked") and are themselves the reopen
-  affordance — clicking one loads the same editor with its column, operator,
-  and value already in place, so adjusting a threshold doesn't mean deleting
-  and rebuilding the condition. An inline "x" on each chip removes it.
+- **Each committed filter renders as a `[ column | operator | value | x ]`
+  pill**, not one opaque chip. The operator segment is its own dropdown of
+  that column's operators — pick a new one and it commits immediately,
+  keeping the existing value when the new operator has the same shape (`>`
+  → `<`) and resetting it when it doesn't (`=` → `is between`). The value
+  segment independently reopens the same value editor the create-new chain
+  uses, prefilled with the current value, so adjusting a threshold is one
+  click on just that segment rather than deleting and rebuilding the whole
+  condition. An inline "x" on each pill removes it.
 - **`dataGridFilterFn`** — the exported `filterFn`. It unwraps
   `{ operator, value }` and dispatches on `column.meta.type`, and sets
   `autoRemove` so clearing a chip removes the filter through TanStack's own

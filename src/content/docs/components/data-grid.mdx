@@ -83,6 +83,7 @@ enableRowSelection: false,
 })
 
 return (
+
 <DataGrid
 table={table}
 onCellEdit={(rowId, columnId, value) => {
@@ -100,15 +101,22 @@ row.id === rowId ? { ...row, [columnId]: value } : row
 
 ## Installation
 
-<Tabs items={["CLI", "Manual"]}>
-<Tab value="CLI">
+<CodeTabs>
+<TabsList>
+<TabsTrigger value="cli">CLI</TabsTrigger>
+<TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+<TabsContent value="cli">
 
-```npm
-npx shadcn@latest add jayclydeTags/workspaceui/data-grid
-```
+<CodeBlockCommand
+  __npm__="npx shadcn@latest add jayclydeTags/workspaceui/data-grid"
+  __pnpm__="pnpm dlx shadcn@latest add jayclydeTags/workspaceui/data-grid"
+  __yarn__="yarn dlx shadcn@latest add jayclydeTags/workspaceui/data-grid"
+  __bun__="bun x shadcn@latest add jayclydeTags/workspaceui/data-grid"
+/>
 
-</Tab>
-<Tab value="Manual">
+</TabsContent>
+<TabsContent value="manual">
 
 ### Install dependencies
 
@@ -123,8 +131,8 @@ npm install @tanstack/react-table
 <ComponentSource name="data-grid-types" />
 <ComponentSource name="data-grid" />
 
-</Tab>
-</Tabs>
+</TabsContent>
+</CodeTabs>
 
 ## Quick start
 
@@ -334,6 +342,7 @@ enableRowSelection: false,
 })
 
 return (
+
 <DataGrid
 table={table}
 onCellEdit={(rowId, columnId, value) => {
@@ -433,6 +442,7 @@ enableRowSelection: false,
 })
 
 return (
+
 <DataGrid
 table={table}
 onCellEdit={(rowId, columnId, value) => {
@@ -482,6 +492,7 @@ enableRowSelection: false,
 })
 
 return (
+
 <DataGrid
 table={table}
 onCellEdit={(rowId, columnId, value) => {
@@ -556,6 +567,7 @@ setData((prev) => prev.filter((row) => row.id !== rowId))
 const selectedIds = Object.keys(rowSelection)
 
 return (
+
 <div className="flex flex-col gap-3">
 <BulkToolbar count={selectedIds.length} onClear={() => setRowSelection({})}>
 <Button variant="outline" size="sm" onClick={() => setConfirmBulkDelete(true)}>
@@ -647,6 +659,7 @@ enableRowSelection: false,
 })
 
 return (
+
 <DataGrid
 table={table}
 onCellEdit={(rowId, columnId, value) => {
@@ -696,6 +709,7 @@ enableRowSelection: false,
 })
 
 return (
+
 <div className="mx-auto w-[320px]">
 <DataGrid
 table={table}

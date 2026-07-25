@@ -14,13 +14,15 @@ import {
   CodeBlockTabsList,
   CodeBlockTabsTrigger,
 } from "@/components/codeblock"
+import { CodeBlockCommand } from "@/components/code-block-command"
+import { CodeTabs } from "@/components/code-tabs"
 import { ComponentPreview } from "@/components/component-preview"
 import { ComponentsIndex } from "@/components/components-index"
 import { ComponentSource } from "@/components/component-source"
 import { ComponentTree } from "@/components/component-tree"
 import { File, Files, Folder } from "@/components/files"
 import { Step, Steps } from "@/components/steps"
-import { Tab, Tabs } from "@/components/mdx-tabs"
+import { TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { TypeTable } from "@/components/type-table"
 
 function MdxLink({ href = "#", children, ...props }: ComponentProps<"a">) {
@@ -73,6 +75,11 @@ export const mdxComponents = {
   CodeBlockTabs,
   CodeBlockTabsList,
   CodeBlockTabsTrigger,
+  CodeBlockCommand,
+  CodeTabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
   Accordion,
   Accordions,
   Callout,
@@ -85,7 +92,5 @@ export const mdxComponents = {
   Folder,
   Step,
   Steps,
-  Tab,
-  Tabs,
   TypeTable,
 }

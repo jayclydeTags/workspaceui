@@ -1,0 +1,28 @@
+"use client"
+import * as React from "react"
+import { useConfig } from "@/hooks/use-config"
+import { Tabs } from "./ui/tabs"
+
+export function CodeTabs({
+  children,
+  ...props
+}: React.ComponentProps<typeof Tabs>) {
+  const [config, setConfig] = useConfig()
+
+  const installationType = React.useMemo(() => {
+    return config.installationType || "cli"
+  }, [config])
+
+  return (
+    <Tabs
+      value={installationType}
+      onValueChange={(value) =>
+        setConfig({ ...config, installationType: value as "cli" | "manual" })
+      }
+      className="*:data-[slot=tabs-list] relative mt-6 w-full"
+      {...props}
+    >
+      {children}
+    </Tabs>
+  )
+}

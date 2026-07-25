@@ -10,15 +10,22 @@ automatically.
 
 ## Installation
 
-<Tabs items={["CLI", "Manual"]}>
-<Tab value="CLI">
+<CodeTabs>
+<TabsList>
+<TabsTrigger value="cli">CLI</TabsTrigger>
+<TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+<TabsContent value="cli">
 
-```npm
-npx shadcn@latest add jayclydeTags/workspaceui/data-grid-types
-```
+<CodeBlockCommand
+  __npm__="npx shadcn@latest add jayclydeTags/workspaceui/data-grid-types"
+  __pnpm__="pnpm dlx shadcn@latest add jayclydeTags/workspaceui/data-grid-types"
+  __yarn__="yarn dlx shadcn@latest add jayclydeTags/workspaceui/data-grid-types"
+  __bun__="bun x shadcn@latest add jayclydeTags/workspaceui/data-grid-types"
+/>
 
-</Tab>
-<Tab value="Manual">
+</TabsContent>
+<TabsContent value="manual">
 
 ### Install dependencies
 
@@ -30,8 +37,8 @@ npm install @tanstack/react-table
 
 <ComponentSource name="data-grid-types" />
 
-</Tab>
-</Tabs>
+</TabsContent>
+</CodeTabs>
 
 ## Usage
 

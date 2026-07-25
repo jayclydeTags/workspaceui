@@ -13,6 +13,7 @@ export function MyToolbar() {
   const [count, setCount] = React.useState(2)
 
 return (
+
 <BulkToolbar count={count} onClear={() => setCount(0)}>
 <Button variant="outline" size="sm">
 <Trash2Icon data-icon="inline-start" />
@@ -26,22 +27,29 @@ Delete
 
 ## Installation
 
-<Tabs items={["CLI", "Manual"]}>
-<Tab value="CLI">
+<CodeTabs>
+<TabsList>
+<TabsTrigger value="cli">CLI</TabsTrigger>
+<TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+<TabsContent value="cli">
 
-```npm
-npx shadcn@latest add jayclydeTags/workspaceui/bulk-toolbar
-```
+<CodeBlockCommand
+  __npm__="npx shadcn@latest add jayclydeTags/workspaceui/bulk-toolbar"
+  __pnpm__="pnpm dlx shadcn@latest add jayclydeTags/workspaceui/bulk-toolbar"
+  __yarn__="yarn dlx shadcn@latest add jayclydeTags/workspaceui/bulk-toolbar"
+  __bun__="bun x shadcn@latest add jayclydeTags/workspaceui/bulk-toolbar"
+/>
 
-</Tab>
-<Tab value="Manual">
+</TabsContent>
+<TabsContent value="manual">
 
 ### Copy the component into your project
 
 <ComponentSource name="bulk-toolbar" />
 
-</Tab>
-</Tabs>
+</TabsContent>
+</CodeTabs>
 
 ## Usage
 

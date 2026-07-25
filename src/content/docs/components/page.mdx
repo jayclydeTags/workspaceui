@@ -27,22 +27,29 @@ export function MyPage() {
 
 ## Installation
 
-<Tabs items={["CLI", "Manual"]}>
-<Tab value="CLI">
+<CodeTabs>
+<TabsList>
+<TabsTrigger value="cli">CLI</TabsTrigger>
+<TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+<TabsContent value="cli">
 
-```npm
-npx shadcn@latest add jayclydeTags/workspaceui/page
-```
+<CodeBlockCommand
+  __npm__="npx shadcn@latest add jayclydeTags/workspaceui/page"
+  __pnpm__="pnpm dlx shadcn@latest add jayclydeTags/workspaceui/page"
+  __yarn__="yarn dlx shadcn@latest add jayclydeTags/workspaceui/page"
+  __bun__="bun x shadcn@latest add jayclydeTags/workspaceui/page"
+/>
 
-</Tab>
-<Tab value="Manual">
+</TabsContent>
+<TabsContent value="manual">
 
 ### Copy the component into your project
 
 <ComponentSource name="page" />
 
-</Tab>
-</Tabs>
+</TabsContent>
+</CodeTabs>
 
 ## Usage
 

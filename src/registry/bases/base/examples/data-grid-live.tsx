@@ -1,12 +1,26 @@
 "use client"
 
 import * as React from "react"
+import { Trash2Icon } from "lucide-react"
 import {
   type ColumnDef,
+  type RowSelectionState,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table"
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import { BulkToolbar } from "@/registry/bases/base/workspaceui/bulk-toolbar"
 import {
   DataGrid,
   getDataGridRowDefaults,
@@ -79,6 +93,8 @@ const columns: ColumnDef<Contact>[] = [
 
 export function DataGridLiveDemo() {
   const [data, setData] = React.useState(initialData)
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
+  const [confirmBulkDelete, setConfirmBulkDelete] = React.useState(false)
 
   // useReactTable() intentionally returns fresh functions each render; see
   // data-table.tsx's identical eslint-disable for the same reason.
@@ -88,38 +104,89 @@ export function DataGridLiveDemo() {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getRowId: (row) => row.id,
+    // DataGrid's leading checkbox column renders regardless (TanStack's own
+    // row selection default) — controlling it here is only so this
+    // component can read the selection to build the bulk bar below.
+    state: { rowSelection },
+    onRowSelectionChange: setRowSelection,
   })
 
+  function deleteRow(rowId: string) {
+    setData((prev) => prev.filter((row) => row.id !== rowId))
+  }
+
+  const selectedIds = Object.keys(rowSelection)
+
   return (
-    <DataGrid
-      table={table}
-      onCellEdit={async (rowId, columnId, value) => {
-        // Simulated network latency so the pending spinner is visible; type
-        // "error" into a cell to see the rejection path.
-        await new Promise((resolve) => setTimeout(resolve, 600))
-        if (typeof value === "string" && value.toLowerCase() === "error") {
-          throw new Error("The server rejected this value.")
-        }
-        setData((prev) =>
-          prev.map((row) =>
-            row.id === rowId ? { ...row, [columnId]: value } : row
+    <div className="flex flex-col gap-3">
+      <BulkToolbar
+        count={selectedIds.length}
+        onClear={() => setRowSelection({})}
+      >
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setConfirmBulkDelete(true)}
+        >
+          <Trash2Icon data-icon="inline-start" />
+          Delete
+        </Button>
+      </BulkToolbar>
+      <DataGrid
+        table={table}
+        onCellEdit={async (rowId, columnId, value) => {
+          // Simulated network latency so the pending spinner is visible; type
+          // "error" into a cell to see the rejection path.
+          await new Promise((resolve) => setTimeout(resolve, 600))
+          if (typeof value === "string" && value.toLowerCase() === "error") {
+            throw new Error("The server rejected this value.")
+          }
+          setData((prev) =>
+            prev.map((row) =>
+              row.id === rowId ? { ...row, [columnId]: value } : row
+            )
           )
-        )
-      }}
-      onRowAdd={(afterRowId) => {
-        const row = {
-          id: crypto.randomUUID(),
-          ...getDataGridRowDefaults(table),
-        } as Contact
-        setData((prev) => {
-          if (afterRowId == null) return [...prev, row]
-          const index = prev.findIndex((r) => r.id === afterRowId)
-          return [...prev.slice(0, index + 1), row, ...prev.slice(index + 1)]
-        })
-      }}
-      onRowDelete={(rowId) => {
-        setData((prev) => prev.filter((row) => row.id !== rowId))
-      }}
-    />
+        }}
+        onRowAdd={(afterRowId) => {
+          const row = {
+            id: crypto.randomUUID(),
+            ...getDataGridRowDefaults(table),
+          } as Contact
+          setData((prev) => {
+            if (afterRowId == null) return [...prev, row]
+            const index = prev.findIndex((r) => r.id === afterRowId)
+            return [...prev.slice(0, index + 1), row, ...prev.slice(index + 1)]
+          })
+        }}
+        onRowDelete={deleteRow}
+      />
+      <AlertDialog open={confirmBulkDelete} onOpenChange={setConfirmBulkDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Delete {selectedIds.length} rows
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This action can&apos;t be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={() => {
+                setConfirmBulkDelete(false)
+                // Reuses the single-row onRowDelete path — there's no
+                // separate bulk-delete callback.
+                selectedIds.forEach(deleteRow)
+                setRowSelection({})
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   )
 }

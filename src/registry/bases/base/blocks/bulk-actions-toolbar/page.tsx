@@ -21,9 +21,9 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from "@/components/ui/empty"
+import { BulkToolbar } from "@/registry/bases/base/workspaceui/bulk-toolbar"
 import { Page } from "@/registry/bases/base/workspaceui/page"
 import { DOCUMENTS, type Document } from "./data"
-import { BulkToolbar } from "./components/bulk-toolbar"
 
 export function BulkActionsToolbar() {
   const [docs, setDocs] = React.useState<Document[]>(DOCUMENTS)
@@ -55,7 +55,10 @@ export function BulkActionsToolbar() {
   return (
     <Page title="Documents" subtitle={`${docs.length} files`} hasPadding>
       <div className="flex flex-col gap-3">
-        <BulkToolbar count={selected.size} onClear={() => setSelected(new Set())}>
+        <BulkToolbar
+          count={selected.size}
+          onClear={() => setSelected(new Set())}
+        >
           <Button variant="outline" size="sm">
             <DownloadIcon data-icon="inline-start" />
             Export
@@ -112,9 +115,12 @@ export function BulkActionsToolbar() {
       <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete {selected.size} documents</AlertDialogTitle>
+            <AlertDialogTitle>
+              Delete {selected.size} documents
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              These files will be permanently deleted. This can&apos;t be undone.
+              These files will be permanently deleted. This can&apos;t be
+              undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

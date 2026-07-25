@@ -245,8 +245,8 @@
         "button",
         "checkbox",
         "empty",
-        "separator",
-        "jayclydeTags/workspaceui/page"
+        "jayclydeTags/workspaceui/page",
+        "jayclydeTags/workspaceui/bulk-toolbar"
       ],
       "files": [
         {
@@ -257,10 +257,20 @@
         {
           "path": "src/registry/bases/base/blocks/bulk-actions-toolbar/data.ts",
           "type": "registry:block"
-        },
+        }
+      ]
+    },
+    {
+      "name": "bulk-toolbar",
+      "type": "registry:ui",
+      "title": "Bulk Toolbar",
+      "description": "Contextual toolbar shown while rows are selected — a count, a clear control, and consumer-supplied action buttons as children. Renders nothing when count is 0.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["button", "separator"],
+      "files": [
         {
-          "path": "src/registry/bases/base/blocks/bulk-actions-toolbar/components/bulk-toolbar.tsx",
-          "type": "registry:block"
+          "path": "src/registry/bases/base/workspaceui/bulk-toolbar.tsx",
+          "type": "registry:ui"
         }
       ]
     },

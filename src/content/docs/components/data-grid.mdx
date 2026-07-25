@@ -4,7 +4,11 @@ description: An editable grid over a consumer-owned useReactTable() instance —
 ---
 
 export const PREVIEW_CODE = `import * as React from "react"
-import { type ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table"
+import { Trash2Icon } from "lucide-react"
+import { type ColumnDef, type RowSelectionState, getCoreRowModel, useReactTable } from "@tanstack/react-table"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import { BulkToolbar } from "@/components/ui/bulk-toolbar"
 import { DataGrid, getDataGridRowDefaults } from "@/components/ui/data-grid"
 
 interface Contact {
@@ -36,16 +40,33 @@ const columns: ColumnDef<Contact>[] = [
 
 export function MyGrid() {
   const [data, setData] = React.useState(initialData)
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
+  const [confirmBulkDelete, setConfirmBulkDelete] = React.useState(false)
 
 const table = useReactTable({
 data,
 columns,
 getCoreRowModel: getCoreRowModel(),
 getRowId: (row) => row.id,
+state: { rowSelection },
+onRowSelectionChange: setRowSelection,
 })
+
+function deleteRow(rowId: string) {
+setData((prev) => prev.filter((row) => row.id !== rowId))
+}
+
+const selectedIds = Object.keys(rowSelection)
 
 return (
 
+<div className="flex flex-col gap-3">
+<BulkToolbar count={selectedIds.length} onClear={() => setRowSelection({})}>
+<Button variant="outline" size="sm" onClick={() => setConfirmBulkDelete(true)}>
+<Trash2Icon data-icon="inline-start" />
+Delete
+</Button>
+</BulkToolbar>
 <DataGrid
 table={table}
 onCellEdit={async (rowId, columnId, value) => {
@@ -65,10 +86,30 @@ const index = prev.findIndex((r) => r.id === afterRowId)
 return [...prev.slice(0, index + 1), row, ...prev.slice(index + 1)]
 })
 }}
-onRowDelete={(rowId) => {
-setData((prev) => prev.filter((row) => row.id !== rowId))
-}}
+onRowDelete={deleteRow}
 />
+<AlertDialog open={confirmBulkDelete} onOpenChange={setConfirmBulkDelete}>
+<AlertDialogContent>
+<AlertDialogHeader>
+<AlertDialogTitle>Delete {selectedIds.length} rows</AlertDialogTitle>
+<AlertDialogDescription>This action can't be undone.</AlertDialogDescription>
+</AlertDialogHeader>
+<AlertDialogFooter>
+<AlertDialogCancel>Cancel</AlertDialogCancel>
+<AlertDialogAction
+variant="destructive"
+onClick={() => {
+setConfirmBulkDelete(false)
+selectedIds.forEach(deleteRow)
+setRowSelection({})
+}}
+>
+Delete
+</AlertDialogAction>
+</AlertDialogFooter>
+</AlertDialogContent>
+</AlertDialog>
+</div>
 )
 }`
 
@@ -209,6 +250,25 @@ render through their normal TanStack `cell` definition (read-only).
 - **Layout reporting** — resize, pin, and reorder all mutate the `table`
   instance's own state directly, so they work with zero setup. Pass
   `onColumnLayoutChange` to additionally observe that state and persist it.
+- **Row selection** — a leading checkbox column renders automatically,
+  because TanStack's own row selection feature is enabled by default — no
+  separate DataGrid prop to remember. Opt out the same way you would on any
+  plain TanStack table: `enableRowSelection: false`. Pass
+  `state: { rowSelection }` and `onRowSelectionChange` (as the example above
+  does) to make the selection observable outside the grid — needed to read a
+  count or build a bulk-action bar. <kbd>Shift+Click</kbd> a row's checkbox,
+  or <kbd>Shift+ArrowUp</kbd>/<kbd>Shift+ArrowDown</kbd> from a focused
+  gridcell, extends the selection from the last plain click or move — the
+  same anchor-and-extend model file explorers use. Selection is row-level
+  only; <kbd>Shift+Left</kbd>/<kbd>Shift+Right</kbd> are deliberately left
+  unbound for a future cell-range selection. There's no `onBulkAction` prop
+  and no action list on `DataGridProps` — the grid doesn't decide what bulk
+  actions your domain supports. Compose your own bar from
+  [`BulkToolbar`](/docs/components/bulk-toolbar), reading
+  `table.getState().rowSelection` for the count and calling
+  `setRowSelection({})` to clear, as the example above does. A bulk delete is
+  just your selected row IDs looped over the same `onRowDelete(rowId)` you'd
+  wire up for single-row delete — there's no second delete path.
 
 ## API Reference
 

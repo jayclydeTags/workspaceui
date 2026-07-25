@@ -698,11 +698,6 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       path: "app/bulk-actions-toolbar/data.ts",
       src: "data.ts",
     },
-    {
-      name: "bulk-toolbar.tsx",
-      path: "components/blocks/bulk-actions-toolbar/components/bulk-toolbar.tsx",
-      src: "components/bulk-toolbar.tsx",
-    },
   ],
   "detail-tabs": [
     { name: "page.tsx", path: "app/detail-tabs/page.tsx", src: "page.tsx" },

@@ -25,6 +25,7 @@ import {
   PageFullDemo,
 } from "@/registry/bases/base/examples/page-sample"
 import { PasswordInputLiveDemo } from "@/registry/bases/base/examples/password-input-live"
+import { BulkToolbarLiveDemo } from "@/registry/bases/base/examples/bulk-toolbar-live"
 import { DataGridLiveDemo } from "@/registry/bases/base/examples/data-grid-live"
 import { DataFilterLiveDemo } from "@/registry/bases/base/examples/data-filter-live"
 import {
@@ -59,6 +60,7 @@ const previewComponents: Record<string, React.ReactNode> = {
   "password-input-default": <PasswordInputDefaultDemo />,
   "password-input-strength": <PasswordInputStrengthDemo />,
   "password-input-checklist": <PasswordInputChecklistDemo />,
+  "bulk-toolbar": <BulkToolbarLiveDemo />,
   "data-grid": <DataGridLiveDemo />,
   "data-filter": <DataFilterLiveDemo />,
 }

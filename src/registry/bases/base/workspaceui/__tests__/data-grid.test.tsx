@@ -11,9 +11,21 @@ import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 import {
   type ColumnDef,
+  type RowSelectionState,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table"
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import { BulkToolbar } from "@/registry/bases/base/workspaceui/bulk-toolbar"
 
 import {
   DataGrid,
@@ -71,6 +83,109 @@ function Harness({
       onRowAdd={onRowAdd}
       onRowDelete={onRowDelete}
     />
+  )
+}
+
+// A 3-row fixture so range selection (anchor to a target two rows away) is
+// actually meaningful — the 2-row Person data above can't exercise a
+// multi-row extension.
+const selectableData: Person[] = [
+  { id: "1", name: "Ada", role: "Engineer" },
+  { id: "2", name: "Grace", role: "Admiral" },
+  { id: "3", name: "Katherine", role: "Mathematician" },
+]
+
+// Row selection is TanStack's own default-enabled table feature, so this
+// harness controls it (state.rowSelection + onRowSelectionChange) only to
+// make selection observable/assertable from the test, not to turn it on.
+function SelectableHarness({
+  onRowDelete,
+}: {
+  onRowDelete?: (rowId: string) => void | Promise<void>
+}) {
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const table = useReactTable({
+    data: selectableData,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getRowId: (row) => row.id,
+    state: { rowSelection },
+    onRowSelectionChange: setRowSelection,
+  })
+  return (
+    <DataGrid table={table} onCellEdit={vi.fn()} onRowDelete={onRowDelete} />
+  )
+}
+
+// The only opt-out: a consumer who doesn't want row selection at all turns
+// it off the same way they would on any plain TanStack table.
+function UnselectableHarness() {
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const table = useReactTable({
+    data: selectableData,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getRowId: (row) => row.id,
+    enableRowSelection: false,
+  })
+  return <DataGrid table={table} onCellEdit={vi.fn()} />
+}
+
+// Mirrors the docs live example's composition: BulkToolbar (from the
+// bulk-actions-toolbar block) reused verbatim above the grid, a "Delete"
+// button that opens a confirm dialog, and onRowDelete looped over the
+// selected ids on confirm — DataGrid itself has no bulk-action prop at all.
+function BulkDeleteHarness({
+  onRowDelete,
+}: {
+  onRowDelete: (rowId: string) => void
+}) {
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
+  const [confirmBulkDelete, setConfirmBulkDelete] = React.useState(false)
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const table = useReactTable({
+    data: selectableData,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getRowId: (row) => row.id,
+    state: { rowSelection },
+    onRowSelectionChange: setRowSelection,
+  })
+  const selectedIds = Object.keys(rowSelection)
+
+  return (
+    <div>
+      <BulkToolbar
+        count={selectedIds.length}
+        onClear={() => setRowSelection({})}
+      >
+        <Button size="sm" onClick={() => setConfirmBulkDelete(true)}>
+          Delete
+        </Button>
+      </BulkToolbar>
+      <DataGrid table={table} onCellEdit={vi.fn()} onRowDelete={onRowDelete} />
+      <AlertDialog open={confirmBulkDelete} onOpenChange={setConfirmBulkDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Delete {selectedIds.length} rows
+            </AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            variant="destructive"
+            onClick={() => {
+              setConfirmBulkDelete(false)
+              selectedIds.forEach((rowId) => onRowDelete(rowId))
+              setRowSelection({})
+            }}
+          >
+            Delete
+          </AlertDialogAction>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   )
 }
 
@@ -778,6 +893,104 @@ describe("DataGrid", () => {
 
       expect(onRowDelete).not.toHaveBeenCalled()
       expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument()
+    })
+  })
+
+  describe("row selection", () => {
+    it("renders a leading checkbox column by default — TanStack's own row selection default", () => {
+      renderGrid()
+      expect(screen.getAllByRole("checkbox")).toHaveLength(2) // one per row
+    })
+
+    it("renders no leading checkbox column when the consumer opts out via enableRowSelection: false", () => {
+      render(<UnselectableHarness />)
+      expect(screen.queryAllByRole("checkbox")).toHaveLength(0)
+    })
+
+    it("renders the checkbox column before the kebab column", () => {
+      render(<SelectableHarness onRowDelete={vi.fn()} />)
+
+      const rows = screen.getAllByRole("row").slice(1) // drop the header row
+      expect(rows).toHaveLength(3)
+      for (const row of rows) {
+        const cells = Array.from(row.children)
+        // Leading checkbox cell first, kebab-menu cell last.
+        expect(
+          within(cells[0] as HTMLElement).getByRole("checkbox")
+        ).toBeInTheDocument()
+        expect(
+          within(cells[cells.length - 1] as HTMLElement).getByRole("button", {
+            name: /actions/i,
+          })
+        ).toBeInTheDocument()
+      }
+    })
+
+    it("Shift+Click on a checkbox extends the selection from the anchor row", async () => {
+      const user = userEvent.setup()
+      render(<SelectableHarness />)
+      const checkboxes = screen.getAllByRole("checkbox")
+
+      await user.click(checkboxes[0]!) // anchor: row 0
+      await user.keyboard("{Shift>}")
+      await user.click(checkboxes[2]!) // extend to row 2
+      await user.keyboard("{/Shift}")
+
+      expect(checkboxes[0]).toBeChecked()
+      expect(checkboxes[1]).toBeChecked()
+      expect(checkboxes[2]).toBeChecked()
+    })
+
+    it("Shift+ArrowDown extends selection from a nav-mode gridcell", async () => {
+      const user = userEvent.setup()
+      render(<SelectableHarness />)
+      const cells = screen.getAllByRole("gridcell")
+      cells[0]!.focus() // row 0, col 0
+
+      await user.keyboard("{Shift>}{ArrowDown}{ArrowDown}{/Shift}")
+
+      const checkboxes = screen.getAllByRole("checkbox")
+      expect(checkboxes[0]).toBeChecked()
+      expect(checkboxes[1]).toBeChecked()
+      expect(checkboxes[2]).toBeChecked()
+    })
+
+    it("Shift+Left/Right stays unbound — no range selection, just plain column navigation", async () => {
+      const user = userEvent.setup()
+      render(<SelectableHarness />)
+      const cells = screen.getAllByRole("gridcell")
+      cells[0]!.focus() // row 0, col 0
+
+      await user.keyboard("{Shift>}{ArrowRight}{/Shift}")
+
+      expect(cells[1]).toHaveFocus()
+      expect(
+        screen
+          .getAllByRole("checkbox")
+          .every((cb) => !(cb as HTMLInputElement).checked)
+      ).toBe(true)
+    })
+
+    it("a consumer-composed bulk bar confirms once, then loops onRowDelete(rowId) over every selected row", async () => {
+      const user = userEvent.setup()
+      const onRowDelete = vi.fn()
+      render(<BulkDeleteHarness onRowDelete={onRowDelete} />)
+      const checkboxes = screen.getAllByRole("checkbox")
+
+      await user.click(checkboxes[0]!)
+      await user.keyboard("{Shift>}")
+      await user.click(checkboxes[1]!)
+      await user.keyboard("{/Shift}")
+
+      await user.click(screen.getByRole("button", { name: "Delete" }))
+      const dialog = screen.getByRole("alertdialog")
+      await user.click(within(dialog).getByRole("button", { name: "Delete" }))
+
+      expect(onRowDelete).toHaveBeenCalledTimes(2)
+      expect(onRowDelete).toHaveBeenNthCalledWith(1, "1")
+      expect(onRowDelete).toHaveBeenNthCalledWith(2, "2")
+      // Confirming once clears the selection and the bar along with it.
+      expect(screen.queryByRole("toolbar")).not.toBeInTheDocument()
     })
   })
 

@@ -1,0 +1,89 @@
+---
+title: Bulk Toolbar
+description: A contextual toolbar shown while rows are selected — a count, a clear control, and consumer-supplied action buttons as children. Renders nothing when count is 0.
+---
+
+export const PREVIEW_CODE = `import * as React from "react"
+import { Trash2Icon } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
+import { BulkToolbar } from "@/components/ui/bulk-toolbar"
+
+export function MyToolbar() {
+  const [count, setCount] = React.useState(2)
+
+return (
+<BulkToolbar count={count} onClear={() => setCount(0)}>
+<Button variant="outline" size="sm">
+<Trash2Icon data-icon="inline-start" />
+Delete
+</Button>
+</BulkToolbar>
+)
+}`
+
+<ComponentPreview name="bulk-toolbar" code={PREVIEW_CODE} />
+
+## Installation
+
+<Tabs items={["CLI", "Manual"]}>
+<Tab value="CLI">
+
+```npm
+npx shadcn@latest add jayclydeTags/workspaceui/bulk-toolbar
+```
+
+</Tab>
+<Tab value="Manual">
+
+### Copy the component into your project
+
+<ComponentSource name="bulk-toolbar" />
+
+</Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { BulkToolbar } from "@/components/ui/bulk-toolbar"
+```
+
+```tsx
+<BulkToolbar count={selected.size} onClear={() => setSelected(new Set())}>
+  <Button variant="outline" size="sm">
+    Export
+  </Button>
+  <Button variant="outline" size="sm" onClick={() => setConfirmDelete(true)}>
+    Delete
+  </Button>
+</BulkToolbar>
+```
+
+`BulkToolbar` renders nothing when `count` is 0 — mount it unconditionally
+next to whatever list or table drives the selection, and it appears once
+something is selected. It only owns the count and clear affordance; the
+action buttons are entirely consumer-supplied as children, so you decide
+which actions exist and how they behave (including any confirmation dialog
+for destructive ones — see [Data Grid](/docs/components/data-grid)'s "Row
+selection" section for a bulk-delete example wired to `onRowDelete`).
+
+## API Reference
+
+<TypeTable
+  type={{
+    count: {
+      type: "number",
+      description:
+        "Number of selected items. The toolbar renders nothing when this is 0.",
+    },
+    onClear: {
+      type: "() => void",
+      description: "Called when the clear button is clicked.",
+    },
+    children: {
+      type: "React.ReactNode",
+      description: "Bulk-action buttons rendered after the separator.",
+    },
+  }}
+/>

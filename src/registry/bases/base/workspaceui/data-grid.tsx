@@ -96,6 +96,15 @@ function pinActionLabel(current: PinPosition): string {
   return "Pin column left"
 }
 
+// A leading checkbox column renders automatically whenever the table's own
+// row-selection feature is enabled — TanStack's own default, so this needs
+// no separate DataGrid prop to remember. A consumer who doesn't want
+// selection at all opts out the same way they would with plain TanStack:
+// `enableRowSelection: false` on their useReactTable() call.
+function hasRowSelectionEnabled<TData>(table: TanstackTable<TData>): boolean {
+  return table.options.enableRowSelection !== false
+}
+
 // A naive insert-before-target no-ops on an adjacent swap: removing the
 // dragged id shifts the target's own index back into the slot the drop
 // intended to fill. The midpoint-derived before/after position fixes that.
@@ -281,7 +290,9 @@ export function DataGrid<TData>({
   const colCount = headerGroups[0]?.headers.length ?? 0
   const rowCount = rows.length
   const hasDeleteColumn = onRowDelete != null
-  const totalColCount = colCount + (hasDeleteColumn ? 1 : 0)
+  const hasSelectionColumn = hasRowSelectionEnabled(table)
+  const totalColCount =
+    colCount + (hasDeleteColumn ? 1 : 0) + (hasSelectionColumn ? 1 : 0)
 
   const [focusCoord, setFocusCoord] = React.useState<Coord>({ r: 0, c: 0 })
   const [editCoord, setEditCoord] = React.useState<Coord | null>(null)
@@ -304,6 +315,14 @@ export function DataGrid<TData>({
   } | null>(null)
   const prevRowCountRef = React.useRef(rowCount)
   const [deleteTarget, setDeleteTarget] = React.useState<string | null>(null)
+
+  // Row-level range selection is anchor-and-extend: the row a plain
+  // click/keyboard-move last landed on, extended by a later Shift+Click or
+  // Shift+ArrowUp/Down. Cleared on any plain (non-shift) move so the next
+  // extension starts fresh from wherever the user is now.
+  const [selectionAnchor, setSelectionAnchor] = React.useState<number | null>(
+    null
+  )
 
   // Set on every dragover inside the Columns panel; read (and cleared) on
   // drop. The dragged column's own id travels through the native
@@ -348,6 +367,31 @@ export function DataGrid<TData>({
   function focusTo(r: number, c: number) {
     setFocusCoord({ r, c })
     cellRefs.current.get(cellKey(r, c))?.focus()
+  }
+
+  // Row-level only: selects every row between a and b inclusive, replacing
+  // whatever was selected before — the same "click, then shift-click/arrow
+  // to extend" model file explorers use. Cell-range selection (Shift+Left/
+  // Right) is deliberately not implemented; those keys stay unbound.
+  function selectRowRange(a: number, b: number) {
+    const lo = Math.min(a, b)
+    const hi = Math.max(a, b)
+    const next: Record<string, boolean> = {}
+    for (let i = lo; i <= hi; i++) {
+      const row = rows[i]
+      if (row) next[row.id] = true
+    }
+    table.setRowSelection(next)
+  }
+
+  function onRowCheckboxChange(r: number, event: Event) {
+    const shiftKey = "shiftKey" in event && (event as MouseEvent).shiftKey
+    if (shiftKey && selectionAnchor != null) {
+      selectRowRange(selectionAnchor, r)
+      return
+    }
+    rows[r]?.toggleSelected()
+    setSelectionAnchor(r)
   }
 
   // Takes the column the caller already has, rather than columnId + a
@@ -598,6 +642,7 @@ export function DataGrid<TData>({
   }
 
   function onCellClick(r: number, c: number) {
+    setSelectionAnchor(null)
     // Already editing this exact cell — let the click just move the caret.
     if (editCoord && editCoord.r === r && editCoord.c === c) return
     beginEdit(r, c)
@@ -614,29 +659,40 @@ export function DataGrid<TData>({
 
     switch (e.key) {
       case "ArrowUp":
+      case "ArrowDown": {
         e.preventDefault()
-        focusTo(clamp(r - 1, 0, rowCount - 1), c)
+        const dir = e.key === "ArrowUp" ? -1 : 1
+        const target = clamp(r + dir, 0, rowCount - 1)
+        if (hasSelectionColumn && e.shiftKey) {
+          const anchor = selectionAnchor ?? r
+          setSelectionAnchor(anchor)
+          selectRowRange(anchor, target)
+        } else {
+          setSelectionAnchor(null)
+        }
+        focusTo(target, c)
         return
-      case "ArrowDown":
-        e.preventDefault()
-        focusTo(clamp(r + 1, 0, rowCount - 1), c)
-        return
+      }
       case "ArrowLeft":
         e.preventDefault()
+        setSelectionAnchor(null)
         focusTo(r, clamp(c - 1, 0, colCount - 1))
         return
       case "ArrowRight":
         e.preventDefault()
+        setSelectionAnchor(null)
         focusTo(r, clamp(c + 1, 0, colCount - 1))
         return
       case "Tab": {
         e.preventDefault()
+        setSelectionAnchor(null)
         const next = wrapIndex(r, c, e.shiftKey ? -1 : 1)
         focusTo(next.r, next.c)
         return
       }
       case "Enter":
         e.preventDefault()
+        setSelectionAnchor(null)
         focusTo(clamp(r + (e.shiftKey ? -1 : 1), 0, rowCount - 1), c)
         return
       case "F2":
@@ -771,6 +827,9 @@ export function DataGrid<TData>({
         <TableHeader>
           {headerGroups.map((headerGroup) => (
             <TableRow key={headerGroup.id}>
+              {hasSelectionColumn && (
+                <TableHead aria-hidden="true" className="w-10" />
+              )}
               {headerGroup.headers.map((header) => {
                 const pinned = header.column.getIsPinned()
                 return (
@@ -865,6 +924,19 @@ export function DataGrid<TData>({
 
               return (
                 <TableRow key={row.id} className="group/row relative">
+                  {hasSelectionColumn && (
+                    <TableCell className="w-10 p-0 text-center align-top">
+                      <div className="flex items-center justify-center px-2 py-2.5">
+                        <Checkbox
+                          checked={row.getIsSelected()}
+                          aria-label={`Select row ${r + 1}`}
+                          onCheckedChange={(_checked, eventDetails) =>
+                            onRowCheckboxChange(r, eventDetails.event)
+                          }
+                        />
+                      </div>
+                    </TableCell>
+                  )}
                   {row.getVisibleCells().map((cell, c) => {
                     const key = cellKey(r, c)
                     const isFocused = focusCoord.r === r && focusCoord.c === c

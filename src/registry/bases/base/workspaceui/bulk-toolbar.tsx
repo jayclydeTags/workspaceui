@@ -4,19 +4,17 @@ import { XIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 
+export interface BulkToolbarProps {
+  count: number
+  onClear: () => void
+  children: React.ReactNode
+}
+
 /**
  * Contextual toolbar shown while rows are selected. Renders nothing when
  * `count` is 0. Pass your bulk-action buttons as children.
  */
-export function BulkToolbar({
-  count,
-  onClear,
-  children,
-}: {
-  count: number
-  onClear: () => void
-  children: React.ReactNode
-}) {
+export function BulkToolbar({ count, onClear, children }: BulkToolbarProps) {
   if (count === 0) return null
 
   return (

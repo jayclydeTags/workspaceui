@@ -37,13 +37,9 @@ npx shadcn@latest add jayclydeTags/workspaceui/page
 </Tab>
 <Tab value="Manual">
 
-<Steps>
-<Step>
 ### Copy the component into your project
 
 <ComponentSource name="page" />
-</Step>
-</Steps>
 
 </Tab>
 </Tabs>
@@ -234,15 +230,46 @@ export function MyPage() {
 
 <TypeTable
   type={{
-    title: { type: "React.ReactNode", description: "Page title. Ignored when `breadcrumbs` is set." },
-    subtitle: { type: "React.ReactNode", description: "Secondary line shown under the title or breadcrumbs." },
-    breadcrumbs: { type: "{ label: string; href?: string }[]", description: "Renders a breadcrumb trail in place of the plain title; the last item is the current page." },
-    visual: { type: "React.ReactNode", description: "Decorative visual shown left of the title/breadcrumbs." },
-    badge: { type: "React.ReactNode", description: "Shown next to the title, or next to the last breadcrumb when `breadcrumbs` is set." },
-    actions: { type: "React.ReactNode", description: "Right-aligned actions in the header." },
-    hasHeader: { type: "boolean", default: "true", description: "Set to `false` to omit the header entirely." },
-    hasPadding: { type: "boolean", default: "false", description: "Adds padding to the content area." },
-    className: { type: "string", description: "Additional CSS classes applied to the root element." },
+    title: {
+      type: "React.ReactNode",
+      description: "Page title. Ignored when `breadcrumbs` is set.",
+    },
+    subtitle: {
+      type: "React.ReactNode",
+      description: "Secondary line shown under the title or breadcrumbs.",
+    },
+    breadcrumbs: {
+      type: "{ label: string; href?: string }[]",
+      description:
+        "Renders a breadcrumb trail in place of the plain title; the last item is the current page.",
+    },
+    visual: {
+      type: "React.ReactNode",
+      description: "Decorative visual shown left of the title/breadcrumbs.",
+    },
+    badge: {
+      type: "React.ReactNode",
+      description:
+        "Shown next to the title, or next to the last breadcrumb when `breadcrumbs` is set.",
+    },
+    actions: {
+      type: "React.ReactNode",
+      description: "Right-aligned actions in the header.",
+    },
+    hasHeader: {
+      type: "boolean",
+      default: "true",
+      description: "Set to `false` to omit the header entirely.",
+    },
+    hasPadding: {
+      type: "boolean",
+      default: "false",
+      description: "Adds padding to the content area.",
+    },
+    className: {
+      type: "string",
+      description: "Additional CSS classes applied to the root element.",
+    },
     children: { type: "React.ReactNode", description: "Content area." },
   }}
 />

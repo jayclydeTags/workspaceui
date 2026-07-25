@@ -300,6 +300,29 @@ render through their normal TanStack `cell` definition (read-only).
   `setRowSelection({})` to clear, as the example above does. A bulk delete is
   just your selected row IDs looped over the same `onRowDelete(rowId)` you'd
   wire up for single-row delete — there's no second delete path.
+- **Narrow-container card list** — measured with a `ResizeObserver` on the
+  grid's own container, never a viewport media query: the driving case is a
+  desktop user dragging a workspace pane divider, not a phone. Below a 448px
+  container, `narrowFallback="cards"` (the default) swaps `role="grid"` for a
+  plain list — only one tree ever renders, never a CSS-hidden second one — so
+  this composes with the deferred virtualization work. Each row becomes a
+  card: the first column is the title and the next two the subtitle,
+  positional by column order unless overridden per column with
+  `meta.summary`. Tapping a card opens a bottom sheet with every column as a
+  labelled, bordered field — a deliberate divergence from the borderless-at-
+  rest wide-branch styling, since an editable field should look unambiguously
+  editable in this layout. Sheet fields commit through the exact same
+  `onCellEdit` callback and pending/error handling as the wide branch;
+  `multiSelect` and `user` toggle inline instead of through a popover, and
+  `select`/`boolean` commit immediately on change. The narrow branch is a
+  list, not a grid: the roving-tabindex/F2/Tab-wrap keyboard model doesn't
+  apply, the hover-gap "+" insert is dropped (adding is append-only), delete
+  moves into the sheet's footer, Shift range-select is dropped (selection is
+  tap-per-row), and resize/pin/the Columns panel don't render. The `aria-live`
+  region is shared across both branches, not duplicated. Pass
+  `narrowFallback="none"` to keep the real grid at any width instead, with
+  the first column stuck sticky-left so it stays visible under horizontal
+  scroll.
 
 ## API Reference
 
@@ -331,6 +354,12 @@ render through their normal TanStack `cell` definition (read-only).
       type: "(layout: DataGridColumnLayout) => void",
       description:
         "Fires after a resize, pin, or reorder change with the table's current { columnOrder, columnSizing, columnPinning }. Purely a reporting side-channel — resize/pin/reorder mutate the table instance's own state directly and work with no callback at all.",
+    },
+    narrowFallback: {
+      type: '"cards" | "none"',
+      default: '"cards"',
+      description:
+        'Below a 448px *measured container* width (never the viewport), "cards" swaps the grid for a card list with a bottom-sheet editor. "none" is the escape hatch: keeps the real grid at any width, with the first column stuck sticky-left.',
     },
     className: {
       type: "string",

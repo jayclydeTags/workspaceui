@@ -3,6 +3,7 @@
 import * as React from "react"
 import {
   flexRender,
+  type Cell,
   type Column,
   type ColumnOrderState,
   type ColumnPinningState,
@@ -10,11 +11,13 @@ import {
   type Table as TanstackTable,
 } from "@tanstack/react-table"
 import {
+  ChevronRightIcon,
   Columns3Icon,
   GripVerticalIcon,
   MoreHorizontalIcon,
   PinIcon,
   PlusIcon,
+  Trash2Icon,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -52,6 +55,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import {
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 import { Spinner } from "@/components/ui/spinner"
 import {
   Table,
@@ -89,7 +99,42 @@ export interface DataGridProps<TData> {
   onRowDelete?: (rowId: string) => void | Promise<void>
   /** Fires after a resize, pin, or reorder change so a consumer can persist it. */
   onColumnLayoutChange?: (layout: DataGridColumnLayout) => void
+  /**
+   * Below a 448px measured container width, `"cards"` (the default) swaps
+   * the grid for a card list with a bottom-sheet editor. `"none"` is the
+   * escape hatch: keeps the real grid at any width, with the first column
+   * stuck sticky-left so it stays visible under horizontal scroll.
+   */
+  narrowFallback?: "cards" | "none"
   className?: string
+}
+
+// Below this container width the grid swaps to a card list (or, with
+// narrowFallback="none", keeps the grid with a sticky first column).
+// Deliberately the same 448px data-filter settled on for its own sheet-backed
+// toolbar (see data-filter.tsx) so the common case — both mounted in one
+// narrow pane — flips together, even though each measures its own container.
+const NARROW_BREAKPOINT = 448
+
+// This component's own ResizeObserver — see the same note in data-filter.tsx
+// for why it isn't shared. Container width, not viewport, drives every
+// responsive decision here: the driving case is a workspace pane getting
+// narrower, not a phone.
+function useContainerWidth<T extends HTMLElement>() {
+  const ref = React.useRef<T>(null)
+  const [width, setWidth] = React.useState<number | null>(null)
+
+  React.useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new ResizeObserver(([entry]) => {
+      setWidth(entry.contentRect.width)
+    })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  return { ref, width }
 }
 
 type PinPosition = false | "left" | "right"
@@ -132,15 +177,20 @@ function reorderColumnIds(
   return [...without.slice(0, insertAt), draggedId, ...without.slice(insertAt)]
 }
 
+// `forceStickyLeft` is the narrowFallback="none" escape hatch: sticks the
+// first column left even when the consumer never pinned it, so a real grid
+// stays usable under horizontal scroll at narrow widths. A real left pin
+// still wins its own getStart() offset over the forced 0.
 function columnPinStyle<TData>(
-  column: Column<TData, unknown>
+  column: Column<TData, unknown>,
+  forceStickyLeft = false
 ): React.CSSProperties {
   const pinned = column.getIsPinned()
   return {
     width: column.getSize(),
-    ...(pinned === "left" && {
+    ...((pinned === "left" || forceStickyLeft) && {
       position: "sticky",
-      left: column.getStart("left"),
+      left: pinned === "left" ? column.getStart("left") : 0,
       zIndex: 1,
     }),
     ...(pinned === "right" && {
@@ -274,6 +324,35 @@ function renderUserTrigger(userId: string | null, users: DataGridUser[]) {
   )
 }
 
+function optionLabel(
+  options: DataGridSelectOption[] | undefined,
+  value: unknown
+): string {
+  return options?.find((opt) => opt.value === value)?.label ?? String(value)
+}
+
+// The narrow branch's own read-mode formatting — covers every column type
+// (formatReadValue only knows currency vs. plain text), since a card's
+// title/subtitle and a sheet field's at-rest value can land on any of them.
+function formatCardValue<TData>(cell: Cell<TData, unknown>): string {
+  const meta = cell.column.columnDef.meta
+  const type = meta?.type
+  const value = cell.getValue()
+  if (type === "boolean") return value ? "Yes" : "No"
+  if (type === "select") return optionLabel(meta?.options, value)
+  if (type === "multiSelect") {
+    const values = Array.isArray(value) ? (value as string[]) : []
+    return values.length === 0
+      ? ""
+      : values.map((v) => optionLabel(meta?.options, v)).join(", ")
+  }
+  if (type === "user") {
+    const user = meta?.users?.find((u) => u.id === value)
+    return user ? user.name : "Unassigned"
+  }
+  return formatReadValue(type, value)
+}
+
 function withKey<T>(map: Map<string, T>, key: string, value: T) {
   const next = new Map(map)
   next.set(key, value)
@@ -369,8 +448,19 @@ export function DataGrid<TData>({
   onRowAdd,
   onRowDelete,
   onColumnLayoutChange,
+  narrowFallback = "cards",
   className,
 }: DataGridProps<TData>) {
+  const { ref: containerRef, width: containerWidth } =
+    useContainerWidth<HTMLDivElement>()
+  const isNarrow = containerWidth != null && containerWidth < NARROW_BREAKPOINT
+  // Only one tree ever renders: showCards picks it up front, rather than
+  // rendering both and hiding one with CSS — the wide grid's own headers
+  // (resize handles, pin buttons, roving tabindex refs) simply don't exist
+  // in the DOM while this is true.
+  const showCards = isNarrow && narrowFallback === "cards"
+  const forceStickyFirstColumn = isNarrow && narrowFallback === "none"
+
   const headerGroups = table.getHeaderGroups()
   const rows = table.getRowModel().rows
   const colCount = headerGroups[0]?.headers.length ?? 0
@@ -379,6 +469,22 @@ export function DataGrid<TData>({
   const hasSelectionColumn = hasRowSelectionEnabled(table)
   const totalColCount =
     colCount + (hasDeleteColumn ? 1 : 0) + (hasSelectionColumn ? 1 : 0)
+
+  // The row a tapped card opened a detail sheet for — narrow-branch-only.
+  // Tracked by row id (not index) so it survives a data update that shifts
+  // row order; resolved back to an index against `rows` at render time,
+  // which is what every commit path below is keyed on.
+  const [openRowId, setOpenRowId] = React.useState<string | null>(null)
+  const openRowIndex = rows.findIndex((row) => row.id === openRowId)
+
+  // Buffer-typed sheet fields (text/number/currency/date) each need their
+  // own in-progress value, since — unlike the grid's one-cell-at-a-time
+  // editCoord — every field in the sheet is editable at once. Keyed the same
+  // "r-c" way as `commits`; a key's absence means "not currently being
+  // typed into", falling back to the committed/pending value.
+  const [sheetBuffers, setSheetBuffers] = React.useState<
+    Record<string, string>
+  >({})
 
   const [focusCoord, setFocusCoord] = React.useState<Coord>({ r: 0, c: 0 })
   const [editCoord, setEditCoord] = React.useState<Coord | null>(null)
@@ -957,630 +1063,1038 @@ export function DataGrid<TData>({
     commitEdit()
   }
 
+  // Card title is the first summary column, subtitle the next two —
+  // positional by column order, unless meta.summary marks specific columns.
+  function getSummaryColumns(): Column<TData, unknown>[] {
+    const visible = table.getVisibleLeafColumns()
+    const flagged = visible.filter((column) => column.columnDef.meta?.summary)
+    return (flagged.length > 0 ? flagged : visible).slice(0, 3)
+  }
+
+  function openCardSheet(rowId: string) {
+    setOpenRowId(rowId)
+  }
+
+  function closeCardSheet() {
+    setOpenRowId(null)
+    setSheetBuffers({})
+  }
+
+  // The sheet's raw, editable value for a buffer-typed field (text/number/
+  // currency/date) — an in-progress keystroke wins over a pending/rejected
+  // commit, which wins over the table's own data. Unlike the wide branch's
+  // formatReadValue-at-rest, this always shows the raw value: every sheet
+  // field is directly editable, so there's no separate "at rest" display.
+  function sheetFieldValue(r: number, c: number, tableValue: unknown): string {
+    const key = cellKey(r, c)
+    const buf = sheetBuffers[key]
+    if (buf !== undefined) return buf
+    const commit = commits.get(key)
+    return cellDisplayValue(commit?.value ?? tableValue)
+  }
+
+  function sheetFieldError(r: number, c: number): string | null {
+    const key = cellKey(r, c)
+    const buf = sheetBuffers[key]
+    if (buf !== undefined) return validateForType(columnTypeAt(r, c), buf)
+    return commits.get(key)?.error ?? null
+  }
+
+  function onSheetFieldChange(r: number, c: number, value: string) {
+    const key = cellKey(r, c)
+    setSheetBuffers((prev) => ({ ...prev, [key]: value }))
+  }
+
+  // Same validate -> dedup -> startCommit path as commitEdit, just reading
+  // the field's own buffer entry instead of the single shared editCoord/
+  // buffer pair, since every field in the sheet can be mid-edit at once.
+  function commitSheetField(r: number, c: number) {
+    const key = cellKey(r, c)
+    const buf = sheetBuffers[key]
+    if (buf === undefined) return
+    const row = rows[r]
+    const cell = row?.getVisibleCells()[c]
+    const type = cell?.column.columnDef.meta?.type
+    const err = validateForType(type, buf)
+    setSheetBuffers((prev) => {
+      const next = { ...prev }
+      delete next[key]
+      return next
+    })
+    if (!cell || err != null) return
+    const committedStr = cellDisplayValue(cell.getValue())
+    if (buf === committedStr) return
+    startCommit(r, c, buf, coerceForType(type, buf))
+  }
+
+  // Enter commits (via the resulting blur) instead of inserting a newline —
+  // these are single-line fields, same as the wide branch's Enter-to-commit.
+  function onSheetFieldKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      e.currentTarget.blur()
+    }
+  }
+
+  // select has no invalid state (its value is always one of meta.options),
+  // so it commits straight through on change rather than needing a buffer.
+  function commitSheetSelect(r: number, c: number, raw: string) {
+    const row = rows[r]
+    const cell = row?.getVisibleCells()[c]
+    if (!cell) return
+    if (raw === cellDisplayValue(cell.getValue())) return
+    startCommit(r, c, raw, raw)
+  }
+
+  const firstVisibleColumnId = table.getVisibleLeafColumns()[0]?.id
+  const summaryColumns = showCards ? getSummaryColumns() : []
+  const titleColumn = summaryColumns[0]
+  const subtitleColumns = summaryColumns.slice(1, 3)
+  const openRow = openRowIndex >= 0 ? rows[openRowIndex] : undefined
+
   return (
-    <div className={cn("flex flex-col gap-2", className)}>
-      <div className="flex items-center justify-end">
-        <Popover>
-          <PopoverTrigger
-            render={
-              <Button variant="outline" size="sm">
-                <Columns3Icon className="size-4" />
-                Columns
-              </Button>
-            }
-          />
-          <PopoverContent align="end" className="w-56 p-1">
-            <ul className="flex flex-col gap-0.5">
-              {table.getVisibleLeafColumns().map((column) => (
-                <li
-                  key={column.id}
-                  draggable
-                  onDragStart={(e) => handleColumnDragStart(e, column.id)}
-                  onDragOver={(e) => handleColumnDragOver(e, column.id)}
-                  onDrop={handleColumnDrop}
-                  onDragEnd={handleColumnDragEnd}
-                  className={cn(
-                    "flex cursor-grab items-center gap-2 rounded-md px-2 py-1.5 text-sm select-none",
-                    dropTarget?.id === column.id &&
-                      (dropTarget.position === "before"
-                        ? "border-t-2 border-primary"
-                        : "border-b-2 border-primary")
-                  )}
-                >
-                  <GripVerticalIcon
-                    aria-hidden="true"
-                    className="size-4 shrink-0 text-muted-foreground"
-                  />
-                  <span className="truncate">{getColumnLabel(column)}</span>
-                </li>
-              ))}
-            </ul>
-          </PopoverContent>
-        </Popover>
-      </div>
-      {/* aria-rowcount includes the header row, per the grid pattern's own convention. */}
-      <Table
-        role="grid"
-        aria-rowcount={rowCount + 1}
-        aria-colcount={totalColCount}
-        className="w-auto min-w-full table-fixed"
-      >
-        <TableHeader>
-          {headerGroups.map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {hasSelectionColumn && (
-                <TableHead aria-hidden="true" className="w-10" />
-              )}
-              {headerGroup.headers.map((header) => {
-                const pinned = header.column.getIsPinned()
-                return (
-                  <TableHead
-                    key={header.id}
-                    className={cn("group relative", pinned && "bg-background")}
-                    style={columnPinStyle(header.column)}
-                  >
-                    {!header.isPlaceholder && (
-                      <div className="flex items-center justify-between gap-1 pe-2">
-                        <span className="truncate">
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                        </span>
-                        <button
-                          type="button"
-                          aria-label={pinActionLabel(pinned)}
-                          onClick={() =>
-                            header.column.pin(nextPinPosition(pinned))
-                          }
-                          className="shrink-0 rounded p-0.5 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-accent focus-visible:opacity-100"
-                        >
-                          <PinIcon
-                            className={cn("size-3.5", pinned && "fill-current")}
-                          />
-                        </button>
-                      </div>
-                    )}
-                    {header.column.getCanResize() && (
-                      <div
-                        role="separator"
-                        aria-orientation="vertical"
-                        aria-label={`Resize ${getColumnLabel(header.column)} column`}
-                        onMouseDown={header.getResizeHandler()}
-                        onTouchStart={header.getResizeHandler()}
-                        onDoubleClick={() => header.column.resetSize()}
-                        className="absolute top-0 right-0 h-full w-1 cursor-col-resize touch-none select-none hover:bg-accent"
-                        style={
-                          header.column.getIsResizing()
-                            ? {
-                                transform: `translateX(${table.getState().columnSizingInfo.deltaOffset ?? 0}px)`,
-                              }
-                            : undefined
-                        }
-                      />
-                    )}
-                  </TableHead>
-                )
-              })}
-              {hasDeleteColumn && (
-                <TableHead aria-hidden="true" className="w-10" />
-              )}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
+    <div ref={containerRef} className={cn("flex flex-col gap-2", className)}>
+      {showCards ? (
+        <ul className="flex flex-col divide-y rounded-md border">
           {rowCount === 0 ? (
-            <TableRow>
-              <TableCell
-                colSpan={totalColCount}
-                className="h-24 text-center text-muted-foreground"
-              >
-                No results.
-              </TableCell>
-            </TableRow>
+            <li className="p-4 text-center text-sm text-muted-foreground">
+              No results.
+            </li>
           ) : (
-            rows.map((row, r) => {
-              // Renders in whichever cell ends up last in the row (the
-              // delete kebab's when present, else the last data cell) —
-              // never its own <tr>. A near-zero-height row is still a real
-              // table row, and browsers floor a table row/cell's rendered
-              // height at ~1px regardless of an explicit height:0, which
-              // reads as a second hairline next to the row's own border.
-              // Positioned absolutely against the *row* (the cell that
-              // hosts it stays position:static), so it spans full width and
-              // hangs off the row's real border with no extra DOM row.
-              const showInsertAfter = onRowAdd && r < rowCount - 1
-              const insertAfterButton = showInsertAfter && (
-                <button
-                  type="button"
-                  aria-label={`Insert row after row ${r + 1}`}
-                  onClick={() => handleRowAdd(row.id)}
-                  className="absolute inset-x-0 bottom-0 z-10 flex h-4 translate-y-1/2 items-center justify-center opacity-0 transition-opacity group-hover/row:opacity-100 focus-visible:opacity-100"
-                >
-                  <span className="flex size-5 items-center justify-center rounded-full border bg-background shadow-sm">
-                    <PlusIcon className="size-3" />
-                  </span>
-                </button>
+            rows.map((row) => {
+              const cells = row.getVisibleCells()
+              const titleCell = cells.find(
+                (c) => c.column.id === titleColumn?.id
               )
-
+              const subtitleCells = subtitleColumns
+                .map((col) => cells.find((c) => c.column.id === col.id))
+                .filter((c): c is NonNullable<typeof c> => c != null)
+              const subtitleText = subtitleCells
+                .map((c) => formatCardValue(c))
+                .filter(Boolean)
+                .join(" · ")
               return (
-                <TableRow key={row.id} className="group/row relative">
-                  {hasSelectionColumn && (
-                    <TableCell className="w-10 p-0 text-center align-top">
-                      <div className="flex items-center justify-center px-2 py-2.5">
-                        <Checkbox
-                          checked={row.getIsSelected()}
-                          aria-label={`Select row ${r + 1}`}
-                          onCheckedChange={(_checked, eventDetails) =>
-                            onRowCheckboxChange(r, eventDetails.event)
-                          }
-                        />
-                      </div>
-                    </TableCell>
-                  )}
-                  {row.getVisibleCells().map((cell, c) => {
-                    const key = cellKey(r, c)
-                    const isFocused = focusCoord.r === r && focusCoord.c === c
-                    const isEditing = editCoord?.r === r && editCoord?.c === c
-                    const commit = commits.get(key)
-                    const isPending = commit?.pending ?? false
-                    const columnType = cell.column.columnDef.meta?.type
-                    const isPlainInputColumn =
-                      columnType === "text" ||
-                      columnType === "number" ||
-                      columnType === "currency" ||
-                      columnType === "date"
-                    const isSelectColumn = columnType === "select"
-                    const isBooleanColumn = columnType === "boolean"
-                    const isMultiSelectColumn = columnType === "multiSelect"
-                    const isUserColumn = columnType === "user"
-                    // While editing, only the live validation error shows —
-                    // once committed (successfully or not), a rejection uses
-                    // the same red-text-under-the-cell treatment instead.
-                    // multiSelect is the one exception: its popover can stay
-                    // open through a rejected toggle-commit, so it always
-                    // reads straight from the commit instead of the
-                    // (unused, buffer-editor-only) live `error` state.
-                    const displayError =
-                      isEditing && !isMultiSelectColumn
-                        ? error
-                        : (commit?.error ?? null)
-                    const showError = displayError != null
-                    const value = cell.getValue()
-                    const cellErrorId = `${errorId}-${key}`
-                    const isLastCell = !hasDeleteColumn && c === colCount - 1
-                    const isPinned = cell.column.getIsPinned()
-
-                    return (
-                      <TableCell
-                        key={cell.id}
-                        ref={setMapRef(cellRefs, key)}
-                        role="gridcell"
-                        tabIndex={isFocused ? 0 : -1}
-                        onFocus={() => setFocusCoord({ r, c })}
-                        onClick={() => onCellClick(r, c)}
-                        onKeyDown={(e) => onGridCellKeyDown(e, r, c)}
-                        style={columnPinStyle(cell.column)}
-                        className={cn(
-                          "p-0 align-top whitespace-normal outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
-                          isPinned && "bg-background"
-                        )}
-                      >
-                        {isPlainInputColumn ? (
-                          <>
-                            <div className="relative">
-                              {columnType === "currency" && isEditing && (
-                                <span
-                                  aria-hidden="true"
-                                  className="pointer-events-none absolute top-1/2 left-2 -translate-y-1/2 text-muted-foreground"
-                                >
-                                  $
-                                </span>
-                              )}
-                              <Input
-                                ref={setMapRef(inputRefs, key)}
-                                type={
-                                  columnType === "date"
-                                    ? "date"
-                                    : columnType === "number"
-                                      ? "number"
-                                      : "text"
-                                }
-                                value={
-                                  isEditing
-                                    ? buffer
-                                    : formatReadValue(
-                                        columnType,
-                                        commit?.value ?? value
-                                      )
-                                }
-                                readOnly={!isEditing}
-                                disabled={isPending}
-                                tabIndex={-1}
-                                aria-invalid={showError || undefined}
-                                aria-describedby={
-                                  showError ? cellErrorId : undefined
-                                }
-                                onMouseDown={(e) => {
-                                  if (!isEditing) e.preventDefault()
-                                }}
-                                onChange={
-                                  isEditing ? onEditInputChange : undefined
-                                }
-                                onKeyDown={
-                                  isEditing ? onEditInputKeyDown : undefined
-                                }
-                                onBlur={isEditing ? onEditInputBlur : undefined}
-                                className={cn(
-                                  "h-auto rounded-none border-none bg-transparent px-2 py-2 shadow-none hover:bg-accent/30 focus-visible:bg-background focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset dark:bg-transparent",
-                                  columnType === "currency" &&
-                                    isEditing &&
-                                    "pl-5",
-                                  isPending && "pr-7"
-                                )}
-                              />
-                              {isPending && (
-                                <Spinner
-                                  role="presentation"
-                                  aria-hidden="true"
-                                  aria-label={undefined}
-                                  className="absolute top-1/2 right-2 size-3.5 -translate-y-1/2"
-                                />
-                              )}
-                            </div>
-                            {showError && (
-                              <span
-                                id={cellErrorId}
-                                className="block px-2 pb-1.5 text-xs text-destructive"
-                              >
-                                {displayError}
-                              </span>
-                            )}
-                          </>
-                        ) : isSelectColumn ? (
-                          <>
-                            <div className="relative">
-                              <select
-                                ref={setMapRef(selectRefs, key)}
-                                value={
-                                  isEditing
-                                    ? buffer
-                                    : cellDisplayValue(commit?.value ?? value)
-                                }
-                                disabled={!isEditing || isPending}
-                                tabIndex={-1}
-                                aria-invalid={showError || undefined}
-                                aria-describedby={
-                                  showError ? cellErrorId : undefined
-                                }
-                                onMouseDown={(e) => {
-                                  if (!isEditing) e.preventDefault()
-                                }}
-                                onChange={
-                                  isEditing ? onEditInputChange : undefined
-                                }
-                                onKeyDown={
-                                  isEditing ? onEditInputKeyDown : undefined
-                                }
-                                onBlur={isEditing ? onEditInputBlur : undefined}
-                                className={cn(
-                                  "h-auto w-full appearance-none rounded-none border-none bg-transparent px-2 py-2 text-sm shadow-none hover:bg-accent/30 focus-visible:bg-background focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset disabled:cursor-default disabled:opacity-100 dark:bg-transparent",
-                                  isPending && "pr-7"
-                                )}
-                              >
-                                {cell.column.columnDef.meta?.options?.map(
-                                  (opt) => (
-                                    <option key={opt.value} value={opt.value}>
-                                      {opt.label}
-                                    </option>
-                                  )
-                                )}
-                              </select>
-                              {isPending && (
-                                <Spinner
-                                  role="presentation"
-                                  aria-hidden="true"
-                                  aria-label={undefined}
-                                  className="absolute top-1/2 right-2 size-3.5 -translate-y-1/2"
-                                />
-                              )}
-                            </div>
-                            {showError && (
-                              <span
-                                id={cellErrorId}
-                                className="block px-2 pb-1.5 text-xs text-destructive"
-                              >
-                                {displayError}
-                              </span>
-                            )}
-                          </>
-                        ) : isBooleanColumn ? (
-                          <>
-                            <div className="flex items-center px-2 py-2 hover:bg-accent/30">
-                              <Checkbox
-                                checked={booleanCellValue(r, c, value)}
-                                disabled={isPending}
-                                tabIndex={-1}
-                                aria-invalid={showError || undefined}
-                                aria-describedby={
-                                  showError ? cellErrorId : undefined
-                                }
-                                aria-label={`${getColumnLabel(cell.column)}, row ${r + 1}`}
-                                onCheckedChange={() => toggleBooleanCell(r, c)}
-                              />
-                              {isPending && (
-                                <Spinner
-                                  role="presentation"
-                                  aria-hidden="true"
-                                  aria-label={undefined}
-                                  className="ml-2 size-3.5"
-                                />
-                              )}
-                            </div>
-                            {showError && (
-                              <span
-                                id={cellErrorId}
-                                className="block px-2 pb-1.5 text-xs text-destructive"
-                              >
-                                {displayError}
-                              </span>
-                            )}
-                          </>
-                        ) : isMultiSelectColumn ? (
-                          <>
-                            <Popover
-                              open={isEditing}
-                              onOpenChange={(next) =>
-                                next
-                                  ? beginEdit(r, c)
-                                  : closePopoverEditAt(r, c)
-                              }
-                            >
-                              <PopoverTrigger
-                                render={
-                                  <button
-                                    type="button"
-                                    tabIndex={-1}
-                                    disabled={isPending}
-                                    aria-invalid={showError || undefined}
-                                    aria-describedby={
-                                      showError ? cellErrorId : undefined
-                                    }
-                                    aria-label={`${getColumnLabel(cell.column)}, row ${r + 1}`}
-                                    className="flex w-full items-center gap-1 overflow-hidden px-2 py-2 hover:bg-accent/30 focus-visible:bg-background disabled:cursor-default"
-                                  >
-                                    {renderMultiSelectTrigger(
-                                      multiSelectCellValue(r, c, value),
-                                      cell.column.columnDef.meta?.options ?? [],
-                                      cell.column.columnDef.meta?.maxChips ?? 2
-                                    )}
-                                    {isPending && (
-                                      <Spinner
-                                        role="presentation"
-                                        aria-hidden="true"
-                                        aria-label={undefined}
-                                        className="ml-auto size-3.5 shrink-0"
-                                      />
-                                    )}
-                                  </button>
-                                }
-                              />
-                              <PopoverContent
-                                align="start"
-                                className="w-64 p-0"
-                              >
-                                <Command>
-                                  <CommandInput
-                                    placeholder="Search options..."
-                                    value={buffer}
-                                    onValueChange={setBuffer}
-                                  />
-                                  <CommandList>
-                                    <CommandEmpty>No options.</CommandEmpty>
-                                    <CommandGroup>
-                                      {(
-                                        cell.column.columnDef.meta?.options ??
-                                        []
-                                      ).map((opt) => (
-                                        <CommandItem
-                                          key={opt.value}
-                                          value={opt.label}
-                                          data-checked={
-                                            multiSelectCellValue(
-                                              r,
-                                              c,
-                                              value
-                                            ).includes(opt.value)
-                                              ? "true"
-                                              : undefined
-                                          }
-                                          onSelect={() =>
-                                            toggleMultiSelectValue(
-                                              r,
-                                              c,
-                                              opt.value
-                                            )
-                                          }
-                                        >
-                                          {opt.label}
-                                        </CommandItem>
-                                      ))}
-                                    </CommandGroup>
-                                  </CommandList>
-                                </Command>
-                              </PopoverContent>
-                            </Popover>
-                            {showError && (
-                              <span
-                                id={cellErrorId}
-                                className="block px-2 pb-1.5 text-xs text-destructive"
-                              >
-                                {displayError}
-                              </span>
-                            )}
-                          </>
-                        ) : isUserColumn ? (
-                          <>
-                            <Popover
-                              open={isEditing}
-                              onOpenChange={(next) =>
-                                next
-                                  ? beginEdit(r, c)
-                                  : closePopoverEditAt(r, c)
-                              }
-                            >
-                              <PopoverTrigger
-                                render={
-                                  <button
-                                    type="button"
-                                    tabIndex={-1}
-                                    disabled={isPending}
-                                    aria-invalid={showError || undefined}
-                                    aria-describedby={
-                                      showError ? cellErrorId : undefined
-                                    }
-                                    aria-label={`${getColumnLabel(cell.column)}, row ${r + 1}`}
-                                    className="flex w-full items-center gap-2 overflow-hidden px-2 py-1.5 hover:bg-accent/30 focus-visible:bg-background disabled:cursor-default"
-                                  >
-                                    {renderUserTrigger(
-                                      userCellValue(r, c, value),
-                                      cell.column.columnDef.meta?.users ?? []
-                                    )}
-                                    {isPending && (
-                                      <Spinner
-                                        role="presentation"
-                                        aria-hidden="true"
-                                        aria-label={undefined}
-                                        className="ml-auto size-3.5 shrink-0"
-                                      />
-                                    )}
-                                  </button>
-                                }
-                              />
-                              <PopoverContent
-                                align="start"
-                                className="w-64 p-0"
-                              >
-                                <Command>
-                                  <CommandInput
-                                    placeholder="Search people..."
-                                    value={buffer}
-                                    onValueChange={setBuffer}
-                                  />
-                                  <CommandList>
-                                    <CommandEmpty>No people.</CommandEmpty>
-                                    <CommandGroup>
-                                      <CommandItem
-                                        value="Unassigned"
-                                        data-checked={
-                                          userCellValue(r, c, value) == null
-                                            ? "true"
-                                            : undefined
-                                        }
-                                        onSelect={() => pickUser(r, c, null)}
-                                      >
-                                        Unassigned
-                                      </CommandItem>
-                                      {(
-                                        cell.column.columnDef.meta?.users ?? []
-                                      ).map((u) => (
-                                        <CommandItem
-                                          key={u.id}
-                                          value={u.name}
-                                          data-checked={
-                                            userCellValue(r, c, value) === u.id
-                                              ? "true"
-                                              : undefined
-                                          }
-                                          onSelect={() => pickUser(r, c, u.id)}
-                                        >
-                                          <Avatar size="sm">
-                                            {u.avatarUrl && (
-                                              <AvatarImage
-                                                src={u.avatarUrl}
-                                                alt=""
-                                              />
-                                            )}
-                                            <AvatarFallback>
-                                              {initials(u.name)}
-                                            </AvatarFallback>
-                                          </Avatar>
-                                          {u.name}
-                                        </CommandItem>
-                                      ))}
-                                    </CommandGroup>
-                                  </CommandList>
-                                </Command>
-                              </PopoverContent>
-                            </Popover>
-                            {showError && (
-                              <span
-                                id={cellErrorId}
-                                className="block px-2 pb-1.5 text-xs text-destructive"
-                              >
-                                {displayError}
-                              </span>
-                            )}
-                          </>
-                        ) : (
-                          <div className="px-2 py-2">
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </div>
-                        )}
-                        {isLastCell && insertAfterButton}
-                      </TableCell>
-                    )
-                  })}
-                  {hasDeleteColumn && (
-                    <TableCell className="w-10 p-0 text-center align-top">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger
-                          render={
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              aria-label={`Row ${r + 1} actions`}
-                              className="size-7 opacity-0 group-hover/row:opacity-100 focus-visible:opacity-100 data-[popup-open]:opacity-100"
-                            >
-                              <MoreHorizontalIcon className="size-3.5" />
-                            </Button>
-                          }
-                        />
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            variant="destructive"
-                            onClick={() => setDeleteTarget(row.id)}
-                          >
-                            Delete row
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                      {insertAfterButton}
-                    </TableCell>
-                  )}
-                </TableRow>
+                <li key={row.id}>
+                  <button
+                    type="button"
+                    onClick={() => openCardSheet(row.id)}
+                    className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left hover:bg-accent/30"
+                  >
+                    <span className="flex min-w-0 flex-col">
+                      <span className="truncate font-medium">
+                        {titleCell ? formatCardValue(titleCell) || "—" : "—"}
+                      </span>
+                      {subtitleText && (
+                        <span className="truncate text-sm text-muted-foreground">
+                          {subtitleText}
+                        </span>
+                      )}
+                    </span>
+                    <ChevronRightIcon
+                      aria-hidden="true"
+                      className="size-4 shrink-0 text-muted-foreground"
+                    />
+                  </button>
+                </li>
               )
             })
           )}
           {onRowAdd && (
-            <TableRow className="border-none">
-              <TableCell colSpan={totalColCount} className="p-0">
-                <button
-                  type="button"
-                  onClick={() => handleRowAdd()}
-                  className="flex w-full items-center gap-1.5 px-2 py-2 text-sm text-muted-foreground hover:bg-accent/30 hover:text-foreground"
-                >
-                  <PlusIcon className="size-3.5" />
-                  New row
-                </button>
-              </TableCell>
-            </TableRow>
+            <li>
+              <button
+                type="button"
+                onClick={() => handleRowAdd()}
+                className="flex w-full items-center gap-1.5 px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent/30 hover:text-foreground"
+              >
+                <PlusIcon className="size-3.5" />
+                New row
+              </button>
+            </li>
           )}
-        </TableBody>
-      </Table>
+        </ul>
+      ) : (
+        <>
+          <div className="flex items-center justify-end">
+            <Popover>
+              <PopoverTrigger
+                render={
+                  <Button variant="outline" size="sm">
+                    <Columns3Icon className="size-4" />
+                    Columns
+                  </Button>
+                }
+              />
+              <PopoverContent align="end" className="w-56 p-1">
+                <ul className="flex flex-col gap-0.5">
+                  {table.getVisibleLeafColumns().map((column) => (
+                    <li
+                      key={column.id}
+                      draggable
+                      onDragStart={(e) => handleColumnDragStart(e, column.id)}
+                      onDragOver={(e) => handleColumnDragOver(e, column.id)}
+                      onDrop={handleColumnDrop}
+                      onDragEnd={handleColumnDragEnd}
+                      className={cn(
+                        "flex cursor-grab items-center gap-2 rounded-md px-2 py-1.5 text-sm select-none",
+                        dropTarget?.id === column.id &&
+                          (dropTarget.position === "before"
+                            ? "border-t-2 border-primary"
+                            : "border-b-2 border-primary")
+                      )}
+                    >
+                      <GripVerticalIcon
+                        aria-hidden="true"
+                        className="size-4 shrink-0 text-muted-foreground"
+                      />
+                      <span className="truncate">{getColumnLabel(column)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </PopoverContent>
+            </Popover>
+          </div>
+          {/* aria-rowcount includes the header row, per the grid pattern's own convention. */}
+          <Table
+            role="grid"
+            aria-rowcount={rowCount + 1}
+            aria-colcount={totalColCount}
+            className="w-auto min-w-full table-fixed"
+          >
+            <TableHeader>
+              {headerGroups.map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {hasSelectionColumn && (
+                    <TableHead aria-hidden="true" className="w-10" />
+                  )}
+                  {headerGroup.headers.map((header) => {
+                    const pinned = header.column.getIsPinned()
+                    const stickyHeader =
+                      pinned ||
+                      (forceStickyFirstColumn &&
+                        header.column.id === firstVisibleColumnId)
+                    return (
+                      <TableHead
+                        key={header.id}
+                        className={cn(
+                          "group relative",
+                          stickyHeader && "bg-background"
+                        )}
+                        style={columnPinStyle(
+                          header.column,
+                          forceStickyFirstColumn &&
+                            header.column.id === firstVisibleColumnId
+                        )}
+                      >
+                        {!header.isPlaceholder && (
+                          <div className="flex items-center justify-between gap-1 pe-2">
+                            <span className="truncate">
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                            </span>
+                            <button
+                              type="button"
+                              aria-label={pinActionLabel(pinned)}
+                              onClick={() =>
+                                header.column.pin(nextPinPosition(pinned))
+                              }
+                              className="shrink-0 rounded p-0.5 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-accent focus-visible:opacity-100"
+                            >
+                              <PinIcon
+                                className={cn(
+                                  "size-3.5",
+                                  pinned && "fill-current"
+                                )}
+                              />
+                            </button>
+                          </div>
+                        )}
+                        {header.column.getCanResize() && (
+                          <div
+                            role="separator"
+                            aria-orientation="vertical"
+                            aria-label={`Resize ${getColumnLabel(header.column)} column`}
+                            onMouseDown={header.getResizeHandler()}
+                            onTouchStart={header.getResizeHandler()}
+                            onDoubleClick={() => header.column.resetSize()}
+                            className="absolute top-0 right-0 h-full w-1 cursor-col-resize touch-none select-none hover:bg-accent"
+                            style={
+                              header.column.getIsResizing()
+                                ? {
+                                    transform: `translateX(${table.getState().columnSizingInfo.deltaOffset ?? 0}px)`,
+                                  }
+                                : undefined
+                            }
+                          />
+                        )}
+                      </TableHead>
+                    )
+                  })}
+                  {hasDeleteColumn && (
+                    <TableHead aria-hidden="true" className="w-10" />
+                  )}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {rowCount === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={totalColCount}
+                    className="h-24 text-center text-muted-foreground"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                rows.map((row, r) => {
+                  // Renders in whichever cell ends up last in the row (the
+                  // delete kebab's when present, else the last data cell) —
+                  // never its own <tr>. A near-zero-height row is still a real
+                  // table row, and browsers floor a table row/cell's rendered
+                  // height at ~1px regardless of an explicit height:0, which
+                  // reads as a second hairline next to the row's own border.
+                  // Positioned absolutely against the *row* (the cell that
+                  // hosts it stays position:static), so it spans full width and
+                  // hangs off the row's real border with no extra DOM row.
+                  const showInsertAfter = onRowAdd && r < rowCount - 1
+                  const insertAfterButton = showInsertAfter && (
+                    <button
+                      type="button"
+                      aria-label={`Insert row after row ${r + 1}`}
+                      onClick={() => handleRowAdd(row.id)}
+                      className="absolute inset-x-0 bottom-0 z-10 flex h-4 translate-y-1/2 items-center justify-center opacity-0 transition-opacity group-hover/row:opacity-100 focus-visible:opacity-100"
+                    >
+                      <span className="flex size-5 items-center justify-center rounded-full border bg-background shadow-sm">
+                        <PlusIcon className="size-3" />
+                      </span>
+                    </button>
+                  )
+
+                  return (
+                    <TableRow key={row.id} className="group/row relative">
+                      {hasSelectionColumn && (
+                        <TableCell className="w-10 p-0 text-center align-top">
+                          <div className="flex items-center justify-center px-2 py-2.5">
+                            <Checkbox
+                              checked={row.getIsSelected()}
+                              aria-label={`Select row ${r + 1}`}
+                              onCheckedChange={(_checked, eventDetails) =>
+                                onRowCheckboxChange(r, eventDetails.event)
+                              }
+                            />
+                          </div>
+                        </TableCell>
+                      )}
+                      {row.getVisibleCells().map((cell, c) => {
+                        const key = cellKey(r, c)
+                        const isFocused =
+                          focusCoord.r === r && focusCoord.c === c
+                        const isEditing =
+                          editCoord?.r === r && editCoord?.c === c
+                        const commit = commits.get(key)
+                        const isPending = commit?.pending ?? false
+                        const columnType = cell.column.columnDef.meta?.type
+                        const isPlainInputColumn =
+                          columnType === "text" ||
+                          columnType === "number" ||
+                          columnType === "currency" ||
+                          columnType === "date"
+                        const isSelectColumn = columnType === "select"
+                        const isBooleanColumn = columnType === "boolean"
+                        const isMultiSelectColumn = columnType === "multiSelect"
+                        const isUserColumn = columnType === "user"
+                        // While editing, only the live validation error shows —
+                        // once committed (successfully or not), a rejection uses
+                        // the same red-text-under-the-cell treatment instead.
+                        // multiSelect is the one exception: its popover can stay
+                        // open through a rejected toggle-commit, so it always
+                        // reads straight from the commit instead of the
+                        // (unused, buffer-editor-only) live `error` state.
+                        const displayError =
+                          isEditing && !isMultiSelectColumn
+                            ? error
+                            : (commit?.error ?? null)
+                        const showError = displayError != null
+                        const value = cell.getValue()
+                        const cellErrorId = `${errorId}-${key}`
+                        const isLastCell =
+                          !hasDeleteColumn && c === colCount - 1
+                        const forceSticky =
+                          forceStickyFirstColumn &&
+                          cell.column.id === firstVisibleColumnId
+                        const isPinned =
+                          cell.column.getIsPinned() || forceSticky
+
+                        return (
+                          <TableCell
+                            key={cell.id}
+                            ref={setMapRef(cellRefs, key)}
+                            role="gridcell"
+                            tabIndex={isFocused ? 0 : -1}
+                            onFocus={() => setFocusCoord({ r, c })}
+                            onClick={() => onCellClick(r, c)}
+                            onKeyDown={(e) => onGridCellKeyDown(e, r, c)}
+                            style={columnPinStyle(cell.column, forceSticky)}
+                            className={cn(
+                              "p-0 align-top whitespace-normal outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
+                              isPinned && "bg-background"
+                            )}
+                          >
+                            {isPlainInputColumn ? (
+                              <>
+                                <div className="relative">
+                                  {columnType === "currency" && isEditing && (
+                                    <span
+                                      aria-hidden="true"
+                                      className="pointer-events-none absolute top-1/2 left-2 -translate-y-1/2 text-muted-foreground"
+                                    >
+                                      $
+                                    </span>
+                                  )}
+                                  <Input
+                                    ref={setMapRef(inputRefs, key)}
+                                    type={
+                                      columnType === "date"
+                                        ? "date"
+                                        : columnType === "number"
+                                          ? "number"
+                                          : "text"
+                                    }
+                                    value={
+                                      isEditing
+                                        ? buffer
+                                        : formatReadValue(
+                                            columnType,
+                                            commit?.value ?? value
+                                          )
+                                    }
+                                    readOnly={!isEditing}
+                                    disabled={isPending}
+                                    tabIndex={-1}
+                                    aria-invalid={showError || undefined}
+                                    aria-describedby={
+                                      showError ? cellErrorId : undefined
+                                    }
+                                    onMouseDown={(e) => {
+                                      if (!isEditing) e.preventDefault()
+                                    }}
+                                    onChange={
+                                      isEditing ? onEditInputChange : undefined
+                                    }
+                                    onKeyDown={
+                                      isEditing ? onEditInputKeyDown : undefined
+                                    }
+                                    onBlur={
+                                      isEditing ? onEditInputBlur : undefined
+                                    }
+                                    className={cn(
+                                      "h-auto rounded-none border-none bg-transparent px-2 py-2 shadow-none hover:bg-accent/30 focus-visible:bg-background focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset dark:bg-transparent",
+                                      columnType === "currency" &&
+                                        isEditing &&
+                                        "pl-5",
+                                      isPending && "pr-7"
+                                    )}
+                                  />
+                                  {isPending && (
+                                    <Spinner
+                                      role="presentation"
+                                      aria-hidden="true"
+                                      aria-label={undefined}
+                                      className="absolute top-1/2 right-2 size-3.5 -translate-y-1/2"
+                                    />
+                                  )}
+                                </div>
+                                {showError && (
+                                  <span
+                                    id={cellErrorId}
+                                    className="block px-2 pb-1.5 text-xs text-destructive"
+                                  >
+                                    {displayError}
+                                  </span>
+                                )}
+                              </>
+                            ) : isSelectColumn ? (
+                              <>
+                                <div className="relative">
+                                  <select
+                                    ref={setMapRef(selectRefs, key)}
+                                    value={
+                                      isEditing
+                                        ? buffer
+                                        : cellDisplayValue(
+                                            commit?.value ?? value
+                                          )
+                                    }
+                                    disabled={!isEditing || isPending}
+                                    tabIndex={-1}
+                                    aria-invalid={showError || undefined}
+                                    aria-describedby={
+                                      showError ? cellErrorId : undefined
+                                    }
+                                    onMouseDown={(e) => {
+                                      if (!isEditing) e.preventDefault()
+                                    }}
+                                    onChange={
+                                      isEditing ? onEditInputChange : undefined
+                                    }
+                                    onKeyDown={
+                                      isEditing ? onEditInputKeyDown : undefined
+                                    }
+                                    onBlur={
+                                      isEditing ? onEditInputBlur : undefined
+                                    }
+                                    className={cn(
+                                      "h-auto w-full appearance-none rounded-none border-none bg-transparent px-2 py-2 text-sm shadow-none hover:bg-accent/30 focus-visible:bg-background focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset disabled:cursor-default disabled:opacity-100 dark:bg-transparent",
+                                      isPending && "pr-7"
+                                    )}
+                                  >
+                                    {cell.column.columnDef.meta?.options?.map(
+                                      (opt) => (
+                                        <option
+                                          key={opt.value}
+                                          value={opt.value}
+                                        >
+                                          {opt.label}
+                                        </option>
+                                      )
+                                    )}
+                                  </select>
+                                  {isPending && (
+                                    <Spinner
+                                      role="presentation"
+                                      aria-hidden="true"
+                                      aria-label={undefined}
+                                      className="absolute top-1/2 right-2 size-3.5 -translate-y-1/2"
+                                    />
+                                  )}
+                                </div>
+                                {showError && (
+                                  <span
+                                    id={cellErrorId}
+                                    className="block px-2 pb-1.5 text-xs text-destructive"
+                                  >
+                                    {displayError}
+                                  </span>
+                                )}
+                              </>
+                            ) : isBooleanColumn ? (
+                              <>
+                                <div className="flex items-center px-2 py-2 hover:bg-accent/30">
+                                  <Checkbox
+                                    checked={booleanCellValue(r, c, value)}
+                                    disabled={isPending}
+                                    tabIndex={-1}
+                                    aria-invalid={showError || undefined}
+                                    aria-describedby={
+                                      showError ? cellErrorId : undefined
+                                    }
+                                    aria-label={`${getColumnLabel(cell.column)}, row ${r + 1}`}
+                                    onCheckedChange={() =>
+                                      toggleBooleanCell(r, c)
+                                    }
+                                  />
+                                  {isPending && (
+                                    <Spinner
+                                      role="presentation"
+                                      aria-hidden="true"
+                                      aria-label={undefined}
+                                      className="ml-2 size-3.5"
+                                    />
+                                  )}
+                                </div>
+                                {showError && (
+                                  <span
+                                    id={cellErrorId}
+                                    className="block px-2 pb-1.5 text-xs text-destructive"
+                                  >
+                                    {displayError}
+                                  </span>
+                                )}
+                              </>
+                            ) : isMultiSelectColumn ? (
+                              <>
+                                <Popover
+                                  open={isEditing}
+                                  onOpenChange={(next) =>
+                                    next
+                                      ? beginEdit(r, c)
+                                      : closePopoverEditAt(r, c)
+                                  }
+                                >
+                                  <PopoverTrigger
+                                    render={
+                                      <button
+                                        type="button"
+                                        tabIndex={-1}
+                                        disabled={isPending}
+                                        aria-invalid={showError || undefined}
+                                        aria-describedby={
+                                          showError ? cellErrorId : undefined
+                                        }
+                                        aria-label={`${getColumnLabel(cell.column)}, row ${r + 1}`}
+                                        className="flex w-full items-center gap-1 overflow-hidden px-2 py-2 hover:bg-accent/30 focus-visible:bg-background disabled:cursor-default"
+                                      >
+                                        {renderMultiSelectTrigger(
+                                          multiSelectCellValue(r, c, value),
+                                          cell.column.columnDef.meta?.options ??
+                                            [],
+                                          cell.column.columnDef.meta
+                                            ?.maxChips ?? 2
+                                        )}
+                                        {isPending && (
+                                          <Spinner
+                                            role="presentation"
+                                            aria-hidden="true"
+                                            aria-label={undefined}
+                                            className="ml-auto size-3.5 shrink-0"
+                                          />
+                                        )}
+                                      </button>
+                                    }
+                                  />
+                                  <PopoverContent
+                                    align="start"
+                                    className="w-64 p-0"
+                                  >
+                                    <Command>
+                                      <CommandInput
+                                        placeholder="Search options..."
+                                        value={buffer}
+                                        onValueChange={setBuffer}
+                                      />
+                                      <CommandList>
+                                        <CommandEmpty>No options.</CommandEmpty>
+                                        <CommandGroup>
+                                          {(
+                                            cell.column.columnDef.meta
+                                              ?.options ?? []
+                                          ).map((opt) => (
+                                            <CommandItem
+                                              key={opt.value}
+                                              value={opt.label}
+                                              data-checked={
+                                                multiSelectCellValue(
+                                                  r,
+                                                  c,
+                                                  value
+                                                ).includes(opt.value)
+                                                  ? "true"
+                                                  : undefined
+                                              }
+                                              onSelect={() =>
+                                                toggleMultiSelectValue(
+                                                  r,
+                                                  c,
+                                                  opt.value
+                                                )
+                                              }
+                                            >
+                                              {opt.label}
+                                            </CommandItem>
+                                          ))}
+                                        </CommandGroup>
+                                      </CommandList>
+                                    </Command>
+                                  </PopoverContent>
+                                </Popover>
+                                {showError && (
+                                  <span
+                                    id={cellErrorId}
+                                    className="block px-2 pb-1.5 text-xs text-destructive"
+                                  >
+                                    {displayError}
+                                  </span>
+                                )}
+                              </>
+                            ) : isUserColumn ? (
+                              <>
+                                <Popover
+                                  open={isEditing}
+                                  onOpenChange={(next) =>
+                                    next
+                                      ? beginEdit(r, c)
+                                      : closePopoverEditAt(r, c)
+                                  }
+                                >
+                                  <PopoverTrigger
+                                    render={
+                                      <button
+                                        type="button"
+                                        tabIndex={-1}
+                                        disabled={isPending}
+                                        aria-invalid={showError || undefined}
+                                        aria-describedby={
+                                          showError ? cellErrorId : undefined
+                                        }
+                                        aria-label={`${getColumnLabel(cell.column)}, row ${r + 1}`}
+                                        className="flex w-full items-center gap-2 overflow-hidden px-2 py-1.5 hover:bg-accent/30 focus-visible:bg-background disabled:cursor-default"
+                                      >
+                                        {renderUserTrigger(
+                                          userCellValue(r, c, value),
+                                          cell.column.columnDef.meta?.users ??
+                                            []
+                                        )}
+                                        {isPending && (
+                                          <Spinner
+                                            role="presentation"
+                                            aria-hidden="true"
+                                            aria-label={undefined}
+                                            className="ml-auto size-3.5 shrink-0"
+                                          />
+                                        )}
+                                      </button>
+                                    }
+                                  />
+                                  <PopoverContent
+                                    align="start"
+                                    className="w-64 p-0"
+                                  >
+                                    <Command>
+                                      <CommandInput
+                                        placeholder="Search people..."
+                                        value={buffer}
+                                        onValueChange={setBuffer}
+                                      />
+                                      <CommandList>
+                                        <CommandEmpty>No people.</CommandEmpty>
+                                        <CommandGroup>
+                                          <CommandItem
+                                            value="Unassigned"
+                                            data-checked={
+                                              userCellValue(r, c, value) == null
+                                                ? "true"
+                                                : undefined
+                                            }
+                                            onSelect={() =>
+                                              pickUser(r, c, null)
+                                            }
+                                          >
+                                            Unassigned
+                                          </CommandItem>
+                                          {(
+                                            cell.column.columnDef.meta?.users ??
+                                            []
+                                          ).map((u) => (
+                                            <CommandItem
+                                              key={u.id}
+                                              value={u.name}
+                                              data-checked={
+                                                userCellValue(r, c, value) ===
+                                                u.id
+                                                  ? "true"
+                                                  : undefined
+                                              }
+                                              onSelect={() =>
+                                                pickUser(r, c, u.id)
+                                              }
+                                            >
+                                              <Avatar size="sm">
+                                                {u.avatarUrl && (
+                                                  <AvatarImage
+                                                    src={u.avatarUrl}
+                                                    alt=""
+                                                  />
+                                                )}
+                                                <AvatarFallback>
+                                                  {initials(u.name)}
+                                                </AvatarFallback>
+                                              </Avatar>
+                                              {u.name}
+                                            </CommandItem>
+                                          ))}
+                                        </CommandGroup>
+                                      </CommandList>
+                                    </Command>
+                                  </PopoverContent>
+                                </Popover>
+                                {showError && (
+                                  <span
+                                    id={cellErrorId}
+                                    className="block px-2 pb-1.5 text-xs text-destructive"
+                                  >
+                                    {displayError}
+                                  </span>
+                                )}
+                              </>
+                            ) : (
+                              <div className="px-2 py-2">
+                                {flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext()
+                                )}
+                              </div>
+                            )}
+                            {isLastCell && insertAfterButton}
+                          </TableCell>
+                        )
+                      })}
+                      {hasDeleteColumn && (
+                        <TableCell className="w-10 p-0 text-center align-top">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger
+                              render={
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  aria-label={`Row ${r + 1} actions`}
+                                  className="size-7 opacity-0 group-hover/row:opacity-100 focus-visible:opacity-100 data-[popup-open]:opacity-100"
+                                >
+                                  <MoreHorizontalIcon className="size-3.5" />
+                                </Button>
+                              }
+                            />
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                variant="destructive"
+                                onClick={() => setDeleteTarget(row.id)}
+                              >
+                                Delete row
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                          {insertAfterButton}
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  )
+                })
+              )}
+              {onRowAdd && (
+                <TableRow className="border-none">
+                  <TableCell colSpan={totalColCount} className="p-0">
+                    <button
+                      type="button"
+                      onClick={() => handleRowAdd()}
+                      className="flex w-full items-center gap-1.5 px-2 py-2 text-sm text-muted-foreground hover:bg-accent/30 hover:text-foreground"
+                    >
+                      <PlusIcon className="size-3.5" />
+                      New row
+                    </button>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </>
+      )}
+      {showCards && openRow && (
+        <Sheet
+          open
+          onOpenChange={(open) => {
+            if (!open) closeCardSheet()
+          }}
+        >
+          <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
+            <SheetHeader>
+              <SheetTitle>
+                {titleColumn
+                  ? formatCardValue(
+                      openRow
+                        .getVisibleCells()
+                        .find((c) => c.column.id === titleColumn.id)!
+                    ) || "—"
+                  : "Row details"}
+              </SheetTitle>
+            </SheetHeader>
+            <div className="flex flex-col gap-3 px-4 pb-4">
+              {openRow.getVisibleCells().map((cell, c) => {
+                const r = openRowIndex
+                const key = cellKey(r, c)
+                const columnType = cell.column.columnDef.meta?.type
+                const columnLabel = getColumnLabel(cell.column)
+                const commit = commits.get(key)
+                const isPending = commit?.pending ?? false
+                const cellErrorId = `${errorId}-sheet-${key}`
+                const fieldError =
+                  columnType == null || columnType === "boolean"
+                    ? null
+                    : sheetFieldError(r, c)
+                const showError = fieldError != null
+                const value = cell.getValue()
+
+                const isPlainInputColumn =
+                  columnType === "text" ||
+                  columnType === "number" ||
+                  columnType === "currency" ||
+                  columnType === "date"
+
+                const labelId = `${key}-label`
+
+                return (
+                  <div key={cell.id} className="flex flex-col gap-1">
+                    <label
+                      id={labelId}
+                      className="text-sm font-medium text-foreground"
+                    >
+                      {columnLabel}
+                    </label>
+                    {isPlainInputColumn ? (
+                      <div className="relative">
+                        <Input
+                          aria-labelledby={labelId}
+                          type={
+                            columnType === "date"
+                              ? "date"
+                              : columnType === "number" ||
+                                  columnType === "currency"
+                                ? "number"
+                                : "text"
+                          }
+                          value={sheetFieldValue(r, c, value)}
+                          disabled={isPending}
+                          aria-invalid={showError || undefined}
+                          aria-describedby={showError ? cellErrorId : undefined}
+                          onChange={(e) =>
+                            onSheetFieldChange(r, c, e.target.value)
+                          }
+                          onKeyDown={onSheetFieldKeyDown}
+                          onBlur={() => commitSheetField(r, c)}
+                          className={cn(isPending && "pr-7")}
+                        />
+                        {isPending && (
+                          <Spinner
+                            role="presentation"
+                            aria-hidden="true"
+                            aria-label={undefined}
+                            className="absolute top-1/2 right-2 size-3.5 -translate-y-1/2"
+                          />
+                        )}
+                      </div>
+                    ) : columnType === "select" ? (
+                      <select
+                        aria-labelledby={labelId}
+                        value={sheetFieldValue(r, c, value)}
+                        disabled={isPending}
+                        aria-invalid={showError || undefined}
+                        onChange={(e) =>
+                          commitSheetSelect(r, c, e.target.value)
+                        }
+                        className="h-9 rounded-md border border-input bg-transparent px-3 text-sm disabled:opacity-50"
+                      >
+                        {cell.column.columnDef.meta?.options?.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    ) : columnType === "boolean" ? (
+                      <div className="flex items-center gap-2 rounded-md border px-3 py-2">
+                        <Checkbox
+                          aria-labelledby={labelId}
+                          checked={booleanCellValue(r, c, value)}
+                          disabled={isPending}
+                          onCheckedChange={() => toggleBooleanCell(r, c)}
+                        />
+                        {isPending && <Spinner className="size-3.5" />}
+                      </div>
+                    ) : columnType === "multiSelect" ? (
+                      <div
+                        role="group"
+                        aria-labelledby={labelId}
+                        className="flex flex-col gap-1 rounded-md border p-2"
+                      >
+                        {(cell.column.columnDef.meta?.options ?? []).map(
+                          (opt) => {
+                            const selected = multiSelectCellValue(
+                              r,
+                              c,
+                              value
+                            ).includes(opt.value)
+                            return (
+                              <button
+                                key={opt.value}
+                                type="button"
+                                disabled={isPending}
+                                aria-pressed={selected}
+                                onClick={() =>
+                                  toggleMultiSelectValue(r, c, opt.value)
+                                }
+                                className={cn(
+                                  "flex items-center justify-between rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent/30 disabled:opacity-50",
+                                  selected && "bg-accent/50"
+                                )}
+                              >
+                                {opt.label}
+                              </button>
+                            )
+                          }
+                        )}
+                      </div>
+                    ) : columnType === "user" ? (
+                      <div
+                        role="group"
+                        aria-labelledby={labelId}
+                        className="flex flex-col gap-1 rounded-md border p-2"
+                      >
+                        <button
+                          type="button"
+                          disabled={isPending}
+                          aria-pressed={userCellValue(r, c, value) == null}
+                          onClick={() => pickUser(r, c, null)}
+                          className={cn(
+                            "rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent/30 disabled:opacity-50",
+                            userCellValue(r, c, value) == null && "bg-accent/50"
+                          )}
+                        >
+                          Unassigned
+                        </button>
+                        {(cell.column.columnDef.meta?.users ?? []).map((u) => (
+                          <button
+                            key={u.id}
+                            type="button"
+                            disabled={isPending}
+                            aria-pressed={userCellValue(r, c, value) === u.id}
+                            onClick={() => pickUser(r, c, u.id)}
+                            className={cn(
+                              "rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent/30 disabled:opacity-50",
+                              userCellValue(r, c, value) === u.id &&
+                                "bg-accent/50"
+                            )}
+                          >
+                            {u.name}
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <div
+                        role="group"
+                        aria-labelledby={labelId}
+                        className="rounded-md border px-3 py-2 text-sm text-muted-foreground"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </div>
+                    )}
+                    {showError && (
+                      <span
+                        id={cellErrorId}
+                        className="text-xs text-destructive"
+                      >
+                        {fieldError}
+                      </span>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+            {onRowDelete && (
+              <SheetFooter>
+                <Button
+                  variant="destructive"
+                  onClick={() => setDeleteTarget(openRow.id)}
+                >
+                  <Trash2Icon className="size-4" />
+                  Delete row
+                </Button>
+              </SheetFooter>
+            )}
+          </SheetContent>
+        </Sheet>
+      )}
       {hasDeleteColumn && (
         <AlertDialog
           open={deleteTarget != null}

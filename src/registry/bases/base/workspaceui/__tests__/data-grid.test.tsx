@@ -1,5 +1,6 @@
 import * as React from "react"
 import {
+  act,
   createEvent,
   fireEvent,
   render,
@@ -26,6 +27,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { BulkToolbar } from "@/registry/bases/base/workspaceui/bulk-toolbar"
+import { resizeTo } from "@/test/setup"
 
 import {
   DataGrid,
@@ -453,6 +455,178 @@ async function typeAndCommit(
   await user.clear(input)
   await user.type(input, text)
   await user.tab()
+}
+
+// ── Narrow container fixture ────────────────────────────────────────────
+// One row of every column type — text/number (positional summary), select,
+// boolean, multiSelect, and user — so the sheet's per-type field rendering
+// gets exercised in one harness rather than five.
+
+interface Contact {
+  id: string
+  name: string
+  email: string
+  seats: number
+  plan: string
+  active: boolean
+  tags: string[]
+  owner: string | null
+}
+
+const planOptions = [
+  { value: "starter", label: "Starter" },
+  { value: "team", label: "Team" },
+]
+
+const contactTagOptions = [
+  { value: "vip", label: "VIP" },
+  { value: "risk", label: "Risk" },
+]
+
+const contactUsers = [
+  { id: "u1", name: "Priya Patel" },
+  { id: "u2", name: "Sam Okafor" },
+]
+
+const contactColumns: ColumnDef<Contact>[] = [
+  { accessorKey: "name", header: "Name", meta: { type: "text" } },
+  { accessorKey: "email", header: "Email", meta: { type: "text" } },
+  { accessorKey: "seats", header: "Seats", meta: { type: "number" } },
+  {
+    accessorKey: "plan",
+    header: "Plan",
+    meta: { type: "select", options: planOptions },
+  },
+  { accessorKey: "active", header: "Active", meta: { type: "boolean" } },
+  {
+    accessorKey: "tags",
+    header: "Tags",
+    meta: { type: "multiSelect", options: contactTagOptions },
+  },
+  {
+    accessorKey: "owner",
+    header: "Owner",
+    meta: { type: "user", users: contactUsers },
+  },
+]
+
+// Same shape, but plan/active are flagged meta.summary instead of relying on
+// column order — the override case.
+const summaryFlaggedColumns: ColumnDef<Contact>[] = [
+  { accessorKey: "name", header: "Name", meta: { type: "text" } },
+  { accessorKey: "email", header: "Email", meta: { type: "text" } },
+  { accessorKey: "seats", header: "Seats", meta: { type: "number" } },
+  {
+    accessorKey: "plan",
+    header: "Plan",
+    meta: { type: "select", options: planOptions, summary: true },
+  },
+  {
+    accessorKey: "active",
+    header: "Active",
+    meta: { type: "boolean", summary: true },
+  },
+  {
+    accessorKey: "tags",
+    header: "Tags",
+    meta: { type: "multiSelect", options: contactTagOptions },
+  },
+  {
+    accessorKey: "owner",
+    header: "Owner",
+    meta: { type: "user", users: contactUsers },
+  },
+]
+
+const contactData: Contact[] = [
+  {
+    id: "1",
+    name: "Ada Lovelace",
+    email: "ada@example.com",
+    seats: 12,
+    plan: "team",
+    active: true,
+    tags: ["vip"],
+    owner: "u1",
+  },
+  {
+    id: "2",
+    name: "Grace Hopper",
+    email: "grace@example.com",
+    seats: 3,
+    plan: "starter",
+    active: false,
+    tags: [],
+    owner: null,
+  },
+]
+
+function NarrowHarness({
+  onCellEdit,
+  onRowAdd,
+  onRowDelete,
+  narrowFallback,
+  columns = contactColumns,
+  initialData = contactData,
+}: {
+  onCellEdit: OnCellEdit
+  onRowAdd?: (afterRowId?: string) => void | Promise<void>
+  onRowDelete?: (rowId: string) => void | Promise<void>
+  narrowFallback?: "cards" | "none"
+  columns?: ColumnDef<Contact>[]
+  initialData?: Contact[]
+}) {
+  const [data, setData] = React.useState(initialData)
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getRowId: (row) => row.id,
+  })
+  return (
+    <DataGrid
+      table={table}
+      onCellEdit={async (rowId, columnId, value) => {
+        await onCellEdit(rowId, columnId, value)
+        setData((prev) =>
+          prev.map((row) =>
+            row.id === rowId ? { ...row, [columnId]: value } : row
+          )
+        )
+      }}
+      onRowAdd={onRowAdd}
+      onRowDelete={onRowDelete}
+      narrowFallback={narrowFallback}
+    />
+  )
+}
+
+function renderNarrow(
+  overrides: Partial<{
+    onRowAdd: (afterRowId?: string) => void | Promise<void>
+    onRowDelete: (rowId: string) => void | Promise<void>
+    narrowFallback: "cards" | "none"
+    columns: ColumnDef<Contact>[]
+    initialData: Contact[]
+  }> = {}
+) {
+  const onCellEdit = vi.fn<OnCellEdit>().mockResolvedValue(undefined)
+  const { container } = render(
+    <NarrowHarness onCellEdit={onCellEdit} {...overrides} />
+  )
+  return { container, onCellEdit }
+}
+
+// DataGrid's own root div — the element containerRef/ResizeObserver
+// actually watches — is the sole child Testing Library's own wrapper div,
+// since NarrowHarness renders nothing else alongside <DataGrid />.
+function gridRoot(container: HTMLElement) {
+  return container.firstElementChild as HTMLElement
+}
+
+function goNarrowGrid(container: HTMLElement, width = 320) {
+  act(() => resizeTo(gridRoot(container), width))
 }
 
 describe("DataGrid", () => {
@@ -1420,6 +1594,180 @@ describe("DataGrid", () => {
 
       expect(pinButton).toHaveAccessibleName("Pin column right")
       expect(header).toHaveStyle({ position: "sticky", left: "0px" })
+    })
+  })
+
+  describe("narrow container", () => {
+    it("renders the wide grid by default; below 448px it swaps to a card list with no role=grid", () => {
+      const { container } = renderNarrow()
+      expect(screen.getByRole("grid")).toBeInTheDocument()
+
+      goNarrowGrid(container)
+
+      expect(screen.queryByRole("grid")).toBeNull()
+      expect(screen.getByRole("list")).toBeInTheDocument()
+    })
+
+    it("card title is the first column and subtitle the next two, by column order", () => {
+      const { container } = renderNarrow()
+      goNarrowGrid(container)
+
+      const item = within(screen.getByRole("list")).getAllByRole("listitem")[0]!
+      expect(within(item).getByText("Ada Lovelace")).toBeInTheDocument()
+      expect(within(item).getByText("ada@example.com · 12")).toBeInTheDocument()
+    })
+
+    it("meta.summary overrides which columns fill the title and subtitle", () => {
+      const { container } = renderNarrow({ columns: summaryFlaggedColumns })
+      goNarrowGrid(container)
+
+      const item = within(screen.getByRole("list")).getAllByRole("listitem")[0]!
+      expect(within(item).getByText("Team")).toBeInTheDocument()
+      expect(within(item).getByText("Yes")).toBeInTheDocument()
+      expect(within(item).queryByText("Ada Lovelace")).toBeNull()
+    })
+
+    it("tapping a card opens a bottom sheet with every column as a labelled, bordered field", async () => {
+      const user = userEvent.setup()
+      const { container } = renderNarrow()
+      goNarrowGrid(container)
+
+      await user.click(screen.getByText("Ada Lovelace"))
+      const dialog = screen.getByRole("dialog")
+
+      expect(within(dialog).getByLabelText("Name")).toHaveValue("Ada Lovelace")
+      expect(within(dialog).getByLabelText("Email")).toHaveValue(
+        "ada@example.com"
+      )
+      expect(within(dialog).getByLabelText("Seats")).toHaveValue(12)
+      expect(within(dialog).getByLabelText("Plan")).toHaveValue("team")
+      expect(
+        within(dialog).getByRole("checkbox", { name: "Active" })
+      ).toBeChecked()
+      expect(within(dialog).getByLabelText("Tags")).toBeInTheDocument()
+      expect(within(dialog).getByLabelText("Owner")).toBeInTheDocument()
+      // Every field is bordered — the deliberate divergence from the wide
+      // branch's borderless-at-rest styling.
+      expect(within(dialog).getByLabelText("Tags")).toHaveClass("border")
+    })
+
+    it("sheet text field edits use the same onCellEdit callback and the same pending/error behavior as the wide branch", async () => {
+      const user = userEvent.setup()
+      const { container, onCellEdit } = renderNarrow()
+      goNarrowGrid(container)
+      await user.click(screen.getByText("Ada Lovelace"))
+      const dialog = screen.getByRole("dialog")
+
+      const pending = deferred<void>()
+      onCellEdit.mockReturnValueOnce(pending.promise)
+
+      const nameField = within(dialog).getByLabelText("Name")
+      await user.clear(nameField)
+      await user.type(nameField, "Ada K")
+      await user.tab()
+
+      expect(nameField).toBeDisabled()
+
+      await act(async () => {
+        pending.resolve()
+        await pending.promise
+      })
+
+      expect(onCellEdit).toHaveBeenCalledWith("1", "name", "Ada K")
+
+      // Now a rejection: the invalid-looking, red-text-under-the-field
+      // treatment the wide branch also uses.
+      const rejected = deferred<void>()
+      onCellEdit.mockReturnValueOnce(rejected.promise)
+      await user.clear(nameField)
+      await user.type(nameField, "Ada Rejected")
+      await user.tab()
+      await act(async () => {
+        rejected.reject(new Error("nope"))
+        await rejected.promise.catch(() => {})
+      })
+
+      expect(screen.getByText("nope")).toBeInTheDocument()
+    })
+
+    it("multiSelect and user fields commit per-tap the same way the wide branch's popover does", async () => {
+      const user = userEvent.setup()
+      const { container, onCellEdit } = renderNarrow()
+      goNarrowGrid(container)
+      await user.click(screen.getByText("Ada Lovelace"))
+      const dialog = screen.getByRole("dialog")
+
+      await user.click(within(dialog).getByRole("button", { name: "Risk" }))
+      expect(onCellEdit).toHaveBeenCalledWith("1", "tags", ["vip", "risk"])
+
+      await user.click(
+        within(dialog).getByRole("button", { name: "Sam Okafor" })
+      )
+      expect(onCellEdit).toHaveBeenCalledWith("1", "owner", "u2")
+    })
+
+    it("adding is append-only on narrow — no hover gap insert-after affordance", () => {
+      const onRowAdd = vi.fn()
+      const { container } = renderNarrow({ onRowAdd })
+      goNarrowGrid(container)
+
+      expect(
+        screen.getByRole("button", { name: "New row" })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByLabelText(/Insert row after row/)
+      ).not.toBeInTheDocument()
+    })
+
+    it("delete lives in the sheet's footer on narrow, wired through the same confirm dialog", async () => {
+      const user = userEvent.setup()
+      const onRowDelete = vi.fn()
+      const { container } = renderNarrow({ onRowDelete })
+      goNarrowGrid(container)
+
+      await user.click(screen.getByText("Ada Lovelace"))
+      const dialog = screen.getByRole("dialog")
+      await user.click(
+        within(dialog).getByRole("button", { name: "Delete row" })
+      )
+
+      await user.click(screen.getByRole("button", { name: "Delete" }))
+      expect(onRowDelete).toHaveBeenCalledWith("1")
+    })
+
+    it("shift range-select is absent on narrow — no row-selection checkboxes render", () => {
+      const { container } = renderNarrow()
+      goNarrowGrid(container)
+
+      expect(screen.queryByRole("checkbox", { name: /Select row/ })).toBeNull()
+    })
+
+    it("resize, pin, and the Columns panel do not render on narrow", () => {
+      const { container } = renderNarrow()
+      goNarrowGrid(container)
+
+      expect(screen.queryByRole("button", { name: "Columns" })).toBeNull()
+      expect(screen.queryByRole("separator")).toBeNull()
+      expect(screen.queryByRole("button", { name: /Pin column/ })).toBeNull()
+    })
+
+    it('narrowFallback="none" keeps the real grid at narrow widths, with the first column stuck sticky-left', () => {
+      const { container } = renderNarrow({ narrowFallback: "none" })
+      goNarrowGrid(container)
+
+      expect(screen.getByRole("grid")).toBeInTheDocument()
+      expect(screen.queryByRole("list")).toBeNull()
+
+      const header = screen.getAllByRole("columnheader")[0]!
+      expect(header).toHaveStyle({ position: "sticky", left: "0px" })
+    })
+
+    it("shares one aria-live region across both branches — resizing doesn't duplicate it", () => {
+      const { container } = renderNarrow()
+      expect(container.querySelectorAll('[aria-live="polite"]')).toHaveLength(1)
+
+      goNarrowGrid(container)
+      expect(container.querySelectorAll('[aria-live="polite"]')).toHaveLength(1)
     })
   })
 })

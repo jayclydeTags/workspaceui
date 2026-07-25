@@ -1,5 +1,12 @@
 import * as React from "react"
-import { render, screen, waitFor, within } from "@testing-library/react"
+import {
+  createEvent,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 import {
@@ -8,7 +15,11 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 
-import { DataGrid, getDataGridRowDefaults } from "../data-grid"
+import {
+  DataGrid,
+  getDataGridRowDefaults,
+  type DataGridColumnLayout,
+} from "../data-grid"
 import "../data-grid-types"
 
 interface Person {
@@ -93,6 +104,75 @@ function AddableHarness() {
   }
 
   return <DataGrid table={table} onCellEdit={vi.fn()} onRowAdd={handleRowAdd} />
+}
+
+interface Employee {
+  id: string
+  name: string
+  email: string
+  team: string
+}
+
+const employeeData: Employee[] = [
+  { id: "1", name: "Ada", email: "ada@example.com", team: "Eng" },
+  { id: "2", name: "Grace", email: "grace@example.com", team: "Navy" },
+]
+
+const employeeColumns: ColumnDef<Employee>[] = [
+  { accessorKey: "name", header: "Name", meta: { type: "text" } },
+  { accessorKey: "email", header: "Email", meta: { type: "text" } },
+  { accessorKey: "team", header: "Team", meta: { type: "text" } },
+]
+
+// A separate 3-column dataset/harness: the existing Person/columns fixtures
+// above are hardcoded to 2 columns in several places (getCell, exact
+// gridcell counts), and resize/pin/reorder need at least 3 to be meaningful.
+function LayoutHarness({
+  onColumnLayoutChange,
+}: {
+  onColumnLayoutChange?: (layout: DataGridColumnLayout) => void
+}) {
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const table = useReactTable({
+    data: employeeData,
+    columns: employeeColumns,
+    getCoreRowModel: getCoreRowModel(),
+    getRowId: (row) => row.id,
+  })
+  return (
+    <DataGrid
+      table={table}
+      onCellEdit={vi.fn()}
+      onColumnLayoutChange={onColumnLayoutChange}
+    />
+  )
+}
+
+// A minimal DataTransfer stand-in — jsdom doesn't implement the real one,
+// and getData() is only readable at drop time on the genuine API anyway.
+function fakeDataTransfer() {
+  let stored = ""
+  return {
+    effectAllowed: "",
+    dropEffect: "",
+    setData: (_type: string, value: string) => {
+      stored = value
+    },
+    getData: () => stored,
+  }
+}
+
+// jsdom's DragEvent constructor drops MouseEvent-only init fields like
+// clientY (https://github.com/jsdom/jsdom/issues/1568 territory), so
+// fireEvent.dragOver(el, { clientY }) silently no-ops it. Build the event via
+// testing-library's own createEvent, then force clientY on afterward.
+function fireDragOver(el: Element, dataTransfer: unknown, clientY: number) {
+  const event = createEvent.dragOver(el, { dataTransfer })
+  Object.defineProperty(event, "clientY", {
+    value: clientY,
+    configurable: true,
+  })
+  fireEvent(el, event)
 }
 
 function renderGrid(overrides: Partial<{ data: Person[] }> = {}) {
@@ -623,6 +703,151 @@ describe("DataGrid", () => {
       }
 
       render(<Probe />)
+    })
+  })
+
+  describe("column resize", () => {
+    it("resizes a column via drag, committing on mouseup", () => {
+      render(<LayoutHarness />)
+      const handle = screen.getByRole("separator", {
+        name: "Resize Name column",
+      })
+
+      fireEvent.mouseDown(handle, { clientX: 0 })
+      fireEvent.mouseMove(document, { clientX: 50 })
+      fireEvent.mouseUp(document, { clientX: 50 })
+
+      const header = screen.getAllByRole("columnheader")[0]!
+      expect(header).toHaveStyle({ width: "200px" })
+    })
+
+    it("double-clicking the resize handle resets the column to its default width", () => {
+      render(<LayoutHarness />)
+      const handle = screen.getByRole("separator", {
+        name: "Resize Name column",
+      })
+
+      fireEvent.mouseDown(handle, { clientX: 0 })
+      fireEvent.mouseMove(document, { clientX: 50 })
+      fireEvent.mouseUp(document, { clientX: 50 })
+      const header = screen.getAllByRole("columnheader")[0]!
+      expect(header).toHaveStyle({ width: "200px" })
+
+      fireEvent.doubleClick(handle)
+      expect(header).toHaveStyle({ width: "150px" })
+    })
+  })
+
+  describe("column pin", () => {
+    it("cycles unpinned -> left -> right -> unpinned via the header pin button", () => {
+      render(<LayoutHarness />)
+      const header = screen.getAllByRole("columnheader")[0]!
+      const pinButton = within(header).getByRole("button")
+      expect(pinButton).toHaveAccessibleName("Pin column left")
+      expect(header).not.toHaveStyle({ position: "sticky" })
+
+      fireEvent.click(pinButton)
+      expect(pinButton).toHaveAccessibleName("Pin column right")
+      expect(header).toHaveStyle({ position: "sticky", left: "0px" })
+
+      fireEvent.click(pinButton)
+      expect(pinButton).toHaveAccessibleName("Unpin column")
+      expect(header).toHaveStyle({ position: "sticky", right: "0px" })
+
+      fireEvent.click(pinButton)
+      expect(pinButton).toHaveAccessibleName("Pin column left")
+      expect(header).not.toHaveStyle({ position: "sticky" })
+    })
+  })
+
+  describe("column reorder", () => {
+    it("opens a Columns panel from the toolbar listing columns with drag handles", async () => {
+      const user = userEvent.setup()
+      render(<LayoutHarness />)
+
+      await user.click(screen.getByRole("button", { name: "Columns" }))
+
+      const items = await screen.findAllByRole("listitem")
+      expect(items.map((li) => li.textContent)).toEqual([
+        "Name",
+        "Email",
+        "Team",
+      ])
+      expect(items[0]).toHaveAttribute("draggable", "true")
+    })
+
+    it("reorders columns on drop using insert-before-target semantics", async () => {
+      const user = userEvent.setup()
+      render(<LayoutHarness />)
+      await user.click(screen.getByRole("button", { name: "Columns" }))
+      const items = () => screen.getAllByRole("listitem")
+
+      const dataTransfer = fakeDataTransfer()
+      fireEvent.dragStart(items()[2]!, { dataTransfer }) // Team
+      fireDragOver(items()[0]!, dataTransfer, -1) // before Name
+      fireEvent.drop(items()[0]!, { dataTransfer })
+      fireEvent.dragEnd(items()[2]!, { dataTransfer })
+
+      await waitFor(() => {
+        expect(items().map((li) => li.textContent)).toEqual([
+          "Team",
+          "Name",
+          "Email",
+        ])
+      })
+    })
+
+    it("registers an adjacent swap via the midpoint check, unlike naive insert-before math", async () => {
+      const user = userEvent.setup()
+      render(<LayoutHarness />)
+      await user.click(screen.getByRole("button", { name: "Columns" }))
+      const items = () => screen.getAllByRole("listitem")
+
+      // Naive insert-before-target math would no-op here: removing "Name"
+      // shifts "Email" back into the very slot the drop targeted.
+      const dataTransfer = fakeDataTransfer()
+      fireEvent.dragStart(items()[0]!, { dataTransfer }) // Name
+      fireDragOver(items()[1]!, dataTransfer, 1) // after Email
+      fireEvent.drop(items()[1]!, { dataTransfer })
+      fireEvent.dragEnd(items()[0]!, { dataTransfer })
+
+      await waitFor(() => {
+        expect(items().map((li) => li.textContent)).toEqual([
+          "Email",
+          "Name",
+          "Team",
+        ])
+      })
+    })
+  })
+
+  describe("onColumnLayoutChange", () => {
+    it("reports resize/pin/reorder changes when provided (controlled)", () => {
+      const onColumnLayoutChange =
+        vi.fn<(layout: DataGridColumnLayout) => void>()
+      render(<LayoutHarness onColumnLayoutChange={onColumnLayoutChange} />)
+      expect(onColumnLayoutChange).not.toHaveBeenCalled() // no fire on mount
+
+      const header = screen.getAllByRole("columnheader")[0]!
+      fireEvent.click(within(header).getByRole("button"))
+
+      expect(onColumnLayoutChange).toHaveBeenCalledTimes(1)
+      expect(onColumnLayoutChange).toHaveBeenCalledWith(
+        expect.objectContaining({
+          columnPinning: { left: ["name"], right: [] },
+        })
+      )
+    })
+
+    it("leaves resize/pin/reorder fully working when the callback is omitted (uncontrolled)", () => {
+      render(<LayoutHarness />)
+      const header = screen.getAllByRole("columnheader")[0]!
+      const pinButton = within(header).getByRole("button")
+
+      fireEvent.click(pinButton)
+
+      expect(pinButton).toHaveAccessibleName("Pin column right")
+      expect(header).toHaveStyle({ position: "sticky", left: "0px" })
     })
   })
 })

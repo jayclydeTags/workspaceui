@@ -4,9 +4,18 @@ import * as React from "react"
 import {
   flexRender,
   type Column,
+  type ColumnOrderState,
+  type ColumnPinningState,
+  type ColumnSizingState,
   type Table as TanstackTable,
 } from "@tanstack/react-table"
-import { MoreHorizontalIcon, PlusIcon } from "lucide-react"
+import {
+  Columns3Icon,
+  GripVerticalIcon,
+  MoreHorizontalIcon,
+  PinIcon,
+  PlusIcon,
+} from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import {
@@ -27,6 +36,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { Spinner } from "@/components/ui/spinner"
 import {
   Table,
@@ -44,6 +58,13 @@ import type {
   DataGridSelectOption,
 } from "@/registry/bases/base/workspaceui/data-grid-types"
 
+/** A snapshot of column resize/pin/reorder state, reported via `onColumnLayoutChange`. */
+export interface DataGridColumnLayout {
+  columnOrder: ColumnOrderState
+  columnSizing: ColumnSizingState
+  columnPinning: ColumnPinningState
+}
+
 export interface DataGridProps<TData> {
   table: TanstackTable<TData>
   onCellEdit: (
@@ -54,7 +75,59 @@ export interface DataGridProps<TData> {
   /** Omit `afterRowId` to append; pass it to insert after that row. */
   onRowAdd?: (afterRowId?: string) => void | Promise<void>
   onRowDelete?: (rowId: string) => void | Promise<void>
+  /** Fires after a resize, pin, or reorder change so a consumer can persist it. */
+  onColumnLayoutChange?: (layout: DataGridColumnLayout) => void
   className?: string
+}
+
+type PinPosition = false | "left" | "right"
+
+// unpinned -> left -> right -> unpinned: one control covers every pin state.
+function nextPinPosition(current: PinPosition): PinPosition {
+  if (current === "left") return "right"
+  if (current === "right") return false
+  return "left"
+}
+
+function pinActionLabel(current: PinPosition): string {
+  if (current === "left") return "Pin column right"
+  if (current === "right") return "Unpin column"
+  return "Pin column left"
+}
+
+// A naive insert-before-target no-ops on an adjacent swap: removing the
+// dragged id shifts the target's own index back into the slot the drop
+// intended to fill. The midpoint-derived before/after position fixes that.
+function reorderColumnIds(
+  order: string[],
+  draggedId: string,
+  overId: string,
+  position: "before" | "after"
+): string[] {
+  if (draggedId === overId) return order
+  const without = order.filter((id) => id !== draggedId)
+  const overIndex = without.indexOf(overId)
+  const insertAt = position === "after" ? overIndex + 1 : overIndex
+  return [...without.slice(0, insertAt), draggedId, ...without.slice(insertAt)]
+}
+
+function columnPinStyle<TData>(
+  column: Column<TData, unknown>
+): React.CSSProperties {
+  const pinned = column.getIsPinned()
+  return {
+    width: column.getSize(),
+    ...(pinned === "left" && {
+      position: "sticky",
+      left: column.getStart("left"),
+      zIndex: 1,
+    }),
+    ...(pinned === "right" && {
+      position: "sticky",
+      right: column.getAfter("right"),
+      zIndex: 1,
+    }),
+  }
 }
 
 interface Coord {
@@ -166,6 +239,7 @@ export function DataGrid<TData>({
   onCellEdit,
   onRowAdd,
   onRowDelete,
+  onColumnLayoutChange,
   className,
 }: DataGridProps<TData>) {
   const headerGroups = table.getHeaderGroups()
@@ -197,6 +271,14 @@ export function DataGrid<TData>({
   const prevRowCountRef = React.useRef(rowCount)
   const [deleteTarget, setDeleteTarget] = React.useState<string | null>(null)
 
+  // Set on every dragover inside the Columns panel; read (and cleared) on
+  // drop. The dragged column's own id travels through the native
+  // DataTransfer instead, since that's the only thing readable at drop time.
+  const [dropTarget, setDropTarget] = React.useState<{
+    id: string
+    position: "before" | "after"
+  } | null>(null)
+
   const cellRefs = React.useRef(new Map<string, HTMLTableCellElement>())
   const inputRefs = React.useRef(new Map<string, HTMLInputElement>())
   // Enter/Tab/Escape move focus themselves after resolving the cell (commit
@@ -222,6 +304,70 @@ export function DataGrid<TData>({
   function getColumnLabel(column: Column<TData, unknown>): string {
     const header = column.columnDef.header
     return typeof header === "string" ? header : column.id
+  }
+
+  const columnOrderState = table.getState().columnOrder
+  const columnSizingState = table.getState().columnSizing
+  const columnPinningState = table.getState().columnPinning
+  const isMountedRef = React.useRef(false)
+
+  // Resize, pin, and reorder all mutate the table's own (TanStack-managed)
+  // state directly — no internal copy to keep in sync. This just reports
+  // that state out whenever it actually changes, so a consumer can persist
+  // it; omitting the callback doesn't disable resize/pin/reorder themselves.
+  // Skips the mount-time run so it only fires after a real change.
+  React.useEffect(() => {
+    if (!isMountedRef.current) {
+      isMountedRef.current = true
+      return
+    }
+    onColumnLayoutChange?.({
+      columnOrder: columnOrderState,
+      columnSizing: columnSizingState,
+      columnPinning: columnPinningState,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [columnOrderState, columnSizingState, columnPinningState])
+
+  function handleColumnDragStart(
+    e: React.DragEvent<HTMLLIElement>,
+    columnId: string
+  ) {
+    e.dataTransfer.effectAllowed = "move"
+    e.dataTransfer.setData("text/plain", columnId)
+  }
+
+  function handleColumnDragOver(
+    e: React.DragEvent<HTMLLIElement>,
+    overId: string
+  ) {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = "move"
+    const rect = e.currentTarget.getBoundingClientRect()
+    const midpointY = rect.top + rect.height / 2
+    const position: "before" | "after" =
+      e.clientY < midpointY ? "before" : "after"
+    setDropTarget((prev) =>
+      prev && prev.id === overId && prev.position === position
+        ? prev
+        : { id: overId, position }
+    )
+  }
+
+  function handleColumnDrop(e: React.DragEvent<HTMLLIElement>) {
+    e.preventDefault()
+    const draggedId = e.dataTransfer.getData("text/plain")
+    const target = dropTarget
+    setDropTarget(null)
+    if (!draggedId || !target) return
+    const currentOrder = table.getVisibleLeafColumns().map((c) => c.id)
+    table.setColumnOrder(
+      reorderColumnIds(currentOrder, draggedId, target.id, target.position)
+    )
+  }
+
+  function handleColumnDragEnd() {
+    setDropTarget(null)
   }
 
   // Fires once the consumer hands back a grown row set after onRowAdd —
@@ -451,25 +597,106 @@ export function DataGrid<TData>({
 
   return (
     <div className={cn("flex flex-col gap-2", className)}>
+      <div className="flex items-center justify-end">
+        <Popover>
+          <PopoverTrigger
+            render={
+              <Button variant="outline" size="sm">
+                <Columns3Icon className="size-4" />
+                Columns
+              </Button>
+            }
+          />
+          <PopoverContent align="end" className="w-56 p-1">
+            <ul className="flex flex-col gap-0.5">
+              {table.getVisibleLeafColumns().map((column) => (
+                <li
+                  key={column.id}
+                  draggable
+                  onDragStart={(e) => handleColumnDragStart(e, column.id)}
+                  onDragOver={(e) => handleColumnDragOver(e, column.id)}
+                  onDrop={handleColumnDrop}
+                  onDragEnd={handleColumnDragEnd}
+                  className={cn(
+                    "flex cursor-grab items-center gap-2 rounded-md px-2 py-1.5 text-sm select-none",
+                    dropTarget?.id === column.id &&
+                      (dropTarget.position === "before"
+                        ? "border-t-2 border-primary"
+                        : "border-b-2 border-primary")
+                  )}
+                >
+                  <GripVerticalIcon
+                    aria-hidden="true"
+                    className="size-4 shrink-0 text-muted-foreground"
+                  />
+                  <span className="truncate">{getColumnLabel(column)}</span>
+                </li>
+              ))}
+            </ul>
+          </PopoverContent>
+        </Popover>
+      </div>
       {/* aria-rowcount includes the header row, per the grid pattern's own convention. */}
       <Table
         role="grid"
         aria-rowcount={rowCount + 1}
         aria-colcount={totalColCount}
+        className="w-auto min-w-full table-fixed"
       >
         <TableHeader>
           {headerGroups.map((headerGroup) => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </TableHead>
-              ))}
+              {headerGroup.headers.map((header) => {
+                const pinned = header.column.getIsPinned()
+                return (
+                  <TableHead
+                    key={header.id}
+                    className={cn("group relative", pinned && "bg-background")}
+                    style={columnPinStyle(header.column)}
+                  >
+                    {!header.isPlaceholder && (
+                      <div className="flex items-center justify-between gap-1 pe-2">
+                        <span className="truncate">
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                        </span>
+                        <button
+                          type="button"
+                          aria-label={pinActionLabel(pinned)}
+                          onClick={() =>
+                            header.column.pin(nextPinPosition(pinned))
+                          }
+                          className="shrink-0 rounded p-0.5 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-accent focus-visible:opacity-100"
+                        >
+                          <PinIcon
+                            className={cn("size-3.5", pinned && "fill-current")}
+                          />
+                        </button>
+                      </div>
+                    )}
+                    {header.column.getCanResize() && (
+                      <div
+                        role="separator"
+                        aria-orientation="vertical"
+                        aria-label={`Resize ${getColumnLabel(header.column)} column`}
+                        onMouseDown={header.getResizeHandler()}
+                        onTouchStart={header.getResizeHandler()}
+                        onDoubleClick={() => header.column.resetSize()}
+                        className="absolute top-0 right-0 h-full w-1 cursor-col-resize touch-none select-none hover:bg-accent"
+                        style={
+                          header.column.getIsResizing()
+                            ? {
+                                transform: `translateX(${table.getState().columnSizingInfo.deltaOffset ?? 0}px)`,
+                              }
+                            : undefined
+                        }
+                      />
+                    )}
+                  </TableHead>
+                )
+              })}
               {hasDeleteColumn && (
                 <TableHead aria-hidden="true" className="w-10" />
               )}
@@ -531,6 +758,7 @@ export function DataGrid<TData>({
                     const value = cell.getValue()
                     const cellErrorId = `${errorId}-${key}`
                     const isLastCell = !hasDeleteColumn && c === colCount - 1
+                    const isPinned = cell.column.getIsPinned()
 
                     return (
                       <TableCell
@@ -541,7 +769,11 @@ export function DataGrid<TData>({
                         onFocus={() => setFocusCoord({ r, c })}
                         onClick={() => onCellClick(r, c)}
                         onKeyDown={(e) => onGridCellKeyDown(e, r, c)}
-                        className="p-0 align-top whitespace-normal outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                        style={columnPinStyle(cell.column)}
+                        className={cn(
+                          "p-0 align-top whitespace-normal outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
+                          isPinned && "bg-background"
+                        )}
                       >
                         {isTextColumn ? (
                           <>

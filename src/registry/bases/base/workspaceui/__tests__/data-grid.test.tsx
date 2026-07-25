@@ -459,7 +459,7 @@ async function typeAndCommit(
 
 // ── Narrow container fixture ────────────────────────────────────────────
 // One row of every column type — text/number (positional summary), select,
-// boolean, multiSelect, and user — so the sheet's per-type field rendering
+// boolean, multiSelect, and user — so the drawer's per-type field rendering
 // gets exercised in one harness rather than five.
 
 interface Contact {
@@ -1627,7 +1627,7 @@ describe("DataGrid", () => {
       expect(within(item).queryByText("Ada Lovelace")).toBeNull()
     })
 
-    it("tapping a card opens a bottom sheet with every column as a labelled, bordered field", async () => {
+    it("tapping a card opens a bottom drawer with every column as a labelled, bordered field", async () => {
       const user = userEvent.setup()
       const { container } = renderNarrow()
       goNarrowGrid(container)
@@ -1651,7 +1651,7 @@ describe("DataGrid", () => {
       expect(within(dialog).getByLabelText("Tags")).toHaveClass("border")
     })
 
-    it("sheet text field edits use the same onCellEdit callback and the same pending/error behavior as the wide branch", async () => {
+    it("drawer text field edits use the same onCellEdit callback and the same pending/error behavior as the wide branch", async () => {
       const user = userEvent.setup()
       const { container, onCellEdit } = renderNarrow()
       goNarrowGrid(container)
@@ -1719,7 +1719,7 @@ describe("DataGrid", () => {
       ).not.toBeInTheDocument()
     })
 
-    it("delete lives in the sheet's footer on narrow, wired through the same confirm dialog", async () => {
+    it("delete lives in the drawer's footer on narrow, wired through the same confirm dialog", async () => {
       const user = userEvent.setup()
       const onRowDelete = vi.fn()
       const { container } = renderNarrow({ onRowDelete })

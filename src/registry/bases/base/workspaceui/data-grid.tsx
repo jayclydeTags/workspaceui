@@ -8,6 +8,7 @@ import {
   type ColumnOrderState,
   type ColumnPinningState,
   type ColumnSizingState,
+  type Row,
   type Table as TanstackTable,
 } from "@tanstack/react-table"
 import {
@@ -44,6 +45,13 @@ import {
   CommandList,
 } from "@/components/ui/command"
 import {
+  Drawer,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer"
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -55,13 +63,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import {
-  Sheet,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet"
 import { Spinner } from "@/components/ui/spinner"
 import {
   Table,
@@ -1151,6 +1152,24 @@ export function DataGrid<TData>({
   const titleColumn = summaryColumns[0]
   const subtitleColumns = summaryColumns.slice(1, 3)
   const openRow = openRowIndex >= 0 ? rows[openRowIndex] : undefined
+  // The drawer's close transition needs something to render while it
+  // animates out — clearing openRowId drops openRow to undefined
+  // immediately, which would blank the drawer's content mid-animation.
+  // Kept as the last real row instead of resetting on close; only ever read
+  // while the drawer is (still visually) open. Adjusted during render (React's
+  // documented "store info from previous render" pattern) rather than an
+  // effect, since this state is derived from openRowId, not an external
+  // system to synchronize with.
+  const [trackedOpenRowId, setTrackedOpenRowId] = React.useState(openRowId)
+  const [lastOpenRow, setLastOpenRow] = React.useState<
+    { row: Row<TData>; index: number } | undefined
+  >(undefined)
+  if (openRowId !== trackedOpenRowId) {
+    setTrackedOpenRowId(openRowId)
+    if (openRow) setLastOpenRow({ row: openRow, index: openRowIndex })
+  }
+  const displayRow = openRow ?? lastOpenRow?.row
+  const displayRowIndex = openRow ? openRowIndex : (lastOpenRow?.index ?? 0)
 
   return (
     <div ref={containerRef} className={cn("flex flex-col gap-2", className)}>
@@ -1879,28 +1898,29 @@ export function DataGrid<TData>({
           </Table>
         </>
       )}
-      {showCards && openRow && (
-        <Sheet
-          open
+      {showCards && displayRow && (
+        <Drawer
+          open={openRow != null}
+          showSwipeHandle
           onOpenChange={(open) => {
             if (!open) closeCardSheet()
           }}
         >
-          <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
-            <SheetHeader>
-              <SheetTitle>
+          <DrawerContent className="h-[50vh]">
+            <DrawerHeader>
+              <DrawerTitle>
                 {titleColumn
                   ? formatCardValue(
-                      openRow
+                      displayRow
                         .getVisibleCells()
                         .find((c) => c.column.id === titleColumn.id)!
                     ) || "—"
                   : "Row details"}
-              </SheetTitle>
-            </SheetHeader>
-            <div className="flex flex-col gap-3 px-4 pb-4">
-              {openRow.getVisibleCells().map((cell, c) => {
-                const r = openRowIndex
+              </DrawerTitle>
+            </DrawerHeader>
+            <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 pb-4">
+              {displayRow.getVisibleCells().map((cell, c) => {
+                const r = displayRowIndex
                 const key = cellKey(r, c)
                 const columnType = cell.column.columnDef.meta?.type
                 const columnLabel = getColumnLabel(cell.column)
@@ -2082,18 +2102,18 @@ export function DataGrid<TData>({
               })}
             </div>
             {onRowDelete && (
-              <SheetFooter>
+              <DrawerFooter>
                 <Button
                   variant="destructive"
-                  onClick={() => setDeleteTarget(openRow.id)}
+                  onClick={() => setDeleteTarget(displayRow.id)}
                 >
                   <Trash2Icon className="size-4" />
                   Delete row
                 </Button>
-              </SheetFooter>
+              </DrawerFooter>
             )}
-          </SheetContent>
-        </Sheet>
+          </DrawerContent>
+        </Drawer>
       )}
       {hasDeleteColumn && (
         <AlertDialog

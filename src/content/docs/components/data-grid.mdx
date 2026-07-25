@@ -308,16 +308,18 @@ render through their normal TanStack `cell` definition (read-only).
   this composes with the deferred virtualization work. Each row becomes a
   card: the first column is the title and the next two the subtitle,
   positional by column order unless overridden per column with
-  `meta.summary`. Tapping a card opens a bottom sheet with every column as a
-  labelled, bordered field — a deliberate divergence from the borderless-at-
-  rest wide-branch styling, since an editable field should look unambiguously
-  editable in this layout. Sheet fields commit through the exact same
-  `onCellEdit` callback and pending/error handling as the wide branch;
-  `multiSelect` and `user` toggle inline instead of through a popover, and
-  `select`/`boolean` commit immediately on change. The narrow branch is a
-  list, not a grid: the roving-tabindex/F2/Tab-wrap keyboard model doesn't
-  apply, the hover-gap "+" insert is dropped (adding is append-only), delete
-  moves into the sheet's footer, Shift range-select is dropped (selection is
+  `meta.summary`. Tapping a card opens a swipeable bottom drawer — dragged
+  down or dismissed via its swipe handle, the same bottom-to-top transition a
+  sheet would use — with every column as a labelled, bordered field, a
+  deliberate divergence from the borderless-at-rest wide-branch styling,
+  since an editable field should look unambiguously editable in this layout.
+  Drawer fields commit through the exact same `onCellEdit` callback and
+  pending/error handling as the wide branch; `multiSelect` and `user` toggle
+  inline instead of through a popover, and `select`/`boolean` commit
+  immediately on change. The narrow branch is a list, not a grid: the
+  roving-tabindex/F2/Tab-wrap keyboard model doesn't apply, the hover-gap "+"
+  insert is dropped (adding is append-only), delete moves into the drawer's
+  footer, Shift range-select is dropped (selection is
   tap-per-row), and resize/pin/the Columns panel don't render. The `aria-live`
   region is shared across both branches, not duplicated. Pass
   `narrowFallback="none"` to keep the real grid at any width instead, with
@@ -359,7 +361,7 @@ render through their normal TanStack `cell` definition (read-only).
       type: '"cards" | "none"',
       default: '"cards"',
       description:
-        'Below a 448px *measured container* width (never the viewport), "cards" swaps the grid for a card list with a bottom-sheet editor. "none" is the escape hatch: keeps the real grid at any width, with the first column stuck sticky-left.',
+        'Below a 448px *measured container* width (never the viewport), "cards" swaps the grid for a card list with a swipeable bottom-drawer editor. "none" is the escape hatch: keeps the real grid at any width, with the first column stuck sticky-left.',
     },
     className: {
       type: "string",

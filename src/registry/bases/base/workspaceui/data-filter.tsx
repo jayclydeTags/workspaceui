@@ -17,6 +17,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { ButtonGroup } from "@/components/ui/button-group"
 import {
   Command,
   CommandEmpty,
@@ -25,19 +26,19 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
 import { Input } from "@/components/ui/input"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"
 // Side-effect import: pulls in the column.meta type augmentation this
 // component reads (column.columnDef.meta?.type / .options).
 import "@/registry/bases/base/workspaceui/data-grid-types"
@@ -234,7 +235,7 @@ function valueShapeOf(operator: string): ValueShape {
 }
 
 // Below this container width the chip chain and column-pick popover give
-// way to sheet-backed toolbar buttons. 448px is the same threshold settled
+// way to drawer-backed toolbar buttons. 448px is the same threshold settled
 // on for data-grid's own (not yet built — see #54) card-fallback breakpoint,
 // so once that lands the common case — both mounted in one narrow pane —
 // flips together, even though each component measures its own container.
@@ -875,7 +876,7 @@ function cycleSort<TData>(table: TanstackTable<TData>, columnId: string) {
 // a muted "+N more" when a wide-branch multi-column sort is in effect — the
 // extra columns stay in `sorting` state untouched until a new pick replaces
 // the whole array. Tapping a column commits immediately and closes.
-function NarrowSortSheet<TData>({
+function NarrowSortDrawer<TData>({
   table,
   sortableColumns,
 }: {
@@ -894,8 +895,8 @@ function NarrowSortSheet<TData>({
   }
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger
+    <Drawer open={open} onOpenChange={setOpen} showSwipeHandle>
+      <DrawerTrigger
         render={
           <Button variant="outline" size="sm">
             {primaryColumn ? (
@@ -918,11 +919,11 @@ function NarrowSortSheet<TData>({
           </Button>
         }
       />
-      <SheetContent side="bottom">
-        <SheetHeader>
-          <SheetTitle>Sort by</SheetTitle>
-        </SheetHeader>
-        <div className="flex flex-col gap-0.5 px-4 pb-4">
+      <DrawerContent className="h-[50vh]">
+        <DrawerHeader>
+          <DrawerTitle>Sort by</DrawerTitle>
+        </DrawerHeader>
+        <div className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-4 pb-4">
           {sortableColumns.map((column) => {
             const isPrimary = primary?.id === column.id
             return (
@@ -946,31 +947,39 @@ function NarrowSortSheet<TData>({
             )
           })}
         </div>
-      </SheetContent>
-    </Sheet>
+      </DrawerContent>
+    </Drawer>
   )
 }
 
 // Narrow-branch replacement for the chip chain: active filters as
 // full-width rows plus a persistent "Add filter" row, both scoped to a
-// bottom Sheet so toolbar height stays constant no matter how many filters
+// bottom drawer so toolbar height stays constant no matter how many filters
 // are active. Tapping "Add filter" or an existing row pushes the same
-// column -> operator -> value chain as a second step inside this sheet
+// column -> operator -> value chain as a second step inside this drawer
 // (skipping the column step when editing, since that row's column is
 // already fixed) — same `{ operator, value }` written through
 // `column.setFilterValue()` as the wide-branch popover.
-function NarrowFilterSheet<TData>({
+function NarrowFilterDrawer<TData>({
   table,
   activeFilters,
   pickableColumns,
   removeFilter,
+  open,
+  onOpenChange,
+  editColumnId,
 }: {
   table: TanstackTable<TData>
   activeFilters: { id: string; value: unknown }[]
   pickableColumns: Column<TData, unknown>[]
   removeFilter: (columnId: string) => void
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  /** Set by the chip row's tap-to-edit outside the trigger button — seeds
+   *  the chain straight to this filter's operator step instead of the list
+   *  the trigger button itself opens to. */
+  editColumnId: string | null
 }) {
-  const [open, setOpen] = React.useState(false)
   const [step, setStep] = React.useState<"list" | Step>("list")
   const [chainStart, setChainStart] = React.useState<"column" | "operator">(
     "column"
@@ -989,9 +998,27 @@ function NarrowFilterSheet<TData>({
     setDraftValue(undefined)
   }
 
-  function handleOpenChange(next: boolean) {
-    setOpen(next)
-    if (next) resetChain()
+  function startEdit(columnId: string) {
+    setChainStart("operator")
+    setDraftColumnId(columnId)
+    setDraftOperator(null)
+    setDraftValue(undefined)
+    setStep("operator")
+  }
+
+  // Reseeds the chain on every fresh open — straight to editColumnId's
+  // operator step when the chip row opened it, otherwise back to the list
+  // the trigger button opens to. Adjusted during render (React's documented
+  // "store info from previous render" pattern) rather than an effect, since
+  // `open` becoming true from the *outside* (the chip row's openEdit, not a
+  // Drawer-internal event) never fires onOpenChange for an effect to key off.
+  const [trackedOpen, setTrackedOpen] = React.useState(open)
+  if (open !== trackedOpen) {
+    setTrackedOpen(open)
+    if (open) {
+      if (editColumnId) startEdit(editColumnId)
+      else resetChain()
+    }
   }
 
   function commitFilter(operator: string, value?: unknown) {
@@ -1012,14 +1039,6 @@ function NarrowFilterSheet<TData>({
     setStep("column")
   }
 
-  function startEdit(columnId: string) {
-    setChainStart("operator")
-    setDraftColumnId(columnId)
-    setDraftOperator(null)
-    setDraftValue(undefined)
-    setStep("operator")
-  }
-
   function selectColumn(id: string) {
     setDraftColumnId(id)
     setDraftOperator(null)
@@ -1038,8 +1057,8 @@ function NarrowFilterSheet<TData>({
   }
 
   return (
-    <Sheet open={open} onOpenChange={handleOpenChange}>
-      <SheetTrigger
+    <Drawer open={open} onOpenChange={onOpenChange} showSwipeHandle>
+      <DrawerTrigger
         render={
           <Button variant="outline" size="sm">
             Filter{" "}
@@ -1049,105 +1068,107 @@ function NarrowFilterSheet<TData>({
           </Button>
         }
       />
-      <SheetContent side="bottom">
-        <SheetHeader>
-          <SheetTitle>Filters</SheetTitle>
-        </SheetHeader>
+      <DrawerContent className="h-[50vh]">
+        <DrawerHeader>
+          <DrawerTitle>Filters</DrawerTitle>
+        </DrawerHeader>
 
-        {step === "list" && (
-          <div className="flex flex-col gap-2 px-4 pb-4">
-            {activeFilters.map((filter) => {
-              const column = table.getColumn(filter.id)
-              if (!column) return null
-              const filterValue = filter.value as DataGridFilterValue
-              return (
-                <div
-                  key={filter.id}
-                  className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm"
-                >
-                  <button
-                    type="button"
-                    className="flex-1 text-left"
-                    onClick={() => startEdit(filter.id)}
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+          {step === "list" && (
+            <div className="flex flex-col gap-2 px-4 pb-4">
+              {activeFilters.map((filter) => {
+                const column = table.getColumn(filter.id)
+                if (!column) return null
+                const filterValue = filter.value as DataGridFilterValue
+                return (
+                  <div
+                    key={filter.id}
+                    className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm"
                   >
-                    {formatFilterSummary(column, filterValue)}
-                  </button>
-                  <button
-                    type="button"
-                    aria-label={`Remove ${getColumnLabel(column)} filter`}
-                    onClick={() => removeFilter(filter.id)}
-                    className="shrink-0 rounded-sm p-1 hover:bg-accent"
-                  >
-                    <XIcon className="size-3" />
-                  </button>
-                </div>
-              )
-            })}
-            <Button variant="outline" onClick={startAdd}>
-              <PlusIcon className="size-4" />
-              Add filter
-            </Button>
-          </div>
-        )}
-
-        {step === "column" && (
-          <Command>
-            <CommandInput placeholder="Filter by column..." />
-            <CommandList>
-              <CommandEmpty>No columns.</CommandEmpty>
-              <CommandGroup>
-                {pickableColumns.map((column) => (
-                  <CommandItem
-                    key={column.id}
-                    value={getColumnLabel(column)}
-                    onSelect={() => selectColumn(column.id)}
-                  >
-                    {getColumnLabel(column)}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        )}
-
-        {step === "operator" && (
-          <div className="flex flex-col gap-0.5 px-4 pb-4">
-            <FilterBackButton
-              label={draftColumn ? getColumnLabel(draftColumn) : "Back"}
-              onClick={() =>
-                setStep(chainStart === "column" ? "column" : "list")
-              }
-            />
-            <OperatorList
-              type={draftType}
-              selected={draftOperator}
-              onSelect={selectOperator}
-            />
-          </div>
-        )}
-
-        {step === "value" && draftColumn && draftOperator && (
-          <div className="flex flex-col px-4 pb-4">
-            <FilterBackButton
-              label={operatorLabel(draftType, draftOperator)}
-              onClick={() => setStep("operator")}
-            />
-            <ValueEditor
-              column={draftColumn}
-              operator={draftOperator}
-              value={draftValue}
-              onChange={setDraftValue}
-              onCommit={(value) =>
-                commitFilter(
-                  draftOperator,
-                  value !== undefined ? value : draftValue
+                    <button
+                      type="button"
+                      className="flex-1 text-left"
+                      onClick={() => startEdit(filter.id)}
+                    >
+                      {formatFilterSummary(column, filterValue)}
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`Remove ${getColumnLabel(column)} filter`}
+                      onClick={() => removeFilter(filter.id)}
+                      className="shrink-0 rounded-sm p-1 hover:bg-accent"
+                    >
+                      <XIcon className="size-3" />
+                    </button>
+                  </div>
                 )
-              }
-            />
-          </div>
-        )}
-      </SheetContent>
-    </Sheet>
+              })}
+              <Button variant="outline" onClick={startAdd}>
+                <PlusIcon className="size-4" />
+                Add filter
+              </Button>
+            </div>
+          )}
+
+          {step === "column" && (
+            <Command>
+              <CommandInput placeholder="Filter by column..." />
+              <CommandList>
+                <CommandEmpty>No columns.</CommandEmpty>
+                <CommandGroup>
+                  {pickableColumns.map((column) => (
+                    <CommandItem
+                      key={column.id}
+                      value={getColumnLabel(column)}
+                      onSelect={() => selectColumn(column.id)}
+                    >
+                      {getColumnLabel(column)}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          )}
+
+          {step === "operator" && (
+            <div className="flex flex-col gap-0.5 px-4 pb-4">
+              <FilterBackButton
+                label={draftColumn ? getColumnLabel(draftColumn) : "Back"}
+                onClick={() =>
+                  setStep(chainStart === "column" ? "column" : "list")
+                }
+              />
+              <OperatorList
+                type={draftType}
+                selected={draftOperator}
+                onSelect={selectOperator}
+              />
+            </div>
+          )}
+
+          {step === "value" && draftColumn && draftOperator && (
+            <div className="flex flex-col px-4 pb-4">
+              <FilterBackButton
+                label={operatorLabel(draftType, draftOperator)}
+                onClick={() => setStep("operator")}
+              />
+              <ValueEditor
+                column={draftColumn}
+                operator={draftOperator}
+                value={draftValue}
+                onChange={setDraftValue}
+                onCommit={(value) =>
+                  commitFilter(
+                    draftOperator,
+                    value !== undefined ? value : draftValue
+                  )
+                }
+              />
+            </div>
+          )}
+        </div>
+      </DrawerContent>
+    </Drawer>
   )
 }
 
@@ -1182,21 +1203,75 @@ export function DataFilter<TData>({ table }: DataFilterProps<TData>) {
     table.getColumn(columnId)?.setFilterValue(undefined)
   }
 
+  // Lifted out of NarrowFilterDrawer so the chip row below the toolbar can
+  // open it too, straight to a tapped chip's edit step — the trigger button
+  // itself still just opens to the list (editColumnId null).
+  const [narrowFilterOpen, setNarrowFilterOpen] = React.useState(false)
+  const [narrowEditColumnId, setNarrowEditColumnId] = React.useState<
+    string | null
+  >(null)
+
+  function handleNarrowFilterOpenChange(next: boolean) {
+    setNarrowFilterOpen(next)
+    if (!next) setNarrowEditColumnId(null)
+  }
+
+  function openNarrowFilterEdit(columnId: string) {
+    setNarrowEditColumnId(columnId)
+    setNarrowFilterOpen(true)
+  }
+
   if (isNarrow) {
     return (
       <div
         ref={containerRef}
         role="toolbar"
         aria-label="Sort and filter"
-        className="flex items-center gap-1.5"
+        className="flex flex-col gap-1.5"
       >
-        <NarrowSortSheet table={table} sortableColumns={sortableColumns} />
-        <NarrowFilterSheet
-          table={table}
-          activeFilters={activeFilters}
-          pickableColumns={pickableColumns}
-          removeFilter={removeFilter}
-        />
+        <div className="flex items-center gap-1.5">
+          <NarrowSortDrawer table={table} sortableColumns={sortableColumns} />
+          <NarrowFilterDrawer
+            table={table}
+            activeFilters={activeFilters}
+            pickableColumns={pickableColumns}
+            removeFilter={removeFilter}
+            open={narrowFilterOpen}
+            onOpenChange={handleNarrowFilterOpenChange}
+            editColumnId={narrowEditColumnId}
+          />
+        </div>
+        {activeFilters.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1.5">
+            {activeFilters.map((filter) => {
+              const column = table.getColumn(filter.id)
+              if (!column) return null
+              const filterValue = filter.value as DataGridFilterValue
+              return (
+                <ButtonGroup key={filter.id} className="max-w-full">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="xs"
+                    className="max-w-48 truncate"
+                    onClick={() => openNarrowFilterEdit(filter.id)}
+                  >
+                    {formatFilterSummary(column, filterValue)}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon-xs"
+                    aria-label={`Remove ${getColumnLabel(column)} filter`}
+                    onClick={() => removeFilter(filter.id)}
+                  >
+                    <XIcon />
+                  </Button>
+                </ButtonGroup>
+              )
+            })}
+          </div>
+        )}
       </div>
     )
   }

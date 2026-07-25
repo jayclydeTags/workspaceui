@@ -571,7 +571,7 @@ describe("DataFilter", () => {
   })
 
   describe("narrow container", () => {
-    it("replaces the popover chain with sheet-backed toolbar buttons below 448px", async () => {
+    it("replaces the popover chain with drawer-backed toolbar buttons below 448px", async () => {
       const user = userEvent.setup()
       render(<Harness />)
       // Wide: the "Filter" trigger opens the column-pick popover instantly.
@@ -584,7 +584,7 @@ describe("DataFilter", () => {
       goNarrow()
 
       expect(screen.getByRole("button", { name: "Sort" })).toBeInTheDocument()
-      // Narrow: the same-labelled "Filter" trigger opens a Sheet instead —
+      // Narrow: the same-labelled "Filter" trigger opens a Drawer instead —
       // no column options render until "Add filter" is tapped inside it.
       await user.click(screen.getByRole("button", { name: "Filter" }))
       expect(screen.getByRole("dialog")).toBeInTheDocument()
@@ -610,7 +610,7 @@ describe("DataFilter", () => {
       expect(screen.queryByRole("option", { name: "Name" })).toBeNull()
     })
 
-    it("filter sheet lists active filters as full-width rows with a persistent Add filter, and adds one via the second-step chain", async () => {
+    it("filter drawer lists active filters as full-width rows with a persistent Add filter, and adds one via the second-step chain", async () => {
       const user = userEvent.setup()
       render(<Harness />)
       await openNewFilter(user)
@@ -635,7 +635,7 @@ describe("DataFilter", () => {
       })
       await user.click(screen.getByRole("button", { name: "Apply" }))
 
-      // Back on the list step inside the still-open sheet.
+      // Back on the list step inside the still-open drawer.
       expect(
         screen.getByRole("button", { name: "Active is true" })
       ).toBeInTheDocument()
@@ -643,7 +643,7 @@ describe("DataFilter", () => {
         screen.getByRole("button", { name: "Qty > 10" })
       ).toBeInTheDocument()
 
-      // The rest of the page is inert while the sheet is open — close it to
+      // The rest of the page is inert while the drawer is open — close it to
       // check the underlying table state the chain actually wrote.
       await user.keyboard("{Escape}")
       expect(visibleNames()).toEqual(["Gizmo"])
@@ -669,7 +669,7 @@ describe("DataFilter", () => {
       expect(screen.getByRole("button", { name: "<" })).toBeInTheDocument()
     })
 
-    it("removes a row from the sheet's list step", async () => {
+    it("removes a row from the drawer's list step", async () => {
       const user = userEvent.setup()
       render(<Harness />)
       await openNewFilter(user)
@@ -690,13 +690,90 @@ describe("DataFilter", () => {
       expect(screen.getByRole("button", { name: "Filter" })).toBeInTheDocument()
     })
 
+    it("shows active filters as chips below the toolbar, even while the drawer is closed", async () => {
+      const user = userEvent.setup()
+      render(<Harness />)
+      await openNewFilter(user)
+      await pickColumn(user, "Qty")
+      await pickOperator(user, ">")
+      fireEvent.change(screen.getByPlaceholderText("Value"), {
+        target: { value: "10" },
+      })
+      await user.click(screen.getByRole("button", { name: "Apply" }))
+
+      goNarrow()
+
+      expect(screen.queryByRole("dialog")).toBeNull()
+      expect(
+        screen.getByRole("button", { name: "Qty > 10" })
+      ).toBeInTheDocument()
+    })
+
+    it("tapping a chip opens the drawer straight to that filter's operator step", async () => {
+      const user = userEvent.setup()
+      render(<Harness />)
+      await openNewFilter(user)
+      await pickColumn(user, "Qty")
+      await pickOperator(user, ">")
+      fireEvent.change(screen.getByPlaceholderText("Value"), {
+        target: { value: "10" },
+      })
+      await user.click(screen.getByRole("button", { name: "Apply" }))
+
+      goNarrow()
+      await user.click(screen.getByRole("button", { name: "Qty > 10" }))
+
+      const dialog = screen.getByRole("dialog")
+      expect(
+        within(dialog).queryByPlaceholderText("Filter by column...")
+      ).toBeNull()
+      expect(
+        within(dialog).getByRole("button", { name: "<" })
+      ).toBeInTheDocument()
+
+      // The Filter trigger's own count badge stays in sync with the chip.
+      await user.keyboard("{Escape}")
+      expect(
+        screen.getByRole("button", { name: "Filter 1" })
+      ).toBeInTheDocument()
+    })
+
+    it("removing a chip's own x clears the filter without opening the drawer", async () => {
+      const user = userEvent.setup()
+      render(<Harness />)
+      await openNewFilter(user)
+      await pickColumn(user, "Active")
+      await pickOperator(user, "is true")
+
+      goNarrow()
+      await user.click(
+        screen.getByRole("button", { name: "Remove Active filter" })
+      )
+
+      expect(screen.queryByRole("dialog")).toBeNull()
+      expect(
+        screen.queryByRole("button", { name: "Active is true" })
+      ).toBeNull()
+      expect(visibleNames()).toEqual(["Widget", "Gadget", "Gizmo"])
+      expect(screen.getByRole("button", { name: "Filter" })).toBeInTheDocument()
+    })
+
+    it("renders no chip row when there are no active filters", () => {
+      render(<Harness />)
+      goNarrow()
+
+      expect(
+        screen.queryByRole("button", { name: /^Remove .* filter$/ })
+      ).toBeNull()
+    })
+
     it("Sort button is labelled Sort when unsorted, and cycles asc -> desc -> off on the tapped column", async () => {
       const user = userEvent.setup()
       render(<Harness />)
       goNarrow()
 
-      // Each tap in the sheet commits and closes it (per spec), so the
-      // trigger and the sheet's list button never coexist — each step below
+      // Each tap in the drawer commits and closes it (per spec), so the
+      // trigger and the drawer's list button never coexist — each step below
       // re-finds the trigger by its current label, then scopes the tap to
       // the freshly-opened dialog.
       expect(screen.getByRole("button", { name: "Sort" })).toBeInTheDocument()

@@ -122,7 +122,7 @@ npx shadcn@latest add jayclydeTags/workspaceui/data-filter
 
 ```bash
 npm install @tanstack/react-table
-npx shadcn@latest add popover command sheet badge
+npx shadcn@latest add popover command drawer badge button-group
 ```
 
 ### Copy the files into your project
@@ -199,22 +199,34 @@ it never filters rows itself.
 - **Narrow-container toolbar** — `DataFilter` measures its own container
   with a `ResizeObserver` (never the viewport; this is independent of
   `DataGrid`'s own container measurement). Below 448px the chip chain and
-  the "+ Filter" popover give way to two sheet-backed toolbar buttons, so
-  chrome height stays constant no matter how many filters are active:
+  the "+ Filter" popover give way to two swipeable bottom-drawer toolbar
+  buttons, so chrome height stays constant no matter how many filters are
+  active:
   - **"Sort"** is labelled with the current sort column and direction.
-    Tapping it opens a bottom sheet listing every sortable column; tapping
-    one cycles asc → desc → unsorted and closes the sheet. Sorting on this
+    Tapping it opens a bottom drawer listing every sortable column; tapping
+    one cycles asc → desc → unsorted and closes the drawer. Sorting on this
     branch is single-column — picking a different column replaces the whole
     sort array. A pre-existing multi-column sort (set while wide) shows as
     the primary column plus a muted "+N more" and is left untouched until a
     new pick replaces it.
-  - **"Filter"** carries a count badge and opens a bottom sheet listing
+  - **"Filter"** carries a count badge and opens a bottom drawer listing
     active filters as full-width rows with a persistent "Add filter" row.
     Tapping "Add filter" or an existing row pushes the same
-    column → operator → value chain as a second step inside the sheet
+    column → operator → value chain as a second step inside the drawer
     (skipping the column step when editing an existing row) — the same
     `{ operator, value }` write through `column.setFilterValue()` as the
     wide-branch popover.
+  - **Active filters stay visible as chips below the toolbar row**, not just
+    the "Filter" badge count — mirroring the wide branch's always-visible
+    pills instead of hiding them inside the drawer. Each chip is a
+    `ButtonGroup` of two `Button`s: `formatFilterSummary`'s "column operator
+    value" text (`size="xs"`) plus an icon-only "×" (`size="icon-xs"`).
+    Tapping the label button opens the drawer straight to that filter's
+    operator step (skipping the list), and the "×" removes it directly
+    without opening the drawer at all. Unlike the wide-branch pill, a narrow
+    chip has no separate operator/value tap targets — one tap always opens
+    the full edit chain, since three independent hit targets don't fit at
+    this width.
 
 ## API Reference
 

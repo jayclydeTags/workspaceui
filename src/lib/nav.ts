@@ -654,6 +654,7 @@ export const nav: NavSection[] = [
       { title: "Password Input", href: "/docs/components/password-input" },
       { title: "Data Grid Types", href: "/docs/components/data-grid-types" },
       { title: "Data Grid", href: "/docs/components/data-grid" },
+      { title: "Data Filter", href: "/docs/components/data-filter" },
     ],
   },
 ]

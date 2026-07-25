@@ -26,6 +26,7 @@ import {
 } from "@/registry/bases/base/examples/page-sample"
 import { PasswordInputLiveDemo } from "@/registry/bases/base/examples/password-input-live"
 import { DataGridLiveDemo } from "@/registry/bases/base/examples/data-grid-live"
+import { DataFilterLiveDemo } from "@/registry/bases/base/examples/data-filter-live"
 import {
   PasswordInputDefaultDemo,
   PasswordInputStrengthDemo,
@@ -59,6 +60,7 @@ const previewComponents: Record<string, React.ReactNode> = {
   "password-input-strength": <PasswordInputStrengthDemo />,
   "password-input-checklist": <PasswordInputChecklistDemo />,
   "data-grid": <DataGridLiveDemo />,
+  "data-filter": <DataFilterLiveDemo />,
 }
 
 interface ComponentPreviewProps {

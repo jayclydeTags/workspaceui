@@ -72,3 +72,8 @@ Element.prototype.hasPointerCapture = function (pointerId: number) {
 // input-otp calls document.elementFromPoint in a timer for caret tracking; jsdom
 // lacks it and throws an unhandled error after the test unmounts.
 document.elementFromPoint = () => null
+
+// cmdk (Command) scrolls the active item into view on every filter/selection
+// change; jsdom doesn't implement scrollIntoView at all. No test asserts on
+// scroll position, so a no-op is enough — unlike the stateful mocks above.
+Element.prototype.scrollIntoView = function () {}

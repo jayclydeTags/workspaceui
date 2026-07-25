@@ -7,6 +7,7 @@
     "page",
     "password-input",
     "data-grid-types",
-    "data-grid"
+    "data-grid",
+    "data-filter"
   ]
 }

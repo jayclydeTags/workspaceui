@@ -1,0 +1,212 @@
+---
+title: Data Filter
+description: A composable filter builder over a consumer-owned useReactTable() instance — a single "+ Filter" trigger chains column → operator → value into a clickable, removable chip.
+---
+
+export const PREVIEW_CODE = `import {
+  flexRender,
+  type ColumnDef,
+  getCoreRowModel,
+  getFilteredRowModel,
+  useReactTable,
+} from "@tanstack/react-table"
+import { DataFilter, dataGridFilterFn } from "@/components/ui/data-filter"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+
+interface Task {
+id: string
+title: string
+status: string
+priority: number
+done: boolean
+}
+
+const data: Task[] = [
+{ id: "1", title: "Design onboarding flow", status: "In Progress", priority: 2, done: false },
+{ id: "2", title: "Fix invoice rounding bug", status: "Done", priority: 1, done: true },
+{ id: "3", title: "Write Q3 report", status: "Todo", priority: 3, done: false },
+{ id: "4", title: "Review PR #482", status: "In Progress", priority: 1, done: false },
+]
+
+const columns: ColumnDef<Task>[] = [
+{ accessorKey: "title", header: "Title", meta: { type: "text" }, filterFn: dataGridFilterFn },
+{
+accessorKey: "status",
+header: "Status",
+meta: {
+type: "select",
+options: [
+{ value: "Todo", label: "Todo" },
+{ value: "In Progress", label: "In Progress" },
+{ value: "Done", label: "Done" },
+],
+},
+filterFn: dataGridFilterFn,
+},
+{ accessorKey: "priority", header: "Priority", meta: { type: "number" }, filterFn: dataGridFilterFn },
+{
+accessorKey: "done",
+header: "Done",
+cell: (info) => (info.getValue() ? "Yes" : "No"),
+meta: { type: "boolean" },
+filterFn: dataGridFilterFn,
+},
+]
+
+export function MyFilteredTable() {
+const table = useReactTable({
+data,
+columns,
+getCoreRowModel: getCoreRowModel(),
+getFilteredRowModel: getFilteredRowModel(),
+getRowId: (row) => row.id,
+})
+
+return (
+
+<div className="flex flex-col gap-3">
+  <DataFilter table={table} />
+  <Table>
+    <TableHeader>
+      {table.getHeaderGroups().map((headerGroup) => (
+        <TableRow key={headerGroup.id}>
+          {headerGroup.headers.map((header) => (
+            <TableHead key={header.id}>
+              {flexRender(header.column.columnDef.header, header.getContext())}
+            </TableHead>
+          ))}
+        </TableRow>
+      ))}
+    </TableHeader>
+    <TableBody>
+      {table.getRowModel().rows.map((row) => (
+        <TableRow key={row.id}>
+          {row.getVisibleCells().map((cell) => (
+            <TableCell key={cell.id}>
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </TableCell>
+          ))}
+        </TableRow>
+      ))}
+    </TableBody>
+  </Table>
+</div>
+)
+}`
+
+<ComponentPreview name="data-filter" code={PREVIEW_CODE} />
+
+`DataFilter` is a headless-composition component over the same
+`useReactTable()` instance you'd pass to [Data Grid](/docs/components/data-grid)
+— they aren't coupled, and a consumer can use either alone. They share only
+the `table` instance and the `column.meta` type contract from
+[Data Grid Types](/docs/components/data-grid-types). Six of the eight column
+types have a working operator set here — `text`, `number`, `currency`,
+`date`, `select`, and `boolean`. `multiSelect` and `user` land in a follow-up
+without changing this component's props.
+
+## Installation
+
+<Tabs items={["CLI", "Manual"]}>
+<Tab value="CLI">
+
+```npm
+npx shadcn@latest add jayclydeTags/workspaceui/data-filter
+```
+
+</Tab>
+<Tab value="Manual">
+
+<Steps>
+<Step>
+### Install dependencies
+
+```bash
+npm install @tanstack/react-table
+npx shadcn@latest add popover command
+```
+
+</Step>
+<Step>
+### Copy the files into your project
+
+`data-filter` depends on `data-grid-types` for the `column.meta` contract:
+
+<ComponentSource name="data-grid-types" />
+<ComponentSource name="data-filter" />
+</Step>
+</Steps>
+
+</Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { DataFilter, dataGridFilterFn } from "@/components/ui/data-filter"
+```
+
+```tsx
+const columns: ColumnDef<Task>[] = [
+  { accessorKey: "title", header: "Title", meta: { type: "text" }, filterFn: dataGridFilterFn },
+  // ...
+]
+
+const table = useReactTable({
+  data,
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+  getFilteredRowModel: getFilteredRowModel(),
+})
+
+<DataFilter table={table} />
+```
+
+Every filterable column needs **both** a `meta.type` and
+`filterFn: dataGridFilterFn` — the type drives the operator set and value
+input this component renders, and `dataGridFilterFn` is what actually
+evaluates the `{ operator, value }` object the chip chain writes via
+`column.setFilterValue()`. None of TanStack's own built-in filter functions
+can read that shape; they all expect the filter value directly. The table
+also needs `getFilteredRowModel()` — `DataFilter` only writes filter state,
+it never filters rows itself.
+
+## Features
+
+- **A single "+ Filter" trigger** rather than a control per column, so the
+  toolbar stays a constant size no matter how wide the table is. Filterable
+  columns derive from `meta.type` (one of the six types above) plus
+  `column.getCanFilter()` — excluding a column from the builder is an
+  ordinary TanStack concern (`enableColumnFilter: false`), not a second
+  config list.
+- **Column → operator → value chain** — the popover walks through picking a
+  column, then an operator (from that column's type-specific set), then a
+  value control shaped for the operator: a single input for most, two
+  inputs for "is between", a searchable list for `select` is/is-not, and a
+  searchable multi-select for "is any of". `boolean` ends at the operator —
+  "is true"/"is false" commit immediately, with no value step at all.
+- **Chips summarize each committed filter** (e.g. "Price is between 10 and
+  50", "Status is any of Open, Blocked") and are themselves the reopen
+  affordance — clicking one loads the same editor with its column, operator,
+  and value already in place, so adjusting a threshold doesn't mean deleting
+  and rebuilding the condition. An inline "x" on each chip removes it.
+- **`dataGridFilterFn`** — the exported `filterFn`. It unwraps
+  `{ operator, value }` and dispatches on `column.meta.type`, and sets
+  `autoRemove` so clearing a chip removes the filter through TanStack's own
+  `columnFilters` path rather than a parallel one.
+- **A column already filtered drops out of the column-pick list** — its chip
+  is the edit path, so the "+ Filter" trigger only ever offers columns that
+  don't already have a condition.
+
+## API Reference
+
+<TypeTable
+  type={{
+    table: {
+      type: "Table<TData>",
+      required: true,
+      description:
+        "A useReactTable() instance you create and own — the same one you'd pass to DataGrid. Filterable columns need meta.type and filterFn: dataGridFilterFn; the table needs getFilteredRowModel().",
+    },
+  }}
+/>

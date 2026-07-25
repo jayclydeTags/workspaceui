@@ -27,6 +27,14 @@ import {
 import { PasswordInputLiveDemo } from "@/registry/bases/base/examples/password-input-live"
 import { BulkToolbarLiveDemo } from "@/registry/bases/base/examples/bulk-toolbar-live"
 import { DataGridLiveDemo } from "@/registry/bases/base/examples/data-grid-live"
+import {
+  DataGridBasicDemo,
+  DataGridAllColumnTypesDemo,
+  DataGridAddDeleteDemo,
+  DataGridSelectionDemo,
+  DataGridMixedEditableDemo,
+  DataGridNarrowDemo,
+} from "@/registry/bases/base/examples/data-grid-sample"
 import { DataFilterLiveDemo } from "@/registry/bases/base/examples/data-filter-live"
 import {
   PasswordInputDefaultDemo,
@@ -62,6 +70,12 @@ const previewComponents: Record<string, React.ReactNode> = {
   "password-input-checklist": <PasswordInputChecklistDemo />,
   "bulk-toolbar": <BulkToolbarLiveDemo />,
   "data-grid": <DataGridLiveDemo />,
+  "data-grid-basic": <DataGridBasicDemo />,
+  "data-grid-all-column-types": <DataGridAllColumnTypesDemo />,
+  "data-grid-add-delete": <DataGridAddDeleteDemo />,
+  "data-grid-selection": <DataGridSelectionDemo />,
+  "data-grid-mixed-editable": <DataGridMixedEditableDemo />,
+  "data-grid-narrow": <DataGridNarrowDemo />,
   "data-filter": <DataFilterLiveDemo />,
 }
 

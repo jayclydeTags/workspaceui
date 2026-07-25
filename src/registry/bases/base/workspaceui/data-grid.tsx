@@ -1174,7 +1174,7 @@ export function DataGrid<TData>({
   return (
     <div ref={containerRef} className={cn("flex flex-col gap-2", className)}>
       {showCards ? (
-        <ul className="flex flex-col divide-y rounded-md border">
+        <ul className="flex list-none flex-col divide-y rounded-md border ps-0">
           {rowCount === 0 ? (
             <li className="p-4 text-center text-sm text-muted-foreground">
               No results.
@@ -1244,7 +1244,7 @@ export function DataGrid<TData>({
                 }
               />
               <PopoverContent align="end" className="w-56 p-1">
-                <ul className="flex flex-col gap-0.5">
+                <ul className="flex list-none flex-col gap-0.5 ps-0">
                   {table.getVisibleLeafColumns().map((column) => (
                     <li
                       key={column.id}

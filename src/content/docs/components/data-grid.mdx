@@ -3,140 +3,100 @@ title: Data Grid
 description: An editable grid over a consumer-owned useReactTable() instance — every cell renders its live control, borderless at rest, with a full spreadsheet keyboard model over role="grid".
 ---
 
+`DataGrid` renders a [TanStack Table](https://tanstack.com/table) instance
+you create and own. It never holds `data` itself — it reads from your
+`table`, and reports every edit, add, and delete back to you through
+callbacks. You decide how (and whether) to persist them.
+
 export const PREVIEW_CODE = `import * as React from "react"
-import { Trash2Icon } from "lucide-react"
-import { type ColumnDef, type RowSelectionState, getCoreRowModel, useReactTable } from "@tanstack/react-table"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-import { BulkToolbar } from "@/components/ui/bulk-toolbar"
-import { DataGrid, getDataGridRowDefaults } from "@/components/ui/data-grid"
+import {
+  type ColumnDef,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table"
+import { DataGrid } from "@/components/ui/data-grid"
 
 interface Contact {
 id: string
 name: string
-email: string
 seats: number
-mrr: number
 plan: string
 active: boolean
 renewsOn: string
-tags: string[]
-owner: string | null
 }
 
-const owners = [
-{ id: "u1", name: "Priya Patel" },
-{ id: "u2", name: "Sam Okafor" },
-]
-
 const initialData: Contact[] = [
-{ id: "1", name: "Ada Lovelace", email: "ada@example.com", seats: 12, mrr: 490, plan: "team", active: true, renewsOn: "2026-03-01", tags: ["champion", "renewal-risk"], owner: "u1" },
-{ id: "2", name: "Grace Hopper", email: "grace@example.com", seats: 3, mrr: 90, plan: "starter", active: true, renewsOn: "2026-01-15", tags: [], owner: null },
-{ id: "3", name: "Katherine Johnson", email: "katherine@example.com", seats: 40, mrr: 1990, plan: "enterprise", active: false, renewsOn: "2026-05-20", tags: ["champion"], owner: "u2" },
+{
+id: "1",
+name: "Ada Lovelace",
+seats: 12,
+plan: "team",
+active: true,
+renewsOn: "2026-03-01",
+},
+{
+id: "2",
+name: "Grace Hopper",
+seats: 3,
+plan: "starter",
+active: true,
+renewsOn: "2026-01-15",
+},
+{
+id: "3",
+name: "Katherine Johnson",
+seats: 40,
+plan: "enterprise",
+active: false,
+renewsOn: "2026-05-20",
+},
 ]
 
 const columns: ColumnDef<Contact>[] = [
 { accessorKey: "name", header: "Name", meta: { type: "text" } },
-{ accessorKey: "email", header: "Email", meta: { type: "text" } },
 { accessorKey: "seats", header: "Seats", meta: { type: "number" } },
-{ accessorKey: "mrr", header: "MRR", meta: { type: "currency" } },
-{ accessorKey: "plan", header: "Plan", meta: { type: "select", options: [{ value: "starter", label: "Starter" }, { value: "team", label: "Team" }, { value: "enterprise", label: "Enterprise" }] } },
+{
+accessorKey: "plan",
+header: "Plan",
+meta: {
+type: "select",
+options: [
+{ value: "starter", label: "Starter" },
+{ value: "team", label: "Team" },
+{ value: "enterprise", label: "Enterprise" },
+],
+},
+},
 { accessorKey: "active", header: "Active", meta: { type: "boolean" } },
 { accessorKey: "renewsOn", header: "Renews on", meta: { type: "date" } },
-{ accessorKey: "tags", header: "Tags", meta: { type: "multiSelect", options: [{ value: "champion", label: "Champion" }, { value: "renewal-risk", label: "Renewal risk" }, { value: "upsell", label: "Upsell" }] } },
-{ accessorKey: "owner", header: "Owner", meta: { type: "user", users: owners } },
 ]
 
 export function MyGrid() {
   const [data, setData] = React.useState(initialData)
-  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
-  const [confirmBulkDelete, setConfirmBulkDelete] = React.useState(false)
 
 const table = useReactTable({
 data,
 columns,
 getCoreRowModel: getCoreRowModel(),
 getRowId: (row) => row.id,
-state: { rowSelection },
-onRowSelectionChange: setRowSelection,
+enableRowSelection: false,
 })
-
-function deleteRow(rowId: string) {
-setData((prev) => prev.filter((row) => row.id !== rowId))
-}
-
-const selectedIds = Object.keys(rowSelection)
 
 return (
-
-<div className="flex flex-col gap-3">
-<BulkToolbar count={selectedIds.length} onClear={() => setRowSelection({})}>
-<Button variant="outline" size="sm" onClick={() => setConfirmBulkDelete(true)}>
-<Trash2Icon data-icon="inline-start" />
-Delete
-</Button>
-</BulkToolbar>
 <DataGrid
 table={table}
-onCellEdit={async (rowId, columnId, value) => {
-await new Promise((resolve) => setTimeout(resolve, 600))
-if (typeof value === "string" && value.toLowerCase() === "error") {
-throw new Error("The server rejected this value.")
-}
+onCellEdit={(rowId, columnId, value) => {
 setData((prev) =>
-prev.map((row) => (row.id === rowId ? { ...row, [columnId]: value } : row))
+prev.map((row) =>
+row.id === rowId ? { ...row, [columnId]: value } : row
+)
 )
 }}
-onRowAdd={(afterRowId) => {
-const row = { id: crypto.randomUUID(), ...getDataGridRowDefaults(table) } as Contact
-setData((prev) => {
-if (afterRowId == null) return [...prev, row]
-const index = prev.findIndex((r) => r.id === afterRowId)
-return [...prev.slice(0, index + 1), row, ...prev.slice(index + 1)]
-})
-}}
-onRowDelete={deleteRow}
 />
-<AlertDialog open={confirmBulkDelete} onOpenChange={setConfirmBulkDelete}>
-<AlertDialogContent>
-<AlertDialogHeader>
-<AlertDialogTitle>Delete {selectedIds.length} rows</AlertDialogTitle>
-<AlertDialogDescription>This action can't be undone.</AlertDialogDescription>
-</AlertDialogHeader>
-<AlertDialogFooter>
-<AlertDialogCancel>Cancel</AlertDialogCancel>
-<AlertDialogAction
-variant="destructive"
-onClick={() => {
-setConfirmBulkDelete(false)
-selectedIds.forEach(deleteRow)
-setRowSelection({})
-}}
->
-Delete
-</AlertDialogAction>
-</AlertDialogFooter>
-</AlertDialogContent>
-</AlertDialog>
-</div>
 )
 }`
 
 <ComponentPreview name="data-grid" code={PREVIEW_CODE} />
-
-The public API, the `column.meta` type contract
-([Data Grid Types](/docs/components/data-grid-types)), the full keyboard
-model, and the async commit contract are final. All eight column types —
-`text`, `number`, `currency`, `select`, `boolean`, `date`, `multiSelect`, and
-`user` — have working editors. `multiSelect` and `user` share a popover
-widget shape neither of the other six need: a borderless trigger (chips
-capped at `meta.maxChips`, or an avatar plus name) opening a searchable
-command list, with edit mode and popover-open being the same state. Inline row add and delete
-(this page's `onRowAdd`/`onRowDelete`) are already final and work with any
-column type, since they don't depend on a cell editor existing. Column
-resize, pin, and reorder are also final and work with any column type — they
-run on TanStack's own column-sizing/pinning/ordering state, not this grid's
-own, so they need no wiring to work out of the box.
 
 ## Installation
 
@@ -166,206 +126,628 @@ npm install @tanstack/react-table
 </Tab>
 </Tabs>
 
-## Usage
+## Quick start
+
+The smallest working grid: two columns, one `meta.type` each, and an
+`onCellEdit` that writes the new value back into state.
 
 ```tsx
+"use client"
+
+import * as React from "react"
+import {
+  type ColumnDef,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table"
 import { DataGrid } from "@/components/ui/data-grid"
+// side-effect import — augments ColumnMeta so `meta: { type: "text" }` typechecks
+import "@/components/ui/data-grid-types"
+
+interface Contact {
+  id: string
+  name: string
+  email: string
+}
+
+const columns: ColumnDef<Contact>[] = [
+  { accessorKey: "name", header: "Name", meta: { type: "text" } },
+  { accessorKey: "email", header: "Email", meta: { type: "text" } },
+]
+
+export function ContactsGrid() {
+  const [data, setData] = React.useState<Contact[]>([
+    { id: "1", name: "Ada Lovelace", email: "ada@example.com" },
+    { id: "2", name: "Grace Hopper", email: "grace@example.com" },
+  ])
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getRowId: (row) => row.id,
+  })
+
+  return (
+    <DataGrid
+      table={table}
+      onCellEdit={(rowId, columnId, value) => {
+        setData((prev) =>
+          prev.map((row) =>
+            row.id === rowId ? { ...row, [columnId]: value } : row
+          )
+        )
+      }}
+    />
+  )
+}
 ```
 
-```tsx
+Two things to get right before the grid does anything useful:
+
+- **`getRowId: (row) => row.id`** — without it, TanStack falls back to the
+  row's array index as its id. That id is what `onCellEdit`/`onRowDelete`
+  hand back to you, so a deleted or reordered row will silently target the
+  wrong record. Always pass a stable id.
+- **`meta: { type: ... }`** on a column — this is what turns a column
+  editable. A `ColumnDef` without `meta.type` renders through its normal
+  TanStack `cell` definition and is read-only; clicking it does nothing.
+
+## Column types
+
+Eight column types are available, each with a matching cell editor:
+`text`, `number`, `currency`, `select`, `boolean`, `date`, `multiSelect`,
+`user`. `multiSelect` and `user` render a shared popover picker (chips or an
+avatar, opening a searchable list); the rest are plain inline controls.
+
+Full field reference (`options`, `users`, `maxChips`, `summary`) lives in
+[Data Grid Types](/docs/components/data-grid-types) — install it once as a
+`registryDependencies` entry, no separate import needed beyond the
+side-effect one shown above.
+
+## Editing behavior
+
+- **Enter edit mode** — click a cell, focus it and press <kbd>F2</kbd>
+  (preserves the existing value), or focus it and type a character (replaces
+  the value, seeded with what you typed). `boolean` has no separate edit
+  mode: click, <kbd>F2</kbd>, or <kbd>Space</kbd> toggles and commits in one
+  step.
+- **Commit** — on blur or <kbd>Enter</kbd>. <kbd>Escape</kbd> discards the
+  in-progress value and returns focus to the cell.
+- **Validation** — runs on every keystroke, shown as red text under the cell
+  and wired through `aria-invalid`/`aria-describedby`. An invalid value is
+  never sent to `onCellEdit`. Out of the box this only checks "required" and
+  "must be a number" for `number`/`currency` — swap in your own rules by
+  validating inside `onCellEdit` and throwing.
+- **Async commits** — `onCellEdit` is always awaited, and a synchronous throw
+  is treated the same as a rejected promise. While pending, the control shows
+  a spinner and disables. On rejection the typed value stays on screen (it
+  never reverts) and renders with the same invalid-cell styling; committing
+  the same value again retries it, since dedup compares against the last
+  **successful** commit, not the last attempted one.
+
+## Keyboard shortcuts
+
+The grid implements the full [WAI-ARIA grid](https://www.w3.org/WAI/ARIA/apg/patterns/grid/)
+keyboard model, with one deliberate divergence noted below.
+
+| Key                                                                            | Effect                                                                            |
+| ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| <kbd>Arrow keys</kbd>                                                          | Move focus between cells                                                          |
+| <kbd>Tab</kbd> / <kbd>Shift+Tab</kbd>                                          | Move and **wrap** at row ends (spreadsheet convention, not standard APG behavior) |
+| <kbd>Enter</kbd> / <kbd>Shift+Enter</kbd>                                      | Move down/up one row without entering edit mode                                   |
+| <kbd>F2</kbd>                                                                  | Enter edit mode, preserving the current value                                     |
+| <kbd>Escape</kbd>                                                              | Cancel the in-progress edit                                                       |
+| <kbd>Shift+Click</kbd> / <kbd>Shift+ArrowUp</kbd> / <kbd>Shift+ArrowDown</kbd> | Extend row selection from the last plain click or move                            |
+
+Exactly one gridcell sits in the page's tab order at a time (roving
+tabindex) — tabbing into the grid from elsewhere always lands on that cell,
+not on every cell in it.
+
+## Rows
+
+**Add and delete** are both opt-in — pass `onRowAdd`/`onRowDelete` and the
+grid renders the affordances for you:
+
+- `onRowAdd` renders a trailing "+ New row" control and a hover "+" between
+  rows to insert after a specific one. Since the grid never owns data, build
+  the new row yourself with the exported `getDataGridRowDefaults(table)`,
+  which seeds a value per column from its `meta.type` (`""` for text/date,
+  `0` for number/currency, `false` for boolean, the first option for select,
+  `[]` for multiSelect, `null` for user).
+- `onRowDelete` renders a hover kebab menu with a "Delete row" item that
+  fires only after a built-in confirmation dialog is accepted — no
+  optimistic removal, no undo.
+
+**Row selection** is on by default — TanStack's own row-selection feature is
+enabled unless you set `enableRowSelection: false`. Pass
+`state: { rowSelection }` and `onRowSelectionChange` to read the selection
+outside the grid (needed for a count or a bulk-action bar). There's no
+`onBulkAction` prop; compose your own bar from
+[`BulkToolbar`](/docs/components/bulk-toolbar) and loop your selected ids
+through the same `onRowDelete(rowId)` for bulk delete — see
+[Row selection & bulk delete](#row-selection--bulk-delete) below.
+
+## Columns
+
+Resize, pin, and reorder all run on TanStack's own column state
+(`columnSizing`/`columnPinning`/`columnOrder`), so they work with zero setup
+on `useReactTable()`:
+
+- **Resize** — drag a column's right border; double-click it to reset to the
+  default width.
+- **Pin** — hover a header to reveal a pin icon, cycling
+  unpinned → left → right → unpinned. Pinned columns stick during horizontal
+  scroll.
+- **Reorder** — the toolbar's "Columns" button opens a panel to drag columns
+  into a new order.
+
+Pass `onColumnLayoutChange` to observe `{ columnOrder, columnSizing,
+columnPinning }` and persist it — it's a reporting side-channel only;
+omitting it doesn't disable resize/pin/reorder.
+
+## Responsive behavior
+
+Below a **448px measured container width** (a `ResizeObserver` on the grid's
+own wrapper, never a viewport media query — the driving case is a workspace
+pane getting narrower, not a phone), the grid swaps to a card list:
+each row becomes a card (title + up to two subtitle fields, positional by
+column order unless you mark columns with `meta.summary`), and tapping one
+opens a bottom drawer with every column as a labeled field, committing
+through the same `onCellEdit`. Pass `narrowFallback="none"` to keep the real
+grid at any width instead, with the first column pinned sticky-left.
+
+## Examples
+
+### Basic editing
+
+A minimal grid: `text` and `number` columns, no row add/delete, no
+selection.
+
+<ComponentPreview name="data-grid-basic" code={`import * as React from "react"
+import { type ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table"
+import { DataGrid } from "@/components/ui/data-grid"
+
+interface Task {
+id: string
+title: string
+estimate: number
+}
+
+const columns: ColumnDef<Task>[] = [
+{ accessorKey: "title", header: "Title", meta: { type: "text" } },
+{ accessorKey: "estimate", header: "Estimate (h)", meta: { type: "number" } },
+]
+
+export function MyGrid() {
+  const [data, setData] = React.useState<Task[]>([
+    { id: "1", title: "Design onboarding flow", estimate: 8 },
+    { id: "2", title: "Fix invoice rounding bug", estimate: 3 },
+  ])
+
 const table = useReactTable({
-  data,
-  columns,
-  getCoreRowModel: getCoreRowModel(),
+data,
+columns,
+getCoreRowModel: getCoreRowModel(),
+getRowId: (row) => row.id,
+enableRowSelection: false,
 })
 
+return (
 <DataGrid
-  table={table}
-  onCellEdit={(rowId, columnId, value) => {
-    // persist the edit however you like — the grid never owns data
-  }}
+table={table}
+onCellEdit={(rowId, columnId, value) => {
+setData((prev) =>
+prev.map((row) =>
+row.id === rowId ? { ...row, [columnId]: value } : row
+)
+)
+}}
 />
-```
+)
+}`} />
 
-The grid never owns `data` — it renders from the `table` instance you create
-and own, and reports intent through `onCellEdit`, `onRowAdd`, and
-`onRowDelete` only. Declare a column as editable by setting
-`meta: { type: "text" }` on its `ColumnDef`; columns without a `meta.type`
-render through their normal TanStack `cell` definition (read-only).
+### All column types
 
-## Features
+Every `meta.type` in one grid — `text`, `number`, `currency`, `select`,
+`boolean`, `date`, `multiSelect`, and `user`.
 
-- **Always-rendered live control** — every editable cell is a real control,
-  styled borderless and transparent at rest (`hover:bg-accent/30`, a focus
-  ring on focus) so a page of mixed column types reads as plain table text,
-  not a form. `text`, `number`, and `date` are an `Input` with the matching
-  HTML `type`; `currency` is the same input formatted (`$1,234.00`) at rest
-  and prefixed with `$` while editing; `select` is a native `<select>`
-  restricted to `column.meta.options`; `boolean` is a checkbox; `multiSelect`
-  and `user` are a borderless button.
-- **multiSelect and user share a popover widget** — settled by prototyping
-  three variants; inline toggles and removable chips both lost on the same
-  grounds: they let row height vary with content, which the deferred
-  virtualization work depends on staying fixed. `multiSelect` shows chips
-  from `column.meta.options` (reused verbatim — no parallel option shape)
-  capped at `column.meta.maxChips` (default 2) with a "+N" overflow; `user`
-  shows an avatar plus name from the static `column.meta.users` list — the
-  grid never fetches. Both open onto a searchable command list in a popover;
-  edit mode and popover-open are the same state, so typing a character seeds
-  the search box and arrows are captured by the list instead of moving
-  between cells. `multiSelect` stores a `string[]` normalized to options
-  order — so reordering the same set never misfires the commit dedup — and
-  commits per toggle with the popover staying open, letting you set several
-  tags without reopening the picker. `user` stores a single id or `null` and
-  commits-and-closes on pick; "Unassigned" (`null`) is picked the same way as
-  any real user, and there's deliberately no `meta.multiple` — a consumer
-  who needs more than one assignee uses `multiSelect` instead.
-- **Click or type to edit** — clicking a cell or typing a character while it's
-  focused enters edit mode and focuses the inner control. <kbd>F2</kbd> also
-  enters edit mode, preserving the existing value instead of replacing it.
-  `boolean` has no separate edit mode: a click, <kbd>F2</kbd>, or
-  <kbd>Space</kbd> toggles and commits it in one step.
-- **Commit on blur or Enter** — an edit commits when the control blurs or when
-  you press <kbd>Enter</kbd>. <kbd>Escape</kbd> discards the in-progress value
-  and returns focus to the cell. `multiSelect`/`user` have no in-progress
-  buffer to discard — <kbd>Escape</kbd> there just closes the popover back to
-  nav mode without undoing a toggle that already committed.
-- **Live validation** — runs on every keystroke and renders as red text under
-  the cell, wired through `aria-invalid`/`aria-describedby` on the control. An
-  invalid value is never sent to `onCellEdit`.
-- **Full keyboard model over `role="grid"`** — arrow keys move between cells;
-  <kbd>Tab</kbd>/<kbd>Shift+Tab</kbd> move and **wrap** at row ends (a
-  deliberate divergence from generic APG advice, matching spreadsheet
-  convention); <kbd>Enter</kbd>/<kbd>Shift+Enter</kbd> move down/up without
-  entering edit mode.
-- **Roving tabindex** — exactly one gridcell sits in the page's tab order at
-  a time; tabbing into the grid from elsewhere lands on that cell, not every
-  cell in it.
-- **Async commit contract** — `onCellEdit` is always awaited and wrapped in
-  the grid's own try/catch, so a synchronous throw and a rejected promise are
-  handled identically. A commit shows an inline spinner and disables the
-  control immediately, with no delay threshold. On rejection the typed value
-  stays on screen — it never reverts — and the error renders with the same
-  invalid-cell treatment as a validation error. Committing the same value
-  again after a rejection retries it: dedup compares against the last
-  _successfully_ committed value, not the last attempted one. Commit errors
-  are announced through a reserved `aria-live` region with the cell's
-  location; the region stays silent on pending and on success.
-- **Inline row add** — passing `onRowAdd` renders a trailing "+ New row"
-  control (appends) and a "+" that appears on hover in the gap between two
-  rows (inserts after that row). Both call `onRowAdd`, distinguished only by
-  whether `afterRowId` is passed, and both autofocus the new row's first cell
-  once it appears. The grid never owns data, so it can't build the row
-  itself — use the exported `getDataGridRowDefaults(table)` to seed one from
-  each column's `meta.type` (`""` for text/date, `0` for number/currency,
-  `false` for boolean, the first option for select, `[]` for multiSelect,
-  `null` for user).
-- **Guarded row delete** — passing `onRowDelete` renders a kebab menu that
-  only appears on hover in a trailing column, so the destructive action never
-  sits under the cursor during normal editing. Its "Delete row" item opens a
-  confirmation dialog; `onRowDelete(rowId)` fires only on confirm. There's no
-  optimistic removal and no undo — the row disappears once you hand back data
-  without it.
-- **Column resize** — every column gets a border-drag handle
-  (`header.getResizeHandler()`); double-clicking it resets that column to its
-  default width (`column.resetSize()`).
-- **Column pin** — a pin icon fades in on header hover and cycles
-  unpinned → left → right → unpinned. Pinned columns stick on horizontal
-  scroll, offset from TanStack's own `column.getStart()`/`getAfter()`
-  measurements.
-- **Column reorder** — a "Columns" button in the toolbar opens a panel
-  listing columns with drag handles, reordered via native HTML5 drag and
-  drop (no extra dependency). Drop position is resolved with a mouse-Y
-  midpoint check against the target row, so dragging a column onto its
-  immediate neighbor registers as a swap instead of silently no-op'ing.
-- **Layout reporting** — resize, pin, and reorder all mutate the `table`
-  instance's own state directly, so they work with zero setup. Pass
-  `onColumnLayoutChange` to additionally observe that state and persist it.
-- **Row selection** — a leading checkbox column renders automatically,
-  because TanStack's own row selection feature is enabled by default — no
-  separate DataGrid prop to remember. Opt out the same way you would on any
-  plain TanStack table: `enableRowSelection: false`. Pass
-  `state: { rowSelection }` and `onRowSelectionChange` (as the example above
-  does) to make the selection observable outside the grid — needed to read a
-  count or build a bulk-action bar. <kbd>Shift+Click</kbd> a row's checkbox,
-  or <kbd>Shift+ArrowUp</kbd>/<kbd>Shift+ArrowDown</kbd> from a focused
-  gridcell, extends the selection from the last plain click or move — the
-  same anchor-and-extend model file explorers use. Selection is row-level
-  only; <kbd>Shift+Left</kbd>/<kbd>Shift+Right</kbd> are deliberately left
-  unbound for a future cell-range selection. There's no `onBulkAction` prop
-  and no action list on `DataGridProps` — the grid doesn't decide what bulk
-  actions your domain supports. Compose your own bar from
-  [`BulkToolbar`](/docs/components/bulk-toolbar), reading
-  `table.getState().rowSelection` for the count and calling
-  `setRowSelection({})` to clear, as the example above does. A bulk delete is
-  just your selected row IDs looped over the same `onRowDelete(rowId)` you'd
-  wire up for single-row delete — there's no second delete path.
-- **Narrow-container card list** — measured with a `ResizeObserver` on the
-  grid's own container, never a viewport media query: the driving case is a
-  desktop user dragging a workspace pane divider, not a phone. Below a 448px
-  container, `narrowFallback="cards"` (the default) swaps `role="grid"` for a
-  plain list — only one tree ever renders, never a CSS-hidden second one — so
-  this composes with the deferred virtualization work. Each row becomes a
-  card: the first column is the title and the next two the subtitle,
-  positional by column order unless overridden per column with
-  `meta.summary`. Tapping a card opens a swipeable bottom drawer — dragged
-  down or dismissed via its swipe handle, the same bottom-to-top transition a
-  sheet would use — with every column as a labelled, bordered field, a
-  deliberate divergence from the borderless-at-rest wide-branch styling,
-  since an editable field should look unambiguously editable in this layout.
-  Drawer fields commit through the exact same `onCellEdit` callback and
-  pending/error handling as the wide branch; `multiSelect` and `user` toggle
-  inline instead of through a popover, and `select`/`boolean` commit
-  immediately on change. The narrow branch is a list, not a grid: the
-  roving-tabindex/F2/Tab-wrap keyboard model doesn't apply, the hover-gap "+"
-  insert is dropped (adding is append-only), delete moves into the drawer's
-  footer, Shift range-select is dropped (selection is
-  tap-per-row), and resize/pin/the Columns panel don't render. The `aria-live`
-  region is shared across both branches, not duplicated. Pass
-  `narrowFallback="none"` to keep the real grid at any width instead, with
-  the first column stuck sticky-left so it stays visible under horizontal
-  scroll.
+<ComponentPreview name="data-grid-all-column-types" code={`import * as React from "react"
+import { type ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table"
+import { DataGrid } from "@/components/ui/data-grid"
+
+interface Contact {
+id: string
+name: string
+email: string
+seats: number
+mrr: number
+plan: string
+active: boolean
+renewsOn: string
+tags: string[]
+owner: string | null
+}
+
+const owners = [
+{ id: "u1", name: "Priya Patel" },
+{ id: "u2", name: "Sam Okafor" },
+]
+
+const columns: ColumnDef<Contact>[] = [
+{ accessorKey: "name", header: "Name", meta: { type: "text" } },
+{ accessorKey: "email", header: "Email", meta: { type: "text" } },
+{ accessorKey: "seats", header: "Seats", meta: { type: "number" } },
+{ accessorKey: "mrr", header: "MRR", meta: { type: "currency" } },
+{
+accessorKey: "plan",
+header: "Plan",
+meta: {
+type: "select",
+options: [
+{ value: "starter", label: "Starter" },
+{ value: "team", label: "Team" },
+{ value: "enterprise", label: "Enterprise" },
+],
+},
+},
+{ accessorKey: "active", header: "Active", meta: { type: "boolean" } },
+{ accessorKey: "renewsOn", header: "Renews on", meta: { type: "date" } },
+{
+accessorKey: "tags",
+header: "Tags",
+meta: {
+type: "multiSelect",
+options: [
+{ value: "champion", label: "Champion" },
+{ value: "renewal-risk", label: "Renewal risk" },
+{ value: "upsell", label: "Upsell" },
+],
+},
+},
+{ accessorKey: "owner", header: "Owner", meta: { type: "user", users: owners } },
+]
+
+export function MyGrid() {
+  const [data, setData] = React.useState<Contact[]>([
+    {
+      id: "1",
+      name: "Ada Lovelace",
+      email: "ada@example.com",
+      seats: 12,
+      mrr: 490,
+      plan: "team",
+      active: true,
+      renewsOn: "2026-03-01",
+      tags: ["champion", "renewal-risk"],
+      owner: "u1",
+    },
+  ])
+
+const table = useReactTable({
+data,
+columns,
+getCoreRowModel: getCoreRowModel(),
+getRowId: (row) => row.id,
+enableRowSelection: false,
+})
+
+return (
+<DataGrid
+table={table}
+onCellEdit={(rowId, columnId, value) => {
+setData((prev) =>
+prev.map((row) =>
+row.id === rowId ? { ...row, [columnId]: value } : row
+)
+)
+}}
+/>
+)
+}`} />
+
+### Row add & delete
+
+Pass `onRowAdd`/`onRowDelete` to get the trailing "+ New row" control, the
+hover between-row "+", and a hover kebab menu with a confirm-guarded
+"Delete row".
+
+<ComponentPreview name="data-grid-add-delete" code={`import * as React from "react"
+import { type ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table"
+import { DataGrid, getDataGridRowDefaults } from "@/components/ui/data-grid"
+
+interface Task {
+id: string
+title: string
+estimate: number
+}
+
+const columns: ColumnDef<Task>[] = [
+{ accessorKey: "title", header: "Title", meta: { type: "text" } },
+{ accessorKey: "estimate", header: "Estimate (h)", meta: { type: "number" } },
+]
+
+export function MyGrid() {
+  const [data, setData] = React.useState<Task[]>([
+    { id: "1", title: "Design onboarding flow", estimate: 8 },
+    { id: "2", title: "Fix invoice rounding bug", estimate: 3 },
+  ])
+
+const table = useReactTable({
+data,
+columns,
+getCoreRowModel: getCoreRowModel(),
+getRowId: (row) => row.id,
+enableRowSelection: false,
+})
+
+return (
+<DataGrid
+table={table}
+onCellEdit={(rowId, columnId, value) => {
+setData((prev) =>
+prev.map((row) =>
+row.id === rowId ? { ...row, [columnId]: value } : row
+)
+)
+}}
+onRowAdd={(afterRowId) => {
+const row = { id: crypto.randomUUID(), ...getDataGridRowDefaults(table) } as Task
+setData((prev) => {
+if (afterRowId == null) return [...prev, row]
+const index = prev.findIndex((r) => r.id === afterRowId)
+return [...prev.slice(0, index + 1), row, ...prev.slice(index + 1)]
+})
+}}
+onRowDelete={(rowId) => {
+setData((prev) => prev.filter((row) => row.id !== rowId))
+}}
+/>
+)
+}`} />
+
+### Row selection & bulk delete
+
+Row selection is on by default. Read `table.getState().rowSelection` to
+drive a [`BulkToolbar`](/docs/components/bulk-toolbar), and loop the
+selected ids through the same `onRowDelete(rowId)` for a bulk action.
+
+<ComponentPreview name="data-grid-selection" code={`import * as React from "react"
+import { Trash2Icon } from "lucide-react"
+import { type ColumnDef, type RowSelectionState, getCoreRowModel, useReactTable } from "@tanstack/react-table"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import { BulkToolbar } from "@/components/ui/bulk-toolbar"
+import { DataGrid } from "@/components/ui/data-grid"
+
+interface Task {
+id: string
+title: string
+estimate: number
+}
+
+const columns: ColumnDef<Task>[] = [
+{ accessorKey: "title", header: "Title", meta: { type: "text" } },
+{ accessorKey: "estimate", header: "Estimate (h)", meta: { type: "number" } },
+]
+
+export function MyGrid() {
+  const [data, setData] = React.useState<Task[]>([
+    { id: "1", title: "Design onboarding flow", estimate: 8 },
+    { id: "2", title: "Fix invoice rounding bug", estimate: 3 },
+    { id: "3", title: "Write Q3 report", estimate: 5 },
+  ])
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
+  const [confirmBulkDelete, setConfirmBulkDelete] = React.useState(false)
+
+const table = useReactTable({
+data,
+columns,
+getCoreRowModel: getCoreRowModel(),
+getRowId: (row) => row.id,
+state: { rowSelection },
+onRowSelectionChange: setRowSelection,
+})
+
+function deleteRow(rowId: string) {
+setData((prev) => prev.filter((row) => row.id !== rowId))
+}
+
+const selectedIds = Object.keys(rowSelection)
+
+return (
+<div className="flex flex-col gap-3">
+<BulkToolbar count={selectedIds.length} onClear={() => setRowSelection({})}>
+<Button variant="outline" size="sm" onClick={() => setConfirmBulkDelete(true)}>
+<Trash2Icon data-icon="inline-start" />
+Delete
+</Button>
+</BulkToolbar>
+<DataGrid
+table={table}
+onCellEdit={(rowId, columnId, value) => {
+setData((prev) =>
+prev.map((row) =>
+row.id === rowId ? { ...row, [columnId]: value } : row
+)
+)
+}}
+/>
+<AlertDialog open={confirmBulkDelete} onOpenChange={setConfirmBulkDelete}>
+<AlertDialogContent>
+<AlertDialogHeader>
+<AlertDialogTitle>Delete {selectedIds.length} rows</AlertDialogTitle>
+<AlertDialogDescription>This action can't be undone.</AlertDialogDescription>
+</AlertDialogHeader>
+<AlertDialogFooter>
+<AlertDialogCancel>Cancel</AlertDialogCancel>
+<AlertDialogAction
+variant="destructive"
+onClick={() => {
+setConfirmBulkDelete(false)
+selectedIds.forEach(deleteRow)
+setRowSelection({})
+}} >
+Delete
+</AlertDialogAction>
+</AlertDialogFooter>
+</AlertDialogContent>
+</AlertDialog>
+</div>
+)
+}`} />
+
+### Read-only & editable columns mixed
+
+A column without `meta.type` (`Order #`) renders through its normal
+TanStack `cell` definition and stays read-only, sitting next to editable
+columns in the same grid.
+
+<ComponentPreview name="data-grid-mixed-editable" code={`import * as React from "react"
+import { type ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table"
+import { DataGrid } from "@/components/ui/data-grid"
+
+interface Order {
+id: string
+reference: string
+customer: string
+status: string
+}
+
+const columns: ColumnDef<Order>[] = [
+// No meta.type — renders read-only.
+{ accessorKey: "reference", header: "Order #" },
+{ accessorKey: "customer", header: "Customer", meta: { type: "text" } },
+{
+accessorKey: "status",
+header: "Status",
+meta: {
+type: "select",
+options: [
+{ value: "pending", label: "Pending" },
+{ value: "shipped", label: "Shipped" },
+{ value: "delivered", label: "Delivered" },
+],
+},
+},
+]
+
+export function MyGrid() {
+  const [data, setData] = React.useState<Order[]>([
+    { id: "1", reference: "#1001", customer: "Ada Lovelace", status: "pending" },
+    { id: "2", reference: "#1002", customer: "Grace Hopper", status: "shipped" },
+  ])
+
+const table = useReactTable({
+data,
+columns,
+getCoreRowModel: getCoreRowModel(),
+getRowId: (row) => row.id,
+enableRowSelection: false,
+})
+
+return (
+<DataGrid
+table={table}
+onCellEdit={(rowId, columnId, value) => {
+setData((prev) =>
+prev.map((row) =>
+row.id === rowId ? { ...row, [columnId]: value } : row
+)
+)
+}}
+/>
+)
+}`} />
+
+### Narrow container (card view)
+
+Below a 448px measured container width, the grid swaps to a card list with
+a bottom-drawer editor — forced here with a fixed-width wrapper instead of
+resizing the browser.
+
+<ComponentPreview name="data-grid-narrow" code={`import * as React from "react"
+import { type ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table"
+import { DataGrid } from "@/components/ui/data-grid"
+
+interface Task {
+id: string
+title: string
+estimate: number
+}
+
+const columns: ColumnDef<Task>[] = [
+{ accessorKey: "title", header: "Title", meta: { type: "text", summary: true } },
+{ accessorKey: "estimate", header: "Estimate (h)", meta: { type: "number", summary: true } },
+]
+
+export function MyGrid() {
+  const [data, setData] = React.useState<Task[]>([
+    { id: "1", title: "Design onboarding flow", estimate: 8 },
+    { id: "2", title: "Fix invoice rounding bug", estimate: 3 },
+  ])
+
+const table = useReactTable({
+data,
+columns,
+getCoreRowModel: getCoreRowModel(),
+getRowId: (row) => row.id,
+enableRowSelection: false,
+})
+
+return (
+<div className="mx-auto w-[320px]">
+<DataGrid
+table={table}
+onCellEdit={(rowId, columnId, value) => {
+setData((prev) =>
+prev.map((row) =>
+row.id === rowId ? { ...row, [columnId]: value } : row
+)
+)
+}}
+/>
+</div>
+)
+}`} />
 
 ## API Reference
 
-<TypeTable
-  type={{
-    table: {
-      type: "Table<TData>",
-      required: true,
-      description:
-        "A useReactTable() instance you create and own. The grid renders from it and never mutates it directly.",
-    },
-    onCellEdit: {
-      type: "(rowId: string, columnId: string, value: unknown) => void | Promise<void>",
-      required: true,
-      description:
-        "Called with a valid, committed edit. rowId matches TanStack's own Row.id; narrow value using columnId and that column's meta.type.",
-    },
-    onRowAdd: {
-      type: "(afterRowId?: string) => void | Promise<void>",
-      description:
-        'Renders the "+ New row" and between-row "+" affordances. Omit `afterRowId` to append; pass it to insert after that row. Both entry points autofocus the new row\'s first cell once it appears — build the row itself with getDataGridRowDefaults().',
-    },
-    onRowDelete: {
-      type: "(rowId: string) => void | Promise<void>",
-      description:
-        'Renders a hover kebab menu in a trailing column with a destructive "Delete row" item. Fires only after the built-in confirmation dialog is accepted — there\'s no optimistic removal or undo.',
-    },
-    onColumnLayoutChange: {
-      type: "(layout: DataGridColumnLayout) => void",
-      description:
-        "Fires after a resize, pin, or reorder change with the table's current { columnOrder, columnSizing, columnPinning }. Purely a reporting side-channel — resize/pin/reorder mutate the table instance's own state directly and work with no callback at all.",
-    },
-    narrowFallback: {
-      type: '"cards" | "none"',
-      default: '"cards"',
-      description:
-        'Below a 448px *measured container* width (never the viewport), "cards" swaps the grid for a card list with a swipeable bottom-drawer editor. "none" is the escape hatch: keeps the real grid at any width, with the first column stuck sticky-left.',
-    },
-    className: {
-      type: "string",
-      description: "Additional CSS classes applied to the root element.",
-    },
-  }}
-/>
+| Prop                    | Type                                                                         | Default   | Description                                                                                                                                                                                                                                                 |
+| ----------------------- | ---------------------------------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `table`                 | `Table<TData>`                                                               | -         | A `useReactTable()` instance you create and own. The grid renders from it and never mutates it directly.                                                                                                                                                    |
+| `onCellEdit`            | `(rowId: string, columnId: string, value: unknown) => void \| Promise<void>` | -         | Called with a valid, committed edit. `rowId` matches TanStack's own `Row.id`; narrow `value` using `columnId` and that column's `meta.type`.                                                                                                                |
+| `onRowAdd?`             | `(afterRowId?: string) => void \| Promise<void>`                             | -         | Renders the "+ New row" and between-row "+" affordances. Omit `afterRowId` to append; pass it to insert after that row. Both entry points autofocus the new row's first cell once it appears — build the row itself with `getDataGridRowDefaults()`.        |
+| `onRowDelete?`          | `(rowId: string) => void \| Promise<void>`                                   | -         | Renders a hover kebab menu in a trailing column with a destructive "Delete row" item. Fires only after the built-in confirmation dialog is accepted — there's no optimistic removal or undo.                                                                |
+| `onColumnLayoutChange?` | `(layout: DataGridColumnLayout) => void`                                     | -         | Fires after a resize, pin, or reorder change with the table's current `{ columnOrder, columnSizing, columnPinning }`. Purely a reporting side-channel — resize/pin/reorder mutate the table instance's own state directly and work with no callback at all. |
+| `narrowFallback?`       | `"cards" \| "none"`                                                          | `"cards"` | Below a 448px _measured container_ width (never the viewport), `"cards"` swaps the grid for a card list with a swipeable bottom-drawer editor. `"none"` is the escape hatch: keeps the real grid at any width, with the first column stuck sticky-left.     |
+| `className?`            | `string`                                                                     | -         | Additional CSS classes applied to the root element.                                                                                                                                                                                                         |
+
+## Troubleshooting
+
+- **A cell doesn't enter edit mode when I click it.** Its column is missing
+  `meta: { type: ... }`. Columns without a `meta.type` render read-only
+  through their normal TanStack `cell` definition — this is by design (e.g.
+  for a computed or actions column), not a bug.
+- **`meta: { type: "text" }` fails to typecheck.** `data-grid-types`'s
+  `declare module` augmentation has to be part of your TypeScript program.
+  Installing the file (CLI or manual) is enough — but if you `git rm` it or
+  exclude it from `include` in `tsconfig.json`, the augmentation stops
+  applying.
+- **Deleting or editing a row updates the wrong record.** You didn't pass
+  `getRowId` to `useReactTable()`. TanStack defaults row ids to array index,
+  so any add/delete/reorder shifts which row an id points to. Always pass a
+  stable `getRowId: (row) => row.id`.
+- **The grid stays stuck on a spinner forever.** `onCellEdit`'s returned
+  promise never resolved or rejected. The grid has no timeout — it awaits
+  indefinitely, matching the "never silently drop an edit" contract.
+- **I passed `onRowAdd` but nothing focuses after adding a row.** The grid
+  detects a successful add by watching `rows.length` grow after your state
+  update lands. If your `onRowAdd` doesn't synchronously (or eventually)
+  increase the row count — e.g. it's gated behind a confirmation the user
+  hasn't accepted yet — the autofocus never fires. That's expected; it's not
+  polling for some other signal.
+- **Resize/pin/reorder don't persist across a reload.** They mutate the
+  `table` instance's own in-memory state, not anything persisted. Wire
+  `onColumnLayoutChange` and feed the saved layout back into
+  `useReactTable()`'s `state`/`initialState` yourself.

@@ -6,7 +6,14 @@ import { cn } from "@/lib/utils"
 import { Heading } from "@/components/mdx-heading"
 import { Accordion, Accordions } from "@/components/mdx-accordion"
 import { Callout } from "@/components/callout"
-import { CodeBlock, Pre, CodeBlockTab, CodeBlockTabs, CodeBlockTabsList, CodeBlockTabsTrigger } from "@/components/codeblock"
+import {
+  CodeBlock,
+  Pre,
+  CodeBlockTab,
+  CodeBlockTabs,
+  CodeBlockTabsList,
+  CodeBlockTabsTrigger,
+} from "@/components/codeblock"
 import { ComponentPreview } from "@/components/component-preview"
 import { ComponentsIndex } from "@/components/components-index"
 import { ComponentSource } from "@/components/component-source"
@@ -51,6 +58,16 @@ export const mdxComponents = {
     <CodeBlock {...props}>
       <Pre>{props.children}</Pre>
     </CodeBlock>
+  ),
+  // Plain markdown tables shrink-to-fit and wrap cell text by default (see
+  // typeset.css); wide tables (long API reference descriptions) read better
+  // scrolling horizontally at their natural width instead. Wrapping every
+  // markdown table here means .mdx content stays pure markdown — no
+  // per-table JSX wrapper needed.
+  table: (props: ComponentProps<"table">) => (
+    <div className="typeset-scroll">
+      <table {...props} />
+    </div>
   ),
   CodeBlockTab,
   CodeBlockTabs,

@@ -29,6 +29,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -156,11 +157,26 @@ function normalizeErrorMessage(err: unknown): string {
   return err instanceof Error ? err.message : String(err)
 }
 
-// A cell's committed value, coerced for display in the (string-only, so far)
-// text control — null/undefined read as empty rather than the literal
+// A cell's committed value, coerced to the string every editor's buffer is
+// typed as — null/undefined read as empty rather than the literal
 // "null"/"undefined".
 function cellDisplayValue(value: unknown): string {
   return value == null ? "" : String(value)
+}
+
+const currencyFormatter = new Intl.NumberFormat(undefined, {
+  style: "currency",
+  currency: "USD",
+})
+
+// Read-mode-only formatting on top of cellDisplayValue — currency gets its
+// symbol/decimals. select doesn't need a case here: a native <option> looks
+// up its own label from the raw value for free.
+function formatReadValue(type: DataGridColumnType | undefined, raw: unknown) {
+  if (type !== "currency" || raw == null || raw === "")
+    return cellDisplayValue(raw)
+  const n = typeof raw === "number" ? raw : Number(raw)
+  return Number.isNaN(n) ? cellDisplayValue(raw) : currencyFormatter.format(n)
 }
 
 function withKey<T>(map: Map<string, T>, key: string, value: T) {
@@ -185,11 +201,29 @@ interface CellCommit {
   error?: string
 }
 
-// ponytail: "required" is the only rule until a real validation hook lands —
-// enough to exercise the aria-invalid / aria-describedby wiring end to end
-// for the one type this walking skeleton implements.
-function validateText(value: string): string | null {
-  return value.trim().length === 0 ? "Required" : null
+// ponytail: "required" (+ "must be a number" for number/currency) is the
+// only validation until a real validation hook lands. boolean never fails —
+// a checkbox has no invalid state.
+function validateForType(
+  type: DataGridColumnType | undefined,
+  value: string
+): string | null {
+  if (type === "boolean") return null
+  if (value.trim().length === 0) return "Required"
+  if (
+    (type === "number" || type === "currency") &&
+    Number.isNaN(Number(value))
+  ) {
+    return "Must be a number"
+  }
+  return null
+}
+
+function coerceForType(
+  type: DataGridColumnType | undefined,
+  raw: string
+): unknown {
+  return type === "number" || type === "currency" ? Number(raw) : raw
 }
 
 function defaultValueForColumnType(
@@ -281,11 +315,28 @@ export function DataGrid<TData>({
 
   const cellRefs = React.useRef(new Map<string, HTMLTableCellElement>())
   const inputRefs = React.useRef(new Map<string, HTMLInputElement>())
+  const selectRefs = React.useRef(new Map<string, HTMLSelectElement>())
   // Enter/Tab/Escape move focus themselves after resolving the cell (commit
   // or cancel); the resulting native blur on the old input must not run a
   // second, stale commit. Set right before an explicit move, consumed once.
   const suppressNextBlurRef = React.useRef(false)
   const errorId = React.useId()
+
+  function columnTypeAt(r: number, c: number): DataGridColumnType | undefined {
+    return rows[r]?.getVisibleCells()[c]?.column.columnDef.meta?.type
+  }
+
+  // Only text/number/currency/date land in inputRefs; select lands in
+  // selectRefs. Never both for the same key, so trying one then the other
+  // finds whichever control this cell actually rendered.
+  function focusEditControl(key: string) {
+    const input = inputRefs.current.get(key)
+    if (input) {
+      input.focus()
+      return
+    }
+    selectRefs.current.get(key)?.focus()
+  }
 
   function wrapIndex(r: number, c: number, dir: 1 | -1): Coord {
     const total = rowCount * colCount
@@ -408,25 +459,58 @@ export function DataGrid<TData>({
   }
 
   // Always treats onCellEdit as async: a synchronous throw and a rejected
-  // promise both land here, through the same try/catch.
+  // promise both land here, through the same try/catch. displayValue is what
+  // a rejected commit re-shows on screen (always a string); commitValue is
+  // what actually reaches the consumer, coerced to the column's real type.
   async function runCommit(
     rowId: string,
     columnId: string,
     columnLabel: string,
-    value: string,
+    displayValue: string,
+    commitValue: unknown,
     coord: Coord
   ) {
     const key = cellKey(coord.r, coord.c)
     try {
-      await onCellEdit(rowId, columnId, value)
+      await onCellEdit(rowId, columnId, commitValue)
       setCommits((prev) => withoutKey(prev, key))
     } catch (err) {
       const message = normalizeErrorMessage(err)
       setCommits((prev) =>
-        withKey(prev, key, { value, pending: false, error: message })
+        withKey(prev, key, {
+          value: displayValue,
+          pending: false,
+          error: message,
+        })
       )
       setLiveMessage(`${columnLabel}, row ${coord.r + 1}: ${message}`)
     }
+  }
+
+  // Shared by every editor's commit path — the buffer-typed ones (text,
+  // number, currency, select, date) after their own dedup/coerce, and
+  // boolean's direct one-click toggle, which has no buffer to dedup against.
+  function startCommit(
+    r: number,
+    c: number,
+    displayValue: string,
+    commitValue: unknown
+  ) {
+    const row = rows[r]
+    const cell = row?.getVisibleCells()[c]
+    if (!cell) return
+    const key = cellKey(r, c)
+    setCommits((prev) =>
+      withKey(prev, key, { value: displayValue, pending: true })
+    )
+    void runCommit(
+      row.id,
+      cell.column.id,
+      getColumnLabel(cell.column),
+      displayValue,
+      commitValue,
+      { r, c }
+    )
   }
 
   function commitEdit() {
@@ -434,24 +518,38 @@ export function DataGrid<TData>({
     const { r, c } = editCoord
     const row = rows[r]
     const cell = row?.getVisibleCells()[c]
-    const err = validateText(buffer)
+    const type = cell?.column.columnDef.meta?.type
+    const err = validateForType(type, buffer)
     setEditCoord(null)
     if (!cell || err != null) return
 
-    const committed = cell.getValue()
-    const committedStr = cellDisplayValue(committed)
+    const committedStr = cellDisplayValue(cell.getValue())
     // Dedup against the last *successful* commit (the table's own data),
     // never the last attempted value — so retrying a rejected edit with the
     // same value fires onCellEdit again instead of no-opping.
     if (buffer === committedStr) return
 
+    startCommit(r, c, buffer, coerceForType(type, buffer))
+  }
+
+  // A pending/rejected commit's string value wins over the table's own data,
+  // same rule every other type's isEditing ? buffer : commit?.value follows —
+  // boolean just has no buffer, so both the checkbox's checked prop and the
+  // toggle handler read it through here instead of duplicating the check.
+  function booleanCellValue(r: number, c: number, tableValue: unknown) {
     const key = cellKey(r, c)
-    const value = buffer
-    setCommits((prev) => withKey(prev, key, { value, pending: true }))
-    void runCommit(row.id, cell.column.id, getColumnLabel(cell.column), value, {
-      r,
-      c,
-    })
+    const commit = commits.get(key)
+    return commit ? commit.value === "true" : Boolean(tableValue)
+  }
+
+  function toggleBooleanCell(r: number, c: number) {
+    const key = cellKey(r, c)
+    if (commits.get(key)?.pending) return
+    const row = rows[r]
+    const cell = row?.getVisibleCells()[c]
+    if (!cell) return
+    const next = !booleanCellValue(r, c, cell.getValue())
+    startCommit(r, c, String(next), next)
   }
 
   function cancelEdit() {
@@ -472,6 +570,10 @@ export function DataGrid<TData>({
     const row = rows[r]
     const cell = row?.getVisibleCells()[c]
     if (!cell) return
+    const type = cell.column.columnDef.meta?.type
+    // boolean has no buffer-typed edit mode — a click or F2/Space toggles
+    // and commits directly (see toggleBooleanCell).
+    if (type === "boolean") return
     const key = cellKey(r, c)
     const commit = commits.get(key)
     // A pending commit's control is disabled — don't let a second edit
@@ -491,8 +593,8 @@ export function DataGrid<TData>({
     setFocusCoord({ r, c })
     setEditCoord({ r, c })
     setBuffer(initial)
-    setError(validateText(initial))
-    inputRefs.current.get(key)?.focus()
+    setError(validateForType(type, initial))
+    focusEditControl(key)
   }
 
   function onCellClick(r: number, c: number) {
@@ -539,6 +641,10 @@ export function DataGrid<TData>({
         return
       case "F2":
         e.preventDefault()
+        if (columnTypeAt(r, c) === "boolean") {
+          toggleBooleanCell(r, c)
+          return
+        }
         beginEdit(r, c)
         return
       default:
@@ -547,18 +653,37 @@ export function DataGrid<TData>({
           // prevent the default so the keystroke isn't replayed a second
           // time onto the newly-focused control.
           e.preventDefault()
+          const type = columnTypeAt(r, c)
+          // boolean has no text to type-to-replace — only Space toggles it.
+          if (type === "boolean") {
+            if (e.key === " ") toggleBooleanCell(r, c)
+            return
+          }
+          // select is restricted to column.meta.options and date needs a
+          // real date, so an arbitrary keystroke can't seed either one —
+          // both still enter edit mode, just preserving instead of
+          // replacing (same as F2).
+          if (type === "select" || type === "date") {
+            beginEdit(r, c)
+            return
+          }
           beginEdit(r, c, e.key)
         }
     }
   }
 
-  function onEditInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function onEditInputChange(
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) {
     const value = e.target.value
+    const type = editCoord ? columnTypeAt(editCoord.r, editCoord.c) : undefined
     setBuffer(value)
-    setError(validateText(value))
+    setError(validateForType(type, value))
   }
 
-  function onEditInputKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+  function onEditInputKeyDown(
+    e: React.KeyboardEvent<HTMLInputElement | HTMLSelectElement>
+  ) {
     if (!editCoord) return
     const { r, c } = editCoord
     if (e.key === "Escape") {
@@ -753,8 +878,14 @@ export function DataGrid<TData>({
                       ? error
                       : (commit?.error ?? null)
                     const showError = displayError != null
-                    const isTextColumn =
-                      cell.column.columnDef.meta?.type === "text"
+                    const columnType = cell.column.columnDef.meta?.type
+                    const isPlainInputColumn =
+                      columnType === "text" ||
+                      columnType === "number" ||
+                      columnType === "currency" ||
+                      columnType === "date"
+                    const isSelectColumn = columnType === "select"
+                    const isBooleanColumn = columnType === "boolean"
                     const value = cell.getValue()
                     const cellErrorId = `${errorId}-${key}`
                     const isLastCell = !hasDeleteColumn && c === colCount - 1
@@ -775,15 +906,33 @@ export function DataGrid<TData>({
                           isPinned && "bg-background"
                         )}
                       >
-                        {isTextColumn ? (
+                        {isPlainInputColumn ? (
                           <>
                             <div className="relative">
+                              {columnType === "currency" && isEditing && (
+                                <span
+                                  aria-hidden="true"
+                                  className="pointer-events-none absolute top-1/2 left-2 -translate-y-1/2 text-muted-foreground"
+                                >
+                                  $
+                                </span>
+                              )}
                               <Input
                                 ref={setMapRef(inputRefs, key)}
+                                type={
+                                  columnType === "date"
+                                    ? "date"
+                                    : columnType === "number"
+                                      ? "number"
+                                      : "text"
+                                }
                                 value={
                                   isEditing
                                     ? buffer
-                                    : (commit?.value ?? cellDisplayValue(value))
+                                    : formatReadValue(
+                                        columnType,
+                                        commit?.value ?? value
+                                      )
                                 }
                                 readOnly={!isEditing}
                                 disabled={isPending}
@@ -804,6 +953,9 @@ export function DataGrid<TData>({
                                 onBlur={isEditing ? onEditInputBlur : undefined}
                                 className={cn(
                                   "h-auto rounded-none border-none bg-transparent px-2 py-2 shadow-none hover:bg-accent/30 focus-visible:bg-background focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset dark:bg-transparent",
+                                  columnType === "currency" &&
+                                    isEditing &&
+                                    "pl-5",
                                   isPending && "pr-7"
                                 )}
                               />
@@ -813,6 +965,95 @@ export function DataGrid<TData>({
                                   aria-hidden="true"
                                   aria-label={undefined}
                                   className="absolute top-1/2 right-2 size-3.5 -translate-y-1/2"
+                                />
+                              )}
+                            </div>
+                            {showError && (
+                              <span
+                                id={cellErrorId}
+                                className="block px-2 pb-1.5 text-xs text-destructive"
+                              >
+                                {displayError}
+                              </span>
+                            )}
+                          </>
+                        ) : isSelectColumn ? (
+                          <>
+                            <div className="relative">
+                              <select
+                                ref={setMapRef(selectRefs, key)}
+                                value={
+                                  isEditing
+                                    ? buffer
+                                    : cellDisplayValue(commit?.value ?? value)
+                                }
+                                disabled={!isEditing || isPending}
+                                tabIndex={-1}
+                                aria-invalid={showError || undefined}
+                                aria-describedby={
+                                  showError ? cellErrorId : undefined
+                                }
+                                onMouseDown={(e) => {
+                                  if (!isEditing) e.preventDefault()
+                                }}
+                                onChange={
+                                  isEditing ? onEditInputChange : undefined
+                                }
+                                onKeyDown={
+                                  isEditing ? onEditInputKeyDown : undefined
+                                }
+                                onBlur={isEditing ? onEditInputBlur : undefined}
+                                className={cn(
+                                  "h-auto w-full appearance-none rounded-none border-none bg-transparent px-2 py-2 text-sm shadow-none hover:bg-accent/30 focus-visible:bg-background focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset disabled:cursor-default disabled:opacity-100 dark:bg-transparent",
+                                  isPending && "pr-7"
+                                )}
+                              >
+                                {cell.column.columnDef.meta?.options?.map(
+                                  (opt) => (
+                                    <option key={opt.value} value={opt.value}>
+                                      {opt.label}
+                                    </option>
+                                  )
+                                )}
+                              </select>
+                              {isPending && (
+                                <Spinner
+                                  role="presentation"
+                                  aria-hidden="true"
+                                  aria-label={undefined}
+                                  className="absolute top-1/2 right-2 size-3.5 -translate-y-1/2"
+                                />
+                              )}
+                            </div>
+                            {showError && (
+                              <span
+                                id={cellErrorId}
+                                className="block px-2 pb-1.5 text-xs text-destructive"
+                              >
+                                {displayError}
+                              </span>
+                            )}
+                          </>
+                        ) : isBooleanColumn ? (
+                          <>
+                            <div className="flex items-center px-2 py-2 hover:bg-accent/30">
+                              <Checkbox
+                                checked={booleanCellValue(r, c, value)}
+                                disabled={isPending}
+                                tabIndex={-1}
+                                aria-invalid={showError || undefined}
+                                aria-describedby={
+                                  showError ? cellErrorId : undefined
+                                }
+                                aria-label={`${getColumnLabel(cell.column)}, row ${r + 1}`}
+                                onCheckedChange={() => toggleBooleanCell(r, c)}
+                              />
+                              {isPending && (
+                                <Spinner
+                                  role="presentation"
+                                  aria-hidden="true"
+                                  aria-label={undefined}
+                                  className="ml-2 size-3.5"
                                 />
                               )}
                             </div>

@@ -1,10 +1,10 @@
 import type { RowData } from "@tanstack/react-table"
 
 // ── Column type contract ─────────────────────────────────────────────────
-// Declared once here so data-grid and data-filter never re-open it. Only
-// "text" has a working editor today (see data-grid.tsx); the rest exist so
-// consumers can type their columns now and get the editor for free once a
-// later ticket implements it.
+// Declared once here so data-grid and data-filter never re-open it. All but
+// "multiSelect" and "user" have a working editor today (see data-grid.tsx);
+// those two exist so consumers can type their columns now and get the
+// editor for free once a later ticket implements it.
 
 export type DataGridColumnType =
   | "text"

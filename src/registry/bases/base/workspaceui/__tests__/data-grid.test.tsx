@@ -148,6 +148,64 @@ function LayoutHarness({
   )
 }
 
+interface Widget {
+  id: string
+  qty: number
+  price: number
+  status: string
+  active: boolean
+  shipsOn: string
+}
+
+const widgetData: Widget[] = [
+  {
+    id: "1",
+    qty: 5,
+    price: 9.5,
+    status: "open",
+    active: false,
+    shipsOn: "2026-01-01",
+  },
+]
+
+const widgetColumns: ColumnDef<Widget>[] = [
+  { accessorKey: "qty", header: "Qty", meta: { type: "number" } },
+  { accessorKey: "price", header: "Price", meta: { type: "currency" } },
+  {
+    accessorKey: "status",
+    header: "Status",
+    meta: {
+      type: "select",
+      options: [
+        { value: "open", label: "Open" },
+        { value: "closed", label: "Closed" },
+      ],
+    },
+  },
+  { accessorKey: "active", header: "Active", meta: { type: "boolean" } },
+  { accessorKey: "shipsOn", header: "Ships on", meta: { type: "date" } },
+]
+
+// One row, five typed columns — a dedicated fixture so each new editor gets
+// its own commit-path test without disturbing the 2-column Person harness
+// every other describe block indexes into.
+function TypedHarness({ onCellEdit }: { onCellEdit: OnCellEdit }) {
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const table = useReactTable({
+    data: widgetData,
+    columns: widgetColumns,
+    getCoreRowModel: getCoreRowModel(),
+    getRowId: (row) => row.id,
+  })
+  return <DataGrid table={table} onCellEdit={onCellEdit} />
+}
+
+function renderTypedGrid() {
+  const onCellEdit = vi.fn<OnCellEdit>()
+  render(<TypedHarness onCellEdit={onCellEdit} />)
+  return { onCellEdit }
+}
+
 // A minimal DataTransfer stand-in — jsdom doesn't implement the real one,
 // and getData() is only readable at drop time on the genuine API anyway.
 function fakeDataTransfer() {
@@ -349,6 +407,92 @@ describe("DataGrid", () => {
       const input = within(cell).getByRole("textbox")
       expect(input).toHaveFocus()
       expect(input).toHaveValue("X")
+    })
+  })
+
+  describe("typed cell editors", () => {
+    it("number cells edit through a numeric input and commit a number", async () => {
+      const user = userEvent.setup()
+      const { onCellEdit } = renderTypedGrid()
+      const cell = screen.getAllByRole("gridcell")[0]!
+      await user.click(cell)
+      const input = within(cell).getByRole("spinbutton")
+      await user.clear(input)
+      await user.type(input, "12")
+      await user.tab()
+      expect(onCellEdit).toHaveBeenCalledWith("1", "qty", 12)
+    })
+
+    it("currency cells render formatted and commit a number", async () => {
+      const user = userEvent.setup()
+      const { onCellEdit } = renderTypedGrid()
+      const cell = screen.getAllByRole("gridcell")[1]!
+      expect(within(cell).getByRole("textbox")).toHaveValue("$9.50")
+      await user.click(cell)
+      const input = within(cell).getByRole("textbox")
+      await user.clear(input)
+      await user.type(input, "19.99")
+      await user.tab()
+      expect(onCellEdit).toHaveBeenCalledWith("1", "price", 19.99)
+    })
+
+    it("select cells edit through a dropdown restricted to column.meta.options", async () => {
+      const user = userEvent.setup()
+      const { onCellEdit } = renderTypedGrid()
+      const cell = screen.getAllByRole("gridcell")[2]!
+      await user.click(cell)
+      const select = within(cell).getByRole("combobox")
+      expect(
+        within(select)
+          .getAllByRole("option")
+          .map((o) => o.textContent)
+      ).toEqual(["Open", "Closed"])
+      await user.selectOptions(select, "closed")
+      await user.tab()
+      expect(onCellEdit).toHaveBeenCalledWith("1", "status", "closed")
+    })
+
+    it("boolean cells are a checkbox that toggles and commits in a single click", async () => {
+      const user = userEvent.setup()
+      const { onCellEdit } = renderTypedGrid()
+      const cell = screen.getAllByRole("gridcell")[3]!
+      const checkbox = within(cell).getByRole("checkbox")
+      await user.click(checkbox)
+      expect(onCellEdit).toHaveBeenCalledWith("1", "active", true)
+    })
+
+    it("date cells edit through a date input", async () => {
+      const user = userEvent.setup()
+      const { onCellEdit } = renderTypedGrid()
+      const cell = screen.getAllByRole("gridcell")[4]!
+      await user.click(cell)
+      const input = cell.querySelector('input[type="date"]')
+      expect(input).not.toBeNull()
+      await user.clear(input!)
+      await user.type(input!, "2026-02-15")
+      await user.tab()
+      expect(onCellEdit).toHaveBeenCalledWith("1", "shipsOn", "2026-02-15")
+    })
+
+    it("typing a character on a select cell preserves the value instead of seeding an invalid one", async () => {
+      const user = userEvent.setup()
+      renderTypedGrid()
+      const cell = screen.getAllByRole("gridcell")[2]!
+      cell.focus()
+      await user.keyboard("z")
+      const select = within(cell).getByRole("combobox")
+      expect(select).toHaveFocus()
+      expect(select).toHaveValue("open")
+    })
+
+    it("typing a character on a date cell preserves the value instead of seeding an invalid one", async () => {
+      const user = userEvent.setup()
+      renderTypedGrid()
+      const cell = screen.getAllByRole("gridcell")[4]!
+      cell.focus()
+      await user.keyboard("2")
+      const input = cell.querySelector('input[type="date"]')
+      expect(input).toHaveValue("2026-01-01")
     })
   })
 

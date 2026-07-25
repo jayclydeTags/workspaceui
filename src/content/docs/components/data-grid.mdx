@@ -11,17 +11,27 @@ interface Contact {
 id: string
 name: string
 email: string
+seats: number
+mrr: number
+plan: string
+active: boolean
+renewsOn: string
 }
 
 const initialData: Contact[] = [
-{ id: "1", name: "Ada Lovelace", email: "ada@example.com" },
-{ id: "2", name: "Grace Hopper", email: "grace@example.com" },
-{ id: "3", name: "Katherine Johnson", email: "katherine@example.com" },
+{ id: "1", name: "Ada Lovelace", email: "ada@example.com", seats: 12, mrr: 490, plan: "team", active: true, renewsOn: "2026-03-01" },
+{ id: "2", name: "Grace Hopper", email: "grace@example.com", seats: 3, mrr: 90, plan: "starter", active: true, renewsOn: "2026-01-15" },
+{ id: "3", name: "Katherine Johnson", email: "katherine@example.com", seats: 40, mrr: 1990, plan: "enterprise", active: false, renewsOn: "2026-05-20" },
 ]
 
 const columns: ColumnDef<Contact>[] = [
 { accessorKey: "name", header: "Name", meta: { type: "text" } },
 { accessorKey: "email", header: "Email", meta: { type: "text" } },
+{ accessorKey: "seats", header: "Seats", meta: { type: "number" } },
+{ accessorKey: "mrr", header: "MRR", meta: { type: "currency" } },
+{ accessorKey: "plan", header: "Plan", meta: { type: "select", options: [{ value: "starter", label: "Starter" }, { value: "team", label: "Team" }, { value: "enterprise", label: "Enterprise" }] } },
+{ accessorKey: "active", header: "Active", meta: { type: "boolean" } },
+{ accessorKey: "renewsOn", header: "Renews on", meta: { type: "date" } },
 ]
 
 export function MyGrid() {
@@ -64,12 +74,12 @@ setData((prev) => prev.filter((row) => row.id !== rowId))
 
 <ComponentPreview name="data-grid" code={PREVIEW_CODE} />
 
-This is the walking skeleton of a larger data-grid: the public API, the
-`column.meta` type contract ([Data Grid Types](/docs/components/data-grid-types)),
-the full keyboard model, and the async commit contract are final — only the
-`text` column type has a working editor so far. `number`, `currency`,
-`select`, `boolean`, `date`, `multiSelect`, and `user` land in later
-components without changing this one's props. Inline row add and delete
+The public API, the `column.meta` type contract
+([Data Grid Types](/docs/components/data-grid-types)), the full keyboard
+model, and the async commit contract are final. `text`, `number`, `currency`,
+`select`, `boolean`, and `date` all have working editors; `multiSelect` and
+`user` land in a later component without changing this one's props — they
+share a popover widget shape neither of the other six need. Inline row add and delete
 (this page's `onRowAdd`/`onRowDelete`) are already final and work with any
 column type, since they don't depend on a cell editor existing. Column
 resize, pin, and reorder are also final and work with any column type — they
@@ -133,13 +143,18 @@ render through their normal TanStack `cell` definition (read-only).
 
 ## Features
 
-- **Always-rendered live control** — every `text` cell is a real `Input`,
+- **Always-rendered live control** — every editable cell is a real control,
   styled borderless and transparent at rest (`hover:bg-accent/30`, a focus
-  ring on focus) so a page of editable cells reads as plain table text, not a
-  form.
+  ring on focus) so a page of mixed column types reads as plain table text,
+  not a form. `text`, `number`, and `date` are an `Input` with the matching
+  HTML `type`; `currency` is the same input formatted (`$1,234.00`) at rest
+  and prefixed with `$` while editing; `select` is a native `<select>`
+  restricted to `column.meta.options`; `boolean` is a checkbox.
 - **Click or type to edit** — clicking a cell or typing a character while it's
   focused enters edit mode and focuses the inner control. <kbd>F2</kbd> also
   enters edit mode, preserving the existing value instead of replacing it.
+  `boolean` has no separate edit mode: a click, <kbd>F2</kbd>, or
+  <kbd>Space</kbd> toggles and commits it in one step.
 - **Commit on blur or Enter** — an edit commits when the control blurs or when
   you press <kbd>Enter</kbd>. <kbd>Escape</kbd> discards the in-progress value
   and returns focus to the cell.

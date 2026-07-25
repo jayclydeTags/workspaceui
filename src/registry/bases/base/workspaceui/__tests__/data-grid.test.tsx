@@ -321,6 +321,78 @@ function renderTypedGrid() {
   return { onCellEdit }
 }
 
+interface Task {
+  id: string
+  tags: string[]
+  owner: string | null
+}
+
+const tagOptions = [
+  { value: "bug", label: "Bug" },
+  { value: "urgent", label: "Urgent" },
+  { value: "feature", label: "Feature" },
+]
+
+const gridUsers = [
+  { id: "u1", name: "Ada Lovelace" },
+  { id: "u2", name: "Grace Hopper" },
+]
+
+const taskColumns: ColumnDef<Task>[] = [
+  {
+    accessorKey: "tags",
+    header: "Tags",
+    meta: { type: "multiSelect", options: tagOptions, maxChips: 2 },
+  },
+  {
+    accessorKey: "owner",
+    header: "Owner",
+    meta: { type: "user", users: gridUsers },
+  },
+]
+
+const taskData: Task[] = [{ id: "1", tags: [], owner: null }]
+
+// Unlike TypedHarness, this one feeds a resolved edit back into its own data
+// state — multiSelect's per-toggle dedup reads the *committed* table value
+// on every toggle, so a realistic round trip needs the table to actually
+// advance between toggles, not just record that onCellEdit was called.
+function TaskHarness({
+  onCellEdit,
+  initialData = taskData,
+}: {
+  onCellEdit: OnCellEdit
+  initialData?: Task[]
+}) {
+  const [data, setData] = React.useState(initialData)
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const table = useReactTable({
+    data,
+    columns: taskColumns,
+    getCoreRowModel: getCoreRowModel(),
+    getRowId: (row) => row.id,
+  })
+  return (
+    <DataGrid
+      table={table}
+      onCellEdit={async (rowId, columnId, value) => {
+        await onCellEdit(rowId, columnId, value)
+        setData((prev) =>
+          prev.map((row) =>
+            row.id === rowId ? { ...row, [columnId]: value } : row
+          )
+        )
+      }}
+    />
+  )
+}
+
+function renderTaskGrid(initialData?: Task[]) {
+  const onCellEdit = vi.fn<OnCellEdit>().mockResolvedValue(undefined)
+  render(<TaskHarness onCellEdit={onCellEdit} initialData={initialData} />)
+  return { onCellEdit }
+}
+
 // A minimal DataTransfer stand-in — jsdom doesn't implement the real one,
 // and getData() is only readable at drop time on the genuine API anyway.
 function fakeDataTransfer() {
@@ -608,6 +680,149 @@ describe("DataGrid", () => {
       await user.keyboard("2")
       const input = cell.querySelector('input[type="date"]')
       expect(input).toHaveValue("2026-01-01")
+    })
+  })
+
+  describe("multiSelect and user cell editors", () => {
+    it("multiSelect shows chips capped at meta.maxChips, then a +N overflow badge", () => {
+      render(
+        <TaskHarness
+          onCellEdit={vi.fn()}
+          initialData={[
+            { id: "1", tags: ["bug", "urgent", "feature"], owner: null },
+          ]}
+        />
+      )
+      const cell = screen.getAllByRole("gridcell")[0]!
+      expect(within(cell).getByText("Bug")).toBeInTheDocument()
+      expect(within(cell).getByText("Urgent")).toBeInTheDocument()
+      expect(within(cell).queryByText("Feature")).not.toBeInTheDocument()
+      expect(within(cell).getByText("+1")).toBeInTheDocument()
+    })
+
+    it("user shows an avatar plus name, or Unassigned when null", () => {
+      render(
+        <TaskHarness
+          onCellEdit={vi.fn()}
+          initialData={[{ id: "1", tags: [], owner: "u1" }]}
+        />
+      )
+      const cells = screen.getAllByRole("gridcell")
+      expect(within(cells[1]!).getByText("Ada Lovelace")).toBeInTheDocument()
+
+      render(
+        <TaskHarness
+          onCellEdit={vi.fn()}
+          initialData={[{ id: "2", tags: [], owner: null }]}
+        />
+      )
+      expect(screen.getByText("Unassigned")).toBeInTheDocument()
+    })
+
+    it("multiSelect opens a searchable popover on click and commits per toggle with the popover staying open", async () => {
+      const user = userEvent.setup()
+      const { onCellEdit } = renderTaskGrid()
+      const cell = screen.getAllByRole("gridcell")[0]!
+      await user.click(within(cell).getByRole("button"))
+
+      await user.click(await screen.findByRole("option", { name: "Bug" }))
+      expect(onCellEdit).toHaveBeenCalledWith("1", "tags", ["bug"])
+      // Still open: the search box (and the other options) are still there.
+      expect(
+        screen.getByPlaceholderText("Search options...")
+      ).toBeInTheDocument()
+
+      await user.click(await screen.findByRole("option", { name: "Feature" }))
+      expect(onCellEdit).toHaveBeenCalledWith("1", "tags", ["bug", "feature"])
+      expect(onCellEdit).toHaveBeenCalledTimes(2)
+    })
+
+    it("multiSelect commits a string array normalized to options order regardless of toggle order", async () => {
+      const user = userEvent.setup()
+      const { onCellEdit } = renderTaskGrid()
+      const cell = screen.getAllByRole("gridcell")[0]!
+      await user.click(within(cell).getByRole("button"))
+
+      // Toggled in reverse of the declared options order (feature, then bug).
+      await user.click(await screen.findByRole("option", { name: "Feature" }))
+      await user.click(await screen.findByRole("option", { name: "Bug" }))
+
+      expect(onCellEdit).toHaveBeenLastCalledWith("1", "tags", [
+        "bug",
+        "feature",
+      ])
+    })
+
+    it("reordering the same set of values does not trigger a commit", async () => {
+      const user = userEvent.setup()
+      const onCellEdit = vi
+        .fn<OnCellEdit>()
+        .mockRejectedValueOnce(new Error("nope"))
+      render(<TaskHarness onCellEdit={onCellEdit} />)
+      const cell = screen.getAllByRole("gridcell")[0]!
+      await user.click(within(cell).getByRole("button"))
+
+      // Fires and rejects — the optimistic value stays on screen per the
+      // async commit contract, but the table's own committed value never
+      // advances past [].
+      await user.click(await screen.findByRole("option", { name: "Urgent" }))
+      await waitFor(() => expect(onCellEdit).toHaveBeenCalledTimes(1))
+
+      // Toggling it back off returns to exactly the still-committed set
+      // ([]) — normalized comparison recognizes that and clears the failed
+      // attempt locally instead of firing a second, redundant commit.
+      await user.click(await screen.findByRole("option", { name: "Urgent" }))
+      expect(onCellEdit).toHaveBeenCalledTimes(1)
+    })
+
+    it("user commits-and-closes on pick", async () => {
+      const user = userEvent.setup()
+      const { onCellEdit } = renderTaskGrid()
+      const cell = screen.getAllByRole("gridcell")[1]!
+      await user.click(within(cell).getByRole("button"))
+
+      // The item's accessible name includes the avatar fallback initials
+      // ("GH") ahead of the visible name, so match loosely.
+      await user.click(
+        await screen.findByRole("option", { name: /Grace Hopper/ })
+      )
+      expect(onCellEdit).toHaveBeenCalledWith("1", "owner", "u2")
+      expect(
+        screen.queryByPlaceholderText("Search people...")
+      ).not.toBeInTheDocument()
+    })
+
+    it('"Unassigned" is a pickable value on user columns', async () => {
+      const user = userEvent.setup()
+      const { onCellEdit } = renderTaskGrid([
+        { id: "1", tags: [], owner: "u1" },
+      ])
+      const cell = screen.getAllByRole("gridcell")[1]!
+      await user.click(within(cell).getByRole("button"))
+
+      await user.click(
+        await screen.findByRole("option", { name: "Unassigned" })
+      )
+      expect(onCellEdit).toHaveBeenCalledWith("1", "owner", null)
+    })
+
+    it("Escape closes the multiSelect popover back to nav mode without undoing a toggle that already committed", async () => {
+      const user = userEvent.setup()
+      const { onCellEdit } = renderTaskGrid()
+      const cell = screen.getAllByRole("gridcell")[0]!
+      await user.click(within(cell).getByRole("button"))
+
+      await user.click(await screen.findByRole("option", { name: "Bug" }))
+      await waitFor(() => expect(onCellEdit).toHaveBeenCalledTimes(1))
+
+      await user.keyboard("{Escape}")
+      expect(
+        screen.queryByPlaceholderText("Search options...")
+      ).not.toBeInTheDocument()
+      expect(cell).toHaveFocus()
+      // The already-committed toggle is still reflected on screen.
+      expect(within(cell).getByText("Bug")).toBeInTheDocument()
+      expect(onCellEdit).toHaveBeenCalledTimes(1)
     })
   })
 

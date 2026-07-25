@@ -20,12 +20,19 @@ mrr: number
 plan: string
 active: boolean
 renewsOn: string
+tags: string[]
+owner: string | null
 }
 
+const owners = [
+{ id: "u1", name: "Priya Patel" },
+{ id: "u2", name: "Sam Okafor" },
+]
+
 const initialData: Contact[] = [
-{ id: "1", name: "Ada Lovelace", email: "ada@example.com", seats: 12, mrr: 490, plan: "team", active: true, renewsOn: "2026-03-01" },
-{ id: "2", name: "Grace Hopper", email: "grace@example.com", seats: 3, mrr: 90, plan: "starter", active: true, renewsOn: "2026-01-15" },
-{ id: "3", name: "Katherine Johnson", email: "katherine@example.com", seats: 40, mrr: 1990, plan: "enterprise", active: false, renewsOn: "2026-05-20" },
+{ id: "1", name: "Ada Lovelace", email: "ada@example.com", seats: 12, mrr: 490, plan: "team", active: true, renewsOn: "2026-03-01", tags: ["champion", "renewal-risk"], owner: "u1" },
+{ id: "2", name: "Grace Hopper", email: "grace@example.com", seats: 3, mrr: 90, plan: "starter", active: true, renewsOn: "2026-01-15", tags: [], owner: null },
+{ id: "3", name: "Katherine Johnson", email: "katherine@example.com", seats: 40, mrr: 1990, plan: "enterprise", active: false, renewsOn: "2026-05-20", tags: ["champion"], owner: "u2" },
 ]
 
 const columns: ColumnDef<Contact>[] = [
@@ -36,6 +43,8 @@ const columns: ColumnDef<Contact>[] = [
 { accessorKey: "plan", header: "Plan", meta: { type: "select", options: [{ value: "starter", label: "Starter" }, { value: "team", label: "Team" }, { value: "enterprise", label: "Enterprise" }] } },
 { accessorKey: "active", header: "Active", meta: { type: "boolean" } },
 { accessorKey: "renewsOn", header: "Renews on", meta: { type: "date" } },
+{ accessorKey: "tags", header: "Tags", meta: { type: "multiSelect", options: [{ value: "champion", label: "Champion" }, { value: "renewal-risk", label: "Renewal risk" }, { value: "upsell", label: "Upsell" }] } },
+{ accessorKey: "owner", header: "Owner", meta: { type: "user", users: owners } },
 ]
 
 export function MyGrid() {
@@ -117,10 +126,12 @@ Delete
 
 The public API, the `column.meta` type contract
 ([Data Grid Types](/docs/components/data-grid-types)), the full keyboard
-model, and the async commit contract are final. `text`, `number`, `currency`,
-`select`, `boolean`, and `date` all have working editors; `multiSelect` and
-`user` land in a later component without changing this one's props — they
-share a popover widget shape neither of the other six need. Inline row add and delete
+model, and the async commit contract are final. All eight column types —
+`text`, `number`, `currency`, `select`, `boolean`, `date`, `multiSelect`, and
+`user` — have working editors. `multiSelect` and `user` share a popover
+widget shape neither of the other six need: a borderless trigger (chips
+capped at `meta.maxChips`, or an avatar plus name) opening a searchable
+command list, with edit mode and popover-open being the same state. Inline row add and delete
 (this page's `onRowAdd`/`onRowDelete`) are already final and work with any
 column type, since they don't depend on a cell editor existing. Column
 resize, pin, and reorder are also final and work with any column type — they
@@ -190,7 +201,25 @@ render through their normal TanStack `cell` definition (read-only).
   not a form. `text`, `number`, and `date` are an `Input` with the matching
   HTML `type`; `currency` is the same input formatted (`$1,234.00`) at rest
   and prefixed with `$` while editing; `select` is a native `<select>`
-  restricted to `column.meta.options`; `boolean` is a checkbox.
+  restricted to `column.meta.options`; `boolean` is a checkbox; `multiSelect`
+  and `user` are a borderless button.
+- **multiSelect and user share a popover widget** — settled by prototyping
+  three variants; inline toggles and removable chips both lost on the same
+  grounds: they let row height vary with content, which the deferred
+  virtualization work depends on staying fixed. `multiSelect` shows chips
+  from `column.meta.options` (reused verbatim — no parallel option shape)
+  capped at `column.meta.maxChips` (default 2) with a "+N" overflow; `user`
+  shows an avatar plus name from the static `column.meta.users` list — the
+  grid never fetches. Both open onto a searchable command list in a popover;
+  edit mode and popover-open are the same state, so typing a character seeds
+  the search box and arrows are captured by the list instead of moving
+  between cells. `multiSelect` stores a `string[]` normalized to options
+  order — so reordering the same set never misfires the commit dedup — and
+  commits per toggle with the popover staying open, letting you set several
+  tags without reopening the picker. `user` stores a single id or `null` and
+  commits-and-closes on pick; "Unassigned" (`null`) is picked the same way as
+  any real user, and there's deliberately no `meta.multiple` — a consumer
+  who needs more than one assignee uses `multiSelect` instead.
 - **Click or type to edit** — clicking a cell or typing a character while it's
   focused enters edit mode and focuses the inner control. <kbd>F2</kbd> also
   enters edit mode, preserving the existing value instead of replacing it.
@@ -198,7 +227,9 @@ render through their normal TanStack `cell` definition (read-only).
   <kbd>Space</kbd> toggles and commits it in one step.
 - **Commit on blur or Enter** — an edit commits when the control blurs or when
   you press <kbd>Enter</kbd>. <kbd>Escape</kbd> discards the in-progress value
-  and returns focus to the cell.
+  and returns focus to the cell. `multiSelect`/`user` have no in-progress
+  buffer to discard — <kbd>Escape</kbd> there just closes the popover back to
+  nav mode without undoing a toggle that already committed.
 - **Live validation** — runs on every keystroke and renders as red text under
   the cell, wired through `aria-invalid`/`aria-describedby` on the control. An
   invalid value is never sent to `onCellEdit`.

@@ -35,7 +35,14 @@ interface Contact {
   plan: string
   active: boolean
   renewsOn: string
+  tags: string[]
+  owner: string | null
 }
+
+const owners = [
+  { id: "u1", name: "Priya Patel" },
+  { id: "u2", name: "Sam Okafor" },
+]
 
 const initialData: Contact[] = [
   {
@@ -47,6 +54,8 @@ const initialData: Contact[] = [
     plan: "team",
     active: true,
     renewsOn: "2026-03-01",
+    tags: ["champion", "renewal-risk"],
+    owner: "u1",
   },
   {
     id: "2",
@@ -57,6 +66,8 @@ const initialData: Contact[] = [
     plan: "starter",
     active: true,
     renewsOn: "2026-01-15",
+    tags: [],
+    owner: null,
   },
   {
     id: "3",
@@ -67,6 +78,8 @@ const initialData: Contact[] = [
     plan: "enterprise",
     active: false,
     renewsOn: "2026-05-20",
+    tags: ["champion"],
+    owner: "u2",
   },
 ]
 
@@ -89,6 +102,23 @@ const columns: ColumnDef<Contact>[] = [
   },
   { accessorKey: "active", header: "Active", meta: { type: "boolean" } },
   { accessorKey: "renewsOn", header: "Renews on", meta: { type: "date" } },
+  {
+    accessorKey: "tags",
+    header: "Tags",
+    meta: {
+      type: "multiSelect",
+      options: [
+        { value: "champion", label: "Champion" },
+        { value: "renewal-risk", label: "Renewal risk" },
+        { value: "upsell", label: "Upsell" },
+      ],
+    },
+  },
+  {
+    accessorKey: "owner",
+    header: "Owner",
+    meta: { type: "user", users: owners },
+  },
 ]
 
 export function DataGridLiveDemo() {

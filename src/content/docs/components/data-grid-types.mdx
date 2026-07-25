@@ -59,13 +59,11 @@ const columns: ColumnDef<Contact>[] = [
 
 ## Column types
 
-Eight types are declared now so `data-grid` and `data-filter` never have to
-re-open the contract. **`text`, `number`, `currency`, `select`, `boolean`, and
-`date`** all have a working cell editor today (see
-[Data Grid](/docs/components/data-grid)) — **`multiSelect`** and **`user`**
-exist so you can type those columns now and get the editor for free once a
-later component ships it (they share a popover widget shape neither of the
-other six need).
+Eight types are declared here so `data-grid` and `data-filter` never have to
+re-open the contract. All eight have a working cell editor in
+[Data Grid](/docs/components/data-grid) — **`multiSelect`** and **`user`**
+share a popover widget shape (a borderless trigger opening a searchable
+command list) neither of the other six need.
 
 - `text`, `number`, `currency`, `select`, `boolean`, `date`, `multiSelect`, `user`
 

@@ -28,8 +28,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -57,6 +67,7 @@ import "@/registry/bases/base/workspaceui/data-grid-types"
 import type {
   DataGridColumnType,
   DataGridSelectOption,
+  DataGridUser,
 } from "@/registry/bases/base/workspaceui/data-grid-types"
 
 /** A snapshot of column resize/pin/reorder state, reported via `onColumnLayoutChange`. */
@@ -186,6 +197,81 @@ function formatReadValue(type: DataGridColumnType | undefined, raw: unknown) {
     return cellDisplayValue(raw)
   const n = typeof raw === "number" ? raw : Number(raw)
   return Number.isNaN(n) ? cellDisplayValue(raw) : currencyFormatter.format(n)
+}
+
+// multiSelect's commit shape: filters to the options that are actually
+// selected, in the column's own declared order — the same call site handles
+// both "normalize before commit" and "normalize before dedup-compare", so
+// reordering the same set can never read as a change.
+function normalizeToOptionsOrder(
+  values: string[],
+  options: DataGridSelectOption[]
+): string[] {
+  return options
+    .filter((opt) => values.includes(opt.value))
+    .map((opt) => opt.value)
+}
+
+function arraysEqual(a: string[], b: string[]): boolean {
+  return a.length === b.length && a.every((v, i) => v === b[i])
+}
+
+function initials(name: string): string {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("")
+}
+
+// The at-rest trigger content for a multiSelect cell — chips capped at
+// maxChips, then a "+N" overflow badge. Fixed row height is the point (the
+// deferred virtualization work depends on it), so this never wraps.
+function renderMultiSelectTrigger(
+  selected: string[],
+  options: DataGridSelectOption[],
+  maxChips: number
+) {
+  if (selected.length === 0) {
+    return <span className="text-muted-foreground">—</span>
+  }
+  const shown = options.filter((opt) => selected.includes(opt.value))
+  const visible = shown.slice(0, maxChips)
+  const overflow = shown.length - visible.length
+  return (
+    <>
+      {visible.map((opt) => (
+        <Badge key={opt.value} variant="secondary" className="shrink-0">
+          {opt.label}
+        </Badge>
+      ))}
+      {overflow > 0 && (
+        <Badge variant="outline" className="shrink-0">
+          +{overflow}
+        </Badge>
+      )}
+    </>
+  )
+}
+
+// The at-rest trigger content for a user cell — an avatar plus name, or a
+// muted "Unassigned" label. "Unassigned" is a real pickable value (null),
+// not just an empty state.
+function renderUserTrigger(userId: string | null, users: DataGridUser[]) {
+  const user = userId == null ? undefined : users.find((u) => u.id === userId)
+  if (!user) {
+    return <span className="text-muted-foreground">Unassigned</span>
+  }
+  return (
+    <>
+      <Avatar size="sm" className="shrink-0">
+        {user.avatarUrl && <AvatarImage src={user.avatarUrl} alt="" />}
+        <AvatarFallback>{initials(user.name)}</AvatarFallback>
+      </Avatar>
+      <span className="truncate">{user.name}</span>
+    </>
+  )
 }
 
 function withKey<T>(map: Map<string, T>, key: string, value: T) {
@@ -596,6 +682,88 @@ export function DataGrid<TData>({
     startCommit(r, c, String(next), next)
   }
 
+  // Same rule as booleanCellValue: a pending/rejected commit's value wins
+  // over the table's own data. The commit's string is a JSON-encoded array —
+  // the same "coerced to string" convention every other editor's buffer
+  // follows, just opaque here since there's no visible text buffer.
+  function multiSelectCellValue(
+    r: number,
+    c: number,
+    tableValue: unknown
+  ): string[] {
+    const key = cellKey(r, c)
+    const commit = commits.get(key)
+    if (commit) return JSON.parse(commit.value) as string[]
+    return Array.isArray(tableValue) ? (tableValue as string[]) : []
+  }
+
+  // Commits per toggle with the popover staying open — setting three tags
+  // never means opening the picker three times. Dedup compares the
+  // options-order-normalized next set against the last *successfully*
+  // committed set (never the last attempted one, same rule commitEdit
+  // follows), so toggling a tag off and back on again — or any reordering of
+  // the same set — never fires a second onCellEdit.
+  function toggleMultiSelectValue(r: number, c: number, optionValue: string) {
+    const key = cellKey(r, c)
+    if (commits.get(key)?.pending) return
+    const row = rows[r]
+    const cell = row?.getVisibleCells()[c]
+    if (!cell) return
+    const options = cell.column.columnDef.meta?.options ?? []
+    const current = multiSelectCellValue(r, c, cell.getValue())
+    const next = current.includes(optionValue)
+      ? current.filter((v) => v !== optionValue)
+      : [...current, optionValue]
+    const normalized = normalizeToOptionsOrder(next, options)
+    const committed = Array.isArray(cell.getValue())
+      ? (cell.getValue() as string[])
+      : []
+    if (arraysEqual(normalized, normalizeToOptionsOrder(committed, options))) {
+      setCommits((prev) => withoutKey(prev, key))
+      return
+    }
+    startCommit(r, c, JSON.stringify(normalized), normalized)
+  }
+
+  // A pending/rejected commit's value wins over the table's own data, same
+  // rule as multiSelectCellValue — "" is the commit map's encoding of null
+  // (every other editor's buffer is a string too).
+  function userCellValue(
+    r: number,
+    c: number,
+    tableValue: unknown
+  ): string | null {
+    const key = cellKey(r, c)
+    const commit = commits.get(key)
+    if (commit) return commit.value === "" ? null : commit.value
+    return tableValue == null ? null : String(tableValue)
+  }
+
+  // Closes the popover back to nav mode without touching commits — Escape,
+  // an outside click, and a normal pick all route through here, and none of
+  // them should undo a toggle that already committed.
+  function closePopoverEditAt(r: number, c: number) {
+    setEditCoord(null)
+    setBuffer("")
+    cellRefs.current.get(cellKey(r, c))?.focus()
+  }
+
+  // user commits-and-closes on pick — unlike multiSelect, there's no reason
+  // to keep the popover open after a single-value pick. "Unassigned" (null)
+  // is picked the same way as any real user.
+  function pickUser(r: number, c: number, userId: string | null) {
+    const key = cellKey(r, c)
+    if (commits.get(key)?.pending) return
+    const row = rows[r]
+    const cell = row?.getVisibleCells()[c]
+    if (!cell) return
+    closePopoverEditAt(r, c)
+    const committed = cell.getValue()
+    const committedId = committed == null ? null : String(committed)
+    if (committedId === userId) return
+    startCommit(r, c, userId ?? "", userId)
+  }
+
   function cancelEdit() {
     if (!editCoord) return
     const { r, c } = editCoord
@@ -625,19 +793,32 @@ export function DataGrid<TData>({
     if (commit?.pending) return
 
     // Switching directly from one editing cell to another: resolve the old
-    // one first so its value isn't silently dropped.
+    // one first so its value isn't silently dropped. multiSelect/user have
+    // no buffer to commit — their toggles/picks already committed
+    // themselves — so the old cell just closes.
     if (editCoord && (editCoord.r !== r || editCoord.c !== c)) {
-      suppressNextBlurRef.current = true
-      commitEdit()
+      const oldType = columnTypeAt(editCoord.r, editCoord.c)
+      if (oldType === "multiSelect" || oldType === "user") {
+        setEditCoord(null)
+      } else {
+        suppressNextBlurRef.current = true
+        commitEdit()
+      }
     }
 
+    // multiSelect/user's buffer is a search filter, not the cell's value —
+    // unlike every buffer-typed editor, it never seeds from the committed
+    // value, only from a seed keystroke.
+    const isPopoverType = type === "multiSelect" || type === "user"
     const committed = cell.getValue()
-    const fallback = commit?.value ?? cellDisplayValue(committed)
+    const fallback = isPopoverType
+      ? ""
+      : (commit?.value ?? cellDisplayValue(committed))
     const initial = seed ?? fallback
     setFocusCoord({ r, c })
     setEditCoord({ r, c })
     setBuffer(initial)
-    setError(validateForType(type, initial))
+    setError(isPopoverType ? null : validateForType(type, initial))
     focusEditControl(key)
   }
 
@@ -943,13 +1124,6 @@ export function DataGrid<TData>({
                     const isEditing = editCoord?.r === r && editCoord?.c === c
                     const commit = commits.get(key)
                     const isPending = commit?.pending ?? false
-                    // While editing, only the live validation error shows —
-                    // once committed (successfully or not), a rejection uses
-                    // the same red-text-under-the-cell treatment instead.
-                    const displayError = isEditing
-                      ? error
-                      : (commit?.error ?? null)
-                    const showError = displayError != null
                     const columnType = cell.column.columnDef.meta?.type
                     const isPlainInputColumn =
                       columnType === "text" ||
@@ -958,6 +1132,20 @@ export function DataGrid<TData>({
                       columnType === "date"
                     const isSelectColumn = columnType === "select"
                     const isBooleanColumn = columnType === "boolean"
+                    const isMultiSelectColumn = columnType === "multiSelect"
+                    const isUserColumn = columnType === "user"
+                    // While editing, only the live validation error shows —
+                    // once committed (successfully or not), a rejection uses
+                    // the same red-text-under-the-cell treatment instead.
+                    // multiSelect is the one exception: its popover can stay
+                    // open through a rejected toggle-commit, so it always
+                    // reads straight from the commit instead of the
+                    // (unused, buffer-editor-only) live `error` state.
+                    const displayError =
+                      isEditing && !isMultiSelectColumn
+                        ? error
+                        : (commit?.error ?? null)
+                    const showError = displayError != null
                     const value = cell.getValue()
                     const cellErrorId = `${errorId}-${key}`
                     const isLastCell = !hasDeleteColumn && c === colCount - 1
@@ -1129,6 +1317,202 @@ export function DataGrid<TData>({
                                 />
                               )}
                             </div>
+                            {showError && (
+                              <span
+                                id={cellErrorId}
+                                className="block px-2 pb-1.5 text-xs text-destructive"
+                              >
+                                {displayError}
+                              </span>
+                            )}
+                          </>
+                        ) : isMultiSelectColumn ? (
+                          <>
+                            <Popover
+                              open={isEditing}
+                              onOpenChange={(next) =>
+                                next
+                                  ? beginEdit(r, c)
+                                  : closePopoverEditAt(r, c)
+                              }
+                            >
+                              <PopoverTrigger
+                                render={
+                                  <button
+                                    type="button"
+                                    tabIndex={-1}
+                                    disabled={isPending}
+                                    aria-invalid={showError || undefined}
+                                    aria-describedby={
+                                      showError ? cellErrorId : undefined
+                                    }
+                                    aria-label={`${getColumnLabel(cell.column)}, row ${r + 1}`}
+                                    className="flex w-full items-center gap-1 overflow-hidden px-2 py-2 hover:bg-accent/30 focus-visible:bg-background disabled:cursor-default"
+                                  >
+                                    {renderMultiSelectTrigger(
+                                      multiSelectCellValue(r, c, value),
+                                      cell.column.columnDef.meta?.options ?? [],
+                                      cell.column.columnDef.meta?.maxChips ?? 2
+                                    )}
+                                    {isPending && (
+                                      <Spinner
+                                        role="presentation"
+                                        aria-hidden="true"
+                                        aria-label={undefined}
+                                        className="ml-auto size-3.5 shrink-0"
+                                      />
+                                    )}
+                                  </button>
+                                }
+                              />
+                              <PopoverContent
+                                align="start"
+                                className="w-64 p-0"
+                              >
+                                <Command>
+                                  <CommandInput
+                                    placeholder="Search options..."
+                                    value={buffer}
+                                    onValueChange={setBuffer}
+                                  />
+                                  <CommandList>
+                                    <CommandEmpty>No options.</CommandEmpty>
+                                    <CommandGroup>
+                                      {(
+                                        cell.column.columnDef.meta?.options ??
+                                        []
+                                      ).map((opt) => (
+                                        <CommandItem
+                                          key={opt.value}
+                                          value={opt.label}
+                                          data-checked={
+                                            multiSelectCellValue(
+                                              r,
+                                              c,
+                                              value
+                                            ).includes(opt.value)
+                                              ? "true"
+                                              : undefined
+                                          }
+                                          onSelect={() =>
+                                            toggleMultiSelectValue(
+                                              r,
+                                              c,
+                                              opt.value
+                                            )
+                                          }
+                                        >
+                                          {opt.label}
+                                        </CommandItem>
+                                      ))}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
+                            {showError && (
+                              <span
+                                id={cellErrorId}
+                                className="block px-2 pb-1.5 text-xs text-destructive"
+                              >
+                                {displayError}
+                              </span>
+                            )}
+                          </>
+                        ) : isUserColumn ? (
+                          <>
+                            <Popover
+                              open={isEditing}
+                              onOpenChange={(next) =>
+                                next
+                                  ? beginEdit(r, c)
+                                  : closePopoverEditAt(r, c)
+                              }
+                            >
+                              <PopoverTrigger
+                                render={
+                                  <button
+                                    type="button"
+                                    tabIndex={-1}
+                                    disabled={isPending}
+                                    aria-invalid={showError || undefined}
+                                    aria-describedby={
+                                      showError ? cellErrorId : undefined
+                                    }
+                                    aria-label={`${getColumnLabel(cell.column)}, row ${r + 1}`}
+                                    className="flex w-full items-center gap-2 overflow-hidden px-2 py-1.5 hover:bg-accent/30 focus-visible:bg-background disabled:cursor-default"
+                                  >
+                                    {renderUserTrigger(
+                                      userCellValue(r, c, value),
+                                      cell.column.columnDef.meta?.users ?? []
+                                    )}
+                                    {isPending && (
+                                      <Spinner
+                                        role="presentation"
+                                        aria-hidden="true"
+                                        aria-label={undefined}
+                                        className="ml-auto size-3.5 shrink-0"
+                                      />
+                                    )}
+                                  </button>
+                                }
+                              />
+                              <PopoverContent
+                                align="start"
+                                className="w-64 p-0"
+                              >
+                                <Command>
+                                  <CommandInput
+                                    placeholder="Search people..."
+                                    value={buffer}
+                                    onValueChange={setBuffer}
+                                  />
+                                  <CommandList>
+                                    <CommandEmpty>No people.</CommandEmpty>
+                                    <CommandGroup>
+                                      <CommandItem
+                                        value="Unassigned"
+                                        data-checked={
+                                          userCellValue(r, c, value) == null
+                                            ? "true"
+                                            : undefined
+                                        }
+                                        onSelect={() => pickUser(r, c, null)}
+                                      >
+                                        Unassigned
+                                      </CommandItem>
+                                      {(
+                                        cell.column.columnDef.meta?.users ?? []
+                                      ).map((u) => (
+                                        <CommandItem
+                                          key={u.id}
+                                          value={u.name}
+                                          data-checked={
+                                            userCellValue(r, c, value) === u.id
+                                              ? "true"
+                                              : undefined
+                                          }
+                                          onSelect={() => pickUser(r, c, u.id)}
+                                        >
+                                          <Avatar size="sm">
+                                            {u.avatarUrl && (
+                                              <AvatarImage
+                                                src={u.avatarUrl}
+                                                alt=""
+                                              />
+                                            )}
+                                            <AvatarFallback>
+                                              {initials(u.name)}
+                                            </AvatarFallback>
+                                          </Avatar>
+                                          {u.name}
+                                        </CommandItem>
+                                      ))}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
                             {showError && (
                               <span
                                 id={cellErrorId}

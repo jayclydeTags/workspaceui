@@ -121,7 +121,7 @@ npx shadcn@latest add jayclydeTags/workspaceui/data-filter
 
 ```bash
 npm install @tanstack/react-table
-npx shadcn@latest add popover command
+npx shadcn@latest add popover command sheet badge
 ```
 
 ### Copy the files into your project
@@ -195,6 +195,25 @@ it never filters rows itself.
 - **A column already filtered drops out of the column-pick list** — its chip
   is the edit path, so the "+ Filter" trigger only ever offers columns that
   don't already have a condition.
+- **Narrow-container toolbar** — `DataFilter` measures its own container
+  with a `ResizeObserver` (never the viewport; this is independent of
+  `DataGrid`'s own container measurement). Below 448px the chip chain and
+  the "+ Filter" popover give way to two sheet-backed toolbar buttons, so
+  chrome height stays constant no matter how many filters are active:
+  - **"Sort"** is labelled with the current sort column and direction.
+    Tapping it opens a bottom sheet listing every sortable column; tapping
+    one cycles asc → desc → unsorted and closes the sheet. Sorting on this
+    branch is single-column — picking a different column replaces the whole
+    sort array. A pre-existing multi-column sort (set while wide) shows as
+    the primary column plus a muted "+N more" and is left untouched until a
+    new pick replaces it.
+  - **"Filter"** carries a count badge and opens a bottom sheet listing
+    active filters as full-width rows with a persistent "Add filter" row.
+    Tapping "Add filter" or an existing row pushes the same
+    column → operator → value chain as a second step inside the sheet
+    (skipping the column step when editing an existing row) — the same
+    `{ operator, value }` write through `column.setFilterValue()` as the
+    wide-branch popover.
 
 ## API Reference
 

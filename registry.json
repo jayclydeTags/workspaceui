@@ -106,7 +106,7 @@
       "name": "data-filter",
       "type": "registry:ui",
       "title": "Data Filter",
-      "description": "A composable filter builder over a consumer-owned useReactTable() instance. A single \"+ Filter\" trigger opens a popover chaining column → operator → value; committing writes a clickable, removable chip. Operators and the value input follow from the column's meta.type — text, number, currency, date, select, and boolean are implemented here (multiSelect and user are a follow-up). Exports dataGridFilterFn, the filterFn every filterable column must set: it unwraps the chip chain's { operator, value } object and dispatches on meta.type, since none of TanStack's built-in filter functions can read that shape.",
+      "description": "A composable filter builder over a consumer-owned useReactTable() instance. A single \"+ Filter\" trigger opens a popover chaining column → operator → value; committing writes a clickable, removable chip. Operators and the value input follow from the column's meta.type — text, number, currency, date, select, and boolean are implemented here (multiSelect and user are a follow-up). Exports dataGridFilterFn, the filterFn every filterable column must set: it unwraps the chip chain's { operator, value } object and dispatches on meta.type, since none of TanStack's built-in filter functions can read that shape. Measures its own container width via ResizeObserver; below 448px the chip chain and popover give way to sheet-backed \"Sort\" and \"Filter\" toolbar buttons.",
       "dependencies": ["@tanstack/react-table"],
       "registryDependencies": [
         "jayclydeTags/workspaceui/data-grid-types",
@@ -114,6 +114,8 @@
         "command",
         "button",
         "input",
+        "sheet",
+        "badge",
         "utils"
       ],
       "files": [

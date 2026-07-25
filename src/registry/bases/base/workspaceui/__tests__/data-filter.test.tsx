@@ -1,13 +1,15 @@
-import { fireEvent, render, screen, within } from "@testing-library/react"
+import { act, fireEvent, render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect } from "vitest"
 import {
   type ColumnDef,
   getCoreRowModel,
   getFilteredRowModel,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
 
+import { resizeTo } from "@/test/setup"
 import { DataFilter, dataGridFilterFn } from "../data-filter"
 import "../data-grid-types"
 
@@ -116,11 +118,26 @@ function Harness() {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getRowId: (row) => row.id,
   })
   return (
     <div>
       <DataFilter table={table} />
+      {/* DataGrid owns real header-click sorting; this stands in for it so
+          narrow-branch tests can exercise a pre-existing multi-column sort
+          without depending on that component. */}
+      <button
+        type="button"
+        onClick={() =>
+          table.setSorting([
+            { id: "qty", desc: false },
+            { id: "price", desc: true },
+          ])
+        }
+      >
+        set wide multi-sort
+      </button>
       <ul aria-label="results">
         {table.getRowModel().rows.map((row) => (
           <li key={row.id}>{row.original.name}</li>
@@ -128,6 +145,14 @@ function Harness() {
       </ul>
     </div>
   )
+}
+
+function toolbar() {
+  return screen.getByRole("toolbar", { name: "Sort and filter" })
+}
+
+function goNarrow() {
+  act(() => resizeTo(toolbar(), 320))
 }
 
 function visibleNames() {
@@ -422,6 +447,231 @@ describe("DataFilter", () => {
       expect(
         screen.queryByRole("option", { name: "Name" })
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe("narrow container", () => {
+    it("replaces the popover chain with sheet-backed toolbar buttons below 448px", async () => {
+      const user = userEvent.setup()
+      render(<Harness />)
+      // Wide: the "Filter" trigger opens the column-pick popover instantly.
+      await openNewFilter(user)
+      expect(
+        await screen.findByRole("option", { name: "Name" })
+      ).toBeInTheDocument()
+      await user.keyboard("{Escape}")
+
+      goNarrow()
+
+      expect(screen.getByRole("button", { name: "Sort" })).toBeInTheDocument()
+      // Narrow: the same-labelled "Filter" trigger opens a Sheet instead —
+      // no column options render until "Add filter" is tapped inside it.
+      await user.click(screen.getByRole("button", { name: "Filter" }))
+      expect(screen.getByRole("dialog")).toBeInTheDocument()
+      expect(
+        screen.getByRole("button", { name: "Add filter" })
+      ).toBeInTheDocument()
+      expect(screen.queryByRole("option", { name: "Name" })).toBeNull()
+    })
+
+    it("shows a count badge on the Filter button and doesn't open the wide popover chain", async () => {
+      const user = userEvent.setup()
+      render(<Harness />)
+      await openNewFilter(user)
+      await pickColumn(user, "Active")
+      await pickOperator(user, "is true")
+
+      goNarrow()
+
+      const filterButton = screen.getByRole("button", { name: "Filter 1" })
+      expect(filterButton).toBeInTheDocument()
+      // Column-pick popover options only ever render once a trigger is
+      // clicked, so their absence here just confirms nothing auto-opened.
+      expect(screen.queryByRole("option", { name: "Name" })).toBeNull()
+    })
+
+    it("filter sheet lists active filters as full-width rows with a persistent Add filter, and adds one via the second-step chain", async () => {
+      const user = userEvent.setup()
+      render(<Harness />)
+      await openNewFilter(user)
+      await pickColumn(user, "Active")
+      await pickOperator(user, "is true")
+      expect(visibleNames()).toEqual(["Widget", "Gizmo"])
+
+      goNarrow()
+      await user.click(screen.getByRole("button", { name: "Filter 1" }))
+
+      expect(
+        screen.getByRole("button", { name: "Active is true" })
+      ).toBeInTheDocument()
+      const addFilter = screen.getByRole("button", { name: "Add filter" })
+      expect(addFilter).toBeInTheDocument()
+
+      await user.click(addFilter)
+      await pickColumn(user, "Qty")
+      await pickOperator(user, ">")
+      fireEvent.change(screen.getByPlaceholderText("Value"), {
+        target: { value: "10" },
+      })
+      await user.click(screen.getByRole("button", { name: "Apply" }))
+
+      // Back on the list step inside the still-open sheet.
+      expect(
+        screen.getByRole("button", { name: "Active is true" })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole("button", { name: "Qty > 10" })
+      ).toBeInTheDocument()
+
+      // The rest of the page is inert while the sheet is open — close it to
+      // check the underlying table state the chain actually wrote.
+      await user.keyboard("{Escape}")
+      expect(visibleNames()).toEqual(["Gizmo"])
+    })
+
+    it("tapping an existing row edits it, skipping straight to the operator step", async () => {
+      const user = userEvent.setup()
+      render(<Harness />)
+      await openNewFilter(user)
+      await pickColumn(user, "Qty")
+      await pickOperator(user, ">")
+      fireEvent.change(screen.getByPlaceholderText("Value"), {
+        target: { value: "10" },
+      })
+      await user.click(screen.getByRole("button", { name: "Apply" }))
+
+      goNarrow()
+      await user.click(screen.getByRole("button", { name: "Filter 1" }))
+      await user.click(screen.getByRole("button", { name: "Qty > 10" }))
+
+      // Landed on the operator step directly — no column list shown.
+      expect(screen.queryByPlaceholderText("Filter by column...")).toBeNull()
+      expect(screen.getByRole("button", { name: "<" })).toBeInTheDocument()
+    })
+
+    it("removes a row from the sheet's list step", async () => {
+      const user = userEvent.setup()
+      render(<Harness />)
+      await openNewFilter(user)
+      await pickColumn(user, "Active")
+      await pickOperator(user, "is true")
+
+      goNarrow()
+      await user.click(screen.getByRole("button", { name: "Filter 1" }))
+      await user.click(
+        screen.getByRole("button", { name: "Remove Active filter" })
+      )
+      expect(
+        screen.queryByRole("button", { name: "Active is true" })
+      ).toBeNull()
+
+      await user.keyboard("{Escape}")
+      expect(visibleNames()).toEqual(["Widget", "Gadget", "Gizmo"])
+      expect(screen.getByRole("button", { name: "Filter" })).toBeInTheDocument()
+    })
+
+    it("Sort button is labelled Sort when unsorted, and cycles asc -> desc -> off on the tapped column", async () => {
+      const user = userEvent.setup()
+      render(<Harness />)
+      goNarrow()
+
+      // Each tap in the sheet commits and closes it (per spec), so the
+      // trigger and the sheet's list button never coexist — each step below
+      // re-finds the trigger by its current label, then scopes the tap to
+      // the freshly-opened dialog.
+      expect(screen.getByRole("button", { name: "Sort" })).toBeInTheDocument()
+
+      await user.click(screen.getByRole("button", { name: "Sort" }))
+      await user.click(
+        within(screen.getByRole("dialog")).getByRole("button", {
+          name: "Qty",
+        })
+      )
+      expect(screen.getByRole("button", { name: "Qty" })).toBeInTheDocument()
+
+      // asc -> desc
+      await user.click(screen.getByRole("button", { name: "Qty" }))
+      await user.click(
+        within(screen.getByRole("dialog")).getByRole("button", {
+          name: "Qty",
+        })
+      )
+      expect(screen.getByRole("button", { name: "Qty" })).toBeInTheDocument()
+
+      // desc -> off: back to the unlabelled "Sort" trigger.
+      await user.click(screen.getByRole("button", { name: "Qty" }))
+      await user.click(
+        within(screen.getByRole("dialog")).getByRole("button", {
+          name: "Qty",
+        })
+      )
+      expect(screen.getByRole("button", { name: "Sort" })).toBeInTheDocument()
+    })
+
+    it("an existing wide multi-sort shows as primary + '+1 more', untouched until a new pick replaces it", async () => {
+      const user = userEvent.setup()
+      render(<Harness />)
+      await user.click(
+        screen.getByRole("button", { name: "set wide multi-sort" })
+      )
+      goNarrow()
+
+      expect(
+        screen.getByRole("button", { name: /^Qty\s*\+1 more$/ })
+      ).toBeInTheDocument()
+
+      await user.click(screen.getByRole("button", { name: /^Qty/ }))
+      await user.click(
+        within(screen.getByRole("dialog")).getByRole("button", {
+          name: "Price",
+        })
+      )
+
+      // Picking a new column replaces the whole array — no more "+1 more".
+      expect(screen.getByRole("button", { name: "Price" })).toBeInTheDocument()
+      expect(screen.queryByRole("button", { name: /\+1 more$/ })).toBeNull()
+    })
+
+    it("tapping the current primary column of a wide multi-sort cycles its own direction instead of resetting to asc", async () => {
+      const user = userEvent.setup()
+      render(<Harness />)
+      await user.click(
+        screen.getByRole("button", { name: "set wide multi-sort" })
+      )
+      goNarrow()
+
+      // Wide state: Qty asc (primary), Price desc.
+      await user.click(screen.getByRole("button", { name: /^Qty/ }))
+      await user.click(
+        within(screen.getByRole("dialog")).getByRole("button", {
+          name: "Qty",
+        })
+      )
+
+      // Qty was asc -> cycles to desc (not reset back to asc), and the
+      // extra "Price" column is gone since narrow enforces single-column.
+      expect(screen.getByRole("button", { name: "Qty" })).toBeInTheDocument()
+      expect(screen.queryByRole("button", { name: /\+1 more$/ })).toBeNull()
+
+      await user.click(screen.getByRole("button", { name: "Qty" }))
+      await user.click(
+        within(screen.getByRole("dialog")).getByRole("button", {
+          name: "Qty",
+        })
+      )
+      // desc -> off.
+      expect(screen.getByRole("button", { name: "Sort" })).toBeInTheDocument()
+    })
+
+    it("does not share an observer with anything else — resizing back above 448px restores the chip chain", () => {
+      render(<Harness />)
+      goNarrow()
+      expect(screen.getByRole("button", { name: "Sort" })).toBeInTheDocument()
+
+      act(() => resizeTo(toolbar(), 800))
+
+      expect(screen.getByRole("button", { name: "Filter" })).toBeInTheDocument()
+      expect(screen.queryByRole("button", { name: "Sort" })).toBeNull()
     })
   })
 })

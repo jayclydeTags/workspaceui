@@ -6,9 +6,16 @@ import type {
   FilterFn,
   Table as TanstackTable,
 } from "@tanstack/react-table"
-import { ChevronLeftIcon, PlusIcon, XIcon } from "lucide-react"
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  ChevronLeftIcon,
+  PlusIcon,
+  XIcon,
+} from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Command,
@@ -24,6 +31,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 // Side-effect import: pulls in the column.meta type augmentation this
 // component reads (column.columnDef.meta?.type / .options).
 import "@/registry/bases/base/workspaceui/data-grid-types"
@@ -179,6 +193,34 @@ function valueShapeOf(operator: string): ValueShape {
   if (operator === "between") return "between"
   if (operator === "isAnyOf") return "multi"
   return "single"
+}
+
+// Below this container width the chip chain and column-pick popover give
+// way to sheet-backed toolbar buttons. 448px is the same threshold settled
+// on for data-grid's own (not yet built — see #54) card-fallback breakpoint,
+// so once that lands the common case — both mounted in one narrow pane —
+// flips together, even though each component measures its own container.
+const NARROW_BREAKPOINT = 448
+
+// This component's own ResizeObserver — deliberately not shared with
+// data-grid's. They're mounted separately and only share the table
+// instance, so a wide filter bar above a narrow grid is correct, not a
+// desync to fix.
+function useContainerWidth<T extends HTMLElement>() {
+  const ref = React.useRef<T>(null)
+  const [width, setWidth] = React.useState<number | null>(null)
+
+  React.useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new ResizeObserver(([entry]) => {
+      setWidth(entry.contentRect.width)
+    })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  return { ref, width }
 }
 
 // ── dataGridFilterFn ─────────────────────────────────────────────────────
@@ -704,7 +746,308 @@ function ValuePopover<TData>({
   )
 }
 
+// Single-column sort, cycling asc -> desc -> off. Tapping the current
+// primary column continues its own cycle — even out of a wide-branch
+// multi-column sort, where it collapses the extra columns but keeps
+// cycling the primary's direction rather than resetting it to asc.
+// Picking any other column always replaces the whole array with that
+// column ascending — that's the one place the narrow branch can discard a
+// wide-branch multi-column sort, and it's deliberate: widening the
+// container again restores nothing, since the replacement already
+// overwrote `sorting`.
+function cycleSort<TData>(table: TanstackTable<TData>, columnId: string) {
+  const sorting = table.getState().sorting
+  const isPrimary = sorting.length > 0 && sorting[0]!.id === columnId
+  if (isPrimary) {
+    table.setSorting(sorting[0]!.desc ? [] : [{ id: columnId, desc: true }])
+  } else {
+    table.setSorting([{ id: columnId, desc: false }])
+  }
+}
+
+// Narrow-branch replacement for column-header sort clicks (the card
+// fallback renders no headers). Labelled with the primary sort column, plus
+// a muted "+N more" when a wide-branch multi-column sort is in effect — the
+// extra columns stay in `sorting` state untouched until a new pick replaces
+// the whole array. Tapping a column commits immediately and closes.
+function NarrowSortSheet<TData>({
+  table,
+  sortableColumns,
+}: {
+  table: TanstackTable<TData>
+  sortableColumns: Column<TData, unknown>[]
+}) {
+  const [open, setOpen] = React.useState(false)
+  const sorting = table.getState().sorting
+  const primary = sorting[0]
+  const primaryColumn = primary ? table.getColumn(primary.id) : undefined
+  const extraCount = Math.max(sorting.length - 1, 0)
+
+  function pick(columnId: string) {
+    cycleSort(table, columnId)
+    setOpen(false)
+  }
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger
+        render={
+          <Button variant="outline" size="sm">
+            {primaryColumn ? (
+              <>
+                {getColumnLabel(primaryColumn)}
+                {primary!.desc ? (
+                  <ArrowDownIcon className="size-3" />
+                ) : (
+                  <ArrowUpIcon className="size-3" />
+                )}
+                {extraCount > 0 && (
+                  <span className="text-muted-foreground">
+                    +{extraCount} more
+                  </span>
+                )}
+              </>
+            ) : (
+              "Sort"
+            )}
+          </Button>
+        }
+      />
+      <SheetContent side="bottom">
+        <SheetHeader>
+          <SheetTitle>Sort by</SheetTitle>
+        </SheetHeader>
+        <div className="flex flex-col gap-0.5 px-4 pb-4">
+          {sortableColumns.map((column) => {
+            const isPrimary = primary?.id === column.id
+            return (
+              <button
+                key={column.id}
+                type="button"
+                onClick={() => pick(column.id)}
+                className={cn(
+                  "flex items-center justify-between rounded-sm px-3 py-2 text-left text-sm hover:bg-muted",
+                  isPrimary && "bg-muted"
+                )}
+              >
+                {getColumnLabel(column)}
+                {isPrimary &&
+                  (primary!.desc ? (
+                    <ArrowDownIcon className="size-3.5" />
+                  ) : (
+                    <ArrowUpIcon className="size-3.5" />
+                  ))}
+              </button>
+            )
+          })}
+        </div>
+      </SheetContent>
+    </Sheet>
+  )
+}
+
+// Narrow-branch replacement for the chip chain: active filters as
+// full-width rows plus a persistent "Add filter" row, both scoped to a
+// bottom Sheet so toolbar height stays constant no matter how many filters
+// are active. Tapping "Add filter" or an existing row pushes the same
+// column -> operator -> value chain as a second step inside this sheet
+// (skipping the column step when editing, since that row's column is
+// already fixed) — same `{ operator, value }` written through
+// `column.setFilterValue()` as the wide-branch popover.
+function NarrowFilterSheet<TData>({
+  table,
+  activeFilters,
+  pickableColumns,
+  removeFilter,
+}: {
+  table: TanstackTable<TData>
+  activeFilters: { id: string; value: unknown }[]
+  pickableColumns: Column<TData, unknown>[]
+  removeFilter: (columnId: string) => void
+}) {
+  const [open, setOpen] = React.useState(false)
+  const [step, setStep] = React.useState<"list" | Step>("list")
+  const [chainStart, setChainStart] = React.useState<"column" | "operator">(
+    "column"
+  )
+  const [draftColumnId, setDraftColumnId] = React.useState<string | null>(null)
+  const [draftOperator, setDraftOperator] = React.useState<string | null>(null)
+  const [draftValue, setDraftValue] = React.useState<unknown>(undefined)
+
+  const draftColumn = draftColumnId ? table.getColumn(draftColumnId) : undefined
+  const draftType = draftColumn?.columnDef.meta?.type
+
+  function resetChain() {
+    setStep("list")
+    setDraftColumnId(null)
+    setDraftOperator(null)
+    setDraftValue(undefined)
+  }
+
+  function handleOpenChange(next: boolean) {
+    setOpen(next)
+    if (next) resetChain()
+  }
+
+  function commitFilter(operator: string, value?: unknown) {
+    if (!draftColumnId) return
+    const column = table.getColumn(draftColumnId)
+    if (!column) return
+    column.setFilterValue(
+      operatorRequiresValue(draftType) ? { operator, value } : { operator }
+    )
+    resetChain()
+  }
+
+  function startAdd() {
+    setChainStart("column")
+    setDraftColumnId(null)
+    setDraftOperator(null)
+    setDraftValue(undefined)
+    setStep("column")
+  }
+
+  function startEdit(columnId: string) {
+    setChainStart("operator")
+    setDraftColumnId(columnId)
+    setDraftOperator(null)
+    setDraftValue(undefined)
+    setStep("operator")
+  }
+
+  function selectColumn(id: string) {
+    setDraftColumnId(id)
+    setDraftOperator(null)
+    setDraftValue(undefined)
+    setStep("operator")
+  }
+
+  function selectOperator(op: string) {
+    setDraftOperator(op)
+    if (!operatorRequiresValue(draftType)) {
+      commitFilter(op, undefined)
+      return
+    }
+    setDraftValue(defaultValueForOperator(op))
+    setStep("value")
+  }
+
+  return (
+    <Sheet open={open} onOpenChange={handleOpenChange}>
+      <SheetTrigger
+        render={
+          <Button variant="outline" size="sm">
+            Filter{" "}
+            {activeFilters.length > 0 && (
+              <Badge variant="secondary">{activeFilters.length}</Badge>
+            )}
+          </Button>
+        }
+      />
+      <SheetContent side="bottom">
+        <SheetHeader>
+          <SheetTitle>Filters</SheetTitle>
+        </SheetHeader>
+
+        {step === "list" && (
+          <div className="flex flex-col gap-2 px-4 pb-4">
+            {activeFilters.map((filter) => {
+              const column = table.getColumn(filter.id)
+              if (!column) return null
+              const filterValue = filter.value as DataGridFilterValue
+              return (
+                <div
+                  key={filter.id}
+                  className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm"
+                >
+                  <button
+                    type="button"
+                    className="flex-1 text-left"
+                    onClick={() => startEdit(filter.id)}
+                  >
+                    {formatFilterSummary(column, filterValue)}
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={`Remove ${getColumnLabel(column)} filter`}
+                    onClick={() => removeFilter(filter.id)}
+                    className="shrink-0 rounded-sm p-1 hover:bg-accent"
+                  >
+                    <XIcon className="size-3" />
+                  </button>
+                </div>
+              )
+            })}
+            <Button variant="outline" onClick={startAdd}>
+              <PlusIcon className="size-4" />
+              Add filter
+            </Button>
+          </div>
+        )}
+
+        {step === "column" && (
+          <Command>
+            <CommandInput placeholder="Filter by column..." />
+            <CommandList>
+              <CommandEmpty>No columns.</CommandEmpty>
+              <CommandGroup>
+                {pickableColumns.map((column) => (
+                  <CommandItem
+                    key={column.id}
+                    value={getColumnLabel(column)}
+                    onSelect={() => selectColumn(column.id)}
+                  >
+                    {getColumnLabel(column)}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        )}
+
+        {step === "operator" && (
+          <div className="flex flex-col gap-0.5 px-4 pb-4">
+            <FilterBackButton
+              label={draftColumn ? getColumnLabel(draftColumn) : "Back"}
+              onClick={() =>
+                setStep(chainStart === "column" ? "column" : "list")
+              }
+            />
+            <OperatorList
+              type={draftType}
+              selected={draftOperator}
+              onSelect={selectOperator}
+            />
+          </div>
+        )}
+
+        {step === "value" && draftColumn && draftOperator && (
+          <div className="flex flex-col px-4 pb-4">
+            <FilterBackButton
+              label={operatorLabel(draftType, draftOperator)}
+              onClick={() => setStep("operator")}
+            />
+            <ValueEditor
+              column={draftColumn}
+              operator={draftOperator}
+              value={draftValue}
+              onChange={setDraftValue}
+              onCommit={(value) =>
+                commitFilter(draftOperator, value ?? draftValue)
+              }
+            />
+          </div>
+        )}
+      </SheetContent>
+    </Sheet>
+  )
+}
+
 export function DataFilter<TData>({ table }: DataFilterProps<TData>) {
+  const { ref: containerRef, width: containerWidth } =
+    useContainerWidth<HTMLDivElement>()
+  const isNarrow = containerWidth != null && containerWidth < NARROW_BREAKPOINT
+
   const filterableColumns = table
     .getAllLeafColumns()
     .filter(
@@ -713,6 +1056,9 @@ export function DataFilter<TData>({ table }: DataFilterProps<TData>) {
         column.columnDef.meta.type in OPERATORS_BY_TYPE &&
         column.getCanFilter()
     )
+  const sortableColumns = table
+    .getAllLeafColumns()
+    .filter((column) => column.getCanSort())
 
   const activeFilters = table
     .getState()
@@ -728,8 +1074,32 @@ export function DataFilter<TData>({ table }: DataFilterProps<TData>) {
     table.getColumn(columnId)?.setFilterValue(undefined)
   }
 
+  if (isNarrow) {
+    return (
+      <div
+        ref={containerRef}
+        role="toolbar"
+        aria-label="Sort and filter"
+        className="flex items-center gap-1.5"
+      >
+        <NarrowSortSheet table={table} sortableColumns={sortableColumns} />
+        <NarrowFilterSheet
+          table={table}
+          activeFilters={activeFilters}
+          pickableColumns={pickableColumns}
+          removeFilter={removeFilter}
+        />
+      </div>
+    )
+  }
+
   return (
-    <div className="flex flex-wrap items-center gap-1.5">
+    <div
+      ref={containerRef}
+      role="toolbar"
+      aria-label="Sort and filter"
+      className="flex flex-wrap items-center gap-1.5"
+    >
       <FilterEditorPopover
         table={table}
         availableColumns={pickableColumns}

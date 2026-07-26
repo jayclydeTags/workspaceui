@@ -11,10 +11,13 @@ import {
   type Row,
   type Table as TanstackTable,
 } from "@tanstack/react-table"
+import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox"
 import {
+  CheckIcon,
   ChevronRightIcon,
   Columns3Icon,
   GripVerticalIcon,
+  MinusIcon,
   MoreHorizontalIcon,
   PinIcon,
   PlusIcon,
@@ -151,6 +154,37 @@ function pinActionLabel(current: PinPosition): string {
 // Follows TanStack's own default; opt out via `enableRowSelection: false` on useReactTable().
 function hasRowSelectionEnabled<TData>(table: TanstackTable<TData>): boolean {
   return table.options.enableRowSelection !== false
+}
+
+// The shared Checkbox has no indeterminate icon, and other consumers use it
+// as-is — this local variant (same classes, swapped indicator) keeps the
+// mixed-state affordance scoped to the header select-all control.
+function SelectAllCheckbox({
+  checked,
+  indeterminate,
+  onCheckedChange,
+}: {
+  checked: boolean
+  indeterminate: boolean
+  onCheckedChange: (checked: boolean) => void
+}) {
+  return (
+    <CheckboxPrimitive.Root
+      data-slot="checkbox"
+      checked={checked}
+      indeterminate={indeterminate}
+      aria-label="Select all rows"
+      onCheckedChange={onCheckedChange}
+      className="peer relative flex size-4 shrink-0 items-center justify-center rounded-[4px] border border-input transition-colors outline-none after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30 data-checked:border-primary data-checked:bg-primary data-checked:text-primary-foreground dark:data-checked:bg-primary"
+    >
+      <CheckboxPrimitive.Indicator
+        data-slot="checkbox-indicator"
+        className="grid place-content-center text-current transition-none [&>svg]:size-3.5"
+      >
+        {indeterminate ? <MinusIcon /> : <CheckIcon />}
+      </CheckboxPrimitive.Indicator>
+    </CheckboxPrimitive.Root>
+  )
 }
 
 // Uses the midpoint-derived before/after position: a naive insert-before-target no-ops on an adjacent swap.
@@ -1155,7 +1189,20 @@ export function DataGrid<TData>({
               {headerGroups.map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {hasSelectionColumn && (
-                    <TableHead aria-hidden="true" className="w-10" />
+                    <TableHead className="w-10 min-w-10 p-0 text-center">
+                      <div className="flex items-center justify-center px-2 py-2.5">
+                        <SelectAllCheckbox
+                          checked={table.getIsAllRowsSelected()}
+                          indeterminate={
+                            !table.getIsAllRowsSelected() &&
+                            table.getIsSomeRowsSelected()
+                          }
+                          onCheckedChange={(checked) =>
+                            table.toggleAllRowsSelected(checked)
+                          }
+                        />
+                      </div>
+                    </TableHead>
                   )}
                   {headerGroup.headers.map((header) => {
                     const pinned = header.column.getIsPinned()
@@ -1258,7 +1305,7 @@ export function DataGrid<TData>({
                   return (
                     <TableRow key={row.id} className="group/row relative">
                       {hasSelectionColumn && (
-                        <TableCell className="w-10 p-0 text-center align-top">
+                        <TableCell className="w-10 min-w-10 p-0 text-center align-top">
                           <div className="flex items-center justify-center px-2 py-2.5">
                             <Checkbox
                               checked={row.getIsSelected()}

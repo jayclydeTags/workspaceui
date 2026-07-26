@@ -1288,7 +1288,12 @@ describe("DataGrid", () => {
   describe("row selection", () => {
     it("renders a leading checkbox column by default — TanStack's own row selection default", () => {
       renderGrid()
-      expect(screen.getAllByRole("checkbox")).toHaveLength(2) // one per row
+      expect(
+        screen.getAllByRole("checkbox", { name: /^Select row/ })
+      ).toHaveLength(2) // one per row
+      expect(
+        screen.getByRole("checkbox", { name: "Select all rows" })
+      ).toBeInTheDocument()
     })
 
     it("renders no leading checkbox column when the consumer opts out via enableRowSelection: false", () => {
@@ -1318,7 +1323,9 @@ describe("DataGrid", () => {
     it("Shift+Click on a checkbox extends the selection from the anchor row", async () => {
       const user = userEvent.setup()
       render(<SelectableHarness />)
-      const checkboxes = screen.getAllByRole("checkbox")
+      const checkboxes = screen.getAllByRole("checkbox", {
+        name: /^Select row/,
+      })
 
       await user.click(checkboxes[0]!) // anchor: row 0
       await user.keyboard("{Shift>}")
@@ -1338,7 +1345,9 @@ describe("DataGrid", () => {
 
       await user.keyboard("{Shift>}{ArrowDown}{ArrowDown}{/Shift}")
 
-      const checkboxes = screen.getAllByRole("checkbox")
+      const checkboxes = screen.getAllByRole("checkbox", {
+        name: /^Select row/,
+      })
       expect(checkboxes[0]).toBeChecked()
       expect(checkboxes[1]).toBeChecked()
       expect(checkboxes[2]).toBeChecked()
@@ -1355,7 +1364,7 @@ describe("DataGrid", () => {
       expect(cells[1]).toHaveFocus()
       expect(
         screen
-          .getAllByRole("checkbox")
+          .getAllByRole("checkbox", { name: /^Select row/ })
           .every((cb) => !(cb as HTMLInputElement).checked)
       ).toBe(true)
     })
@@ -1364,7 +1373,9 @@ describe("DataGrid", () => {
       const user = userEvent.setup()
       const onRowDelete = vi.fn()
       render(<BulkDeleteHarness onRowDelete={onRowDelete} />)
-      const checkboxes = screen.getAllByRole("checkbox")
+      const checkboxes = screen.getAllByRole("checkbox", {
+        name: /^Select row/,
+      })
 
       await user.click(checkboxes[0]!)
       await user.keyboard("{Shift>}")
@@ -1463,7 +1474,7 @@ describe("DataGrid", () => {
       fireEvent.mouseMove(document, { clientX: 50 })
       fireEvent.mouseUp(document, { clientX: 50 })
 
-      const header = screen.getAllByRole("columnheader")[0]!
+      const header = screen.getAllByRole("columnheader")[1]!
       expect(header).toHaveStyle({ width: "200px" })
     })
 
@@ -1476,7 +1487,7 @@ describe("DataGrid", () => {
       fireEvent.mouseDown(handle, { clientX: 0 })
       fireEvent.mouseMove(document, { clientX: 50 })
       fireEvent.mouseUp(document, { clientX: 50 })
-      const header = screen.getAllByRole("columnheader")[0]!
+      const header = screen.getAllByRole("columnheader")[1]!
       expect(header).toHaveStyle({ width: "200px" })
 
       fireEvent.doubleClick(handle)
@@ -1487,7 +1498,7 @@ describe("DataGrid", () => {
   describe("column pin", () => {
     it("cycles unpinned -> left -> right -> unpinned via the header pin button", () => {
       render(<LayoutHarness />)
-      const header = screen.getAllByRole("columnheader")[0]!
+      const header = screen.getAllByRole("columnheader")[1]!
       const pinButton = within(header).getByRole("button")
       expect(pinButton).toHaveAccessibleName("Pin column left")
       expect(header).not.toHaveStyle({ position: "sticky" })
@@ -1574,7 +1585,7 @@ describe("DataGrid", () => {
       render(<LayoutHarness onColumnLayoutChange={onColumnLayoutChange} />)
       expect(onColumnLayoutChange).not.toHaveBeenCalled() // no fire on mount
 
-      const header = screen.getAllByRole("columnheader")[0]!
+      const header = screen.getAllByRole("columnheader")[1]!
       fireEvent.click(within(header).getByRole("button"))
 
       expect(onColumnLayoutChange).toHaveBeenCalledTimes(1)
@@ -1587,7 +1598,7 @@ describe("DataGrid", () => {
 
     it("leaves resize/pin/reorder fully working when the callback is omitted (uncontrolled)", () => {
       render(<LayoutHarness />)
-      const header = screen.getAllByRole("columnheader")[0]!
+      const header = screen.getAllByRole("columnheader")[1]!
       const pinButton = within(header).getByRole("button")
 
       fireEvent.click(pinButton)
@@ -1758,7 +1769,7 @@ describe("DataGrid", () => {
       expect(screen.getByRole("grid")).toBeInTheDocument()
       expect(screen.queryByRole("list")).toBeNull()
 
-      const header = screen.getAllByRole("columnheader")[0]!
+      const header = screen.getAllByRole("columnheader")[1]!
       expect(header).toHaveStyle({ position: "sticky", left: "0px" })
     })
 

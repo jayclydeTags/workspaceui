@@ -1,36 +1,30 @@
 import { readFileSync } from "fs"
 import { join } from "path"
 import { DynamicCodeBlock } from "@/components/dynamic-codeblock"
-
-// Server component: read the registry source at build time instead of Vite's
-// `?raw` import (unsupported by Turbopack). Runs once per page at static export.
-const REGISTRY = "src/registry/bases/base/workspaceui"
-const files: Record<string, string> = {
-  "workspace-tabs": `${REGISTRY}/workspace-tabs.tsx`,
-  "workspace-context": `${REGISTRY}/workspace-context.tsx`,
-  workspace: `${REGISTRY}/workspace.tsx`,
-  page: `${REGISTRY}/page.tsx`,
-  "data-grid": `${REGISTRY}/data-grid.tsx`,
-  "data-grid-types": `${REGISTRY}/data-grid-types.ts`,
-}
+import { getRegistrySourcePath } from "@/lib/registry-files"
 
 interface ComponentSourceProps {
   name: string
   filename?: string
 }
 
+// Server component: read the registry source at build time instead of Vite's
+// `?raw` import (unsupported by Turbopack). Runs once per page at static export.
 export function ComponentSource({ name, filename }: ComponentSourceProps) {
-  const file = files[name]
-  if (!file) return null
+  const path = getRegistrySourcePath(name)
+  if (!path) return null
+
   const src = readFileSync(
-    join(/*turbopackIgnore: true*/ process.cwd(), file),
+    join(/*turbopackIgnore: true*/ process.cwd(), path),
     "utf-8"
   )
+  const lang = path.endsWith(".ts") ? "ts" : "tsx"
+
   return (
     <DynamicCodeBlock
-      lang="tsx"
+      lang={lang}
       code={src}
-      codeblock={{ title: filename ?? `components/ui/${name}.tsx` }}
+      codeblock={{ title: filename ?? `components/ui/${name}.${lang}` }}
     />
   )
 }

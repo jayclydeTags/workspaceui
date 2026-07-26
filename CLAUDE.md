@@ -130,6 +130,29 @@ The repo must be public and have `registry.json` at its root; the CLI resolves i
 
 `bases/base/` mirrors shadcn's own multi-base registry convention (`apps/v4` on shadcn/ui). There is currently one base; don't add a second `bases/<name>/` directory speculatively.
 
+### Comment hygiene in distributed components
+
+Files under `src/registry/bases/base/` ship as-is via `npx shadcn add` — the
+consumer only gets that one file, never the rest of this repo. Comments in
+these files must only contain what a consumer needs to understand or maintain
+the code they now own:
+
+- No references to paths outside the shipped file (`docs/`, other repo files,
+  issue numbers, PR links) — a consumer can't follow them and they read as
+  dead pointers.
+- No internal process markers (`ponytail:`, "see docs/...", changelog-style
+  notes referencing "this refactor"/"now"/"previously").
+- Deferred work, known limitations, and future-improvement notes belong in
+  `docs/<component>-notes.md` (top-level `docs/`, not
+  `src/content/docs/components/*.mdx` — those are the public fumadocs pages),
+  not inline in the component.
+- Keep only genuinely load-bearing invariants (a hidden constraint, a subtle
+  ordering requirement, why a ref instead of state) — tightened to one line.
+
+When adding a `ponytail:` shortcut-with-known-ceiling comment to one of these
+files during development, move its explanation to `docs/<component>-notes.md`
+before shipping rather than leaving it inline.
+
 ## Path aliases
 
 | Alias | Resolves to |

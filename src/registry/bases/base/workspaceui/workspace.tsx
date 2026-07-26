@@ -4,8 +4,16 @@ import * as React from "react"
 import { createPortal } from "react-dom"
 
 import { cn } from "@/lib/utils"
-import { WorkspaceTabs, type WorkspaceTab } from "@/registry/bases/base/workspaceui/workspace-tabs"
-import { WorkspaceDragContext, useWorkspaceDrag, type WorkspaceDragContextValue, type WorkspaceSnapZone } from "@/registry/bases/base/workspaceui/workspace-context"
+import {
+  WorkspaceTabs,
+  type WorkspaceTab,
+} from "@/registry/bases/base/workspaceui/workspace-tabs"
+import {
+  WorkspaceDragContext,
+  useWorkspaceDrag,
+  type WorkspaceDragContextValue,
+  type WorkspaceSnapZone,
+} from "@/registry/bases/base/workspaceui/workspace-context"
 import {
   ResizableHandle,
   ResizablePanel,
@@ -19,10 +27,7 @@ const MIN_ROW_SIZE = 30
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
-/**
- * Public alias for the tab shape consumers pass to Workspace. Single source of
- * truth lives in workspace-tabs.tsx ({@link WorkspaceTab}).
- */
+/** Public alias for the tab shape consumers pass to Workspace ({@link WorkspaceTab}). */
 export type WorkspaceTabDef = WorkspaceTab
 
 export interface WorkspacePaneDef {
@@ -65,10 +70,8 @@ interface PaneSnapshot {
 }
 
 /**
- * Serializable shape of the workspace layout. Holds ids only — a tab's `icon`
- * is a ReactNode and its `onAddTab` a function, so neither survives JSON.
- * Rehydrate with {@link WorkspaceHandle.restore}, passing a resolver that maps
- * a tab id back to a full tab.
+ * Serializable shape of the workspace layout. Holds ids only — a tab's `icon`/`onAddTab`
+ * don't survive JSON. Rehydrate with {@link WorkspaceHandle.restore}.
  */
 export interface WorkspaceSnapshot {
   columns: { id: string; topPane: PaneSnapshot; bottomPane?: PaneSnapshot }[]
@@ -83,8 +86,7 @@ interface DragSession {
   tabTitle: string
   sourcePaneId: string
   pointerId: number
-  /** The element holding pointer capture — released if the drag is cancelled. */
-  captureEl: Element | null
+  captureEl: Element | null // held for release on cancel
   startX: number
   startY: number
   didThreshold: boolean
@@ -109,7 +111,11 @@ export interface WorkspaceContextValue {
   openTabInPane: (paneId: string, tab: WorkspaceTabDef) => void
   closeTab: (paneId: string, tabId: string) => void
   activateTab: (paneId: string, tabId: string) => void
-  updateTab: (paneId: string, tabId: string, patch: Partial<WorkspaceTabDef>) => void
+  updateTab: (
+    paneId: string,
+    tabId: string,
+    patch: Partial<WorkspaceTabDef>
+  ) => void
   openPane: (pane: WorkspacePaneDef) => void
   closePane: (paneId: string) => void
 }
@@ -118,7 +124,8 @@ const WorkspaceContext = React.createContext<WorkspaceContextValue | null>(null)
 
 export function useWorkspace(): WorkspaceContextValue {
   const ctx = React.useContext(WorkspaceContext)
-  if (ctx == null) throw new Error("useWorkspace must be used inside <Workspace>")
+  if (ctx == null)
+    throw new Error("useWorkspace must be used inside <Workspace>")
   return ctx
 }
 
@@ -134,13 +141,10 @@ export type WorkspaceHandle = Omit<
   readonly lastActivePaneId: string | null
   /** Capture the current column/pane/tab structure for persistence. */
   serialize: () => WorkspaceSnapshot
-  /**
-   * Rebuild the layout from a snapshot. `resolveTab` maps a tab id back to a
-   * full tab; tabs it can't resolve are dropped, as are panes left empty.
-   */
+  /** Rebuild the layout from a snapshot; `resolveTab` maps a tab id back to a full tab. Unresolved tabs (and panes left empty) are dropped. */
   restore: (
     snapshot: WorkspaceSnapshot,
-    resolveTab: (tabId: string) => WorkspaceTabDef | undefined,
+    resolveTab: (tabId: string) => WorkspaceTabDef | undefined
   ) => void
 }
 
@@ -162,7 +166,7 @@ export interface WorkspaceProps {
   onBeforeCloseTab?: (
     paneId: string,
     tabId: string,
-    tab: WorkspaceTabDef,
+    tab: WorkspaceTabDef
   ) => boolean | Promise<boolean>
   /**
    * Content shown when all panes are closed.
@@ -181,22 +185,19 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
       fallback,
       className,
     },
-    ref,
+    ref
   ) {
     const [layout, setLayout] = React.useState<WorkspaceLayout>(() => ({
       columns: initialPanes.map((p) => ({ id: p.id, topPane: toPaneState(p) })),
     }))
 
-    // Read the live layout from callbacks that must inspect it *before* the
-    // setLayout updater runs (the close guard is async — it can't do its work
-    // inside a reducer).
+    // Lets the async close guard inspect the live layout before setLayout's updater runs.
     const layoutRef = React.useRef(layout)
     React.useEffect(() => {
       layoutRef.current = layout
     }, [layout])
 
-    // Held in a ref so closeTab/closePane keep a stable identity across renders
-    // even when the consumer passes an inline guard.
+    // Keeps closeTab/closePane's identity stable even with an inline guard prop.
     const beforeCloseRef = React.useRef(onBeforeCloseTab)
     React.useEffect(() => {
       beforeCloseRef.current = onBeforeCloseTab
@@ -209,32 +210,33 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
         if (!guard) return true
         return (await guard(paneId, tab.id, tab)) !== false
       },
-      [],
+      []
     )
 
-    const [lastActivePaneId, setLastActivePaneId] = React.useState<string | null>(
-      () => initialPanes[0]?.id ?? null,
-    )
+    const [lastActivePaneId, setLastActivePaneId] = React.useState<
+      string | null
+    >(() => initialPanes[0]?.id ?? null)
 
     const setLastActivePane = React.useCallback((paneId: string) => {
       setLastActivePaneId(paneId)
     }, [])
 
-    // Layout changes are otherwise silent to a screen reader: panes rearrange
-    // with no focus move and no visible-text change to notice.
+    // Layout changes are otherwise silent to a screen reader — no focus move, no visible-text change.
     const [announcement, setAnnouncement] = React.useState("")
 
     // Flat pane view for context consumers — derived, no extra state.
     const panes = React.useMemo(
       () =>
         layout.columns.flatMap((col) =>
-          col.bottomPane ? [col.topPane, col.bottomPane] : [col.topPane],
+          col.bottomPane ? [col.topPane, col.bottomPane] : [col.topPane]
         ),
-      [layout],
+      [layout]
     )
 
     // Resolve the last-active pane: fall back to the first pane if the active one was closed.
-    const resolvedLastActivePaneId = panes.some((p) => p.id === lastActivePaneId)
+    const resolvedLastActivePaneId = panes.some(
+      (p) => p.id === lastActivePaneId
+    )
       ? lastActivePaneId
       : (panes[0]?.id ?? null)
 
@@ -243,14 +245,17 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
     const dragSession = React.useRef<DragSession | null>(null)
     const dragAbortController = React.useRef<AbortController | null>(null)
     const [isDragging, setIsDragging] = React.useState(false)
-    const [ghostPos, setGhostPos] = React.useState<{ x: number; y: number } | null>(null)
+    const [ghostPos, setGhostPos] = React.useState<{
+      x: number
+      y: number
+    } | null>(null)
     const [ghostTitle, setGhostTitle] = React.useState<string | null>(null)
     const [snapState, setSnapState] = React.useState<SnapState | null>(null)
     const snapStateRef = React.useRef<SnapState | null>(null)
-    const [tabDropTarget, setTabDropTarget] = React.useState<TabDropTarget | null>(null)
+    const [tabDropTarget, setTabDropTarget] =
+      React.useState<TabDropTarget | null>(null)
     const tabDropTargetRef = React.useRef<TabDropTarget | null>(null)
-    // Monotonic counter, not Date.now(): two splits in the same millisecond
-    // would collide, and a clock-derived id is non-deterministic in tests.
+    // Monotonic counter, not Date.now(): same-millisecond splits would collide, and clock ids are non-deterministic in tests.
     const paneIdSeq = React.useRef(0)
     const paneRefs = React.useRef<Map<string, HTMLElement>>(new Map())
     const tabStripRefs = React.useRef<Map<string, HTMLElement>>(new Map())
@@ -260,10 +265,13 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
       setSnapState(s)
     }, [])
 
-    const setTabDropTargetSynced = React.useCallback((t: TabDropTarget | null) => {
-      tabDropTargetRef.current = t
-      setTabDropTarget(t)
-    }, [])
+    const setTabDropTargetSynced = React.useCallback(
+      (t: TabDropTarget | null) => {
+        tabDropTargetRef.current = t
+        setTabDropTarget(t)
+      },
+      []
+    )
 
     // ── Mutations (layout-aware) ────────────────────────────────────────────
 
@@ -277,47 +285,60 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
               id: paneId,
               topPane: { id: paneId, tabs: [tab], activeTabId: tab.id },
             }
-            return normalizeColumnSizes({ columns: [...prev.columns, newColumn] })
+            return normalizeColumnSizes({
+              columns: [...prev.columns, newColumn],
+            })
           }
           return mapPane(prev, paneId, (p) => ({
             ...p,
-            tabs: p.tabs.some((t) => t.id === tab.id) ? p.tabs : [...p.tabs, tab],
+            tabs: p.tabs.some((t) => t.id === tab.id)
+              ? p.tabs
+              : [...p.tabs, tab],
             activeTabId: tab.id,
           }))
         })
       },
-      [],
+      []
     )
 
-    const closeTab = React.useCallback(async (paneId: string, tabId: string) => {
-      const target = findPaneInLayout(layoutRef.current, paneId)
-      const targetTab = target?.pane.tabs.find((t) => t.id === tabId)
-      if (!targetTab || targetTab.pinned) return
-      if (!(await mayCloseTab(paneId, targetTab))) return
+    const closeTab = React.useCallback(
+      async (paneId: string, tabId: string) => {
+        const target = findPaneInLayout(layoutRef.current, paneId)
+        const targetTab = target?.pane.tabs.find((t) => t.id === tabId)
+        if (!targetTab || targetTab.pinned) return
+        if (!(await mayCloseTab(paneId, targetTab))) return
 
-      setLayout((prev) => {
-        const found = findPaneInLayout(prev, paneId)
-        if (!found) return prev
-        const pane = found.pane
-        const tab = pane.tabs.find((t) => t.id === tabId)
-        if (tab?.pinned) return prev
-        const next = pane.tabs.filter((t) => t.id !== tabId)
-        if (next.length === 0) {
-          // Last tab — remove the pane from its column (or remove the column)
-          return removePane(prev, paneId)
-        }
-        const wasActive = pane.activeTabId === tabId
-        const removedIdx = pane.tabs.findIndex((t) => t.id === tabId)
-        const newActiveId = wasActive
-          ? (next[Math.max(0, removedIdx - 1)]?.id ?? next[0]!.id)
-          : pane.activeTabId
-        return mapPane(prev, paneId, (p) => ({ ...p, tabs: next, activeTabId: newActiveId }))
-      })
-    }, [mayCloseTab])
+        setLayout((prev) => {
+          const found = findPaneInLayout(prev, paneId)
+          if (!found) return prev
+          const pane = found.pane
+          const tab = pane.tabs.find((t) => t.id === tabId)
+          if (tab?.pinned) return prev
+          const next = pane.tabs.filter((t) => t.id !== tabId)
+          if (next.length === 0) {
+            // Last tab — remove the pane from its column (or remove the column)
+            return removePane(prev, paneId)
+          }
+          const wasActive = pane.activeTabId === tabId
+          const removedIdx = pane.tabs.findIndex((t) => t.id === tabId)
+          const newActiveId = wasActive
+            ? (next[Math.max(0, removedIdx - 1)]?.id ?? next[0]!.id)
+            : pane.activeTabId
+          return mapPane(prev, paneId, (p) => ({
+            ...p,
+            tabs: next,
+            activeTabId: newActiveId,
+          }))
+        })
+      },
+      [mayCloseTab]
+    )
 
     const activateTab = React.useCallback((paneId: string, tabId: string) => {
       setLastActivePaneId(paneId)
-      setLayout((prev) => mapPane(prev, paneId, (p) => ({ ...p, activeTabId: tabId })))
+      setLayout((prev) =>
+        mapPane(prev, paneId, (p) => ({ ...p, activeTabId: tabId }))
+      )
     }, [])
 
     const updateTab = React.useCallback(
@@ -326,18 +347,25 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
           mapPane(prev, paneId, (p) => ({
             ...p,
             tabs: p.tabs.map((t) => (t.id === tabId ? { ...t, ...patch } : t)),
-          })),
+          }))
         )
       },
-      [],
+      []
     )
 
     const openPane = React.useCallback((paneDef: WorkspacePaneDef) => {
       setLayout((prev) => {
-        if (prev.columns.some((col) => col.id === paneDef.id || col.bottomPane?.id === paneDef.id)) {
+        if (
+          prev.columns.some(
+            (col) => col.id === paneDef.id || col.bottomPane?.id === paneDef.id
+          )
+        ) {
           return prev
         }
-        const newColumn: PaneColumn = { id: paneDef.id, topPane: toPaneState(paneDef) }
+        const newColumn: PaneColumn = {
+          id: paneDef.id,
+          topPane: toPaneState(paneDef),
+        }
         return normalizeColumnSizes({ columns: [...prev.columns, newColumn] })
       })
     }, [])
@@ -346,36 +374,51 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
       async (paneId: string) => {
         const found = findPaneInLayout(layoutRef.current, paneId)
         if (!found) return
-        // Closing a pane discards every tab in it, pinned ones included — so
-        // each gets the guard, and any single veto aborts the whole close.
+        // Closing discards every tab, pinned included — each gets the guard, and one veto aborts the whole close.
         for (const tab of found.pane.tabs) {
           if (!(await mayCloseTab(paneId, tab))) return
         }
         setLayout((prev) => removePane(prev, paneId))
       },
-      [mayCloseTab],
+      [mayCloseTab]
     )
 
-    const registerTabStrip = React.useCallback((paneId: string, el: HTMLElement | null) => {
-      if (el) tabStripRefs.current.set(paneId, el)
-      else tabStripRefs.current.delete(paneId)
-    }, [])
+    const registerTabStrip = React.useCallback(
+      (paneId: string, el: HTMLElement | null) => {
+        if (el) tabStripRefs.current.set(paneId, el)
+        else tabStripRefs.current.delete(paneId)
+      },
+      []
+    )
 
-    const reorderTabInPane = React.useCallback((paneId: string, tabId: string, toIndex: number) => {
-      setLayout((prev) =>
-        mapPane(prev, paneId, (p) => {
-          const fromIndex = p.tabs.findIndex((t) => t.id === tabId)
-          if (fromIndex === -1 || toIndex === fromIndex || toIndex === fromIndex + 1) return p
-          const tabs = [...p.tabs]
-          const [tab] = tabs.splice(fromIndex, 1)
-          tabs.splice(toIndex > fromIndex ? toIndex - 1 : toIndex, 0, tab!)
-          return { ...p, tabs }
-        }),
-      )
-    }, [])
+    const reorderTabInPane = React.useCallback(
+      (paneId: string, tabId: string, toIndex: number) => {
+        setLayout((prev) =>
+          mapPane(prev, paneId, (p) => {
+            const fromIndex = p.tabs.findIndex((t) => t.id === tabId)
+            if (
+              fromIndex === -1 ||
+              toIndex === fromIndex ||
+              toIndex === fromIndex + 1
+            )
+              return p
+            const tabs = [...p.tabs]
+            const [tab] = tabs.splice(fromIndex, 1)
+            tabs.splice(toIndex > fromIndex ? toIndex - 1 : toIndex, 0, tab!)
+            return { ...p, tabs }
+          })
+        )
+      },
+      []
+    )
 
     const moveTabToPane = React.useCallback(
-      (sourcePaneId: string, tabId: string, targetPaneId: string, toIndex: number) => {
+      (
+        sourcePaneId: string,
+        tabId: string,
+        targetPaneId: string,
+        toIndex: number
+      ) => {
         setLayout((prev) => {
           const sourceFound = findPaneInLayout(prev, sourcePaneId)
           if (!sourceFound) return prev
@@ -391,7 +434,8 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
             const wasActive = sourcePane.activeTabId === tabId
             const removedIdx = sourcePane.tabs.findIndex((t) => t.id === tabId)
             const newActiveId = wasActive
-              ? (remainingTabs[Math.max(0, removedIdx - 1)]?.id ?? remainingTabs[0]!.id)
+              ? (remainingTabs[Math.max(0, removedIdx - 1)]?.id ??
+                remainingTabs[0]!.id)
               : sourcePane.activeTabId
             layoutAfterRemove = mapPane(prev, sourcePaneId, (p) => ({
               ...p,
@@ -404,9 +448,7 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
           if (!targetFound) return layoutAfterRemove
 
           return mapPane(layoutAfterRemove, targetPaneId, (p) => {
-            // The target may already hold this tab — same id means the same
-            // logical tab, so the move collapses into activating the copy
-            // that's already there. Inserting would duplicate the React key.
+            // Target already holds this tab id — activate it instead of inserting a duplicate React key.
             if (p.tabs.some((t) => t.id === draggedTab.id)) {
               return { ...p, activeTabId: draggedTab.id }
             }
@@ -416,22 +458,25 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
           })
         })
       },
-      [],
+      []
     )
 
     // ── Split operation ────────────────────────────────────────────────────
 
     const executeSplit = React.useCallback(
-      (sourcePaneId: string, tabId: string, targetPaneId: string, zone: SnapZone) => {
+      (
+        sourcePaneId: string,
+        tabId: string,
+        targetPaneId: string,
+        zone: SnapZone
+      ) => {
         setLayout((prev) => {
-          // 1. Extract the dragged tab from source pane
           const sourceFound = findPaneInLayout(prev, sourcePaneId)
           if (!sourceFound) return prev
           const sourcePane = sourceFound.pane
           const draggedTab = sourcePane.tabs.find((t) => t.id === tabId)
           if (!draggedTab) return prev
 
-          // 2. Remove tab from source; determine if source pane becomes empty
           const remainingTabs = sourcePane.tabs.filter((t) => t.id !== tabId)
           let layoutAfterRemove: WorkspaceLayout
           if (remainingTabs.length === 0) {
@@ -440,7 +485,8 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
             const wasActive = sourcePane.activeTabId === tabId
             const removedIdx = sourcePane.tabs.findIndex((t) => t.id === tabId)
             const newActiveId = wasActive
-              ? (remainingTabs[Math.max(0, removedIdx - 1)]?.id ?? remainingTabs[0]!.id)
+              ? (remainingTabs[Math.max(0, removedIdx - 1)]?.id ??
+                remainingTabs[0]!.id)
               : sourcePane.activeTabId
             layoutAfterRemove = mapPane(prev, sourcePaneId, (p) => ({
               ...p,
@@ -449,7 +495,6 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
             }))
           }
 
-          // 3. Create new pane for the dragged tab
           const newPaneId = `${tabId}-pane-${++paneIdSeq.current}`
           const newPane: PaneState = {
             id: newPaneId,
@@ -458,16 +503,16 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
             minSize: MIN_COL_SIZE,
           }
 
-          // 4. Find target column in the updated layout
           const targetFound = findPaneInLayout(layoutAfterRemove, targetPaneId)
           if (!targetFound) {
-            // Target pane was removed (was the source and only pane) — just append
+            // Target pane was removed — it was the source and only pane — so just append.
             const newColumn: PaneColumn = { id: newPaneId, topPane: newPane }
-            return normalizeColumnSizes({ columns: [...layoutAfterRemove.columns, newColumn] })
+            return normalizeColumnSizes({
+              columns: [...layoutAfterRemove.columns, newColumn],
+            })
           }
           const targetColId = targetFound.columnId
 
-          // 5. Insert based on zone
           const cols = layoutAfterRemove.columns
           const targetColIdx = cols.findIndex((c) => c.id === targetColId)
           if (targetColIdx === -1) return layoutAfterRemove
@@ -488,19 +533,15 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
             return normalizeColumnSizes({ columns: next })
           }
 
-          // top / bottom — vertical split within the column
-          // If column already has a bottomPane, fall back to a new side column
+          // top/bottom: vertical split within the column, falling back to a new side column if it's already split.
           if (zone === "top") {
             if (targetFound.slot === "bottom") {
-              // Target is already the bottom pane — insert column to the left
               const newColumn: PaneColumn = { id: newPaneId, topPane: newPane }
               const next = [...cols]
               next.splice(targetColIdx, 0, newColumn)
               return normalizeColumnSizes({ columns: next })
             }
-            // Target is topPane — push current topPane to bottomPane, newPane becomes topPane
             if (targetCol.bottomPane) {
-              // Already split — insert column to the left
               const newColumn: PaneColumn = { id: newPaneId, topPane: newPane }
               const next = [...cols]
               next.splice(targetColIdx, 0, newColumn)
@@ -511,50 +552,54 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
               topPane: newPane,
               bottomPane: targetCol.topPane,
             }
-            return { columns: cols.map((c, i) => (i === targetColIdx ? updatedCol : c)) }
+            return {
+              columns: cols.map((c, i) =>
+                i === targetColIdx ? updatedCol : c
+              ),
+            }
           }
 
           // zone === "bottom"
           if (targetFound.slot === "top") {
             if (targetCol.bottomPane) {
-              // Already split — insert column to the right
               const newColumn: PaneColumn = { id: newPaneId, topPane: newPane }
               const next = [...cols]
               next.splice(targetColIdx + 1, 0, newColumn)
               return normalizeColumnSizes({ columns: next })
             }
             const updatedCol: PaneColumn = { ...targetCol, bottomPane: newPane }
-            return { columns: cols.map((c, i) => (i === targetColIdx ? updatedCol : c)) }
+            return {
+              columns: cols.map((c, i) =>
+                i === targetColIdx ? updatedCol : c
+              ),
+            }
           }
 
-          // Target is bottomPane — insert column to the right
           const newColumn: PaneColumn = { id: newPaneId, topPane: newPane }
           const next = [...cols]
           next.splice(targetColIdx + 1, 0, newColumn)
           return normalizeColumnSizes({ columns: next })
         })
       },
-      [],
+      []
     )
 
     // ── Keyboard equivalents of the drag gestures ──────────────────────────
-    // Splitting and moving a tab were pointer-only. These wrap the same layout
-    // mutations the drop handler uses, so the tab menu can offer them too.
+    // Wrap the same layout mutations the drop handler uses, so the tab menu can offer them too.
 
     const paneTargets = React.useMemo(
       () => panes.map((p) => ({ id: p.id, label: paneLabel(p) })),
-      [panes],
+      [panes]
     )
 
     const splitTab = React.useCallback(
       (paneId: string, tabId: string, zone: SnapZone) => {
         const title = tabTitleIn(layoutRef.current, paneId, tabId)
-        // Source and target are the same pane: split it against its own edge.
-        executeSplit(paneId, tabId, paneId, zone)
+        executeSplit(paneId, tabId, paneId, zone) // source and target are the same pane
         const axis = zone === "left" || zone === "right" ? "column" : "row"
         setAnnouncement(`Moved ${title} to a new ${axis}.`)
       },
-      [executeSplit],
+      [executeSplit]
     )
 
     const moveTab = React.useCallback(
@@ -566,102 +611,112 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
         moveTabToPane(fromPaneId, tabId, toPaneId, target.pane.tabs.length)
         setAnnouncement(`Moved ${title} to ${paneLabel(target.pane)}.`)
       },
-      [moveTabToPane],
+      [moveTabToPane]
     )
 
     // ── Pointer event handlers ─────────────────────────────────────────────
 
-    const handlePointerMove = React.useCallback((e: PointerEvent) => {
-      const session = dragSession.current
-      if (!session) return
+    const handlePointerMove = React.useCallback(
+      (e: PointerEvent) => {
+        const session = dragSession.current
+        if (!session) return
 
-      if (!session.didThreshold) {
-        const dx = e.clientX - session.startX
-        const dy = e.clientY - session.startY
-        if (Math.hypot(dx, dy) < 4) return
-        session.didThreshold = true
-        // Promote to a real drag only here. Doing this in startDrag meant a
-        // plain click mounted every pane's snap overlay and flipped the cursor.
-        setIsDragging(true)
-        setGhostTitle(session.tabTitle)
-        document.body.style.cursor = "grabbing"
-      }
+        if (!session.didThreshold) {
+          const dx = e.clientX - session.startX
+          const dy = e.clientY - session.startY
+          if (Math.hypot(dx, dy) < 4) return
+          session.didThreshold = true
+          // Promoted here, not in startDrag — doing it there made a plain click mount every pane's snap overlay.
+          setIsDragging(true)
+          setGhostTitle(session.tabTitle)
+          document.body.style.cursor = "grabbing"
+        }
 
-      setGhostPos({ x: e.clientX, y: e.clientY })
+        setGhostPos({ x: e.clientX, y: e.clientY })
 
-      // ── Tab strip detection (priority over snap zones) ──────────────────
-      for (const [paneId, el] of tabStripRefs.current) {
-        const rect = el.getBoundingClientRect()
-        if (
-          e.clientX >= rect.left && e.clientX <= rect.right &&
-          e.clientY >= rect.top && e.clientY <= rect.bottom
-        ) {
-          const tabButtons = el.querySelectorAll<HTMLElement>('[role="tab"]')
-          let insertIndex = tabButtons.length
-          for (let i = 0; i < tabButtons.length; i++) {
-            const btnRect = tabButtons[i]!.getBoundingClientRect()
-            if (e.clientX < btnRect.left + btnRect.width / 2) {
-              insertIndex = i
-              break
+        // ── Tab strip detection (priority over snap zones) ──────────────────
+        for (const [paneId, el] of tabStripRefs.current) {
+          const rect = el.getBoundingClientRect()
+          if (
+            e.clientX >= rect.left &&
+            e.clientX <= rect.right &&
+            e.clientY >= rect.top &&
+            e.clientY <= rect.bottom
+          ) {
+            const tabButtons = el.querySelectorAll<HTMLElement>('[role="tab"]')
+            let insertIndex = tabButtons.length
+            for (let i = 0; i < tabButtons.length; i++) {
+              const btnRect = tabButtons[i]!.getBoundingClientRect()
+              if (e.clientX < btnRect.left + btnRect.width / 2) {
+                insertIndex = i
+                break
+              }
             }
+            const next: TabDropTarget = { targetPaneId: paneId, insertIndex }
+            const cur = tabDropTargetRef.current
+            if (
+              cur?.targetPaneId !== next.targetPaneId ||
+              cur?.insertIndex !== next.insertIndex
+            ) {
+              setTabDropTargetSynced(next)
+            }
+            if (snapStateRef.current !== null) setSnapStateSynced(null)
+            return
           }
-          const next: TabDropTarget = { targetPaneId: paneId, insertIndex }
-          const cur = tabDropTargetRef.current
-          if (cur?.targetPaneId !== next.targetPaneId || cur?.insertIndex !== next.insertIndex) {
-            setTabDropTargetSynced(next)
+        }
+        if (tabDropTargetRef.current !== null) setTabDropTargetSynced(null)
+
+        // ── Snap zone detection ─────────────────────────────────────────────
+        let bestPaneId: string | null = null
+        let bestRect: DOMRect | null = null
+        for (const [paneId, el] of paneRefs.current) {
+          const rect = el.getBoundingClientRect()
+          if (
+            e.clientX >= rect.left &&
+            e.clientX <= rect.right &&
+            e.clientY >= rect.top &&
+            e.clientY <= rect.bottom
+          ) {
+            bestPaneId = paneId
+            bestRect = rect
+            break
           }
-          if (snapStateRef.current !== null) setSnapStateSynced(null)
+        }
+
+        if (!bestPaneId || !bestRect) {
+          setSnapStateSynced(null)
           return
         }
-      }
-      if (tabDropTargetRef.current !== null) setTabDropTargetSynced(null)
 
-      // ── Snap zone detection ─────────────────────────────────────────────
-      let bestPaneId: string | null = null
-      let bestRect: DOMRect | null = null
-      for (const [paneId, el] of paneRefs.current) {
-        const rect = el.getBoundingClientRect()
+        // Clip to visible viewport — a parent with overflow:hidden can extend the rect past the fold.
+        const visibleRight = Math.min(bestRect.right, window.innerWidth)
+        const visibleBottom = Math.min(bestRect.bottom, window.innerHeight)
+        const visibleWidth = visibleRight - bestRect.left
+        const visibleHeight = visibleBottom - bestRect.top
+
+        const snapSize = Math.min(visibleWidth * 0.25, 120)
+        const snapSizeV = Math.min(visibleHeight * 0.25, 120)
+        let zone: SnapZone | null = null
+
+        if (e.clientX - bestRect.left < snapSize) zone = "left"
+        else if (visibleRight - e.clientX < snapSize) zone = "right"
+        else if (e.clientY - bestRect.top < snapSizeV) zone = "top"
+        else if (visibleBottom - e.clientY < snapSizeV) zone = "bottom"
+
+        const next: SnapState | null = zone
+          ? { targetPaneId: bestPaneId, zone }
+          : null
+
+        const cur = snapStateRef.current
         if (
-          e.clientX >= rect.left &&
-          e.clientX <= rect.right &&
-          e.clientY >= rect.top &&
-          e.clientY <= rect.bottom
+          next?.targetPaneId !== cur?.targetPaneId ||
+          next?.zone !== cur?.zone
         ) {
-          bestPaneId = paneId
-          bestRect = rect
-          break
+          setSnapStateSynced(next)
         }
-      }
-
-      if (!bestPaneId || !bestRect) {
-        setSnapStateSynced(null)
-        return
-      }
-
-      // Clip rect to visible viewport — elements may extend beyond the fold
-      // when parent containers use overflow:hidden, so we must use the visible
-      // portion when calculating snap zone edges.
-      const visibleRight = Math.min(bestRect.right, window.innerWidth)
-      const visibleBottom = Math.min(bestRect.bottom, window.innerHeight)
-      const visibleWidth = visibleRight - bestRect.left
-      const visibleHeight = visibleBottom - bestRect.top
-
-      const snapSize = Math.min(visibleWidth * 0.25, 120)
-      const snapSizeV = Math.min(visibleHeight * 0.25, 120)
-      let zone: SnapZone | null = null
-
-      if (e.clientX - bestRect.left < snapSize) zone = "left"
-      else if (visibleRight - e.clientX < snapSize) zone = "right"
-      else if (e.clientY - bestRect.top < snapSizeV) zone = "top"
-      else if (visibleBottom - e.clientY < snapSizeV) zone = "bottom"
-
-      const next: SnapState | null = zone ? { targetPaneId: bestPaneId, zone } : null
-
-      const cur = snapStateRef.current
-      if (next?.targetPaneId !== cur?.targetPaneId || next?.zone !== cur?.zone) {
-        setSnapStateSynced(next)
-      }
-    }, [setSnapStateSynced, setTabDropTargetSynced])
+      },
+      [setSnapStateSynced, setTabDropTargetSynced]
+    )
 
     const handlePointerUp = React.useCallback(() => {
       dragAbortController.current?.abort()
@@ -683,22 +738,45 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
         const title = session.tabTitle
         if (tabDrop) {
           if (tabDrop.targetPaneId === session.sourcePaneId) {
-            reorderTabInPane(session.sourcePaneId, session.tabId, tabDrop.insertIndex)
-            setAnnouncement(`Moved ${title} to position ${tabDrop.insertIndex + 1}.`)
+            reorderTabInPane(
+              session.sourcePaneId,
+              session.tabId,
+              tabDrop.insertIndex
+            )
+            setAnnouncement(
+              `Moved ${title} to position ${tabDrop.insertIndex + 1}.`
+            )
           } else {
-            moveTabToPane(session.sourcePaneId, session.tabId, tabDrop.targetPaneId, tabDrop.insertIndex)
+            moveTabToPane(
+              session.sourcePaneId,
+              session.tabId,
+              tabDrop.targetPaneId,
+              tabDrop.insertIndex
+            )
             const target = findPaneInLayout(current, tabDrop.targetPaneId)
             setAnnouncement(
-              `Moved ${title} to ${target ? paneLabel(target.pane) : "another pane"}.`,
+              `Moved ${title} to ${target ? paneLabel(target.pane) : "another pane"}.`
             )
           }
         } else if (snap) {
-          executeSplit(session.sourcePaneId, session.tabId, snap.targetPaneId, snap.zone)
-          const axis = snap.zone === "left" || snap.zone === "right" ? "column" : "row"
+          executeSplit(
+            session.sourcePaneId,
+            session.tabId,
+            snap.targetPaneId,
+            snap.zone
+          )
+          const axis =
+            snap.zone === "left" || snap.zone === "right" ? "column" : "row"
           setAnnouncement(`Moved ${title} to a new ${axis}.`)
         }
       }
-    }, [executeSplit, reorderTabInPane, moveTabToPane, setSnapStateSynced, setTabDropTargetSynced])
+    }, [
+      executeSplit,
+      reorderTabInPane,
+      moveTabToPane,
+      setSnapStateSynced,
+      setTabDropTargetSynced,
+    ])
 
     const handlePointerCancel = React.useCallback(() => {
       dragAbortController.current?.abort()
@@ -718,7 +796,12 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
     }, [setSnapStateSynced, setTabDropTargetSynced])
 
     const startDrag = React.useCallback(
-      (sourcePaneId: string, tabId: string, tabTitle: string, event: React.PointerEvent<Element>) => {
+      (
+        sourcePaneId: string,
+        tabId: string,
+        tabTitle: string,
+        event: React.PointerEvent<Element>
+      ) => {
         const captureEl = event.currentTarget
         captureEl.setPointerCapture(event.pointerId)
         dragSession.current = {
@@ -733,14 +816,24 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
         }
         const ac = new AbortController()
         dragAbortController.current = ac
-        document.addEventListener("pointermove", handlePointerMove, { signal: ac.signal })
-        document.addEventListener("pointerup", handlePointerUp, { signal: ac.signal })
-        document.addEventListener("pointercancel", handlePointerCancel, { signal: ac.signal })
-        document.addEventListener("keydown", (e: KeyboardEvent) => {
-          if (e.key === "Escape") handlePointerCancel()
-        }, { signal: ac.signal })
+        document.addEventListener("pointermove", handlePointerMove, {
+          signal: ac.signal,
+        })
+        document.addEventListener("pointerup", handlePointerUp, {
+          signal: ac.signal,
+        })
+        document.addEventListener("pointercancel", handlePointerCancel, {
+          signal: ac.signal,
+        })
+        document.addEventListener(
+          "keydown",
+          (e: KeyboardEvent) => {
+            if (e.key === "Escape") handlePointerCancel()
+          },
+          { signal: ac.signal }
+        )
       },
-      [handlePointerMove, handlePointerUp, handlePointerCancel],
+      [handlePointerMove, handlePointerUp, handlePointerCancel]
     )
 
     // ── Persistence ────────────────────────────────────────────────────────
@@ -750,43 +843,50 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
         columns: layoutRef.current.columns.map((col) => ({
           id: col.id,
           topPane: snapshotPane(col.topPane),
-          ...(col.bottomPane ? { bottomPane: snapshotPane(col.bottomPane) } : {}),
+          ...(col.bottomPane
+            ? { bottomPane: snapshotPane(col.bottomPane) }
+            : {}),
         })),
       }),
-      // ponytail: panel sizes are left to react-resizable-panels' own
-      // autoSaveId — no reason to persist them twice.
-      [],
+      // Panel sizes aren't snapshotted here; react-resizable-panels persists those itself via autoSaveId.
+      []
     )
 
     const restore = React.useCallback(
       (
         snapshot: WorkspaceSnapshot,
-        resolveTab: (tabId: string) => WorkspaceTabDef | undefined,
+        resolveTab: (tabId: string) => WorkspaceTabDef | undefined
       ) => {
         const columns = snapshot.columns.reduce<PaneColumn[]>((acc, col) => {
           const topPane = restorePane(col.topPane, resolveTab)
           const bottomPane = col.bottomPane
             ? restorePane(col.bottomPane, resolveTab)
             : undefined
-          // A pane whose tabs all failed to resolve is dropped; if that leaves
-          // the column empty the column goes too, and a surviving bottom pane
-          // is promoted — same invariant removePane() maintains.
-          if (topPane) acc.push({ id: col.id, topPane, bottomPane: bottomPane ?? undefined })
+          // A pane with no resolved tabs is dropped; an emptied column goes too and a surviving bottom pane is promoted, same as removePane().
+          if (topPane)
+            acc.push({
+              id: col.id,
+              topPane,
+              bottomPane: bottomPane ?? undefined,
+            })
           else if (bottomPane) acc.push({ id: col.id, topPane: bottomPane })
           return acc
         }, [])
         setLayout(normalizeColumnSizes({ columns }))
       },
-      [],
+      []
     )
 
-    const registerPane = React.useCallback((paneId: string, el: HTMLElement | null) => {
-      if (el) {
-        paneRefs.current.set(paneId, el)
-      } else {
-        paneRefs.current.delete(paneId)
-      }
-    }, [])
+    const registerPane = React.useCallback(
+      (paneId: string, el: HTMLElement | null) => {
+        if (el) {
+          paneRefs.current.set(paneId, el)
+        } else {
+          paneRefs.current.delete(paneId)
+        }
+      },
+      []
+    )
 
     // ── Imperative handle ──────────────────────────────────────────────────
 
@@ -803,7 +903,17 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
         serialize,
         restore,
       }),
-      [resolvedLastActivePaneId, openTabInPane, closeTab, activateTab, updateTab, openPane, closePane, serialize, restore],
+      [
+        resolvedLastActivePaneId,
+        openTabInPane,
+        closeTab,
+        activateTab,
+        updateTab,
+        openPane,
+        closePane,
+        serialize,
+        restore,
+      ]
     )
 
     // ── Contexts ───────────────────────────────────────────────────────────
@@ -822,12 +932,44 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
         openPane,
         closePane,
       }),
-      [panes, isShowingFallback, resolvedLastActivePaneId, openTabInPane, closeTab, activateTab, updateTab, openPane, closePane],
+      [
+        panes,
+        isShowingFallback,
+        resolvedLastActivePaneId,
+        openTabInPane,
+        closeTab,
+        activateTab,
+        updateTab,
+        openPane,
+        closePane,
+      ]
     )
 
     const dragCtx = React.useMemo<WorkspaceDragContextValue>(
-      () => ({ isDragging, snapState, tabDropTarget, registerPane, registerTabStrip, startDrag, setLastActivePane, paneTargets, splitTab, moveTab }),
-      [isDragging, snapState, tabDropTarget, registerPane, registerTabStrip, startDrag, setLastActivePane, paneTargets, splitTab, moveTab],
+      () => ({
+        isDragging,
+        snapState,
+        tabDropTarget,
+        registerPane,
+        registerTabStrip,
+        startDrag,
+        setLastActivePane,
+        paneTargets,
+        splitTab,
+        moveTab,
+      }),
+      [
+        isDragging,
+        snapState,
+        tabDropTarget,
+        registerPane,
+        registerTabStrip,
+        startDrag,
+        setLastActivePane,
+        paneTargets,
+        splitTab,
+        moveTab,
+      ]
     )
 
     // ── Render ─────────────────────────────────────────────────────────────
@@ -852,11 +994,7 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
               />
             )}
             {ghostPos && ghostTitle && (
-              <DragGhost
-                title={ghostTitle}
-                x={ghostPos.x}
-                y={ghostPos.y}
-              />
+              <DragGhost title={ghostTitle} x={ghostPos.x} y={ghostPos.y} />
             )}
             <div aria-live="polite" role="status" className="sr-only">
               {announcement}
@@ -865,7 +1003,7 @@ export const Workspace = React.forwardRef<WorkspaceHandle, WorkspaceProps>(
         </WorkspaceDragContext.Provider>
       </WorkspaceContext.Provider>
     )
-  },
+  }
 )
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -882,13 +1020,17 @@ function toPaneState(p: WorkspacePaneDef): PaneState {
 }
 
 function snapshotPane(p: PaneState): PaneSnapshot {
-  return { id: p.id, tabIds: p.tabs.map((t) => t.id), activeTabId: p.activeTabId }
+  return {
+    id: p.id,
+    tabIds: p.tabs.map((t) => t.id),
+    activeTabId: p.activeTabId,
+  }
 }
 
 /** Rebuild a pane from a snapshot, or null when none of its tabs resolve. */
 function restorePane(
   snap: PaneSnapshot,
-  resolveTab: (tabId: string) => WorkspaceTabDef | undefined,
+  resolveTab: (tabId: string) => WorkspaceTabDef | undefined
 ): PaneState | null {
   const tabs = snap.tabIds
     .map(resolveTab)
@@ -905,20 +1047,27 @@ function paneLabel(pane: PaneState): string {
   return pane.tabs.find((t) => t.id === pane.activeTabId)?.title ?? pane.id
 }
 
-function tabTitleIn(layout: WorkspaceLayout, paneId: string, tabId: string): string {
+function tabTitleIn(
+  layout: WorkspaceLayout,
+  paneId: string,
+  tabId: string
+): string {
   return (
-    findPaneInLayout(layout, paneId)?.pane.tabs.find((t) => t.id === tabId)?.title ?? "Tab"
+    findPaneInLayout(layout, paneId)?.pane.tabs.find((t) => t.id === tabId)
+      ?.title ?? "Tab"
   )
 }
 
 /** Find a pane anywhere in the layout. Returns the pane, its column ID, and its slot. */
 function findPaneInLayout(
   layout: WorkspaceLayout,
-  paneId: string,
+  paneId: string
 ): { pane: PaneState; columnId: string; slot: "top" | "bottom" } | null {
   for (const col of layout.columns) {
-    if (col.topPane.id === paneId) return { pane: col.topPane, columnId: col.id, slot: "top" }
-    if (col.bottomPane?.id === paneId) return { pane: col.bottomPane, columnId: col.id, slot: "bottom" }
+    if (col.topPane.id === paneId)
+      return { pane: col.topPane, columnId: col.id, slot: "top" }
+    if (col.bottomPane?.id === paneId)
+      return { pane: col.bottomPane, columnId: col.id, slot: "bottom" }
   }
   return null
 }
@@ -927,12 +1076,13 @@ function findPaneInLayout(
 function mapPane(
   layout: WorkspaceLayout,
   paneId: string,
-  fn: (p: PaneState) => PaneState,
+  fn: (p: PaneState) => PaneState
 ): WorkspaceLayout {
   return {
     columns: layout.columns.map((col) => {
       if (col.topPane.id === paneId) return { ...col, topPane: fn(col.topPane) }
-      if (col.bottomPane?.id === paneId) return { ...col, bottomPane: fn(col.bottomPane) }
+      if (col.bottomPane?.id === paneId)
+        return { ...col, bottomPane: fn(col.bottomPane) }
       return col
     }),
   }
@@ -967,7 +1117,11 @@ function normalizeColumnSizes(layout: WorkspaceLayout): WorkspaceLayout {
   return {
     columns: layout.columns.map((col) => ({
       ...col,
-      topPane: { ...col.topPane, defaultSize: equalSize, minSize: MIN_COL_SIZE },
+      topPane: {
+        ...col.topPane,
+        defaultSize: equalSize,
+        minSize: MIN_COL_SIZE,
+      },
     })),
   }
 }
@@ -1002,7 +1156,7 @@ function WorkspaceResizeHandle({ className }: { className?: string }) {
         "w-[6px] after:w-3",
         // Row separator (horizontal line) — library sets aria-orientation=horizontal
         "aria-[orientation=horizontal]:h-[6px] aria-[orientation=horizontal]:w-full aria-[orientation=horizontal]:after:h-3",
-        className,
+        className
       )}
     />
   )
@@ -1033,34 +1187,54 @@ function WorkspacePaneGroupFromLayout({
           >
             {col.bottomPane ? (
               <ResizablePanelGroup orientation="vertical" className="h-full">
-                <ResizablePanel id={col.topPane.id} defaultSize={50} minSize={MIN_ROW_SIZE}>
+                <ResizablePanel
+                  id={col.topPane.id}
+                  defaultSize={50}
+                  minSize={MIN_ROW_SIZE}
+                >
                   <WorkspacePaneWrapper paneId={col.topPane.id}>
                     <WorkspaceTabs
                       tabs={col.topPane.tabs}
                       activeTabId={col.topPane.activeTabId}
-                      onTabChange={(tabId) => onTabChange(col.topPane.id, tabId)}
+                      onTabChange={(tabId) =>
+                        onTabChange(col.topPane.id, tabId)
+                      }
                       onTabClose={(tabId) => onTabClose(col.topPane.id, tabId)}
                       onAddTab={col.topPane.onAddTab}
                       paneId={col.topPane.id}
                       className="h-full"
                     >
-                      {renderTabContent(col.topPane.id, col.topPane.activeTabId)}
+                      {renderTabContent(
+                        col.topPane.id,
+                        col.topPane.activeTabId
+                      )}
                     </WorkspaceTabs>
                   </WorkspacePaneWrapper>
                 </ResizablePanel>
                 <WorkspaceResizeHandle />
-                <ResizablePanel id={col.bottomPane.id} defaultSize={50} minSize={MIN_ROW_SIZE}>
+                <ResizablePanel
+                  id={col.bottomPane.id}
+                  defaultSize={50}
+                  minSize={MIN_ROW_SIZE}
+                >
                   <WorkspacePaneWrapper paneId={col.bottomPane.id}>
                     <WorkspaceTabs
                       tabs={col.bottomPane.tabs}
                       activeTabId={col.bottomPane.activeTabId}
-                      onTabChange={(tabId) => onTabChange(col.bottomPane!.id, tabId)}
-                      onTabClose={(tabId) => onTabClose(col.bottomPane!.id, tabId)}
+                      onTabChange={(tabId) =>
+                        onTabChange(col.bottomPane!.id, tabId)
+                      }
+                      onTabClose={(tabId) =>
+                        onTabClose(col.bottomPane!.id, tabId)
+                      }
                       onAddTab={col.bottomPane.onAddTab}
                       paneId={col.bottomPane.id}
                       className="h-full"
                     >
-                      {renderTabContent(col.bottomPane.id, col.bottomPane.activeTabId)}
+                      {renderTabContent(
+                        col.bottomPane.id,
+                        col.bottomPane.activeTabId
+                      )}
                     </WorkspaceTabs>
                   </WorkspacePaneWrapper>
                 </ResizablePanel>
@@ -1096,19 +1270,31 @@ function WorkspacePaneWrapper({
   paneId: string
   children: React.ReactNode
 }) {
-  const { isDragging, snapState, tabDropTarget, registerPane, setLastActivePane } = useWorkspaceDrag()
+  const {
+    isDragging,
+    snapState,
+    tabDropTarget,
+    registerPane,
+    setLastActivePane,
+  } = useWorkspaceDrag()
 
   const paneRef = React.useCallback(
     (el: HTMLElement | null) => registerPane(paneId, el),
-    [paneId, registerPane],
+    [paneId, registerPane]
   )
 
   return (
-    <div ref={paneRef} className="relative h-full w-full" onPointerDown={() => setLastActivePane(paneId)}>
+    <div
+      ref={paneRef}
+      className="relative h-full w-full"
+      onPointerDown={() => setLastActivePane(paneId)}
+    >
       {children}
       {isDragging && tabDropTarget === null && (
         <SnapZoneOverlay
-          activeZone={snapState?.targetPaneId === paneId ? snapState.zone : null}
+          activeZone={
+            snapState?.targetPaneId === paneId ? snapState.zone : null
+          }
         />
       )}
     </div>
@@ -1118,23 +1304,23 @@ function WorkspacePaneWrapper({
 // ── SnapZoneOverlay ────────────────────────────────────────────────────────
 
 const ZONE_CLASSES: Record<SnapZone, string> = {
-  left:   "inset-y-0 left-0 w-1/2",
-  right:  "inset-y-0 right-0 w-1/2",
-  top:    "inset-x-0 top-0 h-1/2",
+  left: "inset-y-0 left-0 w-1/2",
+  right: "inset-y-0 right-0 w-1/2",
+  top: "inset-x-0 top-0 h-1/2",
   bottom: "inset-x-0 bottom-0 h-1/2",
 }
 
 const ZONE_BORDER: Record<SnapZone, string> = {
-  left:   "border-r border-border",
-  right:  "border-l border-border",
-  top:    "border-b border-border",
+  left: "border-r border-border",
+  right: "border-l border-border",
+  top: "border-b border-border",
   bottom: "border-t border-border",
 }
 
 const ZONE_LABEL: Record<SnapZone, string> = {
-  left:   "Drop to add a new Column\nor move away to cancel",
-  right:  "Drop to add a new Column\nor move away to cancel",
-  top:    "Drop to add a new Row\nor move away to cancel",
+  left: "Drop to add a new Column\nor move away to cancel",
+  right: "Drop to add a new Column\nor move away to cancel",
+  top: "Drop to add a new Row\nor move away to cancel",
   bottom: "Drop to add a new Row\nor move away to cancel",
 }
 
@@ -1146,12 +1332,12 @@ function SnapZoneOverlay({ activeZone }: { activeZone: SnapZone | null }) {
       className={cn(
         "pointer-events-none absolute flex items-center justify-center",
         "bg-muted/70 backdrop-blur-[1px]",
-        "animate-in fade-in-0 duration-100",
+        "animate-in duration-100 fade-in-0",
         ZONE_CLASSES[activeZone],
-        ZONE_BORDER[activeZone],
+        ZONE_BORDER[activeZone]
       )}
     >
-      <p className="max-w-[180px] whitespace-pre-line text-center text-[11px] leading-relaxed text-muted-foreground">
+      <p className="max-w-[180px] text-center text-[11px] leading-relaxed whitespace-pre-line text-muted-foreground">
         {ZONE_LABEL[activeZone]}
       </p>
     </div>
@@ -1172,6 +1358,6 @@ function DragGhost({ title, x, y }: { title: string; x: number; y: number }) {
         <span className="text-[12px] font-medium text-foreground">{title}</span>
       </div>
     </div>,
-    document.body,
+    document.body
   )
 }

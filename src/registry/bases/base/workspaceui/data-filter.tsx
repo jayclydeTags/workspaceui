@@ -99,9 +99,7 @@ const MULTI_SELECT_OPERATORS: OperatorDef[] = [
   { id: "isEmpty", label: "is empty" },
 ]
 
-// user shares select's operators verbatim — "Unassigned" is a pickable null
-// value in the value step rather than a dedicated operator, which is what
-// lets dataGridFilterFn dispatch both types through one branch below.
+// "Unassigned" is a pickable null value, not a dedicated operator — lets dataGridFilterFn dispatch both types through one branch below.
 const USER_OPERATORS: OperatorDef[] = SELECT_OPERATORS
 
 const OPERATORS_BY_TYPE: Partial<Record<DataGridColumnType, OperatorDef[]>> = {
@@ -126,8 +124,7 @@ const MULTI_VALUE_OPERATORS = new Set([
   "hasNoneOf",
 ])
 
-// Operators that encode the value in their own label ("is true" / "is
-// empty") skip the value step entirely — every other operator needs one.
+// Operators that encode the value in their own label skip the value step entirely.
 function operatorRequiresValue(operator: string | null | undefined): boolean {
   return (
     operator !== "isTrue" && operator !== "isFalse" && operator !== "isEmpty"
@@ -156,9 +153,7 @@ function optionLabel(
   return options?.find((o) => o.value === value)?.label ?? value
 }
 
-// select's options list and user's users-plus-Unassigned list, so isAnyOf
-// (shared with user) and the multi-value multiSelect operators can format a
-// picked value without knowing which of the two types they're in.
+// Formats a picked value for either select's options or user's users-plus-Unassigned list.
 function itemLabel<TData>(
   column: Column<TData, unknown>,
   value: unknown
@@ -224,27 +219,17 @@ function formatFilterSummary<TData>(
 
 type ValueShape = "single" | "between" | "multi"
 
-// Switching operators within a type can change what shape the value needs
-// to be (a plain string vs a [lo, hi] tuple vs a string[]) — same-shape
-// switches (eq -> gt, is -> isNot) keep the existing value; a shape change
-// (eq -> between) resets it, since the old value can't be reinterpreted.
+// Same-shape operator switches (eq -> gt) keep the existing value; a shape change (eq -> between) resets it.
 function valueShapeOf(operator: string): ValueShape {
   if (operator === "between") return "between"
   if (MULTI_VALUE_OPERATORS.has(operator)) return "multi"
   return "single"
 }
 
-// Below this container width the chip chain and column-pick popover give
-// way to drawer-backed toolbar buttons. 448px is the same threshold settled
-// on for data-grid's own (not yet built — see #54) card-fallback breakpoint,
-// so once that lands the common case — both mounted in one narrow pane —
-// flips together, even though each component measures its own container.
+// Matches data-grid.tsx's own NARROW_BREAKPOINT so both flip together in a shared narrow pane.
 const NARROW_BREAKPOINT = 448
 
-// This component's own ResizeObserver — deliberately not shared with
-// data-grid's. They're mounted separately and only share the table
-// instance, so a wide filter bar above a narrow grid is correct, not a
-// desync to fix.
+// Own ResizeObserver, deliberately not shared with data-grid's — they're mounted separately, so a wide filter bar above a narrow grid is correct, not a desync.
 function useContainerWidth<T extends HTMLElement>() {
   const ref = React.useRef<T>(null)
   const [width, setWidth] = React.useState<number | null>(null)
@@ -275,16 +260,11 @@ function toTime(value: unknown): number {
 }
 
 /**
- * The filterFn every filterable column must set: `filterFn: dataGridFilterFn`.
- * TanStack's built-in filter functions all read the filter value directly —
- * none of them can consume the `{ operator, value }` object the chip chain
- * writes via `column.setFilterValue()`. This unwraps that object and
- * dispatches on `column.meta.type`.
+ * The filterFn every filterable column must set: `filterFn: dataGridFilterFn`. Unwraps the
+ * `{ operator, value }` object the chip chain writes (TanStack's built-ins can't) and dispatches
+ * on `column.meta.type`.
  */
-// ponytail: typed FilterFn<any>, matching TanStack's own documented pattern
-// for a filterFn meant to be assigned across arbitrary tables — Row<TData>'s
-// variance rejects a real generic (or `unknown`) at the ColumnDef<Employee>
-// assignment site.
+// FilterFn's own generic can't be narrowed here without breaking TanStack's inference.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const dataGridFilterFn: FilterFn<any> = (
   row,
@@ -352,9 +332,7 @@ export const dataGridFilterFn: FilterFn<any> = (
           return true
       }
     }
-    // select and user differ only in how their value is picked (options vs.
-    // users-plus-null) — the operators mean the same thing for both, so one
-    // branch covers them.
+    // select and user's operators mean the same thing, differing only in how the value is picked.
     case "select":
     case "user": {
       switch (operator) {
@@ -428,8 +406,7 @@ function FilterBackButton({
   )
 }
 
-// Plain operator buttons, no wrapping div — callers own the layout so a
-// back button (the create-new chain) can share one without double-wrapping.
+// No wrapping div — callers own the layout so a back button can share one without double-wrapping.
 function OperatorList({
   type,
   selected,
@@ -458,8 +435,6 @@ function OperatorList({
   )
 }
 
-// select's options, or user's users-plus-Unassigned — the value picker's
-// pickable items, keyed by whichever the column's type actually has.
 // "Unassigned" (null) is a real item here, not a separate operator.
 function pickItemsFor<TData>(
   column: Column<TData, unknown>,
@@ -480,20 +455,13 @@ function pickItemsFor<TData>(
   }))
 }
 
-// The Command copy for a picker, keyed by the same type switch as
-// pickItemsFor — one source of truth for "how do we talk about this type's
-// items" instead of a ternary repeated at every Command call site.
 function pickerCopy(type: DataGridColumnType | undefined) {
   return type === "user"
     ? { placeholder: "Search people...", empty: "No people." }
     : { placeholder: "Search options...", empty: "No options." }
 }
 
-// The value-input UI for one operator: a single input for most, two for
-// "is between", a searchable list for select/user is/is-not, a searchable
-// multi-select for isAnyOf and multiSelect's hasAnyOf/hasAllOf/hasNoneOf.
-// Shared by the create-new chain's value step and the chip's standalone
-// value popover.
+// Shared by the create-new chain's value step and the chip's standalone value popover.
 function ValueEditor<TData>({
   column,
   operator,
@@ -632,10 +600,8 @@ function ValueEditor<TData>({
   )
 }
 
-// The "+ Filter" trigger's chain: column -> operator -> value, always
-// starting fresh. Editing an already-committed chip goes through
-// OperatorPopover/ValuePopover instead — those write straight to the
-// column's filter value with no intermediate draft/chain state.
+// The "+ Filter" chain: column -> operator -> value, always starting fresh. Editing an existing
+// chip goes through OperatorPopover/ValuePopover instead, which write straight through with no draft state.
 function FilterEditorPopover<TData>({
   table,
   availableColumns,
@@ -753,10 +719,7 @@ function FilterEditorPopover<TData>({
   )
 }
 
-// A chip's operator segment: a dropdown of the operators for its column's
-// type. Picking one writes straight through — no chain, no draft state.
-// Same-shape switches (eq -> gt) keep the existing value; a shape change
-// (eq -> between) resets it to that operator's default.
+// A chip's operator segment — picking one writes straight through, no chain/draft state.
 function OperatorPopover<TData>({
   table,
   columnId,
@@ -803,9 +766,7 @@ function OperatorPopover<TData>({
   )
 }
 
-// A chip's value segment: the same ValueEditor as the create-new chain,
-// scoped to the operator the chip already has. Writes through on Apply (or
-// immediately for a single-click pick like select is/is-not).
+// A chip's value segment: the same ValueEditor as the create-new chain, scoped to the chip's existing operator.
 function ValuePopover<TData>({
   table,
   columnId,
@@ -852,15 +813,8 @@ function ValuePopover<TData>({
   )
 }
 
-// Single-column sort, cycling asc -> desc -> off. Tapping the current
-// primary column continues its own cycle — even out of a wide-branch
-// multi-column sort, where it collapses the extra columns but keeps
-// cycling the primary's direction rather than resetting it to asc.
-// Picking any other column always replaces the whole array with that
-// column ascending — that's the one place the narrow branch can discard a
-// wide-branch multi-column sort, and it's deliberate: widening the
-// container again restores nothing, since the replacement already
-// overwrote `sorting`.
+// Single-column sort, cycling asc -> desc -> off. Picking a non-primary column replaces the whole
+// `sorting` array (collapsing any wide-branch multi-column sort) — deliberate and not reversible by widening again.
 function cycleSort<TData>(table: TanstackTable<TData>, columnId: string) {
   const sorting = table.getState().sorting
   const isPrimary = sorting.length > 0 && sorting[0]!.id === columnId
@@ -871,11 +825,8 @@ function cycleSort<TData>(table: TanstackTable<TData>, columnId: string) {
   }
 }
 
-// Narrow-branch replacement for column-header sort clicks (the card
-// fallback renders no headers). Labelled with the primary sort column, plus
-// a muted "+N more" when a wide-branch multi-column sort is in effect — the
-// extra columns stay in `sorting` state untouched until a new pick replaces
-// the whole array. Tapping a column commits immediately and closes.
+// Narrow-branch replacement for column-header sort clicks. Shows a muted "+N more" when a
+// wide-branch multi-column sort is in effect (those extras stay in `sorting` until a new pick replaces the array).
 function NarrowSortDrawer<TData>({
   table,
   sortableColumns,
@@ -952,14 +903,9 @@ function NarrowSortDrawer<TData>({
   )
 }
 
-// Narrow-branch replacement for the chip chain: active filters as
-// full-width rows plus a persistent "Add filter" row, both scoped to a
-// bottom drawer so toolbar height stays constant no matter how many filters
-// are active. Tapping "Add filter" or an existing row pushes the same
-// column -> operator -> value chain as a second step inside this drawer
-// (skipping the column step when editing, since that row's column is
-// already fixed) — same `{ operator, value }` written through
-// `column.setFilterValue()` as the wide-branch popover.
+// Narrow-branch replacement for the chip chain: active filters as full-width rows in a bottom
+// drawer, so toolbar height stays constant. Pushes the same column -> operator -> value chain
+// (skipping the column step when editing an existing row).
 function NarrowFilterDrawer<TData>({
   table,
   activeFilters,
@@ -1006,12 +952,8 @@ function NarrowFilterDrawer<TData>({
     setStep("operator")
   }
 
-  // Reseeds the chain on every fresh open — straight to editColumnId's
-  // operator step when the chip row opened it, otherwise back to the list
-  // the trigger button opens to. Adjusted during render (React's documented
-  // "store info from previous render" pattern) rather than an effect, since
-  // `open` becoming true from the *outside* (the chip row's openEdit, not a
-  // Drawer-internal event) never fires onOpenChange for an effect to key off.
+  // Adjusted during render (React's "store info from previous render" pattern), not an effect —
+  // `open` flips true from the chip row's openEdit, which never fires onOpenChange for an effect to key off.
   const [trackedOpen, setTrackedOpen] = React.useState(open)
   if (open !== trackedOpen) {
     setTrackedOpen(open)
@@ -1203,9 +1145,7 @@ export function DataFilter<TData>({ table }: DataFilterProps<TData>) {
     table.getColumn(columnId)?.setFilterValue(undefined)
   }
 
-  // Lifted out of NarrowFilterDrawer so the chip row below the toolbar can
-  // open it too, straight to a tapped chip's edit step — the trigger button
-  // itself still just opens to the list (editColumnId null).
+  // Lifted out of NarrowFilterDrawer so the chip row can open it too, straight to a tapped chip's edit step.
   const [narrowFilterOpen, setNarrowFilterOpen] = React.useState(false)
   const [narrowEditColumnId, setNarrowEditColumnId] = React.useState<
     string | null

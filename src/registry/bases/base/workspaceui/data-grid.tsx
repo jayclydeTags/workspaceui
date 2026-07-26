@@ -110,17 +110,10 @@ export interface DataGridProps<TData> {
   className?: string
 }
 
-// Below this container width the grid swaps to a card list (or, with
-// narrowFallback="none", keeps the grid with a sticky first column).
-// Deliberately the same 448px data-filter settled on for its own sheet-backed
-// toolbar (see data-filter.tsx) so the common case — both mounted in one
-// narrow pane — flips together, even though each measures its own container.
+// Matches data-filter.tsx's own NARROW_BREAKPOINT so both flip together in a shared narrow pane.
 const NARROW_BREAKPOINT = 448
 
-// This component's own ResizeObserver — see the same note in data-filter.tsx
-// for why it isn't shared. Container width, not viewport, drives every
-// responsive decision here: the driving case is a workspace pane getting
-// narrower, not a phone.
+// Own ResizeObserver (not shared with data-filter.tsx): container width, not viewport, drives responsiveness here.
 function useContainerWidth<T extends HTMLElement>() {
   const ref = React.useRef<T>(null)
   const [width, setWidth] = React.useState<number | null>(null)
@@ -153,18 +146,12 @@ function pinActionLabel(current: PinPosition): string {
   return "Pin column left"
 }
 
-// A leading checkbox column renders automatically whenever the table's own
-// row-selection feature is enabled — TanStack's own default, so this needs
-// no separate DataGrid prop to remember. A consumer who doesn't want
-// selection at all opts out the same way they would with plain TanStack:
-// `enableRowSelection: false` on their useReactTable() call.
+// Follows TanStack's own default; opt out via `enableRowSelection: false` on useReactTable().
 function hasRowSelectionEnabled<TData>(table: TanstackTable<TData>): boolean {
   return table.options.enableRowSelection !== false
 }
 
-// A naive insert-before-target no-ops on an adjacent swap: removing the
-// dragged id shifts the target's own index back into the slot the drop
-// intended to fill. The midpoint-derived before/after position fixes that.
+// Uses the midpoint-derived before/after position: a naive insert-before-target no-ops on an adjacent swap.
 function reorderColumnIds(
   order: string[],
   draggedId: string,
@@ -178,10 +165,7 @@ function reorderColumnIds(
   return [...without.slice(0, insertAt), draggedId, ...without.slice(insertAt)]
 }
 
-// `forceStickyLeft` is the narrowFallback="none" escape hatch: sticks the
-// first column left even when the consumer never pinned it, so a real grid
-// stays usable under horizontal scroll at narrow widths. A real left pin
-// still wins its own getStart() offset over the forced 0.
+// forceStickyLeft is the narrowFallback="none" escape hatch; a real left pin still wins its own getStart() offset over the forced 0.
 function columnPinStyle<TData>(
   column: Column<TData, unknown>,
   forceStickyLeft = false
@@ -211,8 +195,7 @@ function cellKey(r: number, c: number) {
   return `${r}-${c}`
 }
 
-// Takes the ref object itself (not `.current`) so `.current` is only read
-// when the callback fires, not while building it during render.
+// Takes the ref object, not `.current`, so `.current` is read only when the callback fires.
 function setMapRef<T>(ref: React.RefObject<Map<string, T>>, key: string) {
   return (el: T | null) => {
     if (el) ref.current.set(key, el)
@@ -228,9 +211,7 @@ function normalizeErrorMessage(err: unknown): string {
   return err instanceof Error ? err.message : String(err)
 }
 
-// A cell's committed value, coerced to the string every editor's buffer is
-// typed as — null/undefined read as empty rather than the literal
-// "null"/"undefined".
+// null/undefined read as empty, not the literal "null"/"undefined".
 function cellDisplayValue(value: unknown): string {
   return value == null ? "" : String(value)
 }
@@ -240,9 +221,7 @@ const currencyFormatter = new Intl.NumberFormat(undefined, {
   currency: "USD",
 })
 
-// Read-mode-only formatting on top of cellDisplayValue — currency gets its
-// symbol/decimals. select doesn't need a case here: a native <option> looks
-// up its own label from the raw value for free.
+// select needs no case here: a native <option> looks up its own label from the raw value.
 function formatReadValue(type: DataGridColumnType | undefined, raw: unknown) {
   if (type !== "currency" || raw == null || raw === "")
     return cellDisplayValue(raw)
@@ -250,10 +229,7 @@ function formatReadValue(type: DataGridColumnType | undefined, raw: unknown) {
   return Number.isNaN(n) ? cellDisplayValue(raw) : currencyFormatter.format(n)
 }
 
-// multiSelect's commit shape: filters to the options that are actually
-// selected, in the column's own declared order — the same call site handles
-// both "normalize before commit" and "normalize before dedup-compare", so
-// reordering the same set can never read as a change.
+// Normalizes to the column's declared option order, so reordering the same set never reads as a change.
 function normalizeToOptionsOrder(
   values: string[],
   options: DataGridSelectOption[]
@@ -276,9 +252,7 @@ function initials(name: string): string {
     .join("")
 }
 
-// The at-rest trigger content for a multiSelect cell — chips capped at
-// maxChips, then a "+N" overflow badge. Fixed row height is the point (the
-// deferred virtualization work depends on it), so this never wraps.
+// Chips capped at maxChips + a "+N" badge, keeping row height fixed.
 function renderMultiSelectTrigger(
   selected: string[],
   options: DataGridSelectOption[],
@@ -306,9 +280,7 @@ function renderMultiSelectTrigger(
   )
 }
 
-// The at-rest trigger content for a user cell — an avatar plus name, or a
-// muted "Unassigned" label. "Unassigned" is a real pickable value (null),
-// not just an empty state.
+// "Unassigned" is a real pickable value (null), not just an empty state.
 function renderUserTrigger(userId: string | null, users: DataGridUser[]) {
   const user = userId == null ? undefined : users.find((u) => u.id === userId)
   if (!user) {
@@ -332,9 +304,7 @@ function optionLabel(
   return options?.find((opt) => opt.value === value)?.label ?? String(value)
 }
 
-// The narrow branch's own read-mode formatting — covers every column type
-// (formatReadValue only knows currency vs. plain text), since a card's
-// title/subtitle and a sheet field's at-rest value can land on any of them.
+// Covers every column type, unlike formatReadValue (currency vs. plain text only).
 function formatCardValue<TData>(cell: Cell<TData, unknown>): string {
   const meta = cell.column.columnDef.meta
   const type = meta?.type
@@ -366,19 +336,14 @@ function withoutKey<T>(map: Map<string, T>, key: string) {
   return next
 }
 
-// A cell's in-flight or rejected commit — the typed value it's holding on
-// screen, whether it's still pending, and (once rejected) the error to show.
-// One entry per cell key so pending/value/error can't drift out of sync with
-// each other.
+// One entry per cell key so pending/value/error can't drift out of sync.
 interface CellCommit {
   value: string
   pending: boolean
   error?: string
 }
 
-// ponytail: "required" (+ "must be a number" for number/currency) is the
-// only validation until a real validation hook lands. boolean never fails —
-// a checkbox has no invalid state.
+// Only checks "required" (+ numeric for number/currency); boolean never fails.
 function validateForType(
   type: DataGridColumnType | undefined,
   value: string
@@ -425,11 +390,8 @@ function defaultValueForColumnType(
 }
 
 /**
- * Per-type default values for a new row — "" for text/date, 0 for
- * number/currency, false for boolean, the first option for select, [] for
- * multiSelect, null for user. Columns without a `meta.type` are omitted.
- * The grid never owns data, so it can't append a row itself: call this from
- * your own `onRowAdd` to seed the record you construct and insert.
+ * Per-type default values for a new row (columns without `meta.type` are omitted).
+ * The grid never owns data — call this from your own `onRowAdd` to seed the row you insert.
  */
 export function getDataGridRowDefaults<TData>(
   table: TanstackTable<TData>
@@ -455,10 +417,7 @@ export function DataGrid<TData>({
   const { ref: containerRef, width: containerWidth } =
     useContainerWidth<HTMLDivElement>()
   const isNarrow = containerWidth != null && containerWidth < NARROW_BREAKPOINT
-  // Only one tree ever renders: showCards picks it up front, rather than
-  // rendering both and hiding one with CSS — the wide grid's own headers
-  // (resize handles, pin buttons, roving tabindex refs) simply don't exist
-  // in the DOM while this is true.
+  // Only one tree renders — showCards picks it up front rather than hiding one with CSS, so the wide grid's headers don't exist in the DOM while true.
   const showCards = isNarrow && narrowFallback === "cards"
   const forceStickyFirstColumn = isNarrow && narrowFallback === "none"
 
@@ -471,18 +430,11 @@ export function DataGrid<TData>({
   const totalColCount =
     colCount + (hasDeleteColumn ? 1 : 0) + (hasSelectionColumn ? 1 : 0)
 
-  // The row a tapped card opened a detail sheet for — narrow-branch-only.
-  // Tracked by row id (not index) so it survives a data update that shifts
-  // row order; resolved back to an index against `rows` at render time,
-  // which is what every commit path below is keyed on.
+  // Tracked by row id, not index, so it survives a data update that reorders rows.
   const [openRowId, setOpenRowId] = React.useState<string | null>(null)
   const openRowIndex = rows.findIndex((row) => row.id === openRowId)
 
-  // Buffer-typed sheet fields (text/number/currency/date) each need their
-  // own in-progress value, since — unlike the grid's one-cell-at-a-time
-  // editCoord — every field in the sheet is editable at once. Keyed the same
-  // "r-c" way as `commits`; a key's absence means "not currently being
-  // typed into", falling back to the committed/pending value.
+  // Every sheet field is editable at once (unlike the grid's single editCoord); a missing key falls back to committed/pending value.
   const [sheetBuffers, setSheetBuffers] = React.useState<
     Record<string, string>
   >({})
@@ -492,34 +444,25 @@ export function DataGrid<TData>({
   const [buffer, setBuffer] = React.useState("")
   const [error, setError] = React.useState<string | null>(null)
 
-  // Async commit state, keyed by "r-c" — independent of editCoord so a
-  // commit can stay pending (or errored) on a cell after focus has moved on.
-  // Cleared entirely on success, since the table's own data takes back over.
+  // Independent of editCoord so a commit can stay pending/errored after focus moves on; cleared on success.
   const [commits, setCommits] = React.useState<Map<string, CellCommit>>(
     new Map()
   )
   const [liveMessage, setLiveMessage] = React.useState("")
 
-  // Set right before calling onRowAdd, consumed once the consumer's data
-  // update lands and rowCount actually grows — that's the only signal the
-  // grid gets back, since it never owns data itself.
+  // Consumed once rowCount actually grows — the only add-succeeded signal the grid gets back, since it never owns data.
   const [pendingAdd, setPendingAdd] = React.useState<{
     afterRowId?: string
   } | null>(null)
   const prevRowCountRef = React.useRef(rowCount)
   const [deleteTarget, setDeleteTarget] = React.useState<string | null>(null)
 
-  // Row-level range selection is anchor-and-extend: the row a plain
-  // click/keyboard-move last landed on, extended by a later Shift+Click or
-  // Shift+ArrowUp/Down. Cleared on any plain (non-shift) move so the next
-  // extension starts fresh from wherever the user is now.
+  // Anchor-and-extend selection; cleared on any plain (non-shift) move so the next extension starts fresh.
   const [selectionAnchor, setSelectionAnchor] = React.useState<number | null>(
     null
   )
 
-  // Set on every dragover inside the Columns panel; read (and cleared) on
-  // drop. The dragged column's own id travels through the native
-  // DataTransfer instead, since that's the only thing readable at drop time.
+  // The dragged column's id travels through native DataTransfer instead — the only thing readable at drop time.
   const [dropTarget, setDropTarget] = React.useState<{
     id: string
     position: "before" | "after"
@@ -528,9 +471,7 @@ export function DataGrid<TData>({
   const cellRefs = React.useRef(new Map<string, HTMLTableCellElement>())
   const inputRefs = React.useRef(new Map<string, HTMLInputElement>())
   const selectRefs = React.useRef(new Map<string, HTMLSelectElement>())
-  // Enter/Tab/Escape move focus themselves after resolving the cell (commit
-  // or cancel); the resulting native blur on the old input must not run a
-  // second, stale commit. Set right before an explicit move, consumed once.
+  // Suppresses the stale blur-commit that follows an explicit Enter/Tab/Escape-driven focus move.
   const suppressNextBlurRef = React.useRef(false)
   const errorId = React.useId()
 
@@ -538,9 +479,7 @@ export function DataGrid<TData>({
     return rows[r]?.getVisibleCells()[c]?.column.columnDef.meta?.type
   }
 
-  // Only text/number/currency/date land in inputRefs; select lands in
-  // selectRefs. Never both for the same key, so trying one then the other
-  // finds whichever control this cell actually rendered.
+  // Never both refs for the same key, so trying one then the other finds whichever control this cell rendered.
   function focusEditControl(key: string) {
     const input = inputRefs.current.get(key)
     if (input) {
@@ -562,10 +501,7 @@ export function DataGrid<TData>({
     cellRefs.current.get(cellKey(r, c))?.focus()
   }
 
-  // Row-level only: selects every row between a and b inclusive, replacing
-  // whatever was selected before — the same "click, then shift-click/arrow
-  // to extend" model file explorers use. Cell-range selection (Shift+Left/
-  // Right) is deliberately not implemented; those keys stay unbound.
+  // Row-level range selection only; cell-range (Shift+Left/Right) is unbound.
   function selectRowRange(a: number, b: number) {
     const lo = Math.min(a, b)
     const hi = Math.max(a, b)
@@ -587,8 +523,6 @@ export function DataGrid<TData>({
     setSelectionAnchor(r)
   }
 
-  // Takes the column the caller already has, rather than columnId + a
-  // table.getColumn() lookup back through the table.
   function getColumnLabel(column: Column<TData, unknown>): string {
     const header = column.columnDef.header
     return typeof header === "string" ? header : column.id
@@ -599,11 +533,7 @@ export function DataGrid<TData>({
   const columnPinningState = table.getState().columnPinning
   const isMountedRef = React.useRef(false)
 
-  // Resize, pin, and reorder all mutate the table's own (TanStack-managed)
-  // state directly — no internal copy to keep in sync. This just reports
-  // that state out whenever it actually changes, so a consumer can persist
-  // it; omitting the callback doesn't disable resize/pin/reorder themselves.
-  // Skips the mount-time run so it only fires after a real change.
+  // Reports the table's own resize/pin/reorder state out after real changes only (skips the mount-time run).
   React.useEffect(() => {
     if (!isMountedRef.current) {
       isMountedRef.current = true
@@ -658,9 +588,7 @@ export function DataGrid<TData>({
     setDropTarget(null)
   }
 
-  // Fires once the consumer hands back a grown row set after onRowAdd —
-  // focuses the new row's first cell, whether it landed at the end (append)
-  // or right after afterRowId (insert).
+  // Focuses the new row's first cell once the consumer's rowCount actually grows after onRowAdd.
   React.useEffect(() => {
     if (pendingAdd && rowCount > prevRowCountRef.current) {
       const targetR =
@@ -678,10 +606,7 @@ export function DataGrid<TData>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowCount, pendingAdd])
 
-  // ponytail: row add/delete have no pending/error UI of their own — unlike
-  // onCellEdit, the spec doesn't ask for one. Still clear pendingAdd on
-  // rejection so a later unrelated row-count change can't be mistaken for
-  // this add having landed and steal focus to the wrong row.
+  // Clears pendingAdd on rejection so a later unrelated row-count change can't steal focus.
   function handleRowAdd(afterRowId?: string) {
     if (!onRowAdd) return
     setPendingAdd({ afterRowId })
@@ -695,10 +620,7 @@ export function DataGrid<TData>({
     void Promise.resolve(onRowDelete(rowId)).catch(() => {})
   }
 
-  // Always treats onCellEdit as async: a synchronous throw and a rejected
-  // promise both land here, through the same try/catch. displayValue is what
-  // a rejected commit re-shows on screen (always a string); commitValue is
-  // what actually reaches the consumer, coerced to the column's real type.
+  // A synchronous throw and a rejected promise both land here through the same try/catch.
   async function runCommit(
     rowId: string,
     columnId: string,
@@ -724,9 +646,7 @@ export function DataGrid<TData>({
     }
   }
 
-  // Shared by every editor's commit path — the buffer-typed ones (text,
-  // number, currency, select, date) after their own dedup/coerce, and
-  // boolean's direct one-click toggle, which has no buffer to dedup against.
+  // Shared by every editor's commit path, buffer-typed and boolean's direct toggle alike.
   function startCommit(
     r: number,
     c: number,
@@ -761,18 +681,13 @@ export function DataGrid<TData>({
     if (!cell || err != null) return
 
     const committedStr = cellDisplayValue(cell.getValue())
-    // Dedup against the last *successful* commit (the table's own data),
-    // never the last attempted value — so retrying a rejected edit with the
-    // same value fires onCellEdit again instead of no-opping.
+    // Dedup against the last successful commit, not the last attempted value, so retrying a rejected edit re-fires onCellEdit.
     if (buffer === committedStr) return
 
     startCommit(r, c, buffer, coerceForType(type, buffer))
   }
 
-  // A pending/rejected commit's string value wins over the table's own data,
-  // same rule every other type's isEditing ? buffer : commit?.value follows —
-  // boolean just has no buffer, so both the checkbox's checked prop and the
-  // toggle handler read it through here instead of duplicating the check.
+  // A pending/rejected commit wins over the table's own data — boolean has no buffer, so both the checkbox and toggle handler read through here.
   function booleanCellValue(r: number, c: number, tableValue: unknown) {
     const key = cellKey(r, c)
     const commit = commits.get(key)
@@ -789,10 +704,7 @@ export function DataGrid<TData>({
     startCommit(r, c, String(next), next)
   }
 
-  // Same rule as booleanCellValue: a pending/rejected commit's value wins
-  // over the table's own data. The commit's string is a JSON-encoded array —
-  // the same "coerced to string" convention every other editor's buffer
-  // follows, just opaque here since there's no visible text buffer.
+  // Same rule as booleanCellValue; the commit's string is a JSON-encoded array.
   function multiSelectCellValue(
     r: number,
     c: number,
@@ -804,12 +716,7 @@ export function DataGrid<TData>({
     return Array.isArray(tableValue) ? (tableValue as string[]) : []
   }
 
-  // Commits per toggle with the popover staying open — setting three tags
-  // never means opening the picker three times. Dedup compares the
-  // options-order-normalized next set against the last *successfully*
-  // committed set (never the last attempted one, same rule commitEdit
-  // follows), so toggling a tag off and back on again — or any reordering of
-  // the same set — never fires a second onCellEdit.
+  // Commits per toggle, popover stays open. Dedups against the last successful (never attempted) set, order-normalized, so re-toggling or reordering never re-fires onCellEdit.
   function toggleMultiSelectValue(r: number, c: number, optionValue: string) {
     const key = cellKey(r, c)
     if (commits.get(key)?.pending) return
@@ -832,9 +739,7 @@ export function DataGrid<TData>({
     startCommit(r, c, JSON.stringify(normalized), normalized)
   }
 
-  // A pending/rejected commit's value wins over the table's own data, same
-  // rule as multiSelectCellValue — "" is the commit map's encoding of null
-  // (every other editor's buffer is a string too).
+  // Same rule as multiSelectCellValue; "" is the commit map's encoding of null.
   function userCellValue(
     r: number,
     c: number,
@@ -846,18 +751,14 @@ export function DataGrid<TData>({
     return tableValue == null ? null : String(tableValue)
   }
 
-  // Closes the popover back to nav mode without touching commits — Escape,
-  // an outside click, and a normal pick all route through here, and none of
-  // them should undo a toggle that already committed.
+  // Doesn't touch commits — a normal pick already committed and shouldn't be undone by closing.
   function closePopoverEditAt(r: number, c: number) {
     setEditCoord(null)
     setBuffer("")
     cellRefs.current.get(cellKey(r, c))?.focus()
   }
 
-  // user commits-and-closes on pick — unlike multiSelect, there's no reason
-  // to keep the popover open after a single-value pick. "Unassigned" (null)
-  // is picked the same way as any real user.
+  // Commits-and-closes on pick, unlike multiSelect. "Unassigned" (null) is picked the same way as any real user.
   function pickUser(r: number, c: number, userId: string | null) {
     const key = cellKey(r, c)
     if (commits.get(key)?.pending) return
@@ -878,9 +779,7 @@ export function DataGrid<TData>({
     setEditCoord(null)
     setBuffer("")
     setError(null)
-    // Escape abandons the in-progress attempt entirely, including a
-    // previously rejected one — back to the last value the table actually
-    // has.
+    // Escape abandons the attempt entirely, including a previously rejected one.
     setCommits((prev) => withoutKey(prev, key))
     cellRefs.current.get(key)?.focus()
   }
@@ -890,19 +789,14 @@ export function DataGrid<TData>({
     const cell = row?.getVisibleCells()[c]
     if (!cell) return
     const type = cell.column.columnDef.meta?.type
-    // boolean has no buffer-typed edit mode — a click or F2/Space toggles
-    // and commits directly (see toggleBooleanCell).
+    // boolean has no buffer-typed edit mode — see toggleBooleanCell.
     if (type === "boolean") return
     const key = cellKey(r, c)
     const commit = commits.get(key)
-    // A pending commit's control is disabled — don't let a second edit
-    // stack on top of an unresolved one.
+    // Don't stack a second edit on an unresolved pending commit.
     if (commit?.pending) return
 
-    // Switching directly from one editing cell to another: resolve the old
-    // one first so its value isn't silently dropped. multiSelect/user have
-    // no buffer to commit — their toggles/picks already committed
-    // themselves — so the old cell just closes.
+    // Resolve the previously-editing cell first so its value isn't dropped; multiSelect/user already self-commit, so they just close.
     if (editCoord && (editCoord.r !== r || editCoord.c !== c)) {
       const oldType = columnTypeAt(editCoord.r, editCoord.c)
       if (oldType === "multiSelect" || oldType === "user") {
@@ -913,9 +807,7 @@ export function DataGrid<TData>({
       }
     }
 
-    // multiSelect/user's buffer is a search filter, not the cell's value —
-    // unlike every buffer-typed editor, it never seeds from the committed
-    // value, only from a seed keystroke.
+    // multiSelect/user's buffer is a search filter, not the cell value — it never seeds from the committed value.
     const isPopoverType = type === "multiSelect" || type === "user"
     const committed = cell.getValue()
     const fallback = isPopoverType
@@ -941,8 +833,7 @@ export function DataGrid<TData>({
     r: number,
     c: number
   ) {
-    // Keydown bubbles from the focused input up to this cell — while editing,
-    // the input's own handler already owns the keyboard.
+    // While editing, the input's own handler already owns the keyboard.
     if (editCoord && editCoord.r === r && editCoord.c === c) return
 
     switch (e.key) {
@@ -993,20 +884,14 @@ export function DataGrid<TData>({
         return
       default:
         if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
-          // Focus is about to jump from this cell to the input mid-event;
-          // prevent the default so the keystroke isn't replayed a second
-          // time onto the newly-focused control.
+          // Prevent default so the keystroke isn't replayed onto the newly-focused input.
           e.preventDefault()
           const type = columnTypeAt(r, c)
-          // boolean has no text to type-to-replace — only Space toggles it.
           if (type === "boolean") {
             if (e.key === " ") toggleBooleanCell(r, c)
             return
           }
-          // select is restricted to column.meta.options and date needs a
-          // real date, so an arbitrary keystroke can't seed either one —
-          // both still enter edit mode, just preserving instead of
-          // replacing (same as F2).
+          // select/date can't be seeded by an arbitrary keystroke — enter edit mode preserving the value instead (same as F2).
           if (type === "select" || type === "date") {
             beginEdit(r, c)
             return
@@ -1038,8 +923,7 @@ export function DataGrid<TData>({
     }
     if (e.key === "Enter") {
       e.preventDefault()
-      // An invalid value is never sent to onCellEdit — and never silently
-      // discarded either. Stay put so the visible error stays visible.
+      // An invalid value is never sent nor silently discarded — stay put with the error visible.
       if (error != null) return
       suppressNextBlurRef.current = true
       commitEdit()
@@ -1064,8 +948,7 @@ export function DataGrid<TData>({
     commitEdit()
   }
 
-  // Card title is the first summary column, subtitle the next two —
-  // positional by column order, unless meta.summary marks specific columns.
+  // Positional by column order unless meta.summary marks specific columns.
   function getSummaryColumns(): Column<TData, unknown>[] {
     const visible = table.getVisibleLeafColumns()
     const flagged = visible.filter((column) => column.columnDef.meta?.summary)
@@ -1081,11 +964,7 @@ export function DataGrid<TData>({
     setSheetBuffers({})
   }
 
-  // The sheet's raw, editable value for a buffer-typed field (text/number/
-  // currency/date) — an in-progress keystroke wins over a pending/rejected
-  // commit, which wins over the table's own data. Unlike the wide branch's
-  // formatReadValue-at-rest, this always shows the raw value: every sheet
-  // field is directly editable, so there's no separate "at rest" display.
+  // In-progress keystroke wins over a pending/rejected commit, which wins over the table's data — always the raw value, since every sheet field is directly editable.
   function sheetFieldValue(r: number, c: number, tableValue: unknown): string {
     const key = cellKey(r, c)
     const buf = sheetBuffers[key]
@@ -1106,9 +985,7 @@ export function DataGrid<TData>({
     setSheetBuffers((prev) => ({ ...prev, [key]: value }))
   }
 
-  // Same validate -> dedup -> startCommit path as commitEdit, just reading
-  // the field's own buffer entry instead of the single shared editCoord/
-  // buffer pair, since every field in the sheet can be mid-edit at once.
+  // Same validate -> dedup -> startCommit path as commitEdit, reading the field's own buffer entry since every sheet field can be mid-edit at once.
   function commitSheetField(r: number, c: number) {
     const key = cellKey(r, c)
     const buf = sheetBuffers[key]
@@ -1128,8 +1005,7 @@ export function DataGrid<TData>({
     startCommit(r, c, buf, coerceForType(type, buf))
   }
 
-  // Enter commits (via the resulting blur) instead of inserting a newline —
-  // these are single-line fields, same as the wide branch's Enter-to-commit.
+  // Enter commits via blur instead of inserting a newline — single-line fields.
   function onSheetFieldKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter") {
       e.preventDefault()
@@ -1137,8 +1013,7 @@ export function DataGrid<TData>({
     }
   }
 
-  // select has no invalid state (its value is always one of meta.options),
-  // so it commits straight through on change rather than needing a buffer.
+  // select has no invalid state, so it commits straight through with no buffer.
   function commitSheetSelect(r: number, c: number, raw: string) {
     const row = rows[r]
     const cell = row?.getVisibleCells()[c]
@@ -1152,14 +1027,8 @@ export function DataGrid<TData>({
   const titleColumn = summaryColumns[0]
   const subtitleColumns = summaryColumns.slice(1, 3)
   const openRow = openRowIndex >= 0 ? rows[openRowIndex] : undefined
-  // The drawer's close transition needs something to render while it
-  // animates out — clearing openRowId drops openRow to undefined
-  // immediately, which would blank the drawer's content mid-animation.
-  // Kept as the last real row instead of resetting on close; only ever read
-  // while the drawer is (still visually) open. Adjusted during render (React's
-  // documented "store info from previous render" pattern) rather than an
-  // effect, since this state is derived from openRowId, not an external
-  // system to synchronize with.
+  // Keeps the last real row visible during the drawer's close animation, instead of blanking on openRowId clearing.
+  // Adjusted during render (React's "store info from previous render" pattern), not an effect — derived from openRowId, not an external system.
   const [trackedOpenRowId, setTrackedOpenRowId] = React.useState(openRowId)
   const [lastOpenRow, setLastOpenRow] = React.useState<
     { row: Row<TData>; index: number } | undefined
@@ -1368,15 +1237,7 @@ export function DataGrid<TData>({
                 </TableRow>
               ) : (
                 rows.map((row, r) => {
-                  // Renders in whichever cell ends up last in the row (the
-                  // delete kebab's when present, else the last data cell) —
-                  // never its own <tr>. A near-zero-height row is still a real
-                  // table row, and browsers floor a table row/cell's rendered
-                  // height at ~1px regardless of an explicit height:0, which
-                  // reads as a second hairline next to the row's own border.
-                  // Positioned absolutely against the *row* (the cell that
-                  // hosts it stays position:static), so it spans full width and
-                  // hangs off the row's real border with no extra DOM row.
+                  // Absolutely positioned against the row, not its own <tr> — a table row/cell can't render at height:0 (browsers floor it ~1px), which would show as a second hairline.
                   const showInsertAfter = onRowAdd && r < rowCount - 1
                   const insertAfterButton = showInsertAfter && (
                     <button
@@ -1424,13 +1285,7 @@ export function DataGrid<TData>({
                         const isBooleanColumn = columnType === "boolean"
                         const isMultiSelectColumn = columnType === "multiSelect"
                         const isUserColumn = columnType === "user"
-                        // While editing, only the live validation error shows —
-                        // once committed (successfully or not), a rejection uses
-                        // the same red-text-under-the-cell treatment instead.
-                        // multiSelect is the one exception: its popover can stay
-                        // open through a rejected toggle-commit, so it always
-                        // reads straight from the commit instead of the
-                        // (unused, buffer-editor-only) live `error` state.
+                        // multiSelect's popover can stay open through a rejected toggle-commit, so it always reads the commit's error, not the buffer-editor's live `error`.
                         const displayError =
                           isEditing && !isMultiSelectColumn
                             ? error

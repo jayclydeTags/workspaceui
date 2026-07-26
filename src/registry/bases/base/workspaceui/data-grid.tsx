@@ -107,6 +107,8 @@ export interface DataGridProps<TData> {
    * stuck sticky-left so it stays visible under horizontal scroll.
    */
   narrowFallback?: "cards" | "none"
+  /** Rendered in place of rows when `table.getRowModel().rows` is empty. Defaults to plain "No results." text. */
+  emptyState?: React.ReactNode
   className?: string
 }
 
@@ -412,6 +414,7 @@ export function DataGrid<TData>({
   onRowDelete,
   onColumnLayoutChange,
   narrowFallback = "cards",
+  emptyState = "No results.",
   className,
 }: DataGridProps<TData>) {
   const { ref: containerRef, width: containerWidth } =
@@ -1046,7 +1049,7 @@ export function DataGrid<TData>({
         <ul className="flex list-none flex-col divide-y rounded-md border ps-0">
           {rowCount === 0 ? (
             <li className="p-4 text-center text-sm text-muted-foreground">
-              No results.
+              {emptyState}
             </li>
           ) : (
             rows.map((row) => {
@@ -1232,7 +1235,7 @@ export function DataGrid<TData>({
                     colSpan={totalColCount}
                     className="h-24 text-center text-muted-foreground"
                   >
-                    No results.
+                    {emptyState}
                   </TableCell>
                 </TableRow>
               ) : (

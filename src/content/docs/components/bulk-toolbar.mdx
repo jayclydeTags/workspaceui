@@ -78,20 +78,8 @@ selection" section for a bulk-delete example wired to `onRowDelete`).
 
 ## API Reference
 
-<TypeTable
-  type={{
-    count: {
-      type: "number",
-      description:
-        "Number of selected items. The toolbar renders nothing when this is 0.",
-    },
-    onClear: {
-      type: "() => void",
-      description: "Called when the clear button is clicked.",
-    },
-    children: {
-      type: "React.ReactNode",
-      description: "Bulk-action buttons rendered after the separator.",
-    },
-  }}
-/>
+| Prop       | Type              | Default | Description                                                           |
+| ---------- | ----------------- | ------- | --------------------------------------------------------------------- |
+| `count`    | `number`          | -       | Number of selected items. The toolbar renders nothing when this is 0. |
+| `onClear`  | `() => void`      | -       | Called when the clear button is clicked.                              |
+| `children` | `React.ReactNode` | -       | Bulk-action buttons rendered after the separator.                     |

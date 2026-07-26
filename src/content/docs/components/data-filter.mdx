@@ -237,13 +237,6 @@ it never filters rows itself.
 
 ## API Reference
 
-<TypeTable
-  type={{
-    table: {
-      type: "Table<TData>",
-      required: true,
-      description:
-        "A useReactTable() instance you create and own — the same one you'd pass to DataGrid. Filterable columns need meta.type and filterFn: dataGridFilterFn; the table needs getFilteredRowModel().",
-    },
-  }}
-/>
+| Prop    | Type           | Default | Description                                                                                                                                                                                              |
+| ------- | -------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `table` | `Table<TData>` | -       | A useReactTable() instance you create and own — the same one you'd pass to DataGrid. Filterable columns need meta.type and filterFn: dataGridFilterFn; the table needs getFilteredRowModel(). (required) |

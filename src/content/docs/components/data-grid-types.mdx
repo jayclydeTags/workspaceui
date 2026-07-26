@@ -76,54 +76,18 @@ command list) neither of the other six need.
 
 ## Meta fields
 
-<TypeTable
-  type={{
-    type: {
-      type: "DataGridColumnType",
-      description:
-        "One of the eight column types above. Omit on columns that aren't user-editable (e.g. a selection or actions column).",
-    },
-    options: {
-      type: "DataGridSelectOption[]",
-      description:
-        "Shared by select and multiSelect — the allowed { value, label } choices.",
-    },
-    users: {
-      type: "DataGridUser[]",
-      description:
-        "user columns only — a static list of { id, name, avatarUrl? }. The grid never fetches; async/remote user lists are out of scope.",
-    },
-    maxChips: {
-      type: "number",
-      default: "2",
-      description:
-        "multiSelect only — chips shown before the rest collapse into “+N”.",
-    },
-    summary: {
-      type: "boolean",
-      default: "false",
-      description:
-        "Marks this column as card title/subtitle material for the narrow-container branch.",
-    },
-  }}
-/>
+| Prop       | Type                     | Default | Description                                                                                                                        |
+| ---------- | ------------------------ | ------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `type`     | `DataGridColumnType`     | -       | One of the eight column types above. Omit on columns that aren't user-editable (e.g. a selection or actions column).               |
+| `options`  | `DataGridSelectOption[]` | -       | Shared by select and multiSelect — the allowed `{ value, label }` choices.                                                         |
+| `users`    | `DataGridUser[]`         | -       | user columns only — a static list of `{ id, name, avatarUrl? }`. The grid never fetches; async/remote user lists are out of scope. |
+| `maxChips` | `number`                 | `2`     | multiSelect only — chips shown before the rest collapse into "+N".                                                                 |
+| `summary`  | `boolean`                | `false` | Marks this column as card title/subtitle material for the narrow-container branch.                                                 |
 
 ## Exported types
 
-<TypeTable
-  type={{
-    DataGridColumnType: {
-      type: "string union",
-      description:
-        '"text" | "number" | "currency" | "select" | "boolean" | "date" | "multiSelect" | "user"',
-    },
-    DataGridSelectOption: {
-      type: "{ value: string; label: string }",
-      description: "A single select/multiSelect option.",
-    },
-    DataGridUser: {
-      type: "{ id: string; name: string; avatarUrl?: string }",
-      description: "A single user-column entry.",
-    },
-  }}
-/>
+| Type                   | Shape                                                                                            | Description                            |
+| ---------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------- |
+| `DataGridColumnType`   | `"text" \| "number" \| "currency" \| "select" \| "boolean" \| "date" \| "multiSelect" \| "user"` | string union of the eight column types |
+| `DataGridSelectOption` | `{ value: string; label: string }`                                                               | A single select/multiSelect option.    |
+| `DataGridUser`         | `{ id: string; name: string; avatarUrl?: string }`                                               | A single user-column entry.            |

@@ -235,48 +235,15 @@ export function MyPage() {
 
 ## API Reference
 
-<TypeTable
-  type={{
-    title: {
-      type: "React.ReactNode",
-      description: "Page title. Ignored when `breadcrumbs` is set.",
-    },
-    subtitle: {
-      type: "React.ReactNode",
-      description: "Secondary line shown under the title or breadcrumbs.",
-    },
-    breadcrumbs: {
-      type: "{ label: string; href?: string }[]",
-      description:
-        "Renders a breadcrumb trail in place of the plain title; the last item is the current page.",
-    },
-    visual: {
-      type: "React.ReactNode",
-      description: "Decorative visual shown left of the title/breadcrumbs.",
-    },
-    badge: {
-      type: "React.ReactNode",
-      description:
-        "Shown next to the title, or next to the last breadcrumb when `breadcrumbs` is set.",
-    },
-    actions: {
-      type: "React.ReactNode",
-      description: "Right-aligned actions in the header.",
-    },
-    hasHeader: {
-      type: "boolean",
-      default: "true",
-      description: "Set to `false` to omit the header entirely.",
-    },
-    hasPadding: {
-      type: "boolean",
-      default: "false",
-      description: "Adds padding to the content area.",
-    },
-    className: {
-      type: "string",
-      description: "Additional CSS classes applied to the root element.",
-    },
-    children: { type: "React.ReactNode", description: "Content area." },
-  }}
-/>
+| Prop          | Type                                 | Default | Description                                                                                |
+| ------------- | ------------------------------------ | ------- | ------------------------------------------------------------------------------------------ |
+| `title`       | `React.ReactNode`                    | -       | Page title. Ignored when `breadcrumbs` is set.                                             |
+| `subtitle`    | `React.ReactNode`                    | -       | Secondary line shown under the title or breadcrumbs.                                       |
+| `breadcrumbs` | `{ label: string; href?: string }[]` | -       | Renders a breadcrumb trail in place of the plain title; the last item is the current page. |
+| `visual`      | `React.ReactNode`                    | -       | Decorative visual shown left of the title/breadcrumbs.                                     |
+| `badge`       | `React.ReactNode`                    | -       | Shown next to the title, or next to the last breadcrumb when `breadcrumbs` is set.         |
+| `actions`     | `React.ReactNode`                    | -       | Right-aligned actions in the header.                                                       |
+| `hasHeader`   | `boolean`                            | `true`  | Set to `false` to omit the header entirely.                                                |
+| `hasPadding`  | `boolean`                            | `false` | Adds padding to the content area.                                                          |
+| `className`   | `string`                             | -       | Additional CSS classes applied to the root element.                                        |
+| `children`    | `React.ReactNode`                    | -       | Content area.                                                                              |

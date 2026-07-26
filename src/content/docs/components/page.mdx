@@ -3,27 +3,7 @@ title: Page
 description: A page shell with an optional header — title or breadcrumbs, subtitle, a visual, a badge, and actions — plus a content area that can be padded.
 ---
 
-export const PREVIEW_CODE = `import { Settings } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Page } from "@/components/ui/page"
-
-export function MyPage() {
-  return (
-    <Page
-      visual={<Settings className="mt-0.5 size-5 text-muted-foreground" />}
-      breadcrumbs={[{ label: "Settings", href: "/settings" }, { label: "Billing" }]}
-      subtitle="Manage your subscription and invoices"
-      badge={<Badge variant="secondary">Beta</Badge>}
-      actions={<Button size="sm">Save changes</Button>}
-      hasPadding
-    >
-      <p className="text-sm text-muted-foreground">Page content goes here.</p>
-    </Page>
-  )
-}`
-
-<ComponentPreview name="page" code={PREVIEW_CODE} />
+<ComponentPreview name="page" />
 
 ## Installation
 
@@ -69,169 +49,55 @@ import { Page } from "@/components/ui/page"
 
 A plain title and subtitle, no header extras.
 
-<ComponentPreview name="page-default" code={`import { Page } from "@/components/ui/page"
-
-export function MyPage() {
-  return (
-    <Page title="Settings" subtitle="Manage your account">
-      <p className="text-sm text-muted-foreground">Page content goes here.</p>
-    </Page>
-  )
-}`} />
+<ComponentPreview name="page-default" />
 
 ### With Subtitle
 
 A secondary line under the title.
 
-<ComponentPreview name="page-with-subtitle" code={`import { Page } from "@/components/ui/page"
-
-export function MyPage() {
-  return (
-    <Page title="Billing" subtitle="Manage your subscription and invoices">
-      <p className="text-sm text-muted-foreground">Page content goes here.</p>
-    </Page>
-  )
-}`} />
+<ComponentPreview name="page-with-subtitle" />
 
 ### With Breadcrumbs
 
 Pass `breadcrumbs` to replace the plain title with a breadcrumb trail — the last item renders as the current page, and `badge` (if set) appears next to it instead of next to the title.
 
-<ComponentPreview name="page-with-breadcrumbs" code={`import { Page } from "@/components/ui/page"
-
-export function MyPage() {
-  return (
-    <Page breadcrumbs={[{ label: "Settings", href: "/settings" }, { label: "Billing" }]}>
-      <p className="text-sm text-muted-foreground">Page content goes here.</p>
-    </Page>
-  )
-}`} />
+<ComponentPreview name="page-with-breadcrumbs" />
 
 ### With Badge & Actions
 
 A decorative `visual`, a `badge` next to the title, and right-aligned `actions`.
 
-<ComponentPreview name="page-with-badge-and-actions" code={`import { Settings } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Page } from "@/components/ui/page"
-
-export function MyPage() {
-  return (
-    <Page
-      visual={<Settings className="mt-0.5 size-5 text-muted-foreground" />}
-      title="Billing"
-      badge={<Badge variant="secondary">Beta</Badge>}
-      actions={<Button size="sm">Save changes</Button>}
-    >
-      <p className="text-sm text-muted-foreground">Page content goes here.</p>
-    </Page>
-  )
-}`} />
+<ComponentPreview name="page-with-badge-and-actions" />
 
 ### Without a Header
 
 Set `hasHeader={false}` to omit the header entirely and render only the content area.
 
-<ComponentPreview name="page-without-header" code={`import { Page } from "@/components/ui/page"
-
-export function MyPage() {
-  return (
-    <Page hasHeader={false} hasPadding>
-      <div>{/* full-bleed content */}</div>
-    </Page>
-  )
-}`} />
+<ComponentPreview name="page-without-header" />
 
 ### Title Only
 
 The minimal header — just a title, no subtitle or extras.
 
-<ComponentPreview name="page-title-only" code={`import { Page } from "@/components/ui/page"
-
-export function MyPage() {
-  return (
-    <Page title="Dashboard">
-      <p className="text-sm text-muted-foreground">Page content goes here.</p>
-    </Page>
-  )
-}`} />
+<ComponentPreview name="page-title-only" />
 
 ### Multiple Actions
 
 `actions` accepts any node — group several buttons for related operations.
 
-<ComponentPreview name="page-actions-group" code={`import { Download, Share2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Page } from "@/components/ui/page"
-
-export function MyPage() {
-  return (
-    <Page
-      title="Report"
-      subtitle="Q3 2026 performance"
-      actions={
-        <div className="flex items-center gap-2">
-          <Button size="sm" variant="outline">
-            <Share2 className="size-4" />
-            Share
-          </Button>
-          <Button size="sm">
-            <Download className="size-4" />
-            Export
-          </Button>
-        </div>
-      }
-    >
-      <p className="text-sm text-muted-foreground">Page content goes here.</p>
-    </Page>
-  )
-}`} />
+<ComponentPreview name="page-actions-group" />
 
 ### Scrollable Content
 
 The header stays fixed while the content area scrolls on overflow. `hasPadding` adds inset spacing.
 
-<ComponentPreview name="page-scroll" code={`import { Page } from "@/components/ui/page"
-
-export function MyPage() {
-  return (
-    <Page title="Changelog" subtitle="The header stays fixed while content scrolls" hasPadding>
-      <div className="space-y-4">
-        {Array.from({ length: 12 }, (_, i) => (
-          <div key={i} className="rounded-md border border-border p-3">
-            <p className="text-sm font-medium">Release {12 - i}.0</p>
-            <p className="text-sm text-muted-foreground">Notes for this release.</p>
-          </div>
-        ))}
-      </div>
-    </Page>
-  )
-}`} />
+<ComponentPreview name="page-scroll" />
 
 ### Full Configuration
 
 Every prop combined — `visual`, `breadcrumbs`, `subtitle`, `badge`, `actions`, and `hasPadding`.
 
-<ComponentPreview name="page-full" code={`import { Settings } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Page } from "@/components/ui/page"
-
-export function MyPage() {
-  return (
-    <Page
-      visual={<Settings className="mt-0.5 size-5 text-muted-foreground" />}
-      breadcrumbs={[{ label: "Settings", href: "/settings" }, { label: "Billing" }]}
-      subtitle="Manage your subscription and invoices"
-      badge={<Badge variant="secondary">Beta</Badge>}
-      actions={<Button size="sm">Save changes</Button>}
-      hasPadding
-    >
-      <p className="text-sm text-muted-foreground">Page content goes here.</p>
-    </Page>
-  )
-}`} />
+<ComponentPreview name="page-full" />
 
 ## API Reference
 

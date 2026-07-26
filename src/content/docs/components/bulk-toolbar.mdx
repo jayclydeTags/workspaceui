@@ -3,27 +3,7 @@ title: Bulk Toolbar
 description: A contextual toolbar shown while rows are selected — a count, a clear control, and consumer-supplied action buttons as children. Renders nothing when count is 0.
 ---
 
-export const PREVIEW_CODE = `import * as React from "react"
-import { Trash2Icon } from "lucide-react"
-
-import { Button } from "@/components/ui/button"
-import { BulkToolbar } from "@/components/ui/bulk-toolbar"
-
-export function MyToolbar() {
-  const [count, setCount] = React.useState(2)
-
-return (
-
-<BulkToolbar count={count} onClear={() => setCount(0)}>
-<Button variant="outline" size="sm">
-<Trash2Icon data-icon="inline-start" />
-Delete
-</Button>
-</BulkToolbar>
-)
-}`
-
-<ComponentPreview name="bulk-toolbar" code={PREVIEW_CODE} />
+<ComponentPreview name="bulk-toolbar" />
 
 ## Installation
 

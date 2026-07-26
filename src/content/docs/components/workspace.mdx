@@ -3,45 +3,6 @@ title: Workspace
 description: Self-contained multi-pane workspace with tab drag/drop, cross-pane transfers, and snap-zone splitting. Exposes a `useWorkspace` context hook and a `WorkspaceHandle` ref for programmatic control.
 ---
 
-export const PREVIEW_CODE = `import { LayoutDashboard, FileText, Settings } from "lucide-react"
-import { Workspace } from "@/components/ui/workspace"
-
-export function MyWorkspace() {
-  return (
-    <div className="h-[400px]">
-      <Workspace
-        initialPanes={[
-          {
-            id: "pane-a",
-            tabs: [
-              { id: "dashboard", title: "Dashboard", icon: <LayoutDashboard />, pinned: true },
-              { id: "docs",      title: "Documentation", icon: <FileText /> },
-            ],
-            defaultSize: 60,
-            minSize: 30,
-          },
-          {
-            id: "pane-b",
-            tabs: [{ id: "settings", title: "Settings", icon: <Settings />, pinned: true }],
-            defaultSize: 40,
-            minSize: 30,
-          },
-        ]}
-        renderTabContent={(_paneId, tabId) => (
-          <div className="flex h-full items-center justify-center">
-            <p className="text-sm text-muted-foreground">{tabId}</p>
-          </div>
-        )}
-        fallback={
-          <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-            All panels closed
-          </div>
-        }
-      />
-    </div>
-  )
-}`
-
 export const WORKSPACE_TREE = {
   name: "Workspace",
   children: [
@@ -63,7 +24,7 @@ export const WORKSPACE_TREE = {
   ],
 }
 
-<ComponentPreview name="workspace" code={PREVIEW_CODE} />
+<ComponentPreview name="workspace" />
 
 ## Installation
 
@@ -200,191 +161,37 @@ the hook from within it. Both expose `openTabInPane`, `closeTab`, `activateTab`,
 
 One pane with several tabs. Tabs are closable and reorderable by drag; the pinned tab has no close button.
 
-<ComponentPreview name="workspace-tabs" code={`import { Home, FolderOpen, Terminal } from "lucide-react"
-import { Workspace } from "@/components/ui/workspace"
-
-const CONTENT = { home: <Home />, files: <FolderOpen />, terminal: <Terminal /> }
-
-export function MyWorkspace() {
-  return (
-    <Workspace
-      initialPanes={[
-        {
-          id: "main",
-          tabs: [
-            { id: "home", title: "Home", icon: <Home />, pinned: true },
-            { id: "files", title: "Files", icon: <FolderOpen /> },
-            { id: "terminal", title: "Terminal", icon: <Terminal /> },
-          ],
-        },
-      ]}
-      renderTabContent={(_paneId, tabId) => CONTENT[tabId]}
-    />
-  )
-}`} />
+<ComponentPreview name="workspace-tabs" />
 
 ### Split panes
 
 Two side-by-side panes sized with \`defaultSize\`. Drag a tab across the divider to move it between panes, or drag it to an edge to split further.
 
-<ComponentPreview name="workspace-split" code={`import { LayoutDashboard, FileText, Settings } from "lucide-react"
-import { Workspace } from "@/components/ui/workspace"
-
-export function MyWorkspace() {
-  return (
-    <Workspace
-      initialPanes={[
-        {
-          id: "left",
-          defaultSize: 60,
-          tabs: [
-            { id: "dashboard", title: "Dashboard", icon: <LayoutDashboard />, pinned: true },
-            { id: "docs", title: "Documentation", icon: <FileText /> },
-          ],
-        },
-        {
-          id: "right",
-          defaultSize: 40,
-          tabs: [{ id: "settings", title: "Settings", icon: <Settings />, pinned: true }],
-        },
-      ]}
-      renderTabContent={(_paneId, tabId) => <div className="p-4">{tabId}</div>}
-    />
-  )
-}`} />
+<ComponentPreview name="workspace-split" />
 
 ### Tab badges
 
 Set \`badge\` (a number) on a tab to show a count next to its title.
 
-<ComponentPreview name="workspace-badges" code={`import { Inbox, MessageSquare, Bell } from "lucide-react"
-import { Workspace } from "@/components/ui/workspace"
-
-export function MyWorkspace() {
-  return (
-    <Workspace
-      initialPanes={[
-        {
-          id: "main",
-          tabs: [
-            { id: "inbox", title: "Inbox", icon: <Inbox />, badge: 12, pinned: true },
-            { id: "chat", title: "Chat", icon: <MessageSquare />, badge: 3 },
-            { id: "alerts", title: "Alerts", icon: <Bell /> },
-          ],
-        },
-      ]}
-      renderTabContent={(_paneId, tabId) => <div className="p-4">{tabId}</div>}
-    />
-  )
-}`} />
+<ComponentPreview name="workspace-badges" />
 
 ### Add-tab button
 
 Provide \`onAddTab\` on a pane to render a "+" button in its tab strip. Open the new tab through the \`WorkspaceHandle\` ref.
 
-<ComponentPreview name="workspace-add-tab" code={`import * as React from "react"
-import { Home, FileText } from "lucide-react"
-import { Workspace, type WorkspaceHandle } from "@/components/ui/workspace"
-
-export function MyWorkspace() {
-  const workspace = React.useRef<WorkspaceHandle>(null)
-  const nextId = React.useRef(1)
-
-return (
-
-<Workspace
-ref={workspace}
-initialPanes={[
-{
-id: "main",
-tabs: [{ id: "start", title: "Start", icon: <Home />, pinned: true }],
-onAddTab: () => {
-const n = nextId.current++
-workspace.current?.openTabInPane("main", {
-id: \`tab-\${n}\`,
-title: \`Untitled \${n}\`,
-icon: <FileText />,
-})
-},
-},
-]}
-renderTabContent={(\_paneId, tabId) => <div className="p-4">{tabId}</div>}
-/>
-)
-}`} />
+<ComponentPreview name="workspace-add-tab" />
 
 ### Programmatic control (sidebar)
 
 Drive the workspace from outside with a \`WorkspaceHandle\` ref. Each sidebar button calls \`openTabInPane\` — reopening an existing tab just focuses it.
 
-<ComponentPreview name="workspace-programmatic" code={`import * as React from "react"
-import { LayoutDashboard, FileText, Settings } from "lucide-react"
-import { Workspace, type WorkspaceHandle } from "@/components/ui/workspace"
-
-export function MyWorkspace() {
-  const workspace = React.useRef<WorkspaceHandle>(null)
-
-const open = (id: string, title: string, icon: React.ReactNode) =>
-workspace.current?.openTabInPane("main", { id, title, icon })
-
-return (
-
-<div className="flex h-full">
-<nav className="w-44 shrink-0 border-r p-2">
-<button onClick={() => open("documents", "Documents", <FileText />)}>Documents</button>
-<button onClick={() => open("settings", "Settings", <Settings />)}>Settings</button>
-</nav>
-<Workspace
-ref={workspace}
-className="flex-1"
-initialPanes={[
-{
-id: "main",
-tabs: [{ id: "dashboard", title: "Dashboard", icon: <LayoutDashboard />, pinned: true }],
-},
-]}
-renderTabContent={(\_paneId, tabId) => <div className="p-4">{tabId}</div>}
-/>
-</div>
-)
-}`} />
+<ComponentPreview name="workspace-programmatic" />
 
 ### Control from inside a pane
 
 Components rendered _inside_ a pane reach the same methods via the [\`useWorkspace()\`](#useworkspace) hook — no ref required.
 
-<ComponentPreview name="workspace-context" code={`import { LayoutDashboard, FileText } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Workspace, useWorkspace } from "@/components/ui/workspace"
-
-function OverviewPanel() {
-const { openTabInPane } = useWorkspace()
-return (
-
-<Button
-onClick={() =>
-openTabInPane("main", { id: "details", title: "Details", icon: <FileText /> })
-} >
-Open details tab
-</Button>
-)
-}
-
-export function MyWorkspace() {
-  return (
-    <Workspace
-      initialPanes={[
-        {
-          id: "main",
-          tabs: [{ id: "overview", title: "Overview", icon: <LayoutDashboard />, pinned: true }],
-        },
-      ]}
-      renderTabContent={(_paneId, tabId) =>
-        tabId === "overview" ? <OverviewPanel /> : <div className="p-4">{tabId}</div>
-      }
-    />
-  )
-}`} />
+<ComponentPreview name="workspace-context" />
 
 ### Unsaved changes
 
@@ -395,80 +202,7 @@ lets you await a confirmation dialog. Type in `draft.md`, then try to close it.
 Because `closePane` discards every tab at once, the guard runs for each tab it
 would drop — pinned ones included — and a single veto aborts the whole pane close.
 
-<ComponentPreview name="workspace-dirty-tabs" code={`import * as React from "react"
-import { FileText } from "lucide-react"
-
-import { Textarea } from "@/components/ui/textarea"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { Workspace, type WorkspaceHandle } from "@/components/ui/workspace"
-
-export function Demo() {
-  const workspace = React.useRef<WorkspaceHandle>(null)
-  const [text, setText] = React.useState<Record<string, string>>({})
-
-// The guard is async, so it parks a resolver and opens the dialog.
-// The dialog's buttons settle it — that's what un-blocks the pending close.
-const decision = React.useRef<((discard: boolean) => void) | null>(null)
-const [pendingTitle, setPendingTitle] = React.useState<string | null>(null)
-
-const settle = (discard: boolean) => {
-decision.current?.(discard)
-decision.current = null
-setPendingTitle(null)
-}
-
-return (
-
-<>
-<Workspace
-ref={workspace}
-initialPanes={[
-{
-id: "main",
-tabs: [
-{ id: "draft", title: "draft.md", icon: <FileText /> },
-{ id: "notes", title: "notes.md", icon: <FileText /> },
-],
-},
-]}
-onBeforeCloseTab={(\_paneId, \_tabId, tab) => {
-if (!tab.dirty) return true
-setPendingTitle(tab.title)
-return new Promise<boolean>((resolve) => {
-decision.current = resolve
-})
-}}
-renderTabContent={(paneId, tabId) => (
-<Textarea
-value={text[tabId] ?? ""}
-onChange={(e) => {
-setText((prev) => ({ ...prev, [tabId]: e.target.value }))
-workspace.current?.updateTab(paneId, tabId, { dirty: true })
-}}
-/>
-)}
-/>
-
-      {/* Dismissing any other way (Escape) must still settle the promise,
-          or the pending close would hang forever. */}
-      <AlertDialog open={pendingTitle !== null} onOpenChange={(open) => { if (!open) settle(false) }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Discard changes to {pendingTitle}?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This tab has unsaved changes. Closing it will lose them.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => settle(false)}>Keep editing</AlertDialogCancel>
-            <AlertDialogAction onClick={() => settle(true)}>Discard</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
-
-)
-}`} />
+<ComponentPreview name="workspace-dirty-tabs" />
 
 ### Saving and restoring the layout
 
@@ -477,67 +211,13 @@ it. The snapshot holds ids only, so `restore` takes a `resolveTab` callback to
 look each tab back up — icons and `onAddTab` handlers live in your lookup, not in
 the snapshot. Split a pane by dragging a tab to an edge, save, rearrange, restore.
 
-<ComponentPreview name="workspace-persistence" code={`import * as React from "react"
-import { Home, FolderOpen, Terminal } from "lucide-react"
-
-import { Button } from "@/components/ui/button"
-import { Workspace, type WorkspaceHandle, type WorkspaceSnapshot, type WorkspaceTabDef } from "@/components/ui/workspace"
-
-// A snapshot holds tab ids, so restore needs somewhere to look them up.
-// Icons live here, not in the snapshot — a ReactNode can't be JSON.
-const TABS: Record<string, WorkspaceTabDef> = {
-home: { id: "home", title: "Home", icon: <Home /> },
-files: { id: "files", title: "Files", icon: <FolderOpen /> },
-terminal: { id: "terminal", title: "Terminal", icon: <Terminal /> },
-}
-
-export function Demo() {
-  const workspace = React.useRef<WorkspaceHandle>(null)
-  const [saved, setSaved] = React.useState<WorkspaceSnapshot | null>(null)
-
-return (
-
-<>
-<Button onClick={() => setSaved(workspace.current!.serialize())}>Save layout</Button>
-<Button
-disabled={saved === null}
-onClick={() => workspace.current!.restore(saved!, (id) => TABS[id])} >
-Restore
-</Button>
-
-      <Workspace
-        ref={workspace}
-        initialPanes={[{ id: "main", tabs: [TABS.home!, TABS.files!, TABS.terminal!] }]}
-        renderTabContent={(_paneId, tabId) => <div>{TABS[tabId]?.title ?? tabId}</div>}
-      />
-    </>
-
-)
-}`} />
+<ComponentPreview name="workspace-persistence" />
 
 ### Custom fallback
 
 The \`fallback\` prop configures what shows when every pane is closed. Close the tab below to reveal it.
 
-<ComponentPreview name="workspace-fallback" code={`import { FileText, Inbox } from "lucide-react"
-import { Workspace } from "@/components/ui/workspace"
-
-export function MyWorkspace() {
-  return (
-    <Workspace
-      initialPanes={[
-        { id: "main", tabs: [{ id: "scratch", title: "Scratch", icon: <FileText /> }] },
-      ]}
-      renderTabContent={(_paneId, tabId) => <div className="p-4">{tabId}</div>}
-      fallback={
-        <div className="flex h-full flex-col items-center justify-center gap-2">
-          <Inbox className="size-8 text-muted-foreground/40" />
-          <p className="text-sm text-muted-foreground">No panels open</p>
-        </div>
-      }
-    />
-  )
-}`} />
+<ComponentPreview name="workspace-fallback" />
 
 ## Composition
 

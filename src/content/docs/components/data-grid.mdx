@@ -8,96 +8,7 @@ you create and own. It never holds `data` itself — it reads from your
 `table`, and reports every edit, add, and delete back to you through
 callbacks. You decide how (and whether) to persist them.
 
-export const PREVIEW_CODE = `import * as React from "react"
-import {
-  type ColumnDef,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
-import { DataGrid } from "@/components/ui/data-grid"
-
-interface Contact {
-id: string
-name: string
-seats: number
-plan: string
-active: boolean
-renewsOn: string
-}
-
-const initialData: Contact[] = [
-{
-id: "1",
-name: "Ada Lovelace",
-seats: 12,
-plan: "team",
-active: true,
-renewsOn: "2026-03-01",
-},
-{
-id: "2",
-name: "Grace Hopper",
-seats: 3,
-plan: "starter",
-active: true,
-renewsOn: "2026-01-15",
-},
-{
-id: "3",
-name: "Katherine Johnson",
-seats: 40,
-plan: "enterprise",
-active: false,
-renewsOn: "2026-05-20",
-},
-]
-
-const columns: ColumnDef<Contact>[] = [
-{ accessorKey: "name", header: "Name", meta: { type: "text" } },
-{ accessorKey: "seats", header: "Seats", meta: { type: "number" } },
-{
-accessorKey: "plan",
-header: "Plan",
-meta: {
-type: "select",
-options: [
-{ value: "starter", label: "Starter" },
-{ value: "team", label: "Team" },
-{ value: "enterprise", label: "Enterprise" },
-],
-},
-},
-{ accessorKey: "active", header: "Active", meta: { type: "boolean" } },
-{ accessorKey: "renewsOn", header: "Renews on", meta: { type: "date" } },
-]
-
-export function MyGrid() {
-  const [data, setData] = React.useState(initialData)
-
-const table = useReactTable({
-data,
-columns,
-getCoreRowModel: getCoreRowModel(),
-getRowId: (row) => row.id,
-enableRowSelection: false,
-})
-
-return (
-
-<DataGrid
-table={table}
-onCellEdit={(rowId, columnId, value) => {
-setData((prev) =>
-prev.map((row) =>
-row.id === rowId ? { ...row, [columnId]: value } : row
-)
-)
-}}
-/>
-)
-}`
-
-<ComponentPreview name="data-grid" code={PREVIEW_CODE} />
+<ComponentPreview name="data-grid" />
 
 ## Installation
 
@@ -312,149 +223,14 @@ grid at any width instead, with the first column pinned sticky-left.
 A minimal grid: `text` and `number` columns, no row add/delete, no
 selection.
 
-<ComponentPreview name="data-grid-basic" code={`import * as React from "react"
-import { type ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table"
-import { DataGrid } from "@/components/ui/data-grid"
-
-interface Task {
-id: string
-title: string
-estimate: number
-}
-
-const columns: ColumnDef<Task>[] = [
-{ accessorKey: "title", header: "Title", meta: { type: "text" } },
-{ accessorKey: "estimate", header: "Estimate (h)", meta: { type: "number" } },
-]
-
-export function MyGrid() {
-  const [data, setData] = React.useState<Task[]>([
-    { id: "1", title: "Design onboarding flow", estimate: 8 },
-    { id: "2", title: "Fix invoice rounding bug", estimate: 3 },
-  ])
-
-const table = useReactTable({
-data,
-columns,
-getCoreRowModel: getCoreRowModel(),
-getRowId: (row) => row.id,
-enableRowSelection: false,
-})
-
-return (
-
-<DataGrid
-table={table}
-onCellEdit={(rowId, columnId, value) => {
-setData((prev) =>
-prev.map((row) =>
-row.id === rowId ? { ...row, [columnId]: value } : row
-)
-)
-}}
-/>
-)
-}`} />
+<ComponentPreview name="data-grid-basic" />
 
 ### All column types
 
 Every `meta.type` in one grid — `text`, `number`, `currency`, `select`,
 `boolean`, `date`, `multiSelect`, and `user`.
 
-<ComponentPreview name="data-grid-all-column-types" code={`import * as React from "react"
-import { type ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table"
-import { DataGrid } from "@/components/ui/data-grid"
-
-interface Contact {
-id: string
-name: string
-email: string
-seats: number
-mrr: number
-plan: string
-active: boolean
-renewsOn: string
-tags: string[]
-owner: string | null
-}
-
-const owners = [
-{ id: "u1", name: "Priya Patel" },
-{ id: "u2", name: "Sam Okafor" },
-]
-
-const columns: ColumnDef<Contact>[] = [
-{ accessorKey: "name", header: "Name", meta: { type: "text" } },
-{ accessorKey: "email", header: "Email", meta: { type: "text" } },
-{ accessorKey: "seats", header: "Seats", meta: { type: "number" } },
-{ accessorKey: "mrr", header: "MRR", meta: { type: "currency" } },
-{
-accessorKey: "plan",
-header: "Plan",
-meta: {
-type: "select",
-options: [
-{ value: "starter", label: "Starter" },
-{ value: "team", label: "Team" },
-{ value: "enterprise", label: "Enterprise" },
-],
-},
-},
-{ accessorKey: "active", header: "Active", meta: { type: "boolean" } },
-{ accessorKey: "renewsOn", header: "Renews on", meta: { type: "date" } },
-{
-accessorKey: "tags",
-header: "Tags",
-meta: {
-type: "multiSelect",
-options: [
-{ value: "champion", label: "Champion" },
-{ value: "renewal-risk", label: "Renewal risk" },
-{ value: "upsell", label: "Upsell" },
-],
-},
-},
-{ accessorKey: "owner", header: "Owner", meta: { type: "user", users: owners } },
-]
-
-export function MyGrid() {
-  const [data, setData] = React.useState<Contact[]>([
-    {
-      id: "1",
-      name: "Ada Lovelace",
-      email: "ada@example.com",
-      seats: 12,
-      mrr: 490,
-      plan: "team",
-      active: true,
-      renewsOn: "2026-03-01",
-      tags: ["champion", "renewal-risk"],
-      owner: "u1",
-    },
-  ])
-
-const table = useReactTable({
-data,
-columns,
-getCoreRowModel: getCoreRowModel(),
-getRowId: (row) => row.id,
-enableRowSelection: false,
-})
-
-return (
-
-<DataGrid
-table={table}
-onCellEdit={(rowId, columnId, value) => {
-setData((prev) =>
-prev.map((row) =>
-row.id === rowId ? { ...row, [columnId]: value } : row
-)
-)
-}}
-/>
-)
-}`} />
+<ComponentPreview name="data-grid-all-column-types" />
 
 ### Row add & delete
 
@@ -462,60 +238,7 @@ Pass `onRowAdd`/`onRowDelete` to get the trailing "+ New row" control, the
 hover between-row "+", and a hover kebab menu with a confirm-guarded
 "Delete row".
 
-<ComponentPreview name="data-grid-add-delete" code={`import * as React from "react"
-import { type ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table"
-import { DataGrid, getDataGridRowDefaults } from "@/components/ui/data-grid"
-
-interface Task {
-id: string
-title: string
-estimate: number
-}
-
-const columns: ColumnDef<Task>[] = [
-{ accessorKey: "title", header: "Title", meta: { type: "text" } },
-{ accessorKey: "estimate", header: "Estimate (h)", meta: { type: "number" } },
-]
-
-export function MyGrid() {
-  const [data, setData] = React.useState<Task[]>([
-    { id: "1", title: "Design onboarding flow", estimate: 8 },
-    { id: "2", title: "Fix invoice rounding bug", estimate: 3 },
-  ])
-
-const table = useReactTable({
-data,
-columns,
-getCoreRowModel: getCoreRowModel(),
-getRowId: (row) => row.id,
-enableRowSelection: false,
-})
-
-return (
-
-<DataGrid
-table={table}
-onCellEdit={(rowId, columnId, value) => {
-setData((prev) =>
-prev.map((row) =>
-row.id === rowId ? { ...row, [columnId]: value } : row
-)
-)
-}}
-onRowAdd={(afterRowId) => {
-const row = { id: crypto.randomUUID(), ...getDataGridRowDefaults(table) } as Task
-setData((prev) => {
-if (afterRowId == null) return [...prev, row]
-const index = prev.findIndex((r) => r.id === afterRowId)
-return [...prev.slice(0, index + 1), row, ...prev.slice(index + 1)]
-})
-}}
-onRowDelete={(rowId) => {
-setData((prev) => prev.filter((row) => row.id !== rowId))
-}}
-/>
-)
-}`} />
+<ComponentPreview name="data-grid-add-delete" />
 
 ### Row selection & bulk delete
 
@@ -523,91 +246,7 @@ Row selection is on by default. Read `table.getState().rowSelection` to
 drive a [`BulkToolbar`](/docs/components/bulk-toolbar), and loop the
 selected ids through the same `onRowDelete(rowId)` for a bulk action.
 
-<ComponentPreview name="data-grid-selection" code={`import * as React from "react"
-import { Trash2Icon } from "lucide-react"
-import { type ColumnDef, type RowSelectionState, getCoreRowModel, useReactTable } from "@tanstack/react-table"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-import { BulkToolbar } from "@/components/ui/bulk-toolbar"
-import { DataGrid } from "@/components/ui/data-grid"
-
-interface Task {
-id: string
-title: string
-estimate: number
-}
-
-const columns: ColumnDef<Task>[] = [
-{ accessorKey: "title", header: "Title", meta: { type: "text" } },
-{ accessorKey: "estimate", header: "Estimate (h)", meta: { type: "number" } },
-]
-
-export function MyGrid() {
-  const [data, setData] = React.useState<Task[]>([
-    { id: "1", title: "Design onboarding flow", estimate: 8 },
-    { id: "2", title: "Fix invoice rounding bug", estimate: 3 },
-    { id: "3", title: "Write Q3 report", estimate: 5 },
-  ])
-  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
-  const [confirmBulkDelete, setConfirmBulkDelete] = React.useState(false)
-
-const table = useReactTable({
-data,
-columns,
-getCoreRowModel: getCoreRowModel(),
-getRowId: (row) => row.id,
-state: { rowSelection },
-onRowSelectionChange: setRowSelection,
-})
-
-function deleteRow(rowId: string) {
-setData((prev) => prev.filter((row) => row.id !== rowId))
-}
-
-const selectedIds = Object.keys(rowSelection)
-
-return (
-
-<div className="flex flex-col gap-3">
-<BulkToolbar count={selectedIds.length} onClear={() => setRowSelection({})}>
-<Button variant="outline" size="sm" onClick={() => setConfirmBulkDelete(true)}>
-<Trash2Icon data-icon="inline-start" />
-Delete
-</Button>
-</BulkToolbar>
-<DataGrid
-table={table}
-onCellEdit={(rowId, columnId, value) => {
-setData((prev) =>
-prev.map((row) =>
-row.id === rowId ? { ...row, [columnId]: value } : row
-)
-)
-}}
-/>
-<AlertDialog open={confirmBulkDelete} onOpenChange={setConfirmBulkDelete}>
-<AlertDialogContent>
-<AlertDialogHeader>
-<AlertDialogTitle>Delete {selectedIds.length} rows</AlertDialogTitle>
-<AlertDialogDescription>This action can't be undone.</AlertDialogDescription>
-</AlertDialogHeader>
-<AlertDialogFooter>
-<AlertDialogCancel>Cancel</AlertDialogCancel>
-<AlertDialogAction
-variant="destructive"
-onClick={() => {
-setConfirmBulkDelete(false)
-selectedIds.forEach(deleteRow)
-setRowSelection({})
-}} >
-Delete
-</AlertDialogAction>
-</AlertDialogFooter>
-</AlertDialogContent>
-</AlertDialog>
-</div>
-)
-}`} />
+<ComponentPreview name="data-grid-selection" />
 
 ### Read-only & editable columns mixed
 
@@ -615,63 +254,7 @@ A column without `meta.type` (`Order #`) renders through its normal
 TanStack `cell` definition and stays read-only, sitting next to editable
 columns in the same grid.
 
-<ComponentPreview name="data-grid-mixed-editable" code={`import * as React from "react"
-import { type ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table"
-import { DataGrid } from "@/components/ui/data-grid"
-
-interface Order {
-id: string
-reference: string
-customer: string
-status: string
-}
-
-const columns: ColumnDef<Order>[] = [
-// No meta.type — renders read-only.
-{ accessorKey: "reference", header: "Order #" },
-{ accessorKey: "customer", header: "Customer", meta: { type: "text" } },
-{
-accessorKey: "status",
-header: "Status",
-meta: {
-type: "select",
-options: [
-{ value: "pending", label: "Pending" },
-{ value: "shipped", label: "Shipped" },
-{ value: "delivered", label: "Delivered" },
-],
-},
-},
-]
-
-export function MyGrid() {
-  const [data, setData] = React.useState<Order[]>([
-    { id: "1", reference: "#1001", customer: "Ada Lovelace", status: "pending" },
-    { id: "2", reference: "#1002", customer: "Grace Hopper", status: "shipped" },
-  ])
-
-const table = useReactTable({
-data,
-columns,
-getCoreRowModel: getCoreRowModel(),
-getRowId: (row) => row.id,
-enableRowSelection: false,
-})
-
-return (
-
-<DataGrid
-table={table}
-onCellEdit={(rowId, columnId, value) => {
-setData((prev) =>
-prev.map((row) =>
-row.id === rowId ? { ...row, [columnId]: value } : row
-)
-)
-}}
-/>
-)
-}`} />
+<ComponentPreview name="data-grid-mixed-editable" />
 
 ### Narrow container (card view)
 
@@ -679,51 +262,7 @@ Below a 448px measured container width, the grid swaps to a card list with
 a bottom-drawer editor — forced here with a fixed-width wrapper instead of
 resizing the browser.
 
-<ComponentPreview name="data-grid-narrow" code={`import * as React from "react"
-import { type ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table"
-import { DataGrid } from "@/components/ui/data-grid"
-
-interface Task {
-id: string
-title: string
-estimate: number
-}
-
-const columns: ColumnDef<Task>[] = [
-{ accessorKey: "title", header: "Title", meta: { type: "text", summary: true } },
-{ accessorKey: "estimate", header: "Estimate (h)", meta: { type: "number", summary: true } },
-]
-
-export function MyGrid() {
-  const [data, setData] = React.useState<Task[]>([
-    { id: "1", title: "Design onboarding flow", estimate: 8 },
-    { id: "2", title: "Fix invoice rounding bug", estimate: 3 },
-  ])
-
-const table = useReactTable({
-data,
-columns,
-getCoreRowModel: getCoreRowModel(),
-getRowId: (row) => row.id,
-enableRowSelection: false,
-})
-
-return (
-
-<div className="mx-auto w-[320px]">
-<DataGrid
-table={table}
-onCellEdit={(rowId, columnId, value) => {
-setData((prev) =>
-prev.map((row) =>
-row.id === rowId ? { ...row, [columnId]: value } : row
-)
-)
-}}
-/>
-</div>
-)
-}`} />
+<ComponentPreview name="data-grid-narrow" />
 
 ## API Reference
 

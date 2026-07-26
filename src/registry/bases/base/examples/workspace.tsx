@@ -59,7 +59,7 @@ const TAB_CONTENT: Record<string, React.ReactNode> = {
   ),
 }
 
-export function WorkspaceLiveDemo() {
+export function WorkspaceDemo() {
   return (
     <div className="h-[400px] w-full overflow-hidden rounded-lg border border-border shadow-sm">
       <Workspace

@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Page } from "@/registry/bases/base/workspaceui/page"
 
-export function PageLiveDemo() {
+export function PageDemo() {
   return (
     <div className="h-[300px] w-full overflow-hidden rounded-lg border border-border shadow-sm">
       <Page

@@ -95,7 +95,7 @@ const columns: ColumnDef<Task>[] = [
   },
 ]
 
-export function DataFilterLiveDemo() {
+export function DataFilterDemo() {
   // useReactTable() intentionally returns fresh functions each render; see
   // data-table.tsx's identical eslint-disable for the same reason.
   // eslint-disable-next-line react-hooks/incompatible-library

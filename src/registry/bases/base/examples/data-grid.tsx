@@ -64,7 +64,7 @@ const columns: ColumnDef<Contact>[] = [
   { accessorKey: "renewsOn", header: "Renews on", meta: { type: "date" } },
 ]
 
-export function DataGridLiveDemo() {
+export function DataGridDemo() {
   const [data, setData] = React.useState(initialData)
 
   // useReactTable() intentionally returns fresh functions each render; see

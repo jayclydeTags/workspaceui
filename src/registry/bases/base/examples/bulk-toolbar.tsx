@@ -6,7 +6,7 @@ import { Trash2Icon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { BulkToolbar } from "@/registry/bases/base/workspaceui/bulk-toolbar"
 
-export function BulkToolbarLiveDemo() {
+export function BulkToolbarDemo() {
   const [count, setCount] = React.useState(2)
 
   return (

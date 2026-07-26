@@ -43,7 +43,7 @@ export function DataTable({ data: initialData }: DataTableProps) {
   const [confirmBulkDelete, setConfirmBulkDelete] = React.useState(false)
 
   // useReactTable() intentionally returns fresh functions each render; see
-  // data-grid-live.tsx's identical eslint-disable for the same reason.
+  // data-grid.tsx's (examples) identical eslint-disable for the same reason.
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,

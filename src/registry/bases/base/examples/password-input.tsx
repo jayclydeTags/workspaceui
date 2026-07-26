@@ -3,7 +3,7 @@
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { PasswordInput } from "@/registry/bases/base/workspaceui/password-input"
 
-export function PasswordInputLiveDemo() {
+export function PasswordInputDemo() {
   return (
     <Field className="w-full max-w-sm">
       <FieldLabel htmlFor="pw-live">New password</FieldLabel>

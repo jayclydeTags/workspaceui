@@ -1,7 +1,7 @@
 import type { ColumnDef } from "@tanstack/react-table"
 
 import { dataGridFilterFn } from "@/registry/bases/base/workspaceui/data-filter"
-import type { Payment } from "../data"
+import { PAYMENT_AGENTS, type Payment } from "../data"
 
 export const columns: ColumnDef<Payment>[] = [
   {
@@ -29,5 +29,37 @@ export const columns: ColumnDef<Payment>[] = [
     header: "Amount",
     filterFn: dataGridFilterFn,
     meta: { type: "currency" },
+  },
+  {
+    accessorKey: "paidAt",
+    header: "Paid at",
+    filterFn: dataGridFilterFn,
+    meta: { type: "date" },
+  },
+  {
+    accessorKey: "flagged",
+    header: "Flagged",
+    filterFn: dataGridFilterFn,
+    meta: { type: "boolean" },
+  },
+  {
+    accessorKey: "tags",
+    header: "Tags",
+    filterFn: dataGridFilterFn,
+    meta: {
+      type: "multiSelect",
+      options: [
+        { value: "recurring", label: "Recurring" },
+        { value: "high-value", label: "High value" },
+        { value: "disputed", label: "Disputed" },
+        { value: "refunded", label: "Refunded" },
+      ],
+    },
+  },
+  {
+    accessorKey: "processedBy",
+    header: "Processed by",
+    filterFn: dataGridFilterFn,
+    meta: { type: "user", users: PAYMENT_AGENTS },
   },
 ]

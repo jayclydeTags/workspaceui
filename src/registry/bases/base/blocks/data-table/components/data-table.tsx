@@ -26,6 +26,11 @@ import { Button } from "@/components/ui/button"
 import { BulkToolbar } from "@/registry/bases/base/workspaceui/bulk-toolbar"
 import { DataFilter } from "@/registry/bases/base/workspaceui/data-filter"
 import { DataGrid } from "@/registry/bases/base/workspaceui/data-grid"
+import {
+  DataSearch,
+  dataGridGetColumnCanGlobalFilter,
+  dataGridGlobalFilterFn,
+} from "@/registry/bases/base/workspaceui/data-search"
 import type { Payment } from "../data"
 import { columns } from "./columns"
 
@@ -49,6 +54,8 @@ export function DataTable({ data: initialData }: DataTableProps) {
     data,
     columns,
     getRowId: (row) => row.id,
+    globalFilterFn: dataGridGlobalFilterFn,
+    getColumnCanGlobalFilter: dataGridGetColumnCanGlobalFilter,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onRowSelectionChange: setRowSelection,
@@ -70,8 +77,11 @@ export function DataTable({ data: initialData }: DataTableProps) {
         {/* min-w-0 lets this shrink below its content's natural width when
             BulkToolbar appears; flex-1 is what gives DataFilter's own
             ResizeObserver a real width to measure instead of shrink-wrapping
-            to its buttons and reading permanently narrow. */}
-        <div className="min-w-0 flex-1">
+            to its buttons and reading permanently narrow. Search reads first
+            (broad/fuzzy), filters follow (precise/boolean) — different
+            mental models, so they don't share one control. */}
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+          <DataSearch table={table} />
           <DataFilter table={table} />
         </div>
         <BulkToolbar

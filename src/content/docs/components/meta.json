@@ -9,6 +9,7 @@
     "bulk-toolbar",
     "data-grid-types",
     "data-grid",
-    "data-filter"
+    "data-filter",
+    "data-search"
   ]
 }

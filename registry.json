@@ -132,6 +132,20 @@
       ]
     },
     {
+      "name": "data-search",
+      "type": "registry:ui",
+      "title": "Data Search",
+      "description": "A debounced global-search input over a consumer-owned useReactTable() instance. Exports dataGridGlobalFilterFn, the globalFilterFn every table needs set: it matches primitive cell values (string/number/boolean) case-insensitively and skips columns with no accessor value (id/select/action columns) and array/object values (multiSelect tags, user objects).",
+      "dependencies": ["@tanstack/react-table"],
+      "registryDependencies": ["button", "input"],
+      "files": [
+        {
+          "path": "src/registry/bases/base/workspaceui/data-search.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "payroll-run",
       "type": "registry:block",
       "title": "Payroll Run",
@@ -211,7 +225,7 @@
       "name": "data-table",
       "type": "registry:block",
       "title": "Data Table",
-      "description": "Editable data table built on DataGrid, DataFilter, and BulkToolbar \u2014 column filter chips, sorting, inline cell editing, row selection with a contextual bulk-delete toolbar, and a confirm dialog for the destructive action.",
+      "description": "Editable data table built on DataGrid, DataFilter, DataSearch, and BulkToolbar \u2014 global search, column filter chips, sorting, inline cell editing, row selection with a contextual bulk-delete toolbar, and a confirm dialog for the destructive action.",
       "dependencies": ["@tanstack/react-table", "lucide-react"],
       "registryDependencies": [
         "alert-dialog",
@@ -219,6 +233,7 @@
         "jayclydeTags/workspaceui/page",
         "jayclydeTags/workspaceui/data-grid",
         "jayclydeTags/workspaceui/data-filter",
+        "jayclydeTags/workspaceui/data-search",
         "jayclydeTags/workspaceui/bulk-toolbar"
       ],
       "files": [

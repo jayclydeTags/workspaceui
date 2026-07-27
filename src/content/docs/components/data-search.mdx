@@ -1,0 +1,121 @@
+---
+title: Data Search
+description: A debounced global-search input over a consumer-owned useReactTable() instance — matches primitive cell values across every searchable column.
+---
+
+<ComponentPreview name="data-search" />
+
+`DataSearch` is a headless-composition component over the same
+`useReactTable()` instance you'd pass to [Data Grid](/docs/components/data-grid)
+and [Data Filter](/docs/components/data-filter) — a sibling toolbar control,
+not a prop on either. It drives TanStack's own `globalFilter` state instead of
+a parallel search implementation.
+
+## Installation
+
+<CodeTabs>
+<TabsList>
+<TabsTrigger value="cli">CLI</TabsTrigger>
+<TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+<TabsContent value="cli">
+
+<CodeBlockCommand
+  __npm__="npx shadcn@latest add jayclydeTags/workspaceui/data-search"
+  __pnpm__="pnpm dlx shadcn@latest add jayclydeTags/workspaceui/data-search"
+  __yarn__="yarn dlx shadcn@latest add jayclydeTags/workspaceui/data-search"
+  __bun__="bun x shadcn@latest add jayclydeTags/workspaceui/data-search"
+/>
+
+</TabsContent>
+<TabsContent value="manual">
+
+### Install dependencies
+
+```bash
+npm install @tanstack/react-table
+npx shadcn@latest add button input
+```
+
+### Copy the file into your project
+
+<ComponentSource name="data-search" />
+
+</TabsContent>
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  DataSearch,
+  dataGridGetColumnCanGlobalFilter,
+  dataGridGlobalFilterFn,
+} from "@/components/ui/data-search"
+```
+
+```tsx
+const table = useReactTable({
+  data,
+  columns,
+  globalFilterFn: dataGridGlobalFilterFn,
+  getColumnCanGlobalFilter: dataGridGetColumnCanGlobalFilter,
+  getCoreRowModel: getCoreRowModel(),
+  getFilteredRowModel: getFilteredRowModel(),
+})
+
+<DataSearch table={table} />
+```
+
+The table needs all three: `globalFilterFn: dataGridGlobalFilterFn`,
+`getColumnCanGlobalFilter: dataGridGetColumnCanGlobalFilter`, and
+`getFilteredRowModel()` — `DataSearch` only writes `globalFilter` state, it
+never filters rows itself.
+
+`getColumnCanGlobalFilter` isn't optional the way it might look. TanStack's
+own default implementation decides which columns are even considered for
+global search by reading each column's **first row value** and checking
+`typeof value === "string" || typeof value === "number"` — before
+`globalFilterFn` ever runs. An array-valued `multiSelect` column fails that
+check and is silently dropped from search entirely, no matter what
+`dataGridGlobalFilterFn` would have matched. `dataGridGetColumnCanGlobalFilter`
+replaces that heuristic with one that understands the same `meta.type`
+contract as [Data Filter](/docs/components/data-filter): every typed column
+stays eligible except `boolean` (not meaningfully free-text-searchable), and
+untyped columns fall back to TanStack's default. Excluding a specific column
+from search on top of that is an ordinary TanStack concern
+(`enableGlobalFilter: false`), not a second config list.
+
+## Features
+
+- **Debounced input** — keystrokes update local state immediately; the
+  200ms-debounced value is what actually reaches `table.setGlobalFilter()`,
+  so large datasets don't re-filter on every keystroke.
+- **`dataGridGlobalFilterFn`** — the exported `globalFilterFn`. TanStack
+  calls it once per column per row and ORs the results, so a row matches if
+  _any_ column matches. It reads `column.meta.type` the same way
+  [Data Filter](/docs/components/data-filter) does: `select` and `user`
+  resolve the stored value to its option label / user name before matching
+  (searching "priya" finds a `user` cell storing id `"u3"` if
+  `meta.users` has `{ id: "u3", name: "Priya Patel" }`), `multiSelect`
+  matches if any tag's label matches, and a `user` cell with a `null` value
+  matches the literal string "unassigned". Every other type stringifies the
+  raw cell value and matches case-insensitively; columns with no accessor
+  value (id/action columns) never match.
+- **`dataGridGetColumnCanGlobalFilter`** — the exported
+  `getColumnCanGlobalFilter`, required alongside `dataGridGlobalFilterFn` (see
+  Usage above) so array-valued `multiSelect` columns aren't dropped from
+  search before `dataGridGlobalFilterFn` even runs.
+- **Clear button** — appears once there's a value; clears local state and
+  `globalFilter` together.
+- **Stays in sync with external clears** — if something else resets
+  `globalFilter` (e.g. a "Clear all" action elsewhere), the input's local
+  state follows it via the `table.getState().globalFilter` prop, not just
+  its own button.
+
+## API Reference
+
+| Prop          | Type           | Default       | Description                                                                                                                                                                        |
+| ------------- | -------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `table`       | `Table<TData>` | -             | A useReactTable() instance you create and own — the same one you'd pass to DataGrid/DataFilter. Needs globalFilterFn: dataGridGlobalFilterFn and getFilteredRowModel(). (required) |
+| `placeholder` | `string`       | `"Search..."` | Input placeholder text.                                                                                                                                                            |

@@ -189,17 +189,22 @@ through the same `onRowDelete(rowId)` for bulk delete — see
 
 ## Columns
 
-Resize, pin, and reorder all run on TanStack's own column state
-(`columnSizing`/`columnPinning`/`columnOrder`), so they work with zero setup
-on `useReactTable()`:
+Resize, sort, pin, and reorder all run on TanStack's own column state
+(`columnSizing`/`sorting`/`columnPinning`/`columnOrder`), so they work with
+zero setup on `useReactTable()`:
 
 - **Resize** — drag a column's right border; double-click it to reset to the
   default width.
-- **Pin** — hover a header to reveal a pin icon, cycling
-  unpinned → left → right → unpinned. Pinned columns stick during horizontal
+- **Sort** — click a column header to cycle ascending → descending →
+  unsorted; the arrow icon reflects the current direction. The affordance only
+  appears when you wire `getSortedRowModel` (and `state.sorting` /
+  `onSortingChange`) — without it a click would be a no-op, so it stays hidden.
+- **Column menu** — each header has a `⋯` button (hover or focus to reveal)
+  with **Move left/right**, **Hide column**, and the **Pin column** cycle
+  (unpinned → left → right → unpinned). Pinned columns stick during horizontal
   scroll.
-- **Reorder** — the toolbar's "Columns" button opens a panel to drag columns
-  into a new order.
+- **Reorder** — besides Move left/right, the toolbar's "Columns" button opens
+  a panel to drag columns into a new order and restore hidden ones.
 
 Pass `onColumnLayoutChange` to observe `{ columnOrder, columnSizing,
 columnPinning }` and persist it — it's a reporting side-channel only;

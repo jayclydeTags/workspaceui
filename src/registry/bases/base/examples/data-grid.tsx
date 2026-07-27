@@ -3,7 +3,9 @@
 import * as React from "react"
 import {
   type ColumnDef,
+  type SortingState,
   getCoreRowModel,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
 
@@ -66,6 +68,8 @@ const columns: ColumnDef<Contact>[] = [
 
 export function DataGridDemo() {
   const [data, setData] = React.useState(initialData)
+  // Wiring getSortedRowModel is what surfaces the header's sort affordance.
+  const [sorting, setSorting] = React.useState<SortingState>([])
 
   // useReactTable() intentionally returns fresh functions each render; see
   // data-table.tsx's identical eslint-disable for the same reason.
@@ -74,8 +78,11 @@ export function DataGridDemo() {
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getRowId: (row) => row.id,
     enableRowSelection: false,
+    state: { sorting },
+    onSortingChange: setSorting,
   })
 
   return (

@@ -13,14 +13,18 @@ import {
 } from "@tanstack/react-table"
 import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox"
 import {
+  ArrowDownIcon,
+  ArrowUpIcon,
   CheckIcon,
   ChevronRightIcon,
+  ChevronsUpDownIcon,
   Columns3Icon,
   EyeIcon,
   EyeOffIcon,
   GripVerticalIcon,
   MinusIcon,
   MoreHorizontalIcon,
+  MoreVerticalIcon,
   PinIcon,
   PlusIcon,
   Trash2Icon,
@@ -60,6 +64,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
@@ -152,6 +157,17 @@ function pinActionLabel(current: PinPosition): string {
   if (current === "left") return "Pin column right"
   if (current === "right") return "Unpin column"
   return "Pin column left"
+}
+
+// Reflects TanStack's getIsSorted() (false | "asc" | "desc"). The unsorted glyph
+// only surfaces on header hover, so it hints at sortability without adding noise.
+function sortIcon(direction: false | "asc" | "desc") {
+  if (direction === "asc") return <ArrowUpIcon className="size-3.5 shrink-0" />
+  if (direction === "desc")
+    return <ArrowDownIcon className="size-3.5 shrink-0" />
+  return (
+    <ChevronsUpDownIcon className="size-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-60" />
+  )
 }
 
 // Follows TanStack's own default; opt out via `enableRowSelection: false` on useReactTable().
@@ -662,6 +678,18 @@ export function DataGrid<TData>({
 
   function handleColumnDragEnd() {
     setDropTarget(null)
+  }
+
+  // Swaps a column with its visible neighbor; same setColumnOrder(visible ids)
+  // contract the drop handler uses, so keyboard/menu and drag can't drift.
+  function moveColumn(columnId: string, dir: -1 | 1) {
+    const ids = table.getVisibleLeafColumns().map((c) => c.id)
+    const i = ids.indexOf(columnId)
+    const j = i + dir
+    if (i < 0 || j < 0 || j >= ids.length) return
+    const next = [...ids]
+    ;[next[i], next[j]] = [next[j], next[i]]
+    table.setColumnOrder(next)
   }
 
   // getVisibleLeafColumns respects columnOrder + visibility; hidden ones aren't
@@ -1312,8 +1340,18 @@ export function DataGrid<TData>({
                       </div>
                     </TableHead>
                   )}
-                  {headerGroup.headers.map((header) => {
+                  {headerGroup.headers.map((header, headerIndex) => {
                     const pinned = header.column.getIsPinned()
+                    // getCanSort() is true for any accessor column; only expose
+                    // the affordance when the consumer actually wired a sorted
+                    // row model, so a click can't be a no-op.
+                    const canSort =
+                      header.column.getCanSort() &&
+                      table.options.getSortedRowModel != null
+                    const sortDirection = header.column.getIsSorted()
+                    const canMoveLeft = headerIndex > 0
+                    const canMoveRight =
+                      headerIndex < headerGroup.headers.length - 1
                     const stickyHeader =
                       pinned ||
                       (forceStickyFirstColumn &&
@@ -1334,26 +1372,79 @@ export function DataGrid<TData>({
                       >
                         {!header.isPlaceholder && (
                           <div className="flex items-center justify-between gap-1 pe-2">
-                            <span className="truncate">
-                              {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                            </span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon-xs"
-                              aria-label={pinActionLabel(pinned)}
-                              onClick={() =>
-                                header.column.pin(nextPinPosition(pinned))
-                              }
-                              className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
-                            >
-                              <PinIcon
-                                className={cn(pinned && "fill-current")}
+                            {canSort ? (
+                              <button
+                                type="button"
+                                onClick={header.column.getToggleSortingHandler()}
+                                aria-label={`Sort by ${getColumnLabel(header.column)}`}
+                                className="flex min-w-0 flex-1 items-center gap-1 text-left"
+                              >
+                                <span className="truncate">
+                                  {flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext()
+                                  )}
+                                </span>
+                                {sortIcon(sortDirection)}
+                              </button>
+                            ) : (
+                              <span className="truncate">
+                                {flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext()
+                                )}
+                              </span>
+                            )}
+                            <DropdownMenu>
+                              <DropdownMenuTrigger
+                                render={
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon-xs"
+                                    aria-label={`${getColumnLabel(header.column)} column options`}
+                                    className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 data-[popup-open]:opacity-100"
+                                  >
+                                    <MoreVerticalIcon />
+                                  </Button>
+                                }
                               />
-                            </Button>
+                              <DropdownMenuContent align="start">
+                                <DropdownMenuItem
+                                  disabled={!canMoveLeft}
+                                  onClick={() =>
+                                    moveColumn(header.column.id, -1)
+                                  }
+                                >
+                                  Move left
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  disabled={!canMoveRight}
+                                  onClick={() =>
+                                    moveColumn(header.column.id, 1)
+                                  }
+                                >
+                                  Move right
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                {header.column.getCanHide() && (
+                                  <DropdownMenuItem
+                                    onClick={() =>
+                                      header.column.toggleVisibility(false)
+                                    }
+                                  >
+                                    Hide column
+                                  </DropdownMenuItem>
+                                )}
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    header.column.pin(nextPinPosition(pinned))
+                                  }
+                                >
+                                  {pinActionLabel(pinned)}
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         )}
                         {header.column.getCanResize() && (

@@ -13,7 +13,9 @@ import { describe, it, expect, vi } from "vitest"
 import {
   type ColumnDef,
   type RowSelectionState,
+  type SortingState,
   getCoreRowModel,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
 
@@ -263,6 +265,23 @@ function LayoutHarness({
       onColumnLayoutChange={onColumnLayoutChange}
     />
   )
+}
+
+// Only this harness wires getSortedRowModel, so it's the one that surfaces the
+// header's sort affordance (LayoutHarness above deliberately doesn't).
+function SortableHarness() {
+  const [sorting, setSorting] = React.useState<SortingState>([])
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const table = useReactTable({
+    data: employeeData,
+    columns: employeeColumns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getRowId: (row) => row.id,
+    state: { sorting },
+    onSortingChange: setSorting,
+  })
+  return <DataGrid table={table} onCellEdit={vi.fn()} />
 }
 
 interface Widget {
@@ -1498,23 +1517,27 @@ describe("DataGrid", () => {
   })
 
   describe("column pin", () => {
-    it("cycles unpinned -> left -> right -> unpinned via the header pin button", () => {
+    it("cycles unpinned -> left -> right -> unpinned via the header options menu", async () => {
+      const user = userEvent.setup()
       render(<LayoutHarness />)
       const header = screen.getAllByRole("columnheader")[1]!
-      const pinButton = within(header).getByRole("button")
-      expect(pinButton).toHaveAccessibleName("Pin column left")
+      // The pin action is a menu item under the header's "⋯" options button.
+      const pin = async (name: string) => {
+        await user.click(
+          within(header).getByRole("button", { name: "Name column options" })
+        )
+        await user.click(await screen.findByRole("menuitem", { name }))
+      }
+
       expect(header).not.toHaveStyle({ position: "sticky" })
 
-      fireEvent.click(pinButton)
-      expect(pinButton).toHaveAccessibleName("Pin column right")
+      await pin("Pin column left")
       expect(header).toHaveStyle({ position: "sticky", left: "0px" })
 
-      fireEvent.click(pinButton)
-      expect(pinButton).toHaveAccessibleName("Unpin column")
+      await pin("Pin column right")
       expect(header).toHaveStyle({ position: "sticky", right: "0px" })
 
-      fireEvent.click(pinButton)
-      expect(pinButton).toHaveAccessibleName("Pin column left")
+      await pin("Unpin column")
       expect(header).not.toHaveStyle({ position: "sticky" })
     })
   })
@@ -1628,17 +1651,117 @@ describe("DataGrid", () => {
         screen.queryByRole("button", { name: "Show Team column" })
       ).toBeNull()
     })
+
+    it("moves a column left/right via the header options menu", async () => {
+      const user = userEvent.setup()
+      render(<LayoutHarness />)
+      // Drop the leading empty select-all column header.
+      const headerTexts = () =>
+        screen
+          .getAllByRole("columnheader")
+          .map((h) => h.textContent)
+          .filter(Boolean)
+      expect(headerTexts()).toEqual(["Name", "Email", "Team"])
+
+      const menuAction = async (column: string, name: string) => {
+        await user.click(
+          screen.getByRole("button", { name: `${column} column options` })
+        )
+        await user.click(await screen.findByRole("menuitem", { name }))
+      }
+
+      await menuAction("Email", "Move left")
+      expect(headerTexts()).toEqual(["Email", "Name", "Team"])
+
+      await menuAction("Name", "Move right")
+      expect(headerTexts()).toEqual(["Email", "Team", "Name"])
+    })
+
+    it("disables Move left on the first column and Move right on the last", async () => {
+      const user = userEvent.setup()
+      render(<LayoutHarness />)
+
+      await user.click(
+        screen.getByRole("button", { name: "Name column options" })
+      )
+      expect(
+        await screen.findByRole("menuitem", { name: "Move left" })
+      ).toHaveAttribute("data-disabled")
+
+      await user.keyboard("{Escape}")
+      await user.click(
+        screen.getByRole("button", { name: "Team column options" })
+      )
+      expect(
+        await screen.findByRole("menuitem", { name: "Move right" })
+      ).toHaveAttribute("data-disabled")
+    })
+
+    it("hides a column via the header options menu", async () => {
+      const user = userEvent.setup()
+      render(<LayoutHarness />)
+      const headerTexts = () =>
+        screen.getAllByRole("columnheader").map((h) => h.textContent)
+      expect(headerTexts()).toContain("Email")
+
+      await user.click(
+        screen.getByRole("button", { name: "Email column options" })
+      )
+      await user.click(
+        await screen.findByRole("menuitem", { name: "Hide column" })
+      )
+
+      expect(headerTexts()).not.toContain("Email")
+    })
+  })
+
+  describe("column sort", () => {
+    it("shows no sort affordance when the table has no sorted row model", () => {
+      // LayoutHarness wires only getCoreRowModel — a click would be a no-op, so
+      // the header stays a plain label with only the options button.
+      render(<LayoutHarness />)
+      const header = screen.getAllByRole("columnheader")[1]!
+      expect(
+        within(header).queryByRole("button", { name: /^Sort by/ })
+      ).toBeNull()
+    })
+
+    it("toggles asc -> desc -> unsorted by clicking the header, reordering rows", async () => {
+      const user = userEvent.setup()
+      render(<SortableHarness />)
+      const nameSort = screen.getByRole("button", { name: "Sort by Name" })
+      // First data cell of the name column tracks the sorted order.
+      const firstName = () =>
+        screen.getAllByRole("gridcell")[0]!.querySelector("input")!.value
+
+      expect(firstName()).toBe("Ada") // unsorted = insertion order
+
+      await user.click(nameSort)
+      expect(firstName()).toBe("Ada") // asc
+
+      await user.click(nameSort)
+      expect(firstName()).toBe("Grace") // desc
+
+      await user.click(nameSort)
+      expect(firstName()).toBe("Ada") // back to unsorted
+    })
   })
 
   describe("onColumnLayoutChange", () => {
-    it("reports resize/pin/reorder changes when provided (controlled)", () => {
+    it("reports resize/pin/reorder changes when provided (controlled)", async () => {
+      const user = userEvent.setup()
       const onColumnLayoutChange =
         vi.fn<(layout: DataGridColumnLayout) => void>()
       render(<LayoutHarness onColumnLayoutChange={onColumnLayoutChange} />)
       expect(onColumnLayoutChange).not.toHaveBeenCalled() // no fire on mount
 
       const header = screen.getAllByRole("columnheader")[1]!
-      fireEvent.click(within(header).getByRole("button"))
+      await user.click(
+        within(header).getByRole("button", { name: "Name column options" })
+      )
+      await user.click(
+        await screen.findByRole("menuitem", { name: "Pin column left" })
+      )
 
       expect(onColumnLayoutChange).toHaveBeenCalledTimes(1)
       expect(onColumnLayoutChange).toHaveBeenCalledWith(
@@ -1648,14 +1771,18 @@ describe("DataGrid", () => {
       )
     })
 
-    it("leaves resize/pin/reorder fully working when the callback is omitted (uncontrolled)", () => {
+    it("leaves resize/pin/reorder fully working when the callback is omitted (uncontrolled)", async () => {
+      const user = userEvent.setup()
       render(<LayoutHarness />)
       const header = screen.getAllByRole("columnheader")[1]!
-      const pinButton = within(header).getByRole("button")
 
-      fireEvent.click(pinButton)
+      await user.click(
+        within(header).getByRole("button", { name: "Name column options" })
+      )
+      await user.click(
+        await screen.findByRole("menuitem", { name: "Pin column left" })
+      )
 
-      expect(pinButton).toHaveAccessibleName("Pin column right")
       expect(header).toHaveStyle({ position: "sticky", left: "0px" })
     })
   })

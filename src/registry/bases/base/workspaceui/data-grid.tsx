@@ -12,6 +12,7 @@ import {
   type Table as TanstackTable,
 } from "@tanstack/react-table"
 import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox"
+import { motion } from "motion/react"
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -73,8 +74,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { Separator } from "@/components/ui/separator"
 import { Spinner } from "@/components/ui/spinner"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import {
   Table,
   TableBody,
@@ -526,11 +532,14 @@ export function DataGrid<TData>({
     null
   )
 
-  // The dragged column's id travels through native DataTransfer instead — the only thing readable at drop time.
-  const [dropTarget, setDropTarget] = React.useState<{
-    id: string
-    position: "before" | "after"
-  } | null>(null)
+  // Drag state lives in refs (read only from drag handlers, no re-renders needed).
+  const draggingColumnRef = React.useRef<string | null>(null)
+  const dragOriginalOrderRef = React.useRef<string[] | null>(null)
+  const dragOriginalHiddenOrderRef = React.useRef<string[] | null>(null)
+  const dragOriginalVisibleRef = React.useRef<boolean | null>(null)
+  const droppedRef = React.useRef(false)
+  // tanstack's columnOrder only tracks visible ids, so hidden columns get their own.
+  const [hiddenOrder, setHiddenOrder] = React.useState<string[]>([])
 
   const cellRefs = React.useRef(new Map<string, HTMLTableCellElement>())
   const inputRefs = React.useRef(new Map<string, HTMLInputElement>())
@@ -608,15 +617,104 @@ export function DataGrid<TData>({
       columnSizing: columnSizingState,
       columnPinning: columnPinningState,
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [columnOrderState, columnSizingState, columnPinningState])
 
-  function handleColumnDragStart(
+  // Each gap between two rows is one drop zone, not two — collapse "after" into the next row's "before".
+  function columnDropTarget(
     e: React.DragEvent<HTMLLIElement>,
+    overId: string,
+    ids: string[]
+  ): { id: string; position: "before" | "after" } {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const midpointY = rect.top + rect.height / 2
+    const rawPosition: "before" | "after" =
+      e.clientY < midpointY ? "before" : "after"
+    const target = { id: overId, position: rawPosition }
+    if (rawPosition === "after") {
+      const idx = ids.indexOf(overId)
+      const nextId = idx >= 0 ? ids[idx + 1] : undefined
+      if (nextId) {
+        target.id = nextId
+        target.position = "before"
+      }
+    }
+    return target
+  }
+
+  function handleColumnDragStart(
+    e: React.DragEvent<HTMLSpanElement>,
     columnId: string
   ) {
     e.dataTransfer.effectAllowed = "move"
     e.dataTransfer.setData("text/plain", columnId)
+    // Drag ghost is the whole row, not just the (only draggable) icon.
+    const row = e.currentTarget.closest("li")
+    if (row) {
+      const rect = row.getBoundingClientRect()
+      e.dataTransfer.setDragImage(
+        row,
+        e.clientX - rect.left,
+        e.clientY - rect.top
+      )
+    }
+    // addEventListener, not onDragEnd: motion.li intercepts that prop name.
+    e.currentTarget.addEventListener("dragend", handleColumnDragEnd, {
+      once: true,
+    })
+    draggingColumnRef.current = columnId
+    dragOriginalOrderRef.current = table
+      .getVisibleLeafColumns()
+      .map((c) => c.id)
+    dragOriginalHiddenOrderRef.current = hiddenMenuColumns.map((c) => c.id)
+    dragOriginalVisibleRef.current =
+      table.getColumn(columnId)?.getIsVisible() ?? null
+    droppedRef.current = false
+  }
+
+  function columnGroupOrder(overId: string) {
+    const overColumn = table.getColumn(overId)
+    const hidden = overColumn ? !overColumn.getIsVisible() : false
+    return hidden
+      ? {
+          hidden,
+          ids: hiddenMenuColumns.map((c) => c.id),
+          setOrder: setHiddenOrder,
+        }
+      : {
+          hidden,
+          ids: table.getVisibleLeafColumns().map((c) => c.id),
+          setOrder: table.setColumnOrder,
+        }
+  }
+
+  // Shared by dragover (live preview) and drop (commit) — reveals/hides the
+  // dragged column to match whichever group it's over, then reorders it in.
+  function applyColumnDrag(
+    e: React.DragEvent<HTMLLIElement>,
+    draggedId: string,
+    overId: string
+  ) {
+    const draggedColumn = table.getColumn(draggedId)
+    const draggedHidden = draggedColumn ? !draggedColumn.getIsVisible() : false
+    const {
+      hidden: overHidden,
+      ids: currentOrder,
+      setOrder,
+    } = columnGroupOrder(overId)
+    if (draggedHidden !== overHidden) {
+      if (overHidden && !draggedColumn?.getCanHide()) return
+      draggedColumn?.toggleVisibility(!overHidden)
+    }
+    const target = columnDropTarget(e, overId, currentOrder)
+    const nextOrder = reorderColumnIds(
+      currentOrder,
+      draggedId,
+      target.id,
+      target.position
+    )
+    if (nextOrder.join() !== currentOrder.join()) {
+      setOrder(nextOrder)
+    }
   }
 
   function handleColumnDragOver(
@@ -625,59 +723,42 @@ export function DataGrid<TData>({
   ) {
     e.preventDefault()
     e.dataTransfer.dropEffect = "move"
-    const rect = e.currentTarget.getBoundingClientRect()
-    const midpointY = rect.top + rect.height / 2
-    const rawPosition: "before" | "after" =
-      e.clientY < midpointY ? "before" : "after"
-    // Each internal gap is shared by two rows: the row above's "after" and the
-    // row below's "before" mark the same slot. Collapse both to the lower row's
-    // "before" so the gap is a single drop zone, not two. Only the last visible
-    // row keeps a distinct "after" (there's no row below to fold it into).
-    const target: { id: string; position: "before" | "after" } = {
-      id: overId,
-      position: rawPosition,
-    }
-    if (rawPosition === "after") {
-      const ids = table.getVisibleLeafColumns().map((col) => col.id)
-      const idx = ids.indexOf(overId)
-      const nextId = idx >= 0 ? ids[idx + 1] : undefined
-      if (nextId) {
-        target.id = nextId
-        target.position = "before"
-      }
-    }
-    setDropTarget((prev) =>
-      prev && prev.id === target.id && prev.position === target.position
-        ? prev
-        : target
-    )
+    const draggedId = draggingColumnRef.current
+    if (!draggedId || draggedId === overId) return
+    applyColumnDrag(e, draggedId, overId)
   }
 
-  function handleColumnDrop(e: React.DragEvent<HTMLLIElement>) {
+  function handleColumnDrop(e: React.DragEvent<HTMLLIElement>, overId: string) {
     e.preventDefault()
     const draggedId = e.dataTransfer.getData("text/plain")
-    const target = dropTarget
-    setDropTarget(null)
-    if (!draggedId || !target) return
-    // Only the visible group is columnOrder-driven; the hidden group renders in
-    // definition order, so a drop onto it can't reorder anything — bail.
-    const targetColumn = table.getColumn(target.id)
-    if (targetColumn && !targetColumn.getIsVisible()) return
-    // Dragging a hidden column into the visible group reveals it at the drop slot.
-    const draggedColumn = table.getColumn(draggedId)
-    if (draggedColumn && !draggedColumn.getIsVisible()) {
-      draggedColumn.toggleVisibility(true)
-    }
-    // reorderColumnIds inserts draggedId even when it's absent (still hidden this
-    // tick), so the resulting order includes it regardless of the async toggle.
-    const currentOrder = table.getVisibleLeafColumns().map((c) => c.id)
-    table.setColumnOrder(
-      reorderColumnIds(currentOrder, draggedId, target.id, target.position)
-    )
+    droppedRef.current = true
+    if (!draggedId) return
+    applyColumnDrag(e, draggedId, overId)
   }
 
   function handleColumnDragEnd() {
-    setDropTarget(null)
+    // No drop landed — undo the live preview.
+    if (!droppedRef.current) {
+      if (dragOriginalHiddenOrderRef.current) {
+        setHiddenOrder(dragOriginalHiddenOrderRef.current)
+      }
+      if (dragOriginalOrderRef.current) {
+        table.setColumnOrder(dragOriginalOrderRef.current)
+      }
+      if (
+        draggingColumnRef.current &&
+        dragOriginalVisibleRef.current !== null
+      ) {
+        table
+          .getColumn(draggingColumnRef.current)
+          ?.toggleVisibility(dragOriginalVisibleRef.current)
+      }
+    }
+    draggingColumnRef.current = null
+    dragOriginalOrderRef.current = null
+    dragOriginalHiddenOrderRef.current = null
+    dragOriginalVisibleRef.current = null
+    droppedRef.current = false
   }
 
   // Swaps a column with its visible neighbor; same setColumnOrder(visible ids)
@@ -692,57 +773,53 @@ export function DataGrid<TData>({
     table.setColumnOrder(next)
   }
 
-  // getVisibleLeafColumns respects columnOrder + visibility; hidden ones aren't
-  // in it, so pull them straight from the full leaf set.
-  const hiddenMenuColumns = table
+  // Synced with hiddenOrder inline (not in an effect) so hide/show lands this render.
+  const currentHiddenIds = table
     .getAllLeafColumns()
     .filter((column) => !column.getIsVisible())
+    .map((column) => column.id)
+  const mergedHiddenOrder = [
+    ...hiddenOrder.filter((id) => currentHiddenIds.includes(id)),
+    ...currentHiddenIds.filter((id) => !hiddenOrder.includes(id)),
+  ]
+  if (mergedHiddenOrder.join() !== hiddenOrder.join()) {
+    setHiddenOrder(mergedHiddenOrder)
+  }
+  const hiddenMenuColumns = mergedHiddenOrder
+    .map((id) => table.getColumn(id))
+    .filter((column): column is Column<TData, unknown> => !!column)
 
   // One row for the Columns panel. Visible rows carry an active Hide toggle;
-  // hidden rows are dimmed with a Show toggle and a disabled Pin, and can be
-  // dragged up into the visible group to reveal them (see handleColumnDrop).
+  // hidden rows are dimmed with a Show toggle and a disabled Pin. Dragging
+  // across the visible/hidden boundary hides or reveals the column.
   function renderColumnMenuRow(
     column: Column<TData, unknown>,
     hidden: boolean
   ) {
     const pinned = column.getIsPinned()
     const label = getColumnLabel(column)
-    const dropPosition =
-      dropTarget?.id === column.id ? dropTarget.position : null
     return (
-      <li
+      <motion.li
         key={column.id}
-        draggable
-        onDragStart={(e) => handleColumnDragStart(e, column.id)}
+        layout="position"
+        transition={{ duration: 0.15 }}
         onDragOver={(e) => handleColumnDragOver(e, column.id)}
-        onDrop={handleColumnDrop}
-        onDragEnd={handleColumnDragEnd}
+        onDrop={(e) => handleColumnDrop(e, column.id)}
         className={cn(
-          "relative flex cursor-grab items-center gap-1.5 rounded-md px-2 py-1.5 text-sm select-none",
+          "relative flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm select-none",
           hidden && "opacity-50"
         )}
       >
-        {dropPosition && (
-          // Insertion line straddling the drop boundary: absolutely placed and
-          // pointer-events-none so it marks the gap without shifting layout or
-          // stealing the row's drag events.
-          <span
-            aria-hidden="true"
-            className={cn(
-              "pointer-events-none absolute inset-x-2 z-10 flex items-center",
-              dropPosition === "before"
-                ? "top-0 -translate-y-1/2"
-                : "bottom-0 translate-y-1/2"
-            )}
-          >
-            <span className="size-1.5 shrink-0 rounded-full bg-primary" />
-            <span className="h-0.5 flex-1 rounded-full bg-primary" />
-          </span>
-        )}
-        <GripVerticalIcon
+        {/* Only the handle is draggable — dragover/drop still target the
+            whole row, since native drag events aren't gated by `draggable`. */}
+        <span
+          draggable
+          onDragStart={(e) => handleColumnDragStart(e, column.id)}
           aria-hidden="true"
-          className="size-4 shrink-0 text-muted-foreground"
-        />
+          className="flex size-5 shrink-0 cursor-grab items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground active:cursor-grabbing"
+        >
+          <GripVerticalIcon className="size-4" />
+        </span>
         <span className="flex-1 truncate">{label}</span>
         <Button
           type="button"
@@ -767,7 +844,7 @@ export function DataGrid<TData>({
             {hidden ? <EyeOffIcon /> : <EyeIcon />}
           </Button>
         )}
-      </li>
+      </motion.li>
     )
   }
 
@@ -786,7 +863,6 @@ export function DataGrid<TData>({
       setPendingAdd(null)
     }
     prevRowCountRef.current = rowCount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowCount, pendingAdd])
 
   // Clears pendingAdd on rejection so a later unrelated row-count change can't steal focus.
@@ -1287,15 +1363,30 @@ export function DataGrid<TData>({
         <>
           <div className="flex items-center justify-end">
             <Popover>
-              <PopoverTrigger
-                render={
-                  <Button variant="outline" size="sm">
-                    <Columns3Icon className="size-4" />
-                    Columns
-                  </Button>
-                }
-              />
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <PopoverTrigger
+                        render={
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            aria-label="Columns"
+                          >
+                            <Columns3Icon className="size-4" />
+                          </Button>
+                        }
+                      />
+                    }
+                  />
+                  <TooltipContent>Column</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               <PopoverContent align="end" className="w-64 p-1">
+                <div className="px-1.5 py-1 text-xs font-medium text-muted-foreground">
+                  Shown in table
+                </div>
                 <ul className="flex list-none flex-col gap-0.5 ps-0">
                   {table
                     .getVisibleLeafColumns()
@@ -1303,7 +1394,9 @@ export function DataGrid<TData>({
                 </ul>
                 {hiddenMenuColumns.length > 0 && (
                   <>
-                    <Separator className="my-1" />
+                    <div className="px-1.5 py-1 text-xs font-medium text-muted-foreground">
+                      Hidden in table
+                    </div>
                     <ul className="flex list-none flex-col gap-0.5 ps-0">
                       {hiddenMenuColumns.map((column) =>
                         renderColumnMenuRow(column, true)

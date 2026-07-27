@@ -39,6 +39,60 @@ deliberate: virtualizing the grid's rows (for very large datasets) depends on
 every row reporting the same height, so any future editor UI must preserve
 this fixed-height invariant rather than allowing wrapping content.
 
+## Column drag-and-drop (Columns panel)
+
+Dragging a column row live-mutates order on every `dragover` (the row slides
+via `layout` on `motion.li`) instead of showing an insertion-line indicator —
+this applies even when dragging across the visible/hidden boundary, which
+reveals or hides the column live too. Drag state (`draggingColumnRef`,
+`dragOriginal*Ref`, `droppedRef`) lives in refs rather than state since it's
+only read inside drag handlers and doesn't need to trigger renders.
+
+`columnDropTarget`'s "before"/"after" collapsing: each gap between two rows
+is really one drop zone, not two (the row above's "after" and the row
+below's "before" mean the same slot). Naive insert-before-target math would
+also no-op on an adjacent swap (removing the dragged id shifts the target
+back into the slot being inserted at), so "after" folds into the next row's
+"before" instead of inserting relative to the raw hovered id.
+
+`e.dataTransfer.setDragImage(row, ...)` in `handleColumnDragStart` makes the
+browser's drag ghost the whole row, not just the grip icon that's actually
+`draggable` — otherwise the default ghost is only the small icon.
+
+The `dragend` listener is attached via `addEventListener` directly on the
+grip handle in `handleColumnDragStart`, not as a React `onDragEnd` prop, for
+two reasons: (1) `motion.li` intercepts the `onDragEnd`/`onDragStart` prop
+names for its own (unrelated, gesture-based) drag system, so a prop placed
+on it never reaches the DOM as a real listener; and (2) crossing the
+visible/hidden boundary mid-drag remounts the row into the other `<ul>`
+(two separate `.map()` calls, i.e. two separate React trees), detaching the
+original node — the browser still fires native `dragend` on that original
+node, but a listener relying on React's delegated root wouldn't receive it
+from a detached node (no bubble path). A listener bound directly to the node
+via `addEventListener` still receives it as the direct target regardless.
+
+`hiddenOrder` exists because tanstack's `columnOrder` state only ever holds
+visible ids in this component (every `setColumnOrder` call here passes a
+visible-only array) — the hidden group needs its own order state to support
+the same live-reorder behavior. It's synced against the actual hidden set
+inline during render (comparing and calling `setHiddenOrder` if different)
+rather than in a `useEffect`, so a hide/show is reflected in the very same
+render instead of one tick later.
+
+`applyColumnDrag` only hides a column via drag if `column.getCanHide()` is
+true, matching the Hide button's own guard — revealing is always allowed.
+`reorderColumnIds` inserts the dragged id even when it's absent from the
+target group's current order (e.g. a visibility toggle that hasn't landed
+in this render's table state yet), so the result is correct regardless of
+that timing — this is also why re-running the same operation in
+`handleColumnDrop` after `handleColumnDragOver` already applied it is a
+harmless no-op rather than a double-move.
+
+`handleColumnDragEnd` reverts order, hidden order, and visibility together
+when a drag ends without a drop (dropped outside a valid row, or
+cancelled) — since the live preview during dragover already mutated all
+three, all three need to be restored from the snapshot taken at dragstart.
+
 ## Narrow breakpoint shared with DataFilter
 
 `NARROW_BREAKPOINT = 448` is deliberately the same constant `data-filter.tsx`

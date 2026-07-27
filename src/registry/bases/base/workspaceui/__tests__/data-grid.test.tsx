@@ -425,6 +425,7 @@ function fakeDataTransfer() {
       stored = value
     },
     getData: () => stored,
+    setDragImage: () => {},
   }
 }
 
@@ -434,6 +435,19 @@ function fakeDataTransfer() {
 // testing-library's own createEvent, then force clientY on afterward.
 function fireDragOver(el: Element, dataTransfer: unknown, clientY: number) {
   const event = createEvent.dragOver(el, { dataTransfer })
+  Object.defineProperty(event, "clientY", {
+    value: clientY,
+    configurable: true,
+  })
+  fireEvent(el, event)
+}
+
+// The drop handler recomputes the drop position from the event's own
+// clientY (a real drop event's clientY matches the pointer's release
+// position, same as the preceding dragover) rather than reusing dragover's
+// last-seen target — see the same jsdom clientY gap as fireDragOver above.
+function fireDrop(el: Element, dataTransfer: unknown, clientY: number) {
+  const event = createEvent.drop(el, { dataTransfer })
   Object.defineProperty(event, "clientY", {
     value: clientY,
     configurable: true,
@@ -1546,6 +1560,11 @@ describe("DataGrid", () => {
   })
 
   describe("column reorder", () => {
+    // Only the grip handle inside each row is draggable now, not the row itself.
+    function dragHandle(li: Element) {
+      return li.querySelector("[draggable]")!
+    }
+
     it("opens a Columns panel from the toolbar listing columns with drag handles", async () => {
       const user = userEvent.setup()
       render(<LayoutHarness />)
@@ -1558,7 +1577,7 @@ describe("DataGrid", () => {
         "Email",
         "Team",
       ])
-      expect(items[0]).toHaveAttribute("draggable", "true")
+      expect(dragHandle(items[0]!)).toHaveAttribute("draggable", "true")
     })
 
     it("reorders columns on drop using insert-before-target semantics", async () => {
@@ -1568,10 +1587,11 @@ describe("DataGrid", () => {
       const items = () => screen.getAllByRole("listitem")
 
       const dataTransfer = fakeDataTransfer()
-      fireEvent.dragStart(items()[2]!, { dataTransfer }) // Team
-      fireDragOver(items()[0]!, dataTransfer, -1) // before Name
-      fireEvent.drop(items()[0]!, { dataTransfer })
-      fireEvent.dragEnd(items()[2]!, { dataTransfer })
+      const nameItem = items()[0]! // captured before the live-preview reorder moves it
+      fireEvent.dragStart(dragHandle(items()[2]!), { dataTransfer }) // Team
+      fireDragOver(nameItem, dataTransfer, -1) // before Name
+      fireDrop(nameItem, dataTransfer, -1)
+      fireEvent.dragEnd(dragHandle(items()[0]!), { dataTransfer })
 
       await waitFor(() => {
         expect(items().map((li) => li.textContent)).toEqual([
@@ -1591,10 +1611,11 @@ describe("DataGrid", () => {
       // Naive insert-before-target math would no-op here: removing "Name"
       // shifts "Email" back into the very slot the drop targeted.
       const dataTransfer = fakeDataTransfer()
-      fireEvent.dragStart(items()[0]!, { dataTransfer }) // Name
-      fireDragOver(items()[1]!, dataTransfer, 1) // after Email
-      fireEvent.drop(items()[1]!, { dataTransfer })
-      fireEvent.dragEnd(items()[0]!, { dataTransfer })
+      const emailItem = items()[1]! // captured before the live-preview reorder moves it
+      fireEvent.dragStart(dragHandle(items()[0]!), { dataTransfer }) // Name
+      fireDragOver(emailItem, dataTransfer, 1) // after Email
+      fireDrop(emailItem, dataTransfer, 1)
+      fireEvent.dragEnd(dragHandle(items()[0]!), { dataTransfer })
 
       await waitFor(() => {
         expect(items().map((li) => li.textContent)).toEqual([
@@ -1637,10 +1658,11 @@ describe("DataGrid", () => {
 
       const dataTransfer = fakeDataTransfer()
       const teamItem = items().find((li) => li.textContent === "Team")!
-      fireEvent.dragStart(teamItem, { dataTransfer })
-      fireDragOver(items()[0]!, dataTransfer, -1) // before Name
-      fireEvent.drop(items()[0]!, { dataTransfer })
-      fireEvent.dragEnd(teamItem, { dataTransfer })
+      const nameItem = items()[0]! // dragging a hidden column doesn't live-reorder, so this stays put
+      fireEvent.dragStart(dragHandle(teamItem), { dataTransfer })
+      fireDragOver(nameItem, dataTransfer, -1) // before Name
+      fireDrop(nameItem, dataTransfer, -1)
+      fireEvent.dragEnd(dragHandle(teamItem), { dataTransfer })
 
       await waitFor(() => {
         expect(items().map((li) => li.textContent)).toEqual([
@@ -1653,6 +1675,114 @@ describe("DataGrid", () => {
       expect(
         screen.queryByRole("button", { name: "Show Team column" })
       ).toBeNull()
+    })
+
+    it("hides a visible column when dragged into an existing hidden group", async () => {
+      const user = userEvent.setup()
+      render(<LayoutHarness />)
+      await user.click(screen.getByRole("button", { name: "Columns" }))
+      // A hidden group only exists to drop onto once something is hidden.
+      await user.click(screen.getByRole("button", { name: "Hide Team column" }))
+      const items = () => screen.getAllByRole("listitem")
+
+      const dataTransfer = fakeDataTransfer()
+      const emailItem = items().find((li) => li.textContent === "Email")!
+      const teamItem = items().find((li) => li.textContent === "Team")!
+      fireEvent.dragStart(dragHandle(emailItem), { dataTransfer })
+      fireDragOver(teamItem, dataTransfer, -1)
+      fireDrop(teamItem, dataTransfer, -1)
+      fireEvent.dragEnd(dragHandle(emailItem), { dataTransfer })
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole("button", { name: "Show Email column" })
+        ).toBeInTheDocument()
+      })
+      // Visible group lost Email (Team was already hidden going in).
+      expect(
+        screen
+          .getAllByRole("columnheader")
+          .map((h) => h.textContent)
+          .filter(Boolean)
+      ).toEqual(["Name"])
+    })
+
+    it("reorders within the hidden group the same way as the visible group", async () => {
+      const user = userEvent.setup()
+      render(<LayoutHarness />)
+      await user.click(screen.getByRole("button", { name: "Columns" }))
+      await user.click(
+        screen.getByRole("button", { name: "Hide Email column" })
+      )
+      await user.click(screen.getByRole("button", { name: "Hide Team column" }))
+      const items = () => screen.getAllByRole("listitem")
+      expect(
+        items()
+          .slice(-2)
+          .map((li) => li.textContent)
+      ).toEqual(["Email", "Team"])
+
+      const dataTransfer = fakeDataTransfer()
+      const teamItem = items().find((li) => li.textContent === "Team")!
+      const emailItem = items().find((li) => li.textContent === "Email")!
+      fireEvent.dragStart(dragHandle(teamItem), { dataTransfer })
+      fireDragOver(emailItem, dataTransfer, -1) // before Email
+      fireDrop(emailItem, dataTransfer, -1)
+      fireEvent.dragEnd(dragHandle(teamItem), { dataTransfer })
+
+      await waitFor(() => {
+        expect(
+          items()
+            .slice(-2)
+            .map((li) => li.textContent)
+        ).toEqual(["Team", "Email"])
+      })
+    })
+
+    it("reverts order and visibility when a drag ends without a drop", async () => {
+      const user = userEvent.setup()
+      render(<LayoutHarness />)
+      await user.click(screen.getByRole("button", { name: "Columns" }))
+      await user.click(screen.getByRole("button", { name: "Hide Team column" }))
+      const items = () => screen.getAllByRole("listitem")
+
+      // Reorder within the visible group, then cancel (no drop) — order
+      // should snap back instead of keeping the live preview.
+      const dataTransfer = fakeDataTransfer()
+      const nameItem = items().find((li) => li.textContent === "Name")!
+      const emailItem = items().find((li) => li.textContent === "Email")!
+      fireEvent.dragStart(dragHandle(nameItem), { dataTransfer })
+      fireDragOver(emailItem, dataTransfer, 1) // after Email
+      fireEvent.dragEnd(dragHandle(nameItem), { dataTransfer })
+      expect(
+        items()
+          .slice(0, 2)
+          .map((li) => li.textContent)
+      ).toEqual(["Name", "Email"])
+
+      // Crossing into the hidden group live-hides the dragged column — cancel
+      // should un-hide it too, not just restore the order.
+      const dataTransfer2 = fakeDataTransfer()
+      const emailItem2 = items().find((li) => li.textContent === "Email")!
+      const teamItem = items().find((li) => li.textContent === "Team")!
+      fireEvent.dragStart(dragHandle(emailItem2), {
+        dataTransfer: dataTransfer2,
+      })
+      fireDragOver(teamItem, dataTransfer2, -1)
+      expect(
+        screen
+          .getAllByRole("columnheader")
+          .map((h) => h.textContent)
+          .filter(Boolean)
+      ).toEqual(["Name"]) // Email live-hidden, Team already was
+      fireEvent.dragEnd(dragHandle(emailItem2), { dataTransfer: dataTransfer2 })
+
+      expect(
+        screen
+          .getAllByRole("columnheader")
+          .map((h) => h.textContent)
+          .filter(Boolean)
+      ).toEqual(["Name", "Email"])
     })
 
     it("moves a column left/right via the header options menu", async () => {

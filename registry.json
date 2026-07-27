@@ -93,6 +93,7 @@
         "dropdown-menu",
         "alert-dialog",
         "popover",
+        "separator",
         "drawer",
         "command",
         "avatar",

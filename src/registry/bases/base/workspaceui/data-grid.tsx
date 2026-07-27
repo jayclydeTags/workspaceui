@@ -16,6 +16,8 @@ import {
   CheckIcon,
   ChevronRightIcon,
   Columns3Icon,
+  EyeIcon,
+  EyeOffIcon,
   GripVerticalIcon,
   MinusIcon,
   MoreHorizontalIcon,
@@ -66,6 +68,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { Separator } from "@/components/ui/separator"
 import { Spinner } from "@/components/ui/spinner"
 import {
   Table,
@@ -600,12 +603,29 @@ export function DataGrid<TData>({
     e.dataTransfer.dropEffect = "move"
     const rect = e.currentTarget.getBoundingClientRect()
     const midpointY = rect.top + rect.height / 2
-    const position: "before" | "after" =
+    const rawPosition: "before" | "after" =
       e.clientY < midpointY ? "before" : "after"
+    // Each internal gap is shared by two rows: the row above's "after" and the
+    // row below's "before" mark the same slot. Collapse both to the lower row's
+    // "before" so the gap is a single drop zone, not two. Only the last visible
+    // row keeps a distinct "after" (there's no row below to fold it into).
+    const target: { id: string; position: "before" | "after" } = {
+      id: overId,
+      position: rawPosition,
+    }
+    if (rawPosition === "after") {
+      const ids = table.getVisibleLeafColumns().map((col) => col.id)
+      const idx = ids.indexOf(overId)
+      const nextId = idx >= 0 ? ids[idx + 1] : undefined
+      if (nextId) {
+        target.id = nextId
+        target.position = "before"
+      }
+    }
     setDropTarget((prev) =>
-      prev && prev.id === overId && prev.position === position
+      prev && prev.id === target.id && prev.position === target.position
         ? prev
-        : { id: overId, position }
+        : target
     )
   }
 
@@ -615,6 +635,17 @@ export function DataGrid<TData>({
     const target = dropTarget
     setDropTarget(null)
     if (!draggedId || !target) return
+    // Only the visible group is columnOrder-driven; the hidden group renders in
+    // definition order, so a drop onto it can't reorder anything — bail.
+    const targetColumn = table.getColumn(target.id)
+    if (targetColumn && !targetColumn.getIsVisible()) return
+    // Dragging a hidden column into the visible group reveals it at the drop slot.
+    const draggedColumn = table.getColumn(draggedId)
+    if (draggedColumn && !draggedColumn.getIsVisible()) {
+      draggedColumn.toggleVisibility(true)
+    }
+    // reorderColumnIds inserts draggedId even when it's absent (still hidden this
+    // tick), so the resulting order includes it regardless of the async toggle.
     const currentOrder = table.getVisibleLeafColumns().map((c) => c.id)
     table.setColumnOrder(
       reorderColumnIds(currentOrder, draggedId, target.id, target.position)
@@ -623,6 +654,85 @@ export function DataGrid<TData>({
 
   function handleColumnDragEnd() {
     setDropTarget(null)
+  }
+
+  // getVisibleLeafColumns respects columnOrder + visibility; hidden ones aren't
+  // in it, so pull them straight from the full leaf set.
+  const hiddenMenuColumns = table
+    .getAllLeafColumns()
+    .filter((column) => !column.getIsVisible())
+
+  // One row for the Columns panel. Visible rows carry an active Hide toggle;
+  // hidden rows are dimmed with a Show toggle and a disabled Pin, and can be
+  // dragged up into the visible group to reveal them (see handleColumnDrop).
+  function renderColumnMenuRow(
+    column: Column<TData, unknown>,
+    hidden: boolean
+  ) {
+    const pinned = column.getIsPinned()
+    const label = getColumnLabel(column)
+    const dropPosition =
+      dropTarget?.id === column.id ? dropTarget.position : null
+    return (
+      <li
+        key={column.id}
+        draggable
+        onDragStart={(e) => handleColumnDragStart(e, column.id)}
+        onDragOver={(e) => handleColumnDragOver(e, column.id)}
+        onDrop={handleColumnDrop}
+        onDragEnd={handleColumnDragEnd}
+        className={cn(
+          "relative flex cursor-grab items-center gap-1.5 rounded-md px-2 py-1.5 text-sm select-none",
+          hidden && "opacity-50"
+        )}
+      >
+        {dropPosition && (
+          // Insertion line straddling the drop boundary: absolutely placed and
+          // pointer-events-none so it marks the gap without shifting layout or
+          // stealing the row's drag events.
+          <span
+            aria-hidden="true"
+            className={cn(
+              "pointer-events-none absolute inset-x-2 z-10 flex items-center",
+              dropPosition === "before"
+                ? "top-0 -translate-y-1/2"
+                : "bottom-0 translate-y-1/2"
+            )}
+          >
+            <span className="size-1.5 shrink-0 rounded-full bg-primary" />
+            <span className="h-0.5 flex-1 rounded-full bg-primary" />
+          </span>
+        )}
+        <GripVerticalIcon
+          aria-hidden="true"
+          className="size-4 shrink-0 text-muted-foreground"
+        />
+        <span className="flex-1 truncate">{label}</span>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-xs"
+          disabled={hidden}
+          aria-label={pinActionLabel(pinned)}
+          onClick={() => column.pin(nextPinPosition(pinned))}
+          className="shrink-0"
+        >
+          <PinIcon className={cn(pinned && "fill-current")} />
+        </Button>
+        {column.getCanHide() && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-xs"
+            aria-label={`${hidden ? "Show" : "Hide"} ${label} column`}
+            onClick={() => column.toggleVisibility(hidden)}
+            className="shrink-0"
+          >
+            {hidden ? <EyeOffIcon /> : <EyeIcon />}
+          </Button>
+        )}
+      </li>
+    )
   }
 
   // Focuses the new row's first cell once the consumer's rowCount actually grows after onRowAdd.
@@ -1149,32 +1259,22 @@ export function DataGrid<TData>({
                   </Button>
                 }
               />
-              <PopoverContent align="end" className="w-56 p-1">
+              <PopoverContent align="end" className="w-64 p-1">
                 <ul className="flex list-none flex-col gap-0.5 ps-0">
-                  {table.getVisibleLeafColumns().map((column) => (
-                    <li
-                      key={column.id}
-                      draggable
-                      onDragStart={(e) => handleColumnDragStart(e, column.id)}
-                      onDragOver={(e) => handleColumnDragOver(e, column.id)}
-                      onDrop={handleColumnDrop}
-                      onDragEnd={handleColumnDragEnd}
-                      className={cn(
-                        "flex cursor-grab items-center gap-2 rounded-md px-2 py-1.5 text-sm select-none",
-                        dropTarget?.id === column.id &&
-                          (dropTarget.position === "before"
-                            ? "border-t-2 border-primary"
-                            : "border-b-2 border-primary")
-                      )}
-                    >
-                      <GripVerticalIcon
-                        aria-hidden="true"
-                        className="size-4 shrink-0 text-muted-foreground"
-                      />
-                      <span className="truncate">{getColumnLabel(column)}</span>
-                    </li>
-                  ))}
+                  {table
+                    .getVisibleLeafColumns()
+                    .map((column) => renderColumnMenuRow(column, false))}
                 </ul>
+                {hiddenMenuColumns.length > 0 && (
+                  <>
+                    <Separator className="my-1" />
+                    <ul className="flex list-none flex-col gap-0.5 ps-0">
+                      {hiddenMenuColumns.map((column) =>
+                        renderColumnMenuRow(column, true)
+                      )}
+                    </ul>
+                  </>
+                )}
               </PopoverContent>
             </Popover>
           </div>
@@ -1231,21 +1331,20 @@ export function DataGrid<TData>({
                                 header.getContext()
                               )}
                             </span>
-                            <button
+                            <Button
                               type="button"
+                              variant="ghost"
+                              size="icon-xs"
                               aria-label={pinActionLabel(pinned)}
                               onClick={() =>
                                 header.column.pin(nextPinPosition(pinned))
                               }
-                              className="shrink-0 rounded p-0.5 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-accent focus-visible:opacity-100"
+                              className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
                             >
                               <PinIcon
-                                className={cn(
-                                  "size-3.5",
-                                  pinned && "fill-current"
-                                )}
+                                className={cn(pinned && "fill-current")}
                               />
-                            </button>
+                            </Button>
                           </div>
                         )}
                         {header.column.getCanResize() && (

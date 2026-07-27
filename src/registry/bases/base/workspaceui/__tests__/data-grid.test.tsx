@@ -1576,6 +1576,56 @@ describe("DataGrid", () => {
         ])
       })
     })
+
+    it("hides a column via the panel, moving it to a separate group with a Show control", async () => {
+      const user = userEvent.setup()
+      render(<LayoutHarness />)
+      await user.click(screen.getByRole("button", { name: "Columns" }))
+      const headerTexts = () =>
+        screen.getAllByRole("columnheader").map((h) => h.textContent)
+      expect(headerTexts()).toContain("Email")
+
+      await user.click(
+        screen.getByRole("button", { name: "Hide Email column" })
+      )
+
+      // Leaves the grid, reappears in the panel with a Show toggle.
+      expect(headerTexts()).not.toContain("Email")
+      expect(
+        screen.getByRole("button", { name: "Show Email column" })
+      ).toBeInTheDocument()
+      // Visible group keeps its order; the hidden one lands after it.
+      expect(
+        screen.getAllByRole("listitem").map((li) => li.textContent)
+      ).toEqual(["Name", "Team", "Email"])
+    })
+
+    it("reveals a hidden column when dragged into the visible group", async () => {
+      const user = userEvent.setup()
+      render(<LayoutHarness />)
+      await user.click(screen.getByRole("button", { name: "Columns" }))
+      await user.click(screen.getByRole("button", { name: "Hide Team column" }))
+      const items = () => screen.getAllByRole("listitem")
+
+      const dataTransfer = fakeDataTransfer()
+      const teamItem = items().find((li) => li.textContent === "Team")!
+      fireEvent.dragStart(teamItem, { dataTransfer })
+      fireDragOver(items()[0]!, dataTransfer, -1) // before Name
+      fireEvent.drop(items()[0]!, { dataTransfer })
+      fireEvent.dragEnd(teamItem, { dataTransfer })
+
+      await waitFor(() => {
+        expect(items().map((li) => li.textContent)).toEqual([
+          "Team",
+          "Name",
+          "Email",
+        ])
+      })
+      // Back in the visible group — no hidden group, so no Show control left.
+      expect(
+        screen.queryByRole("button", { name: "Show Team column" })
+      ).toBeNull()
+    })
   })
 
   describe("onColumnLayoutChange", () => {

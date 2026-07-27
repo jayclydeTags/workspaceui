@@ -1474,8 +1474,10 @@ describe("DataGrid", () => {
       fireEvent.mouseMove(document, { clientX: 50 })
       fireEvent.mouseUp(document, { clientX: 50 })
 
+      // Non-pinned columns render a size-proportional % (200 of 500 total) so
+      // they fill the table while the fixed-px selection cell stays put.
       const header = screen.getAllByRole("columnheader")[1]!
-      expect(header).toHaveStyle({ width: "200px" })
+      expect(header).toHaveStyle({ width: "40%" })
     })
 
     it("double-clicking the resize handle resets the column to its default width", () => {
@@ -1488,10 +1490,10 @@ describe("DataGrid", () => {
       fireEvent.mouseMove(document, { clientX: 50 })
       fireEvent.mouseUp(document, { clientX: 50 })
       const header = screen.getAllByRole("columnheader")[1]!
-      expect(header).toHaveStyle({ width: "200px" })
+      expect(header).toHaveStyle({ width: "40%" }) // 200 of 500 total
 
       fireEvent.doubleClick(handle)
-      expect(header).toHaveStyle({ width: "150px" })
+      expect(header).toHaveStyle({ width: "33.3333%" }) // reset to 150 of 450
     })
   })
 

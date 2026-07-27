@@ -205,13 +205,21 @@ function reorderColumnIds(
 }
 
 // forceStickyLeft is the narrowFallback="none" escape hatch; a real left pin still wins its own getStart() offset over the forced 0.
+// Non-pinned columns get a size-proportional % width so the data columns fill
+// the table (no trailing gap) while the fixed-px selection/action cells stay
+// put — px would let table-fixed distribute slack across every column, growing
+// the checkbox. Pinned columns keep px so their sticky getStart() offsets align.
 function columnPinStyle<TData>(
   column: Column<TData, unknown>,
-  forceStickyLeft = false
+  forceStickyLeft = false,
+  totalSize = 0
 ): React.CSSProperties {
   const pinned = column.getIsPinned()
   return {
-    width: column.getSize(),
+    width:
+      pinned || !totalSize
+        ? column.getSize()
+        : `${+((column.getSize() / totalSize) * 100).toFixed(4)}%`,
     ...((pinned === "left" || forceStickyLeft) && {
       position: "sticky",
       left: pinned === "left" ? column.getStart("left") : 0,
@@ -1320,7 +1328,8 @@ export function DataGrid<TData>({
                         style={columnPinStyle(
                           header.column,
                           forceStickyFirstColumn &&
-                            header.column.id === firstVisibleColumnId
+                            header.column.id === firstVisibleColumnId,
+                          table.getTotalSize()
                         )}
                       >
                         {!header.isPlaceholder && (
@@ -1369,7 +1378,7 @@ export function DataGrid<TData>({
                     )
                   })}
                   {hasDeleteColumn && (
-                    <TableHead aria-hidden="true" className="w-10" />
+                    <TableHead aria-hidden="true" className="w-10 min-w-10" />
                   )}
                 </TableRow>
               ))}
@@ -1459,7 +1468,11 @@ export function DataGrid<TData>({
                             onFocus={() => setFocusCoord({ r, c })}
                             onClick={() => onCellClick(r, c)}
                             onKeyDown={(e) => onGridCellKeyDown(e, r, c)}
-                            style={columnPinStyle(cell.column, forceSticky)}
+                            style={columnPinStyle(
+                              cell.column,
+                              forceSticky,
+                              table.getTotalSize()
+                            )}
                             className={cn(
                               "p-0 align-top whitespace-normal outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
                               isPinned && "bg-background"
@@ -1854,7 +1867,7 @@ export function DataGrid<TData>({
                         )
                       })}
                       {hasDeleteColumn && (
-                        <TableCell className="w-10 p-0 text-center align-top">
+                        <TableCell className="w-10 min-w-10 p-0 text-center align-top">
                           <DropdownMenu>
                             <DropdownMenuTrigger
                               render={

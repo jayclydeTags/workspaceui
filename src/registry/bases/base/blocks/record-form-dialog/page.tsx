@@ -13,12 +13,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { Page } from "@/registry/bases/base/workspaceui/page"
-import {
-  CONTACTS,
-  initials,
-  type Contact,
-  type ContactDraft,
-} from "./data"
+import { CONTACTS, initials, type Contact, type ContactDraft } from "./data"
 import { ContactDialog } from "./components/contact-dialog"
 
 export function RecordFormDialog() {
@@ -80,9 +75,7 @@ export function RecordFormDialog() {
               </Avatar>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="truncate text-sm font-medium">
-                    {c.name}
-                  </span>
+                  <span className="truncate text-sm font-medium">{c.name}</span>
                   <Badge
                     variant={c.status === "active" ? "secondary" : "outline"}
                     className="capitalize"

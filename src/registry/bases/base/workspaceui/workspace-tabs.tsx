@@ -73,7 +73,7 @@ function WorkspaceTabs({
     (el: HTMLDivElement | null) => {
       if (paneId != null) registerTabStrip?.(paneId, el)
     },
-    [paneId, registerTabStrip],
+    [paneId, registerTabStrip]
   )
 
   const tabDropInsertIndex =
@@ -148,7 +148,7 @@ function WorkspaceTabs({
                   <Check
                     className={cn(
                       "size-3.5 shrink-0",
-                      tab.id !== activeTabId && "invisible",
+                      tab.id !== activeTabId && "invisible"
                     )}
                   />
                 </DropdownMenuItem>
@@ -203,7 +203,7 @@ function WorkspaceTabs({
         {/* Scrollable tab row */}
         <Tabs.List
           aria-label="Open tabs"
-          className="flex min-w-0 items-end overflow-x-auto px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex min-w-0 [scrollbar-width:none] items-end overflow-x-auto px-1 [&::-webkit-scrollbar]:hidden"
         >
           {tabs.map((tab, index) => {
             const isActive = tab.id === activeTabId
@@ -240,14 +240,14 @@ function WorkspaceTabs({
                   }}
                   className={cn(
                     // Layout & sizing
-                    "group relative flex min-w-[152px] max-w-[180px] cursor-pointer items-center gap-1.5",
-                    "px-3 py-2 text-[13px] select-none whitespace-nowrap",
-                    "outline-none transition-colors",
-                    "focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
+                    "group relative flex max-w-[180px] min-w-[152px] cursor-pointer items-center gap-1.5",
+                    "px-3 py-2 text-[13px] whitespace-nowrap select-none",
+                    "transition-colors outline-none",
+                    "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
                     // Inactive
                     !isActive &&
                       "text-foreground/60 hover:bg-foreground/5 hover:text-foreground/80",
-                    isActive && "bg-card text-foreground",
+                    isActive && "bg-card text-foreground"
                   )}
                 >
                   {/* Favicon / icon */}
@@ -294,7 +294,7 @@ function WorkspaceTabs({
                         "opacity-0 transition-all group-hover:opacity-100",
                         isActive && "opacity-50 group-hover:opacity-100",
                         // A dirty tab always shows its dot, even unhovered/inactive.
-                        tab.dirty && "opacity-100",
+                        tab.dirty && "opacity-100"
                       )}
                     >
                       {tab.dirty ? (
@@ -335,10 +335,7 @@ function WorkspaceTabs({
       {/* ── Content area ── */}
       {/* Single panel: value always matches the active tab, so it's always shown.
           Base UI wires role="tabpanel" + aria-labelledby to the active tab. */}
-      <Tabs.Panel
-        value={activeTabId}
-        className="min-h-0 flex-1 overflow-auto"
-      >
+      <Tabs.Panel value={activeTabId} className="min-h-0 flex-1 overflow-auto">
         {children}
       </Tabs.Panel>
     </Tabs.Root>

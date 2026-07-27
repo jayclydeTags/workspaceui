@@ -4,7 +4,13 @@ import { useState } from "react"
 import { CheckCircle2, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import {
   Field,
   FieldDescription,
@@ -41,7 +47,8 @@ export function ChangePassword() {
     if (!current) nextErrors.current = "Enter your current password."
     if (!next) nextErrors.next = "Enter a new password."
     else if (strength < 1) nextErrors.next = "Use at least 8 characters."
-    else if (next === current) nextErrors.next = "Choose a password you haven't used."
+    else if (next === current)
+      nextErrors.next = "Choose a password you haven't used."
     if (confirm !== next) nextErrors.confirm = "Passwords don't match."
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length) return
@@ -117,7 +124,9 @@ export function ChangePassword() {
                 </Field>
 
                 <Field data-invalid={!!errors.confirm}>
-                  <FieldLabel htmlFor="cp-confirm">Confirm new password</FieldLabel>
+                  <FieldLabel htmlFor="cp-confirm">
+                    Confirm new password
+                  </FieldLabel>
                   <PasswordInput
                     id="cp-confirm"
                     autoComplete="new-password"
@@ -130,9 +139,16 @@ export function ChangePassword() {
                 </Field>
 
                 <Field>
-                  <Button type="submit" className="w-full" disabled={submitting}>
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={submitting}
+                  >
                     {submitting && (
-                      <Loader2 data-icon="inline-start" className="animate-spin" />
+                      <Loader2
+                        data-icon="inline-start"
+                        className="animate-spin"
+                      />
                     )}
                     {submitting ? "Updating…" : "Update password"}
                   </Button>

@@ -16,7 +16,7 @@ const tab = (id: string, title: string, extra?: object) => ({
 
 /** A drag context with everything stubbed; override just what a test asserts on. */
 function makeDragCtx(
-  overrides: Partial<WorkspaceDragContextValue> = {},
+  overrides: Partial<WorkspaceDragContextValue> = {}
 ): WorkspaceDragContextValue {
   return {
     isDragging: false,
@@ -34,7 +34,7 @@ function makeDragCtx(
 }
 
 function renderTabs(
-  overrides: Partial<React.ComponentProps<typeof WorkspaceTabs>> = {},
+  overrides: Partial<React.ComponentProps<typeof WorkspaceTabs>> = {}
 ) {
   const props: React.ComponentProps<typeof WorkspaceTabs> = {
     tabs: [tab("a", "Alpha"), tab("b", "Beta")],
@@ -58,19 +58,19 @@ describe("WorkspaceTabs", () => {
       renderTabs({ activeTabId: "b" })
       expect(screen.getByRole("tab", { name: "Beta" })).toHaveAttribute(
         "aria-selected",
-        "true",
+        "true"
       )
       expect(screen.getByRole("tab", { name: "Alpha" })).toHaveAttribute(
         "aria-selected",
-        "false",
+        "false"
       )
     })
 
     it("renders children in the tabpanel", () => {
       renderTabs({ children: <p>Hello panel</p> })
-      expect(
-        screen.getByRole("tabpanel").querySelector("p"),
-      ).toHaveTextContent("Hello panel")
+      expect(screen.getByRole("tabpanel").querySelector("p")).toHaveTextContent(
+        "Hello panel"
+      )
     })
 
     it("connects tabpanel aria-labelledby to the active tab id", () => {
@@ -124,7 +124,9 @@ describe("WorkspaceTabs", () => {
   describe("close button", () => {
     it("does not render close buttons when onTabClose is omitted", () => {
       renderTabs()
-      expect(screen.queryByRole("button", { name: /close/i })).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole("button", { name: /close/i })
+      ).not.toBeInTheDocument()
     })
 
     it("renders close buttons when onTabClose is provided", () => {
@@ -135,9 +137,7 @@ describe("WorkspaceTabs", () => {
     it("calls onTabClose with the correct tab id", async () => {
       const onTabClose = vi.fn()
       renderTabs({ onTabClose })
-      await userEvent.click(
-        screen.getByRole("button", { name: "Close Alpha" }),
-      )
+      await userEvent.click(screen.getByRole("button", { name: "Close Alpha" }))
       expect(onTabClose).toHaveBeenCalledWith("a")
     })
   })
@@ -148,20 +148,28 @@ describe("WorkspaceTabs", () => {
         tabs: [tab("a", "Alpha", { pinned: true }), tab("b", "Beta")],
         onTabClose: vi.fn(),
       })
-      expect(screen.queryByRole("button", { name: "Close Alpha" })).not.toBeInTheDocument()
-      expect(screen.getByRole("button", { name: "Close Beta" })).toBeInTheDocument()
+      expect(
+        screen.queryByRole("button", { name: "Close Alpha" })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.getByRole("button", { name: "Close Beta" })
+      ).toBeInTheDocument()
     })
   })
 
   describe("add-tab button", () => {
     it("renders the add button when onAddTab is provided", () => {
       renderTabs({ onAddTab: vi.fn() })
-      expect(screen.getByRole("button", { name: "New tab" })).toBeInTheDocument()
+      expect(
+        screen.getByRole("button", { name: "New tab" })
+      ).toBeInTheDocument()
     })
 
     it("does not render the add button when onAddTab is omitted", () => {
       renderTabs()
-      expect(screen.queryByRole("button", { name: "New tab" })).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole("button", { name: "New tab" })
+      ).not.toBeInTheDocument()
     })
 
     it("calls onAddTab when the add button is clicked", async () => {
@@ -189,7 +197,7 @@ describe("WorkspaceTabs", () => {
     it("is not rendered when there are no tabs", () => {
       renderTabs({ tabs: [], activeTabId: "" })
       expect(
-        screen.queryByRole("button", { name: "Tab menu" }),
+        screen.queryByRole("button", { name: "Tab menu" })
       ).not.toBeInTheDocument()
     })
   })
@@ -198,7 +206,7 @@ describe("WorkspaceTabs", () => {
     // Split and move used to be drag-only. These cover the keyboard route.
     function renderWithCtx(
       ctx: WorkspaceDragContextValue,
-      props: Partial<React.ComponentProps<typeof WorkspaceTabs>> = {},
+      props: Partial<React.ComponentProps<typeof WorkspaceTabs>> = {}
     ) {
       return render(
         <WorkspaceDragContext.Provider value={ctx}>
@@ -211,7 +219,7 @@ describe("WorkspaceTabs", () => {
           >
             <div>content</div>
           </WorkspaceTabs>
-        </WorkspaceDragContext.Provider>,
+        </WorkspaceDragContext.Provider>
       )
     }
 
@@ -220,7 +228,9 @@ describe("WorkspaceTabs", () => {
       renderWithCtx(makeDragCtx({ splitTab }))
 
       await userEvent.click(screen.getByRole("button", { name: "Tab menu" }))
-      await userEvent.click(await screen.findByRole("menuitem", { name: "Split down" }))
+      await userEvent.click(
+        await screen.findByRole("menuitem", { name: "Split down" })
+      )
 
       expect(splitTab).toHaveBeenCalledWith("pane-1", "a", "bottom")
     })
@@ -234,17 +244,17 @@ describe("WorkspaceTabs", () => {
             { id: "pane-1", label: "Alpha" },
             { id: "pane-2", label: "Gamma" },
           ],
-        }),
+        })
       )
 
       await userEvent.click(screen.getByRole("button", { name: "Tab menu" }))
 
       // Its own pane is not offered as a move target.
       expect(
-        screen.queryByRole("menuitem", { name: "Move to Alpha" }),
+        screen.queryByRole("menuitem", { name: "Move to Alpha" })
       ).not.toBeInTheDocument()
       await userEvent.click(
-        await screen.findByRole("menuitem", { name: "Move to Gamma" }),
+        await screen.findByRole("menuitem", { name: "Move to Gamma" })
       )
 
       expect(moveTab).toHaveBeenCalledWith("pane-1", "a", "pane-2")
@@ -255,25 +265,36 @@ describe("WorkspaceTabs", () => {
 
       await userEvent.click(screen.getByRole("button", { name: "Tab menu" }))
       await screen.findByRole("menuitem", { name: "Alpha" })
-      expect(screen.queryByRole("menuitem", { name: "Split right" })).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole("menuitem", { name: "Split right" })
+      ).not.toBeInTheDocument()
     })
 
     it("offers no rearrange actions for a pinned active tab", async () => {
-      renderWithCtx(makeDragCtx({ paneTargets: [{ id: "pane-2", label: "Gamma" }] }), {
-        tabs: [tab("a", "Alpha", { pinned: true }), tab("b", "Beta")],
-      })
+      renderWithCtx(
+        makeDragCtx({ paneTargets: [{ id: "pane-2", label: "Gamma" }] }),
+        {
+          tabs: [tab("a", "Alpha", { pinned: true }), tab("b", "Beta")],
+        }
+      )
 
       await userEvent.click(screen.getByRole("button", { name: "Tab menu" }))
       await screen.findByRole("menuitem", { name: "Beta" })
-      expect(screen.queryByRole("menuitem", { name: "Split right" })).not.toBeInTheDocument()
-      expect(screen.queryByRole("menuitem", { name: /^Move to/ })).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole("menuitem", { name: "Split right" })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole("menuitem", { name: /^Move to/ })
+      ).not.toBeInTheDocument()
     })
 
     it("offers no rearrange actions outside a Workspace", async () => {
       renderTabs()
       await userEvent.click(screen.getByRole("button", { name: "Tab menu" }))
       await screen.findByRole("menuitem", { name: "Alpha" })
-      expect(screen.queryByRole("menuitem", { name: "Split right" })).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole("menuitem", { name: "Split right" })
+      ).not.toBeInTheDocument()
     })
   })
 
@@ -297,7 +318,7 @@ describe("WorkspaceTabs", () => {
           >
             <div>content</div>
           </WorkspaceTabs>
-        </WorkspaceDragContext.Provider>,
+        </WorkspaceDragContext.Provider>
       )
       await userEvent.pointer({
         keys: "[MouseLeft>]",
@@ -308,7 +329,7 @@ describe("WorkspaceTabs", () => {
         "b",
         "Beta",
         // The pointerdown event itself — startDrag owns the pointer capture.
-        expect.objectContaining({ pointerId: expect.any(Number) }),
+        expect.objectContaining({ pointerId: expect.any(Number) })
       )
     })
 
@@ -324,7 +345,7 @@ describe("WorkspaceTabs", () => {
           >
             <div>content</div>
           </WorkspaceTabs>
-        </WorkspaceDragContext.Provider>,
+        </WorkspaceDragContext.Provider>
       )
       await userEvent.pointer({
         keys: "[MouseLeft>]",
@@ -339,7 +360,7 @@ describe("WorkspaceTabs", () => {
       renderTabs({ tabs: [tab("only", "Only Tab")], activeTabId: "only" })
       expect(screen.getByRole("tab", { name: "Only Tab" })).toHaveAttribute(
         "aria-selected",
-        "true",
+        "true"
       )
     })
   })
@@ -353,12 +374,16 @@ describe("WorkspaceTabs", () => {
         onTabClose,
       })
 
-      const close = screen.getByRole("button", { name: "Close Alpha (unsaved changes)" })
+      const close = screen.getByRole("button", {
+        name: "Close Alpha (unsaved changes)",
+      })
       await user.click(close)
       expect(onTabClose).toHaveBeenCalledWith("a")
 
       // A clean tab keeps the plain label.
-      expect(screen.getByRole("button", { name: "Close Beta" })).toBeInTheDocument()
+      expect(
+        screen.getByRole("button", { name: "Close Beta" })
+      ).toBeInTheDocument()
     })
 
     it("renders no close control for a pinned tab, dirty or not", () => {
@@ -366,7 +391,9 @@ describe("WorkspaceTabs", () => {
         tabs: [tab("a", "Alpha", { dirty: true, pinned: true })],
         onTabClose: vi.fn(),
       })
-      expect(screen.queryByRole("button", { name: /Close Alpha/ })).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole("button", { name: /Close Alpha/ })
+      ).not.toBeInTheDocument()
     })
   })
 
@@ -409,7 +436,7 @@ describe("WorkspaceTabs", () => {
           >
             <div>content</div>
           </WorkspaceTabs>
-        </WorkspaceDragContext.Provider>,
+        </WorkspaceDragContext.Provider>
       )
 
       // pointerdown preventDefault()s (to suppress selection during a drag),

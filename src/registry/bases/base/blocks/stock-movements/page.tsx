@@ -36,7 +36,9 @@ import { MovementDialog } from "./components/movement-dialog"
 export function StockMovements() {
   const [movements, setMovements] = React.useState<Movement[]>(MOVEMENTS)
   const [formOpen, setFormOpen] = React.useState(false)
-  const [typeFilter, setTypeFilter] = React.useState<MovementType | "all">("all")
+  const [typeFilter, setTypeFilter] = React.useState<MovementType | "all">(
+    "all"
+  )
 
   const visible =
     typeFilter === "all"
@@ -63,7 +65,9 @@ export function StockMovements() {
         <div className="border-b px-4 py-3 @sm:px-6">
           <Select
             value={typeFilter}
-            onValueChange={(v) => setTypeFilter((v as MovementType | "all") ?? "all")}
+            onValueChange={(v) =>
+              setTypeFilter((v as MovementType | "all") ?? "all")
+            }
           >
             <SelectTrigger aria-label="Filter by type" className="w-48">
               <SelectValue />

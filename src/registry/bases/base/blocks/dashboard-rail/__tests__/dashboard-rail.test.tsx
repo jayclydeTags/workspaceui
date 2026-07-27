@@ -22,8 +22,12 @@ beforeAll(() => {
 describe("DashboardRail block", () => {
   it("renders the app rail and nav sidebar alongside the Dashboard tab", () => {
     render(<DashboardRail />)
-    expect(screen.getByRole("heading", { level: 2, name: "Dashboard" })).toBeInTheDocument()
-    expect(screen.getByRole("button", { name: "Workspace" })).toBeInTheDocument()
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Dashboard" })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: "Workspace" })
+    ).toBeInTheDocument()
   })
 
   it("opens a new tab when a nav sidebar item is clicked", async () => {
@@ -36,7 +40,9 @@ describe("DashboardRail block", () => {
 
   it("renders a single mobile-only sidebar trigger in the content header", () => {
     render(<DashboardRail />)
-    expect(screen.getByRole("button", { name: /toggle sidebar/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: /toggle sidebar/i })
+    ).toBeInTheDocument()
   })
 
   it("toggles the outer sidebar's collapsed state via the app rail icon", async () => {
@@ -57,7 +63,9 @@ describe("DashboardRail block", () => {
 
     await user.click(screen.getByRole("button", { name: "Email" }))
     expect(screen.getByRole("button", { name: "Sent" })).toBeInTheDocument()
-    expect(screen.queryByRole("button", { name: "Analytics" })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole("button", { name: "Analytics" })
+    ).not.toBeInTheDocument()
     expect(screen.getByText("Inbox", { selector: "p" })).toBeInTheDocument()
   })
 })

@@ -71,7 +71,10 @@ function Score({ lead }: { lead: Lead }) {
   return (
     <span className="flex items-center justify-end gap-1 tabular-nums">
       {isHot(lead) && (
-        <FlameIcon className="size-3.5 text-destructive" aria-label="Hot lead" />
+        <FlameIcon
+          className="size-3.5 text-destructive"
+          aria-label="Hot lead"
+        />
       )}
       {lead.score}
     </span>
@@ -120,7 +123,9 @@ export function DataTable({
                   <Score lead={lead} />
                 </TableCell>
                 <TableCell>
-                  <Badge variant={STAGE_VARIANT[lead.stage]}>{lead.stage}</Badge>
+                  <Badge variant={STAGE_VARIANT[lead.stage]}>
+                    {lead.stage}
+                  </Badge>
                 </TableCell>
                 <TableCell className="pr-6">
                   <RowActions
@@ -142,7 +147,9 @@ export function DataTable({
           <li key={lead.id} className="flex items-start gap-3 px-4 py-3">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <span className="truncate text-sm font-medium">{lead.name}</span>
+                <span className="truncate text-sm font-medium">
+                  {lead.name}
+                </span>
                 <Badge variant="outline" className="text-[10px]">
                   {lead.company}
                 </Badge>
@@ -151,7 +158,10 @@ export function DataTable({
                 {lead.email} · {lead.source}
               </p>
               <div className="mt-1.5 flex items-center gap-2 text-xs">
-                <Badge variant={STAGE_VARIANT[lead.stage]} className="text-[10px]">
+                <Badge
+                  variant={STAGE_VARIANT[lead.stage]}
+                  className="text-[10px]"
+                >
                   {lead.stage}
                 </Badge>
                 <Score lead={lead} />

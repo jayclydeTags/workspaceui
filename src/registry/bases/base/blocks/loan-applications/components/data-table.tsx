@@ -64,7 +64,9 @@ function RowActions({ application, onEdit, onDecide, onDelete }: RowProps) {
         }
       />
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => onEdit(application)}>Edit</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onEdit(application)}>
+          Edit
+        </DropdownMenuItem>
         {!decided && (
           <>
             <DropdownMenuItem
@@ -78,7 +80,10 @@ function RowActions({ application, onEdit, onDecide, onDelete }: RowProps) {
             </DropdownMenuItem>
           </>
         )}
-        <DropdownMenuItem variant="destructive" onClick={() => onDelete(application)}>
+        <DropdownMenuItem
+          variant="destructive"
+          onClick={() => onDelete(application)}
+        >
           Delete
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -101,7 +106,11 @@ const Payment = ({ application }: { application: LoanApplication }) => (
   <>
     {formatCurrency(
       Math.round(
-        monthlyPayment(application.amount, application.rate, application.termMonths)
+        monthlyPayment(
+          application.amount,
+          application.rate,
+          application.termMonths
+        )
       )
     )}
     /mo
@@ -151,7 +160,7 @@ export function DataTable({
                 <TableCell className="text-right tabular-nums">
                   {formatCurrency(application.amount)}
                 </TableCell>
-                <TableCell className="hidden text-right tabular-nums text-muted-foreground @md:table-cell">
+                <TableCell className="hidden text-right text-muted-foreground tabular-nums @md:table-cell">
                   <Payment application={application} />
                 </TableCell>
                 <TableCell className="text-right tabular-nums">

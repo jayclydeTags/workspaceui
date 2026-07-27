@@ -93,8 +93,8 @@ export function RepaymentSchedule() {
               <span className="font-medium">
                 {paying && formatCurrency(paying.payment)}
               </span>{" "}
-              for instalment {paying?.n}, due {paying?.due}? Payments are settled in
-              order and can&apos;t be reversed here.
+              for instalment {paying?.n}, due {paying?.due}? Payments are
+              settled in order and can&apos;t be reversed here.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

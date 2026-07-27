@@ -35,7 +35,25 @@ export const initials = (name: string) =>
 // ── Mock data ──────────────────────────────────────────────────────────────
 
 export const CONTACTS: Contact[] = [
-  { id: "1", name: "Ada Lovelace", email: "ada@acme.co", company: "Acme Co.", status: "active" },
-  { id: "2", name: "Grace Hopper", email: "grace@acme.co", company: "Umbrella Corp", status: "active" },
-  { id: "3", name: "Alan Turing", email: "alan@acme.co", company: "Initech", status: "inactive" },
+  {
+    id: "1",
+    name: "Ada Lovelace",
+    email: "ada@acme.co",
+    company: "Acme Co.",
+    status: "active",
+  },
+  {
+    id: "2",
+    name: "Grace Hopper",
+    email: "grace@acme.co",
+    company: "Umbrella Corp",
+    status: "active",
+  },
+  {
+    id: "3",
+    name: "Alan Turing",
+    email: "alan@acme.co",
+    company: "Initech",
+    status: "inactive",
+  },
 ]

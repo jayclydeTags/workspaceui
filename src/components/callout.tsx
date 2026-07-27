@@ -5,14 +5,15 @@ import { cn } from "@/lib/utils"
 type CalloutVariant = "default" | "warning" | "destructive"
 
 const icons: Record<CalloutVariant, React.ReactNode> = {
-  default: <Info className="size-4 shrink-0 mt-0.5" />,
-  warning: <AlertTriangle className="size-4 shrink-0 mt-0.5" />,
-  destructive: <AlertCircle className="size-4 shrink-0 mt-0.5" />,
+  default: <Info className="mt-0.5 size-4 shrink-0" />,
+  warning: <AlertTriangle className="mt-0.5 size-4 shrink-0" />,
+  destructive: <AlertCircle className="mt-0.5 size-4 shrink-0" />,
 }
 
 const styles: Record<CalloutVariant, string> = {
   default: "bg-muted/50 border-border text-foreground",
-  warning: "bg-yellow-500/10 border-yellow-500/30 text-yellow-700 dark:text-yellow-400",
+  warning:
+    "bg-yellow-500/10 border-yellow-500/30 text-yellow-700 dark:text-yellow-400",
   destructive: "bg-destructive/10 border-destructive/30 text-destructive",
 }
 
@@ -22,7 +23,11 @@ interface CalloutProps {
   children: React.ReactNode
 }
 
-export function Callout({ variant = "default", className, children }: CalloutProps) {
+export function Callout({
+  variant = "default",
+  className,
+  children,
+}: CalloutProps) {
   return (
     <div
       className={cn(

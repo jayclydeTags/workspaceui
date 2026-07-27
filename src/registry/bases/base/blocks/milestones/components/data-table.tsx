@@ -62,11 +62,16 @@ function RowActions({
         }
       />
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => onEdit(milestone)}>Edit</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onEdit(milestone)}>
+          Edit
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onToggleComplete(milestone)}>
           {done ? "Reopen" : "Mark complete"}
         </DropdownMenuItem>
-        <DropdownMenuItem variant="destructive" onClick={() => onDelete(milestone)}>
+        <DropdownMenuItem
+          variant="destructive"
+          onClick={() => onDelete(milestone)}
+        >
           Delete
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -37,8 +37,8 @@ export function ForbiddenWorkspace() {
             You&apos;re not a member of {BLOCKED}
           </h1>
           <p className="mt-1 text-xs text-muted-foreground">
-            Your account doesn&apos;t have access to this workspace. Switch to one
-            you belong to, or ask an admin to invite you.
+            Your account doesn&apos;t have access to this workspace. Switch to
+            one you belong to, or ask an admin to invite you.
           </p>
 
           <Card size="sm" className="mt-4 w-full py-0">
@@ -56,7 +56,9 @@ export function ForbiddenWorkspace() {
                   </Avatar>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">{ws.name}</p>
-                    <p className="truncate text-xs text-muted-foreground">{ws.role}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {ws.role}
+                    </p>
                   </div>
                   <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
                 </button>

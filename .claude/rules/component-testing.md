@@ -38,7 +38,7 @@ suites pick up the new item and prop changes with no extra code. If
 until someone runs `npx shadcn add` or reads stale docs — the tests only
 validate what exists, they can't detect something missing entirely.
 
-Known limitation: the prop-doc check only verifies prop *names* are
+Known limitation: the prop-doc check only verifies prop _names_ are
 present in the `<TypeTable>`, not that descriptions/types/defaults are
 accurate — that still needs a human read on review. It also only applies
 where the component follows the `export interface <PascalName>Props`

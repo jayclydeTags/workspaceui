@@ -37,7 +37,9 @@ describe("wouldOverdraw", () => {
 
   it("is true past the approved principal", () => {
     expect(wouldOverdraw(DISBURSEMENTS, { ...draft, amount: 30000 })).toBe(true)
-    expect(wouldOverdraw(DISBURSEMENTS, { ...draft, amount: 25000 })).toBe(false)
+    expect(wouldOverdraw(DISBURSEMENTS, { ...draft, amount: 25000 })).toBe(
+      false
+    )
   })
 })
 
@@ -51,7 +53,9 @@ describe("isValid", () => {
 describe("Disbursements", () => {
   it("summarises released funds and scheduled tranches", () => {
     render(<Disbursements />)
-    expect(screen.getByText("$140,000 released · 2 scheduled")).toBeInTheDocument()
+    expect(
+      screen.getByText("$140,000 released · 2 scheduled")
+    ).toBeInTheDocument()
   })
 
   it("filters by loan", async () => {
@@ -69,20 +73,26 @@ describe("Disbursements", () => {
     const user = userEvent.setup()
     render(<Disbursements />)
 
-    await user.click(screen.getByRole("button", { name: /schedule disbursement/i }))
+    await user.click(
+      screen.getByRole("button", { name: /schedule disbursement/i })
+    )
     await user.click(screen.getByLabelText("Loan"))
     await user.click(await screen.findByRole("option", { name: "LN-2043" }))
     await user.type(screen.getByLabelText("Borrower"), "Nadia Rahman")
     await user.type(screen.getByLabelText("Amount"), "30000")
 
     expect(screen.getByRole("button", { name: "Schedule" })).toBeDisabled()
-    expect(screen.getByText("Only $25,000 left on LN-2043.")).toBeInTheDocument()
+    expect(
+      screen.getByText("Only $25,000 left on LN-2043.")
+    ).toBeInTheDocument()
 
     await user.clear(screen.getByLabelText("Amount"))
     await user.type(screen.getByLabelText("Amount"), "25000")
     await user.click(screen.getByRole("button", { name: "Schedule" }))
 
-    expect(screen.getByText("$140,000 released · 3 scheduled")).toBeInTheDocument()
+    expect(
+      screen.getByText("$140,000 released · 3 scheduled")
+    ).toBeInTheDocument()
   })
 
   it("releasing a tranche adds it to released funds", async () => {
@@ -94,7 +104,9 @@ describe("Disbursements", () => {
     )
     await user.click(await screen.findByRole("menuitem", { name: "Release" }))
 
-    expect(screen.getByText("$160,000 released · 1 scheduled")).toBeInTheDocument()
+    expect(
+      screen.getByText("$160,000 released · 1 scheduled")
+    ).toBeInTheDocument()
   })
 
   it("a settled tranche is read-only", async () => {
@@ -104,10 +116,9 @@ describe("Disbursements", () => {
     await user.click(
       screen.getAllByRole("button", { name: "Actions for LN-2043 $100,000" })[0]
     )
-    expect(await screen.findByRole("menuitem", { name: "Settled" })).toHaveAttribute(
-      "aria-disabled",
-      "true"
-    )
+    expect(
+      await screen.findByRole("menuitem", { name: "Settled" })
+    ).toHaveAttribute("aria-disabled", "true")
   })
 
   it("failing a tranche frees the loan's headroom", async () => {
@@ -117,9 +128,13 @@ describe("Disbursements", () => {
     await user.click(
       screen.getAllByRole("button", { name: "Actions for LN-2041 $20,000" })[0]
     )
-    await user.click(await screen.findByRole("menuitem", { name: "Mark failed" }))
+    await user.click(
+      await screen.findByRole("menuitem", { name: "Mark failed" })
+    )
 
-    await user.click(screen.getByRole("button", { name: /schedule disbursement/i }))
+    await user.click(
+      screen.getByRole("button", { name: /schedule disbursement/i })
+    )
     expect(
       screen.getByText("$20,000 of approved principal left on LN-2041.")
     ).toBeInTheDocument()
@@ -137,6 +152,8 @@ describe("Disbursements", () => {
     const dialog = screen.getByRole("alertdialog")
     await user.click(within(dialog).getByRole("button", { name: "Delete" }))
 
-    expect(screen.getByText("$140,000 released · 1 scheduled")).toBeInTheDocument()
+    expect(
+      screen.getByText("$140,000 released · 1 scheduled")
+    ).toBeInTheDocument()
   })
 })

@@ -76,7 +76,9 @@ export function EmployeeDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{editing ? "Edit employee" : "New employee"}</DialogTitle>
+          <DialogTitle>
+            {editing ? "Edit employee" : "New employee"}
+          </DialogTitle>
         </DialogHeader>
         <form id="employee-form" onSubmit={submit}>
           <FieldGroup>

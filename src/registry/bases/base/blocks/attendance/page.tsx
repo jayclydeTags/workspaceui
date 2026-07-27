@@ -47,7 +47,9 @@ export function Attendance() {
 
   const dates = [...new Set(entries.map((e) => e.date))].sort().reverse()
   const visible =
-    dateFilter === "all" ? entries : entries.filter((e) => e.date === dateFilter)
+    dateFilter === "all"
+      ? entries
+      : entries.filter((e) => e.date === dateFilter)
 
   function openCreate() {
     setEditing(null)
@@ -94,7 +96,10 @@ export function Attendance() {
     >
       <div className="flex h-full flex-col">
         <div className="border-b px-4 py-3 @sm:px-6">
-          <Select value={dateFilter} onValueChange={(v) => setDateFilter(v ?? "all")}>
+          <Select
+            value={dateFilter}
+            onValueChange={(v) => setDateFilter(v ?? "all")}
+          >
             <SelectTrigger aria-label="Filter by date" className="w-48">
               <SelectValue />
             </SelectTrigger>

@@ -1,7 +1,10 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { SETTINGS_SECTIONS, type SettingsSectionId } from "@/registry/bases/base/blocks/settings/data"
+import {
+  SETTINGS_SECTIONS,
+  type SettingsSectionId,
+} from "@/registry/bases/base/blocks/settings/data"
 
 export function SettingsNav({
   activeId,
@@ -11,7 +14,7 @@ export function SettingsNav({
   onChange: (id: SettingsSectionId) => void
 }) {
   return (
-    <nav className="flex shrink-0 flex-col gap-1 border-r border-border p-3 @max-md:w-full @max-md:border-r-0 @max-md:border-b md:w-56">
+    <nav className="flex shrink-0 flex-col gap-1 border-r border-border p-3 md:w-56 @max-md:w-full @max-md:border-r-0 @max-md:border-b">
       {SETTINGS_SECTIONS.map((section) => (
         <button
           key={section.id}
@@ -23,7 +26,9 @@ export function SettingsNav({
           )}
         >
           <span>{section.label}</span>
-          <span className="text-xs font-normal text-muted-foreground">{section.description}</span>
+          <span className="text-xs font-normal text-muted-foreground">
+            {section.description}
+          </span>
         </button>
       ))}
     </nav>

@@ -103,8 +103,7 @@ export const eligibleBins = (
   line: ReceiptLine,
   bins: Bin[],
   warehouse: string
-): Bin[] =>
-  bins.filter((b) => b.warehouse === warehouse && canPutAway(line, b))
+): Bin[] => bins.filter((b) => b.warehouse === warehouse && canPutAway(line, b))
 
 // ── Mock data ──────────────────────────────────────────────────────────────
 
@@ -117,8 +116,24 @@ export const RECEIPTS: Receipt[] = [
     vendor: "Acme Supply Co.",
     warehouse: "WH-CEN",
     lines: [
-      { id: "1a", sku: "SKU-1002", expectedQty: 120, receivedQty: 0, qc: "pending", putAwayQty: 0, binId: null },
-      { id: "1b", sku: "SKU-1006", expectedQty: 60, receivedQty: 0, qc: "pending", putAwayQty: 0, binId: null },
+      {
+        id: "1a",
+        sku: "SKU-1002",
+        expectedQty: 120,
+        receivedQty: 0,
+        qc: "pending",
+        putAwayQty: 0,
+        binId: null,
+      },
+      {
+        id: "1b",
+        sku: "SKU-1006",
+        expectedQty: 60,
+        receivedQty: 0,
+        qc: "pending",
+        putAwayQty: 0,
+        binId: null,
+      },
     ],
   },
   {
@@ -127,8 +142,24 @@ export const RECEIPTS: Receipt[] = [
     vendor: "Northwind Traders",
     warehouse: "WH-NW",
     lines: [
-      { id: "2a", sku: "SKU-1004", expectedQty: 50, receivedQty: 50, qc: "passed", putAwayQty: 0, binId: null },
-      { id: "2b", sku: "SKU-1002", expectedQty: 80, receivedQty: 30, qc: "pending", putAwayQty: 0, binId: null },
+      {
+        id: "2a",
+        sku: "SKU-1004",
+        expectedQty: 50,
+        receivedQty: 50,
+        qc: "passed",
+        putAwayQty: 0,
+        binId: null,
+      },
+      {
+        id: "2b",
+        sku: "SKU-1002",
+        expectedQty: 80,
+        receivedQty: 30,
+        qc: "pending",
+        putAwayQty: 0,
+        binId: null,
+      },
     ],
   },
   {
@@ -137,7 +168,15 @@ export const RECEIPTS: Receipt[] = [
     vendor: "Bluepeak Logistics",
     warehouse: "WH-W",
     lines: [
-      { id: "3a", sku: "SKU-1003", expectedQty: 40, receivedQty: 40, qc: "passed", putAwayQty: 40, binId: "18" },
+      {
+        id: "3a",
+        sku: "SKU-1003",
+        expectedQty: 40,
+        receivedQty: 40,
+        qc: "passed",
+        putAwayQty: 40,
+        binId: "18",
+      },
     ],
   },
 ]

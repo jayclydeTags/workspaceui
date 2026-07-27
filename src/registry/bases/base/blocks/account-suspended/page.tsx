@@ -26,8 +26,8 @@ export function AccountSuspended() {
             Account suspended
           </h1>
           <p className="mt-1 text-xs text-muted-foreground">
-            Access to this account has been suspended and you&apos;ve been signed
-            out. Contact support if you believe this was in error.
+            Access to this account has been suspended and you&apos;ve been
+            signed out. Contact support if you believe this was in error.
           </p>
 
           <Card size="sm" className="mt-4 w-full bg-muted/50">

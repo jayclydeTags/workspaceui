@@ -4,7 +4,13 @@ import { useState } from "react"
 import { Clock, Loader2, TriangleAlert } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import {
   Field,
   FieldError,
@@ -67,8 +73,8 @@ export function SessionExpired() {
             </div>
             <CardTitle className="mt-2">Session expired</CardTitle>
             <CardDescription>
-              You were signed out after a period of inactivity. Enter your password
-              to continue as{" "}
+              You were signed out after a period of inactivity. Enter your
+              password to continue as{" "}
               <span className="font-medium text-foreground">{EMAIL}</span>.
             </CardDescription>
           </CardHeader>
@@ -100,9 +106,16 @@ export function SessionExpired() {
                 </Field>
 
                 <Field>
-                  <Button type="submit" className="w-full" disabled={submitting}>
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={submitting}
+                  >
                     {submitting && (
-                      <Loader2 data-icon="inline-start" className="animate-spin" />
+                      <Loader2
+                        data-icon="inline-start"
+                        className="animate-spin"
+                      />
                     )}
                     {submitting ? "Signing in…" : "Continue"}
                   </Button>

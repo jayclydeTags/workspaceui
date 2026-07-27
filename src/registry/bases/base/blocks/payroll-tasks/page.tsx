@@ -116,7 +116,10 @@ export function PayrollTasks() {
 
         {/* ── Filters ── */}
         <div className="flex flex-wrap gap-2">
-          <InputGroup className="h-9 min-w-0 text-sm" style={{ flex: "1 1 200px" }}>
+          <InputGroup
+            className="h-9 min-w-0 text-sm"
+            style={{ flex: "1 1 200px" }}
+          >
             <InputGroupAddon>
               <Search />
             </InputGroupAddon>
@@ -179,7 +182,9 @@ export function PayrollTasks() {
                   <TableCell className="text-right">
                     {/* Conditional button: only incomplete tasks can be completed. */}
                     {t.status === "completed" ? (
-                      <span className="text-xs text-muted-foreground">Done</span>
+                      <span className="text-xs text-muted-foreground">
+                        Done
+                      </span>
                     ) : (
                       <Button
                         size="sm"
@@ -198,7 +203,10 @@ export function PayrollTasks() {
       </div>
 
       {/* ── Complete dialog ── */}
-      <Dialog open={active !== null} onOpenChange={(o) => !o && setActive(null)}>
+      <Dialog
+        open={active !== null}
+        onOpenChange={(o) => !o && setActive(null)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Complete task</DialogTitle>

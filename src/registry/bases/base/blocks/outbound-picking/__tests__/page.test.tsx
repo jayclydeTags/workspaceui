@@ -64,7 +64,10 @@ describe("pickedQty / remainingToPick / shortfall", () => {
   it("sums allocations and derives the gap", () => {
     const l = line({
       requestedQty: 100,
-      allocations: [{ binId: "1", qty: 60 }, { binId: "6", qty: 30 }],
+      allocations: [
+        { binId: "1", qty: 60 },
+        { binId: "6", qty: 30 },
+      ],
     })
     expect(pickedQty(l)).toBe(90)
     expect(remainingToPick(l)).toBe(10)
@@ -74,13 +77,21 @@ describe("pickedQty / remainingToPick / shortfall", () => {
 
 describe("isLineClosed", () => {
   it("closes on full pick", () => {
-    expect(isLineClosed(line({ allocations: [{ binId: "1", qty: 100 }] }))).toBe(true)
+    expect(
+      isLineClosed(line({ allocations: [{ binId: "1", qty: 100 }] }))
+    ).toBe(true)
   })
   it("closes on short-pick even when under-picked", () => {
-    expect(isLineClosed(line({ allocations: [{ binId: "1", qty: 40 }], short: true }))).toBe(true)
+    expect(
+      isLineClosed(
+        line({ allocations: [{ binId: "1", qty: 40 }], short: true })
+      )
+    ).toBe(true)
   })
   it("stays open while partially picked and not shorted", () => {
-    expect(isLineClosed(line({ allocations: [{ binId: "1", qty: 40 }] }))).toBe(false)
+    expect(isLineClosed(line({ allocations: [{ binId: "1", qty: 40 }] }))).toBe(
+      false
+    )
   })
 })
 
@@ -90,12 +101,16 @@ describe("pickStatus", () => {
   })
   it("is picking while a line is still open", () => {
     expect(
-      pickStatus(list({ lines: [line({ allocations: [{ binId: "1", qty: 40 }] })] }))
+      pickStatus(
+        list({ lines: [line({ allocations: [{ binId: "1", qty: 40 }] })] })
+      )
     ).toBe("picking")
   })
   it("is picked once every line is closed", () => {
     expect(
-      pickStatus(list({ lines: [line({ allocations: [{ binId: "1", qty: 100 }] })] }))
+      pickStatus(
+        list({ lines: [line({ allocations: [{ binId: "1", qty: 100 }] })] })
+      )
     ).toBe("picked")
   })
   it("is completed when the flag is set, regardless of lines", () => {
@@ -109,10 +124,15 @@ describe("canCompletePick", () => {
     expect(canCompletePick(list({ lines: [full] }))).toBe(true)
     expect(canCompletePick(list({ picker: null, lines: [full] }))).toBe(false)
     expect(canCompletePick(list({ lines: [line()] }))).toBe(false) // line open
-    expect(canCompletePick(list({ completed: true, lines: [full] }))).toBe(false)
+    expect(canCompletePick(list({ completed: true, lines: [full] }))).toBe(
+      false
+    )
   })
   it("accepts a short-picked line as closed", () => {
-    const shortLine = line({ allocations: [{ binId: "1", qty: 40 }], short: true })
+    const shortLine = line({
+      allocations: [{ binId: "1", qty: 40 }],
+      short: true,
+    })
     expect(canCompletePick(list({ lines: [shortLine] }))).toBe(true)
   })
 })
@@ -122,7 +142,9 @@ describe("canPickFromBin", () => {
     expect(canPickFromBin(bin(), "SKU-1001", 100)).toBe(true)
     expect(canPickFromBin(bin({ qty: 50 }), "SKU-1001", 100)).toBe(false) // not enough
     expect(canPickFromBin(bin({ sku: "SKU-9999" }), "SKU-1001", 10)).toBe(false) // wrong SKU
-    expect(canPickFromBin(bin({ status: "blocked" }), "SKU-1001", 10)).toBe(false)
+    expect(canPickFromBin(bin({ status: "blocked" }), "SKU-1001", 10)).toBe(
+      false
+    )
     expect(canPickFromBin(bin(), "SKU-1001", 0)).toBe(false)
   })
 })
@@ -143,8 +165,17 @@ describe("pickCompletion", () => {
         id: "9",
         orderId: "SO-7002",
         lines: [
-          line({ sku: "SKU-1001", requestedQty: 100, allocations: [{ binId: "1", qty: 100 }] }),
-          line({ sku: "SKU-1004", requestedQty: 80, allocations: [{ binId: "9", qty: 60 }], short: true }),
+          line({
+            sku: "SKU-1001",
+            requestedQty: 100,
+            allocations: [{ binId: "1", qty: 100 }],
+          }),
+          line({
+            sku: "SKU-1004",
+            requestedQty: 80,
+            allocations: [{ binId: "9", qty: 60 }],
+            short: true,
+          }),
         ],
       })
     )
@@ -170,22 +201,30 @@ describe("OutboundPicking", () => {
     const user = userEvent.setup()
     render(<OutboundPicking />)
 
-    await user.click(screen.getByRole("button", { name: "Open pick list SO-7003" }))
+    await user.click(
+      screen.getByRole("button", { name: "Open pick list SO-7003" })
+    )
 
     expect(
       await screen.findByText(/is closed — it can no longer be picked/)
     ).toBeInTheDocument()
-    expect(screen.queryByRole("button", { name: "Allocate" })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole("button", { name: "Allocate" })
+    ).not.toBeInTheDocument()
   })
 
   it("claims, allocates across a bin, and completes a pick list", async () => {
     const user = userEvent.setup()
     render(<OutboundPicking />)
 
-    await user.click(screen.getByRole("button", { name: "Open pick list SO-7001" }))
+    await user.click(
+      screen.getByRole("button", { name: "Open pick list SO-7001" })
+    )
 
     // Unclaimed — claim it first.
-    await user.click(screen.getByRole("button", { name: "Claim to start picking" }))
+    await user.click(
+      screen.getByRole("button", { name: "Claim to start picking" })
+    )
 
     // Line 1a wants 200 of SKU-1001; CEN-A1 holds 180 — allocate it, then short the rest.
     await user.click(screen.getByLabelText("Bin for SKU-1001"))

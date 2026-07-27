@@ -106,8 +106,8 @@ export function ChartOfAccounts() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete account</AlertDialogTitle>
             <AlertDialogDescription>
-              Delete <span className="font-medium">{deleting?.name}</span>?
-              This action can&apos;t be undone.
+              Delete <span className="font-medium">{deleting?.name}</span>? This
+              action can&apos;t be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

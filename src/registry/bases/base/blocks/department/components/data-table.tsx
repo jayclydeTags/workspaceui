@@ -100,11 +100,7 @@ export function DataTable({
                   <StatusBadge status={dept.status} />
                 </TableCell>
                 <TableCell className="pr-6">
-                  <RowActions
-                    dept={dept}
-                    onEdit={onEdit}
-                    onDelete={onDelete}
-                  />
+                  <RowActions dept={dept} onEdit={onEdit} onDelete={onDelete} />
                 </TableCell>
               </TableRow>
             ))}

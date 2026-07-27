@@ -4,7 +4,13 @@ import { useState } from "react"
 import { Check, Copy, Download, RefreshCw } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Page } from "@/registry/bases/base/workspaceui/page"
@@ -26,7 +32,10 @@ const INITIAL_CODES = [
 function randomCode() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
   const pick = (n: number) =>
-    Array.from({ length: n }, () => chars[Math.floor(Math.random() * chars.length)]).join("")
+    Array.from(
+      { length: n },
+      () => chars[Math.floor(Math.random() * chars.length)]
+    ).join("")
   return `${pick(4)}-${pick(4)}`
 }
 
@@ -63,8 +72,8 @@ export function RecoveryCodes() {
           <CardHeader className="text-center">
             <CardTitle>Save your recovery codes</CardTitle>
             <CardDescription>
-              Store these somewhere safe. Each code works once if you lose access to
-              your authenticator.
+              Store these somewhere safe. Each code works once if you lose
+              access to your authenticator.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
@@ -89,7 +98,11 @@ export function RecoveryCodes() {
                 <Download data-icon="inline-start" />
                 Download
               </Button>
-              <Button variant="outline" onClick={regenerate} aria-label="Regenerate codes">
+              <Button
+                variant="outline"
+                onClick={regenerate}
+                aria-label="Regenerate codes"
+              >
                 <RefreshCw />
               </Button>
             </div>

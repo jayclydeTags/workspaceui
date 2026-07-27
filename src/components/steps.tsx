@@ -16,7 +16,7 @@ export function Step({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "step relative mt-8 font-semibold text-base first:mt-0",
+        "step relative mt-8 text-base font-semibold first:mt-0",
         className
       )}
       {...props}

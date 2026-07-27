@@ -44,7 +44,9 @@ describe("Products", () => {
     await user.type(nameInput, "Recycled Notebook A4")
     await user.click(screen.getByRole("button", { name: "Save changes" }))
 
-    expect(screen.getAllByText("Recycled Notebook A4").length).toBeGreaterThan(0)
+    expect(screen.getAllByText("Recycled Notebook A4").length).toBeGreaterThan(
+      0
+    )
     expect(screen.queryByText("Recycled Notebook A5")).not.toBeInTheDocument()
   })
 

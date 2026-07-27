@@ -37,9 +37,7 @@ describe("JournalEntries", () => {
     await user.type(screen.getAllByLabelText("Credit")[1], "100")
 
     expect(screen.getByText("Balanced")).toBeInTheDocument()
-    expect(
-      screen.getByRole("button", { name: "Create entry" })
-    ).toBeEnabled()
+    expect(screen.getByRole("button", { name: "Create entry" })).toBeEnabled()
 
     await user.click(screen.getByRole("button", { name: "Create entry" }))
 
@@ -61,9 +59,7 @@ describe("JournalEntries", () => {
     await user.type(memoInput, "June rent — updated")
     await user.click(screen.getByRole("button", { name: "Save changes" }))
 
-    expect(
-      screen.getAllByText("June rent — updated").length
-    ).toBeGreaterThan(0)
+    expect(screen.getAllByText("June rent — updated").length).toBeGreaterThan(0)
   })
 
   it("deletes an entry after confirmation", async () => {

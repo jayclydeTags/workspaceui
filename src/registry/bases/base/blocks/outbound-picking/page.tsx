@@ -38,7 +38,10 @@ export function OutboundPicking() {
       prev.map((l) =>
         l.id !== selectedId
           ? l
-          : { ...l, lines: l.lines.map((ln) => (ln.id === lineId ? change(ln) : ln)) }
+          : {
+              ...l,
+              lines: l.lines.map((ln) => (ln.id === lineId ? change(ln) : ln)),
+            }
       )
     )
   }
@@ -75,7 +78,9 @@ export function OutboundPicking() {
   function handleComplete() {
     setLists((prev) =>
       prev.map((l) =>
-        l.id === selectedId && canCompletePick(l) ? { ...l, completed: true } : l
+        l.id === selectedId && canCompletePick(l)
+          ? { ...l, completed: true }
+          : l
       )
     )
   }

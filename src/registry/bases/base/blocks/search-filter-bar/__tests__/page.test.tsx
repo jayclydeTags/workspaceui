@@ -9,7 +9,10 @@ describe("SearchFilterBar", () => {
     const user = userEvent.setup()
     render(<SearchFilterBar />)
 
-    await user.type(screen.getByPlaceholderText("Search name or email…"), "priya")
+    await user.type(
+      screen.getByPlaceholderText("Search name or email…"),
+      "priya"
+    )
 
     expect(screen.getByText("Priya Nair")).toBeInTheDocument()
     expect(screen.queryByText("Sarah Chen")).not.toBeInTheDocument()

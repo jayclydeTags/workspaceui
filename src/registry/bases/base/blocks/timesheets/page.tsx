@@ -156,9 +156,9 @@ export function Timesheets() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete entry</AlertDialogTitle>
             <AlertDialogDescription>
-              Delete <span className="font-medium">{deleting?.member}</span>&apos;s{" "}
-              {deleting?.hours}h on {deleting?.date}? This action can&apos;t be
-              undone.
+              Delete <span className="font-medium">{deleting?.member}</span>
+              &apos;s {deleting?.hours}h on {deleting?.date}? This action
+              can&apos;t be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

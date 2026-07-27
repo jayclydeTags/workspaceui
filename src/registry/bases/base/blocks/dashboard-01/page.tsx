@@ -9,8 +9,15 @@ import {
   type WorkspaceHandle,
   type WorkspaceTabDef,
 } from "@/registry/bases/base/workspaceui/workspace"
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar, NAV_ITEMS } from "@/registry/bases/base/blocks/dashboard-01/components/app-sidebar"
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
+import {
+  AppSidebar,
+  NAV_ITEMS,
+} from "@/registry/bases/base/blocks/dashboard-01/components/app-sidebar"
 import {
   DashboardContent,
   PlaceholderContent,
@@ -68,7 +75,7 @@ export function Dashboard01({ className }: { className?: string }) {
               </div>
             )
           }
-          className="flex-1 min-h-0"
+          className="min-h-0 flex-1"
         />
       </SidebarInset>
     </SidebarProvider>

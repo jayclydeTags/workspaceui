@@ -28,14 +28,14 @@ export function Unauthorized403() {
           </h1>
           <p className="mt-1 text-xs text-muted-foreground">
             Your account isn&apos;t permitted to view{" "}
-            <span className="font-medium text-foreground">{RESOURCE}</span>. Ask an
-            admin for access or head back.
+            <span className="font-medium text-foreground">{RESOURCE}</span>. Ask
+            an admin for access or head back.
           </p>
 
           <Card size="sm" className="mt-4 w-full bg-muted/50">
             <CardContent className="text-left text-xs text-muted-foreground">
-              Error 403 — Forbidden. If you think this is a mistake, contact your
-              workspace administrator.
+              Error 403 — Forbidden. If you think this is a mistake, contact
+              your workspace administrator.
             </CardContent>
           </Card>
 

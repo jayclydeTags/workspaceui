@@ -7,7 +7,9 @@ import { Login } from "../page"
 describe("Login", () => {
   it("renders the sign-in form", () => {
     render(<Login />)
-    expect(screen.getByRole("button", { name: /^sign in$/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: /^sign in$/i })
+    ).toBeInTheDocument()
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument()
   })
@@ -26,7 +28,9 @@ describe("Login", () => {
     await user.type(screen.getByLabelText(/email/i), "nope@acme.com")
     await user.type(screen.getByLabelText(/^password$/i), "wrong")
     await user.click(screen.getByRole("button", { name: /^sign in$/i }))
-    expect(await screen.findByText(/incorrect email or password/i)).toBeInTheDocument()
+    expect(
+      await screen.findByText(/incorrect email or password/i)
+    ).toBeInTheDocument()
   })
 
   it("reaches the signed-in state with the demo credentials", async () => {

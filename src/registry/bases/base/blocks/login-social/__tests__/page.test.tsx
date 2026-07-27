@@ -13,7 +13,9 @@ describe("LoginSocial", () => {
     expect(
       screen.getByRole("button", { name: /continue with github/i })
     ).toBeInTheDocument()
-    expect(screen.getByRole("button", { name: /^sign in$/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: /^sign in$/i })
+    ).toBeInTheDocument()
   })
 
   it("validates the email form on empty submit", async () => {

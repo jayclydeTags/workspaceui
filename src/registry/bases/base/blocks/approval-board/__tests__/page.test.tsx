@@ -29,8 +29,12 @@ describe("ApprovalBoard", () => {
   it("moves a request to a new column on drop", () => {
     render(<ApprovalBoard />)
 
-    const card = screen.getByText("Client dinner — Q2 kickoff").closest("[draggable]")!
-    const approvedColumn = screen.getByText("Approved").closest("div")!.parentElement!
+    const card = screen
+      .getByText("Client dinner — Q2 kickoff")
+      .closest("[draggable]")!
+    const approvedColumn = screen
+      .getByText("Approved")
+      .closest("div")!.parentElement!
 
     const dataTransfer = makeDataTransfer("req-1")
     fireEvent.dragStart(card, { dataTransfer })

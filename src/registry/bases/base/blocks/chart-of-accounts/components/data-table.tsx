@@ -16,11 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  ACCOUNT_TYPE_LABEL,
-  formatCurrency,
-  type Account,
-} from "../data"
+import { ACCOUNT_TYPE_LABEL, formatCurrency, type Account } from "../data"
 
 const TYPE_VARIANT: Record<
   Account["type"],
@@ -124,7 +120,11 @@ export function DataTable({
                   <StatusBadge status={account.status} />
                 </TableCell>
                 <TableCell className="pr-6">
-                  <RowActions account={account} onEdit={onEdit} onDelete={onDelete} />
+                  <RowActions
+                    account={account}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                  />
                 </TableCell>
               </TableRow>
             ))}
@@ -143,7 +143,8 @@ export function DataTable({
                 </span>
               </div>
               <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                {ACCOUNT_TYPE_LABEL[account.type]} · {formatCurrency(account.balance)}
+                {ACCOUNT_TYPE_LABEL[account.type]} ·{" "}
+                {formatCurrency(account.balance)}
               </p>
               <div className="mt-1.5">
                 <StatusBadge status={account.status} />

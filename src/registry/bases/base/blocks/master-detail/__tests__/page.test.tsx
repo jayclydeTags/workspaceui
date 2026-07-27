@@ -18,8 +18,12 @@ describe("MasterDetail", () => {
 
     await user.click(screen.getByText("Redesign onboarding flow"))
 
-    expect(screen.getByRole("heading", { name: "Redesign onboarding flow" })).toBeInTheDocument()
-    expect(screen.getByText(/Simplify the 5-step signup wizard/)).toBeInTheDocument()
+    expect(
+      screen.getByRole("heading", { name: "Redesign onboarding flow" })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(/Simplify the 5-step signup wizard/)
+    ).toBeInTheDocument()
     // "Emma Davis" appears in both the list row and the detail panel
     expect(screen.getAllByText("Emma Davis").length).toBeGreaterThan(1)
     expect(screen.queryByText("No task selected")).not.toBeInTheDocument()

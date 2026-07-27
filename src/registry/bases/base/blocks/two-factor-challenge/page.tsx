@@ -1,11 +1,22 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { AnimatePresence, motion, useAnimate, useReducedMotion } from "motion/react"
+import {
+  AnimatePresence,
+  motion,
+  useAnimate,
+  useReducedMotion,
+} from "motion/react"
 import { KeyRound, Loader2, Smartphone, TriangleAlert } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import {
@@ -52,7 +63,12 @@ function SuccessRing({ reduceMotion }: { reduceMotion: boolean }) {
   const green = "stroke-green-600 dark:stroke-green-500"
   return (
     <svg viewBox="0 0 44 44" className="size-11" fill="none">
-      <circle cx="22" cy="22" r="19" className="fill-green-600/10 dark:fill-green-500/10" />
+      <circle
+        cx="22"
+        cy="22"
+        r="19"
+        className="fill-green-600/10 dark:fill-green-500/10"
+      />
       <motion.circle
         cx="22"
         cy="22"
@@ -199,11 +215,7 @@ export function TwoFactorChallenge() {
               <motion.div
                 key="body"
                 className="overflow-hidden"
-                exit={
-                  reduceMotion
-                    ? { opacity: 0 }
-                    : { opacity: 0, height: 0 }
-                }
+                exit={reduceMotion ? { opacity: 0 } : { opacity: 0, height: 0 }}
                 transition={{ duration: 0.25 }}
               >
                 {/* py-2: keep the OTP focus ring from being clipped by the
@@ -268,7 +280,9 @@ export function TwoFactorChallenge() {
                           }}
                         >
                           <Field data-invalid={status === "error"}>
-                            <FieldLabel htmlFor="recovery-code">Recovery code</FieldLabel>
+                            <FieldLabel htmlFor="recovery-code">
+                              Recovery code
+                            </FieldLabel>
                             <Input
                               id="recovery-code"
                               placeholder="ACME-XXXX-XXXX"
@@ -282,12 +296,21 @@ export function TwoFactorChallenge() {
                               }}
                             />
                             {status === "error" && (
-                              <FieldError>That recovery code isn&apos;t valid.</FieldError>
+                              <FieldError>
+                                That recovery code isn&apos;t valid.
+                              </FieldError>
                             )}
                           </Field>
-                          <Button type="submit" className="mt-4 w-full" disabled={verifying}>
+                          <Button
+                            type="submit"
+                            className="mt-4 w-full"
+                            disabled={verifying}
+                          >
                             {verifying && (
-                              <Loader2 data-icon="inline-start" className="animate-spin" />
+                              <Loader2
+                                data-icon="inline-start"
+                                className="animate-spin"
+                              />
                             )}
                             {verifying ? "Verifying…" : "Verify"}
                           </Button>
@@ -307,7 +330,9 @@ export function TwoFactorChallenge() {
                     variant="link"
                     className="h-auto p-0 text-xs text-muted-foreground"
                     disabled={verifying}
-                    onClick={() => switchMode(mode === "totp" ? "recovery" : "totp")}
+                    onClick={() =>
+                      switchMode(mode === "totp" ? "recovery" : "totp")
+                    }
                   >
                     {mode === "totp"
                       ? "Use a recovery code instead"

@@ -34,7 +34,12 @@ export type NavItem = {
 
 export const APPS_NAV = {
   workspace: [
-    { id: "dashboard", title: "Dashboard", Icon: LayoutDashboard, pinned: true },
+    {
+      id: "dashboard",
+      title: "Dashboard",
+      Icon: LayoutDashboard,
+      pinned: true,
+    },
     { id: "documents", title: "Documents", Icon: FileText, pinned: false },
     { id: "analytics", title: "Analytics", Icon: BarChart2, pinned: false },
     { id: "settings", title: "Settings", Icon: Settings, pinned: false },

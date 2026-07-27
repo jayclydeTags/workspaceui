@@ -41,7 +41,10 @@ export function DetailsStep({
     <FieldGroup className="max-w-md">
       <Field>
         <FieldLabel htmlFor="po-vendor">Vendor</FieldLabel>
-        <Select value={details.vendor} onValueChange={(v) => v && onChange({ vendor: v })}>
+        <Select
+          value={details.vendor}
+          onValueChange={(v) => v && onChange({ vendor: v })}
+        >
           <SelectTrigger id="po-vendor" className="w-full">
             <SelectValue placeholder="Select a vendor" />
           </SelectTrigger>
@@ -130,7 +133,9 @@ export function LineItemsStep({
                   type="number"
                   min={1}
                   value={li.quantity}
-                  onChange={(e) => update(li.id, { quantity: Number(e.target.value) })}
+                  onChange={(e) =>
+                    update(li.id, { quantity: Number(e.target.value) })
+                  }
                   className="text-right"
                   aria-label="Quantity"
                 />
@@ -141,12 +146,16 @@ export function LineItemsStep({
                   min={0}
                   step="0.01"
                   value={li.unitCost}
-                  onChange={(e) => update(li.id, { unitCost: Number(e.target.value) })}
+                  onChange={(e) =>
+                    update(li.id, { unitCost: Number(e.target.value) })
+                  }
                   className="text-right"
                   aria-label="Unit cost"
                 />
               </TableCell>
-              <TableCell className="text-right">{formatCurrency(li.quantity * li.unitCost)}</TableCell>
+              <TableCell className="text-right">
+                {formatCurrency(li.quantity * li.unitCost)}
+              </TableCell>
               <TableCell>
                 <Button
                   type="button"
@@ -165,7 +174,9 @@ export function LineItemsStep({
         <TableFooter>
           <TableRow>
             <TableCell colSpan={3}>Total</TableCell>
-            <TableCell className="text-right">{formatCurrency(lineItemsTotal(items))}</TableCell>
+            <TableCell className="text-right">
+              {formatCurrency(lineItemsTotal(items))}
+            </TableCell>
             <TableCell />
           </TableRow>
         </TableFooter>
@@ -185,7 +196,13 @@ export function LineItemsStep({
   )
 }
 
-export function ReviewStep({ details, items }: { details: PODetails; items: LineItem[] }) {
+export function ReviewStep({
+  details,
+  items,
+}: {
+  details: PODetails
+  items: LineItem[]
+}) {
   return (
     <div className="flex max-w-md flex-col gap-4 text-sm">
       <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5">
@@ -216,14 +233,18 @@ export function ReviewStep({ details, items }: { details: PODetails; items: Line
             <TableRow key={li.id}>
               <TableCell>{li.item || "—"}</TableCell>
               <TableCell className="text-right">{li.quantity}</TableCell>
-              <TableCell className="text-right">{formatCurrency(li.quantity * li.unitCost)}</TableCell>
+              <TableCell className="text-right">
+                {formatCurrency(li.quantity * li.unitCost)}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
         <TableFooter>
           <TableRow>
             <TableCell colSpan={2}>Total</TableCell>
-            <TableCell className="text-right">{formatCurrency(lineItemsTotal(items))}</TableCell>
+            <TableCell className="text-right">
+              {formatCurrency(lineItemsTotal(items))}
+            </TableCell>
           </TableRow>
         </TableFooter>
       </Table>

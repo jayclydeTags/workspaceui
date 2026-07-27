@@ -13,7 +13,8 @@ import {
 import { ApprovalColumn } from "@/registry/bases/base/blocks/approval-board/components/approval-column"
 
 export function ApprovalBoard({ className }: { className?: string }) {
-  const [requests, setRequests] = React.useState<ApprovalRequest[]>(INITIAL_REQUESTS)
+  const [requests, setRequests] =
+    React.useState<ApprovalRequest[]>(INITIAL_REQUESTS)
 
   function moveRequest(id: string, status: ApprovalStatus) {
     setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)))

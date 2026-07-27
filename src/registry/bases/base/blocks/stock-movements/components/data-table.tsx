@@ -31,7 +31,9 @@ function Quantity({ quantity }: { quantity: number }) {
   return (
     <span
       className={
-        quantity < 0 ? "text-destructive" : "text-emerald-600 dark:text-emerald-400"
+        quantity < 0
+          ? "text-destructive"
+          : "text-emerald-600 dark:text-emerald-400"
       }
     >
       {formatQuantity(quantity)}

@@ -12,7 +12,9 @@ interface DynamicCodeBlockProps {
   codeblock?: CodeBlockProps
 }
 
-const CodeblockPropsContext = createContext<CodeBlockProps | undefined>(undefined)
+const CodeblockPropsContext = createContext<CodeBlockProps | undefined>(
+  undefined
+)
 
 function DefaultPre(props: React.ComponentProps<"pre">) {
   const extraProps = use(CodeblockPropsContext)
@@ -26,7 +28,11 @@ function DefaultPre(props: React.ComponentProps<"pre">) {
   )
 }
 
-export function DynamicCodeBlock({ lang, code, codeblock }: DynamicCodeBlockProps) {
+export function DynamicCodeBlock({
+  lang,
+  code,
+  codeblock,
+}: DynamicCodeBlockProps) {
   const node = useShikiDynamic(
     () => defaultShikiFactory.getOrInit(),
     code,

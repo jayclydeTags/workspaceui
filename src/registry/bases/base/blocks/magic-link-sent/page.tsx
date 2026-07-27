@@ -41,8 +41,8 @@ export function MagicLinkSent() {
           <h1 className="mt-4 text-sm font-medium">Check your email</h1>
           <p className="mt-1 text-xs text-muted-foreground">
             We sent a magic sign-in link to{" "}
-            <span className="font-medium text-foreground">{EMAIL}</span>. Click it
-            to sign in — the link expires in 10 minutes.
+            <span className="font-medium text-foreground">{EMAIL}</span>. Click
+            it to sign in — the link expires in 10 minutes.
           </p>
 
           <div className="mt-6 flex w-full flex-col gap-2" aria-live="polite">

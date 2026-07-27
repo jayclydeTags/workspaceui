@@ -32,10 +32,14 @@ export function ApprovalCard({ request }: { request: ApprovalRequest }) {
           </Avatar>
           <span>{request.requester}</span>
         </div>
-        {request.amount != null && <span>{formatCurrency(request.amount)}</span>}
+        {request.amount != null && (
+          <span>{formatCurrency(request.amount)}</span>
+        )}
       </div>
 
-      <span className="text-xs text-muted-foreground">{request.submittedDate}</span>
+      <span className="text-xs text-muted-foreground">
+        {request.submittedDate}
+      </span>
     </div>
   )
 }

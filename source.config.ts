@@ -25,7 +25,9 @@ function evalExpr(src: string): unknown {
 }
 
 function attrRaw(node: MdxJsxNode, name: string): string | undefined {
-  const attr = node.attributes?.find((a) => a.type === "mdxJsxAttribute" && a.name === name)
+  const attr = node.attributes?.find(
+    (a) => a.type === "mdxJsxAttribute" && a.name === name
+  )
   const value = attr?.value
   if (typeof value === "string") return value
   return value?.value
@@ -36,15 +38,20 @@ function stringifyTypeTable(node: MdxJsxNode): string | undefined {
   const data = raw ? evalExpr(raw) : undefined
   if (!data || typeof data !== "object") return undefined
 
-  const rows = Object.entries(data as Record<string, Record<string, unknown>>).map(
-    ([prop, field]) => {
-      const type = field.type ? `\`${field.type}\`` : ""
-      const def = field.default ? `\`${field.default}\`` : ""
-      const description = typeof field.description === "string" ? field.description : ""
-      return `| \`${prop}\` | ${type} | ${def} | ${description} |`
-    }
-  )
-  return ["| Prop | Type | Default | Description |", "| --- | --- | --- | --- |", ...rows].join("\n")
+  const rows = Object.entries(
+    data as Record<string, Record<string, unknown>>
+  ).map(([prop, field]) => {
+    const type = field.type ? `\`${field.type}\`` : ""
+    const def = field.default ? `\`${field.default}\`` : ""
+    const description =
+      typeof field.description === "string" ? field.description : ""
+    return `| \`${prop}\` | ${type} | ${def} | ${description} |`
+  })
+  return [
+    "| Prop | Type | Default | Description |",
+    "| --- | --- | --- | --- |",
+    ...rows,
+  ].join("\n")
 }
 
 function stringifyComponentPreview(node: MdxJsxNode): string | undefined {
@@ -70,7 +77,8 @@ export const { docs, meta } = defineDocs({
       includeProcessedMarkdown: {
         stringify(node) {
           const n = node as unknown as MdxJsxNode
-          if (n.type !== "mdxJsxFlowElement" && n.type !== "mdxJsxTextElement") return undefined
+          if (n.type !== "mdxJsxFlowElement" && n.type !== "mdxJsxTextElement")
+            return undefined
           if (n.name === "TypeTable") return stringifyTypeTable(n)
           if (n.name === "ComponentPreview") return stringifyComponentPreview(n)
           return undefined

@@ -149,7 +149,11 @@ export function MilestoneDialog({
           >
             Cancel
           </Button>
-          <Button type="submit" form="milestone-form" disabled={!isValid(draft)}>
+          <Button
+            type="submit"
+            form="milestone-form"
+            disabled={!isValid(draft)}
+          >
             {editing ? "Save changes" : "Create milestone"}
           </Button>
         </DialogFooter>

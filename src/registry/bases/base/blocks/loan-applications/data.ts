@@ -1,13 +1,10 @@
 // ── Types ──────────────────────────────────────────────────────────────────
 
 export type LoanStatus =
-  | "draft"
-  | "submitted"
-  | "under-review"
-  | "approved"
-  | "rejected"
+  "draft" | "submitted" | "under-review" | "approved" | "rejected"
 
-export type LoanPurpose = "working-capital" | "equipment" | "expansion" | "refinance"
+export type LoanPurpose =
+  "working-capital" | "equipment" | "expansion" | "refinance"
 
 export interface LoanApplication {
   id: string
@@ -110,9 +107,64 @@ export const pipelineValue = (apps: LoanApplication[]): number =>
 // ── Mock data ──────────────────────────────────────────────────────────────
 
 export const APPLICATIONS: LoanApplication[] = [
-  { id: "1", reference: "LN-2041", borrower: "Iris Muller", purpose: "equipment", amount: 60000, rate: 7.5, termMonths: 48, monthlyIncome: 9000, monthlyDebts: 1200, status: "under-review" },
-  { id: "2", reference: "LN-2042", borrower: "Devon Park", purpose: "working-capital", amount: 25000, rate: 9, termMonths: 24, monthlyIncome: 4000, monthlyDebts: 1500, status: "submitted" },
-  { id: "3", reference: "LN-2043", borrower: "Nadia Rahman", purpose: "expansion", amount: 150000, rate: 6.8, termMonths: 60, monthlyIncome: 22000, monthlyDebts: 3000, status: "approved" },
-  { id: "4", reference: "LN-2044", borrower: "Owen Blake", purpose: "refinance", amount: 40000, rate: 8.2, termMonths: 36, monthlyIncome: 3200, monthlyDebts: 900, status: "rejected" },
-  { id: "5", reference: "LN-2045", borrower: "Sofia Marchetti", purpose: "equipment", amount: 18000, rate: 7.9, termMonths: 24, monthlyIncome: 6500, monthlyDebts: 400, status: "draft" },
+  {
+    id: "1",
+    reference: "LN-2041",
+    borrower: "Iris Muller",
+    purpose: "equipment",
+    amount: 60000,
+    rate: 7.5,
+    termMonths: 48,
+    monthlyIncome: 9000,
+    monthlyDebts: 1200,
+    status: "under-review",
+  },
+  {
+    id: "2",
+    reference: "LN-2042",
+    borrower: "Devon Park",
+    purpose: "working-capital",
+    amount: 25000,
+    rate: 9,
+    termMonths: 24,
+    monthlyIncome: 4000,
+    monthlyDebts: 1500,
+    status: "submitted",
+  },
+  {
+    id: "3",
+    reference: "LN-2043",
+    borrower: "Nadia Rahman",
+    purpose: "expansion",
+    amount: 150000,
+    rate: 6.8,
+    termMonths: 60,
+    monthlyIncome: 22000,
+    monthlyDebts: 3000,
+    status: "approved",
+  },
+  {
+    id: "4",
+    reference: "LN-2044",
+    borrower: "Owen Blake",
+    purpose: "refinance",
+    amount: 40000,
+    rate: 8.2,
+    termMonths: 36,
+    monthlyIncome: 3200,
+    monthlyDebts: 900,
+    status: "rejected",
+  },
+  {
+    id: "5",
+    reference: "LN-2045",
+    borrower: "Sofia Marchetti",
+    purpose: "equipment",
+    amount: 18000,
+    rate: 7.9,
+    termMonths: 24,
+    monthlyIncome: 6500,
+    monthlyDebts: 400,
+    status: "draft",
+  },
 ]

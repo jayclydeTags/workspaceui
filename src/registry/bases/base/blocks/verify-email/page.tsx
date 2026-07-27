@@ -61,8 +61,8 @@ export function VerifyEmail() {
           <h1 className="mt-4 text-sm font-medium">Confirm your email</h1>
           <p className="mt-1 text-xs text-muted-foreground">
             We sent a confirmation link to{" "}
-            <span className="font-medium text-foreground">{EMAIL}</span>. Open it to
-            activate your account.
+            <span className="font-medium text-foreground">{EMAIL}</span>. Open
+            it to activate your account.
           </p>
 
           <div className="mt-6 flex w-full flex-col gap-2" aria-live="polite">

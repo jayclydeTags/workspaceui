@@ -4,7 +4,13 @@ import { useState } from "react"
 import { Loader2, MailCheck } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   Field,
@@ -20,7 +26,12 @@ import {
 } from "@/registry/bases/base/workspaceui/password-input"
 import { Page } from "@/registry/bases/base/workspaceui/page"
 
-type Errors = { name?: string; email?: string; password?: string; terms?: string }
+type Errors = {
+  name?: string
+  email?: string
+  password?: string
+  terms?: string
+}
 
 export function Register() {
   const [name, setName] = useState("")
@@ -38,7 +49,8 @@ export function Register() {
     const next: Errors = {}
     if (!name.trim()) next.name = "Enter your name."
     if (!email.trim()) next.email = "Enter your email."
-    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) next.email = "Enter a valid email."
+    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))
+      next.email = "Enter a valid email."
     if (!password) next.password = "Enter a password."
     else if (strength < 1) next.password = "Use at least 8 characters."
     if (!terms) next.terms = "Accept the terms to continue."
@@ -63,8 +75,8 @@ export function Register() {
             <h1 className="mt-4 text-sm font-medium">Verify your email</h1>
             <p className="mt-1 text-xs text-muted-foreground">
               We sent a confirmation link to{" "}
-              <span className="font-medium text-foreground">{email}</span>. Open it
-              to activate your account.
+              <span className="font-medium text-foreground">{email}</span>. Open
+              it to activate your account.
             </p>
             <Button variant="ghost" className="mt-4 text-muted-foreground">
               Resend email
@@ -127,7 +139,9 @@ export function Register() {
                     aria-invalid={!!errors.password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
-                  {errors.password && <FieldError>{errors.password}</FieldError>}
+                  {errors.password && (
+                    <FieldError>{errors.password}</FieldError>
+                  )}
                 </Field>
 
                 <Field data-invalid={!!errors.terms}>
@@ -154,9 +168,16 @@ export function Register() {
                 </Field>
 
                 <Field>
-                  <Button type="submit" className="w-full" disabled={submitting}>
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={submitting}
+                  >
                     {submitting && (
-                      <Loader2 data-icon="inline-start" className="animate-spin" />
+                      <Loader2
+                        data-icon="inline-start"
+                        className="animate-spin"
+                      />
                     )}
                     {submitting ? "Creating account…" : "Create account"}
                   </Button>

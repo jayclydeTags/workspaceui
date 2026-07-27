@@ -8,10 +8,17 @@ import {
   type WorkspaceHandle,
   type WorkspaceTabDef,
 } from "@/registry/bases/base/workspaceui/workspace"
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
 import { DashboardSidebar } from "@/registry/bases/base/blocks/dashboard-rail/components/dashboard-sidebar"
 import { type AppId } from "@/registry/bases/base/blocks/dashboard-rail/components/app-rail"
-import { APPS_NAV, type NavItem } from "@/registry/bases/base/blocks/dashboard-rail/components/nav-sidebar"
+import {
+  APPS_NAV,
+  type NavItem,
+} from "@/registry/bases/base/blocks/dashboard-rail/components/nav-sidebar"
 import {
   DashboardContent,
   PlaceholderContent,
@@ -70,7 +77,8 @@ export function DashboardRail({ className }: { className?: string }) {
     openTab(items.find((item) => item.pinned) ?? items[0])
   }
 
-  const activeTitle = navItems.find((item) => item.id === activeId)?.title ?? navItems[0].title
+  const activeTitle =
+    navItems.find((item) => item.id === activeId)?.title ?? navItems[0].title
 
   return (
     <SidebarProvider className={cn("h-full min-h-0", className)}>

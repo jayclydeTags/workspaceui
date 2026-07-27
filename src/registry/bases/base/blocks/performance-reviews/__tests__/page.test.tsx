@@ -85,7 +85,9 @@ describe("PerformanceReviews", () => {
     await user.click(await screen.findByRole("option", { name: "completed" }))
 
     expect(screen.getByRole("button", { name: "Save changes" })).toBeDisabled()
-    expect(screen.getByText("A completed review needs a rating.")).toBeInTheDocument()
+    expect(
+      screen.getByText("A completed review needs a rating.")
+    ).toBeInTheDocument()
 
     await user.click(screen.getByLabelText("Rating"))
     await user.click(await screen.findByRole("option", { name: /^3 —/ }))

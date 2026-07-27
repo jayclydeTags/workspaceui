@@ -4,7 +4,13 @@ import { useState } from "react"
 import { ArrowLeft, Loader2, MailCheck } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import {
   Field,
   FieldDescription,
@@ -53,8 +59,8 @@ export function ForgotPassword() {
             <h1 className="mt-4 text-sm font-medium">Check your email</h1>
             <p className="mt-1 text-xs text-muted-foreground">
               If an account exists for{" "}
-              <span className="font-medium text-foreground">{email}</span>, we sent
-              a link to reset your password.
+              <span className="font-medium text-foreground">{email}</span>, we
+              sent a link to reset your password.
             </p>
             <Button
               variant="ghost"
@@ -98,9 +104,16 @@ export function ForgotPassword() {
                 </Field>
 
                 <Field>
-                  <Button type="submit" className="w-full" disabled={submitting}>
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={submitting}
+                  >
                     {submitting && (
-                      <Loader2 data-icon="inline-start" className="animate-spin" />
+                      <Loader2
+                        data-icon="inline-start"
+                        className="animate-spin"
+                      />
                     )}
                     {submitting ? "Sending…" : "Send reset link"}
                   </Button>

@@ -48,7 +48,7 @@ export function StageColumn({
       <div className="flex shrink-0 items-center gap-2">
         <span className="text-sm font-medium">{STAGE_LABEL[stage]}</span>
         <Badge variant="secondary">{deals.length}</Badge>
-        <span className="ml-auto text-xs tabular-nums text-muted-foreground">
+        <span className="ml-auto text-xs text-muted-foreground tabular-nums">
           {formatCurrency(stageValue(deals))}
         </span>
       </div>

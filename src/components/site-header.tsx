@@ -41,7 +41,10 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 h-14 border-b bg-background/80 backdrop-blur-lg">
       <div className="flex h-14 items-center gap-4 px-4">
-        <Link href="/" className="inline-flex items-center gap-2.5 font-semibold">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2.5 font-semibold"
+        >
           <WorkspaceUILogo className="h-5 w-auto" />
         </Link>
 

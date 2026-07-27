@@ -4,10 +4,10 @@ A shadcn-compatible component registry with workspace UI primitives.
 
 ## Components
 
-| Name | Description |
-|---|---|
-| `workspace-tabs` | Chrome-style scrollable tab strip with closeable tabs, unread badges, overflow fade, and macOS-style curved active-tab connectors. |
-| `workspace` | Self-contained workspace with tab-based panels: closing a panel's last tab collapses the panel; closing all panels reveals a configurable fallback. Exposes `useWorkspace` context and a `WorkspaceHandle` ref for programmatic control. |
+| Name             | Description                                                                                                                                                                                                                              |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `workspace-tabs` | Chrome-style scrollable tab strip with closeable tabs, unread badges, overflow fade, and macOS-style curved active-tab connectors.                                                                                                       |
+| `workspace`      | Self-contained workspace with tab-based panels: closing a panel's last tab collapses the panel; closing all panels reveals a configurable fallback. Exposes `useWorkspace` context and a `WorkspaceHandle` ref for programmatic control. |
 
 ## Installation
 

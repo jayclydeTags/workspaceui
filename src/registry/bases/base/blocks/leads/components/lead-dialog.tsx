@@ -108,7 +108,9 @@ export function LeadDialog({
               <FieldLabel htmlFor="lead-source">Source</FieldLabel>
               <Select
                 value={draft.source}
-                onValueChange={(v) => patch({ source: (v as LeadSource) ?? "web" })}
+                onValueChange={(v) =>
+                  patch({ source: (v as LeadSource) ?? "web" })
+                }
               >
                 <SelectTrigger id="lead-source">
                   <SelectValue />
@@ -138,7 +140,9 @@ export function LeadDialog({
               <FieldLabel htmlFor="lead-stage">Stage</FieldLabel>
               <Select
                 value={draft.stage}
-                onValueChange={(v) => patch({ stage: (v as LeadStage) ?? "new" })}
+                onValueChange={(v) =>
+                  patch({ stage: (v as LeadStage) ?? "new" })
+                }
               >
                 <SelectTrigger id="lead-stage">
                   <SelectValue />

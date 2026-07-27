@@ -50,11 +50,16 @@ function RowActions({ entry, onEdit, onAdvance, onDelete }: RowProps) {
       <DropdownMenuContent align="end">
         {entry.status === "draft" && (
           <>
-            <DropdownMenuItem onClick={() => onEdit(entry)}>Edit</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onEdit(entry)}>
+              Edit
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onAdvance(entry)}>
               Submit
             </DropdownMenuItem>
-            <DropdownMenuItem variant="destructive" onClick={() => onDelete(entry)}>
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => onDelete(entry)}
+            >
               Delete
             </DropdownMenuItem>
           </>
@@ -110,8 +115,13 @@ export function DataTable({
           </TableHeader>
           <TableBody>
             {entries.map((entry) => (
-              <TableRow key={entry.id} data-locked={isLocked(entry) || undefined}>
-                <TableCell className="px-6 font-medium">{entry.member}</TableCell>
+              <TableRow
+                key={entry.id}
+                data-locked={isLocked(entry) || undefined}
+              >
+                <TableCell className="px-6 font-medium">
+                  {entry.member}
+                </TableCell>
                 <TableCell className="hidden text-muted-foreground @md:table-cell">
                   {entry.project}
                 </TableCell>
@@ -148,7 +158,10 @@ export function DataTable({
                 <span className="truncate text-sm font-medium">
                   {entry.member}
                 </span>
-                <Badge variant={STATUS_VARIANT[entry.status]} className="text-[10px]">
+                <Badge
+                  variant={STATUS_VARIANT[entry.status]}
+                  className="text-[10px]"
+                >
                   {entry.status}
                 </Badge>
               </div>

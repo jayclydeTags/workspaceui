@@ -10,6 +10,8 @@ describe("PendingApproval", () => {
     expect(
       screen.getByRole("button", { name: /check status/i })
     ).toBeInTheDocument()
-    expect(screen.getByRole("button", { name: /sign out/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: /sign out/i })
+    ).toBeInTheDocument()
   })
 })

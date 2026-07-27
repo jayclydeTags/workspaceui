@@ -75,7 +75,9 @@ export function PayrollRun() {
             {PAYSLIPS.map((p) => (
               <TableRow key={p.id}>
                 <TableCell className="font-medium">{p.employee}</TableCell>
-                <TableCell className="text-muted-foreground">{p.role}</TableCell>
+                <TableCell className="text-muted-foreground">
+                  {p.role}
+                </TableCell>
                 <TableCell className="text-right">
                   {formatCurrency(p.gross)}
                 </TableCell>

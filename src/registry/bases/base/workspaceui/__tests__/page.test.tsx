@@ -15,7 +15,7 @@ describe("Page", () => {
       <Page
         title="ignored"
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Settings" }]}
-      />,
+      />
     )
     expect(screen.getByRole("link", { name: "Home" })).toBeInTheDocument()
     expect(screen.getAllByText("Settings").length).toBeGreaterThan(0)
@@ -26,7 +26,7 @@ describe("Page", () => {
     render(
       <Page title="Settings" hasHeader={false}>
         <div>body</div>
-      </Page>,
+      </Page>
     )
     expect(screen.queryByText("Settings")).not.toBeInTheDocument()
     expect(screen.getByText("body")).toBeInTheDocument()
@@ -36,7 +36,7 @@ describe("Page", () => {
     render(
       <Page title="Settings" hasPadding>
         <div>body</div>
-      </Page>,
+      </Page>
     )
     expect(screen.getByText("body").parentElement).toHaveClass("p-6")
   })
@@ -49,7 +49,11 @@ describe("Page", () => {
   })
 
   it("exposes exactly one sr-only h1 matching the last breadcrumb", () => {
-    render(<Page breadcrumbs={[{ label: "Home", href: "/" }, { label: "Billing" }]} />)
+    render(
+      <Page
+        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Billing" }]}
+      />
+    )
     const headings = screen.getAllByRole("heading", { level: 1 })
     expect(headings).toHaveLength(1)
     expect(headings[0]).toHaveTextContent("Billing")
@@ -58,7 +62,9 @@ describe("Page", () => {
 
   it("hides the decorative visual from assistive tech", () => {
     render(<Page title="Settings" visual={<svg data-testid="icon" />} />)
-    expect(screen.getByTestId("icon").closest('[aria-hidden="true"]')).toBeInTheDocument()
+    expect(
+      screen.getByTestId("icon").closest('[aria-hidden="true"]')
+    ).toBeInTheDocument()
   })
 
   it("renders the header as a <header> landmark", () => {

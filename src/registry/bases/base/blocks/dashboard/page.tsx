@@ -10,7 +10,10 @@ import {
   type WorkspaceTabDef,
 } from "@/registry/bases/base/workspaceui/workspace"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
-import { AppSidebar, NAV_ITEMS } from "@/registry/bases/base/blocks/dashboard/components/app-sidebar"
+import {
+  AppSidebar,
+  NAV_ITEMS,
+} from "@/registry/bases/base/blocks/dashboard/components/app-sidebar"
 import {
   DashboardContent,
   PlaceholderContent,

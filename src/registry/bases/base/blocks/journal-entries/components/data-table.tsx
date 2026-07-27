@@ -41,9 +41,7 @@ function RowActions({
         }
       />
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => onEdit(entry)}>
-          Edit
-        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onEdit(entry)}>Edit</DropdownMenuItem>
         <DropdownMenuItem variant="destructive" onClick={() => onDelete(entry)}>
           Delete
         </DropdownMenuItem>
@@ -106,7 +104,11 @@ export function DataTable({
                   <StatusBadge status={entry.status} />
                 </TableCell>
                 <TableCell className="pr-6">
-                  <RowActions entry={entry} onEdit={onEdit} onDelete={onDelete} />
+                  <RowActions
+                    entry={entry}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                  />
                 </TableCell>
               </TableRow>
             ))}

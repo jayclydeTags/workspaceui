@@ -57,7 +57,9 @@ const round2 = (n: number) => Math.round(n * 100) / 100
  * generating the table rather than storing it.
  */
 export function buildSchedule(loan: Loan, paidThrough = 0): Instalment[] {
-  const payment = round2(monthlyPayment(loan.principal, loan.rate, loan.termMonths))
+  const payment = round2(
+    monthlyPayment(loan.principal, loan.rate, loan.termMonths)
+  )
   const r = loan.rate / 100 / 12
   const rows: Instalment[] = []
   let balance = loan.principal
@@ -107,7 +109,9 @@ export const totalInterest = (rows: Instalment[]): number =>
 export const remainingBalance = (rows: Instalment[]): number => {
   if (rows.length === 0) return 0
   const lastPaid = [...rows].reverse().find((row) => row.paid)
-  return lastPaid ? lastPaid.balance : round2(rows[0].balance + rows[0].principal)
+  return lastPaid
+    ? lastPaid.balance
+    : round2(rows[0].balance + rows[0].principal)
 }
 
 // ── Mock data ──────────────────────────────────────────────────────────────

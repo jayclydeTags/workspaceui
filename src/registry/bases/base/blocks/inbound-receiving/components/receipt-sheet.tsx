@@ -101,10 +101,7 @@ function PutAwayControl({
       <div className="flex flex-col gap-1">
         <label className="text-xs text-muted-foreground">Put away into</label>
         <Select value={binId} onValueChange={(v) => setBinId(v ?? "")}>
-          <SelectTrigger
-            className="w-40"
-            aria-label={`Bin for ${line.sku}`}
-          >
+          <SelectTrigger className="w-40" aria-label={`Bin for ${line.sku}`}>
             <SelectValue placeholder="Select bin" />
           </SelectTrigger>
           <SelectContent>
@@ -150,7 +147,7 @@ function LineCard({
       <div className="flex items-start justify-between gap-2">
         <div>
           <p className="text-sm font-medium">{line.sku}</p>
-          <p className="text-xs tabular-nums text-muted-foreground">
+          <p className="text-xs text-muted-foreground tabular-nums">
             {line.receivedQty} / {line.expectedQty} received
             {v !== 0 && (
               <span className={v < 0 ? "text-destructive" : undefined}>
@@ -169,10 +166,18 @@ function LineCard({
 
       {line.receivedQty > 0 && line.qc === "pending" && (
         <div className="flex gap-2">
-          <Button size="sm" variant="outline" onClick={() => onQc(line.id, "passed")}>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => onQc(line.id, "passed")}
+          >
             Pass QC
           </Button>
-          <Button size="sm" variant="outline" onClick={() => onQc(line.id, "failed")}>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => onQc(line.id, "failed")}
+          >
             Fail QC
           </Button>
         </div>

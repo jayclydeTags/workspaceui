@@ -103,8 +103,8 @@ export function TaskBoard({ className }: { className?: string }) {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete task</AlertDialogTitle>
             <AlertDialogDescription>
-              Delete <span className="font-medium">{deleting?.title}</span>? This
-              action can&apos;t be undone.
+              Delete <span className="font-medium">{deleting?.title}</span>?
+              This action can&apos;t be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

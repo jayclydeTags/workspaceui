@@ -17,7 +17,10 @@ import {
   type InvoiceStatus,
 } from "@/registry/bases/base/blocks/invoice-detail/data"
 
-const STATUS_VARIANT: Record<InvoiceStatus, "default" | "secondary" | "destructive" | "outline"> = {
+const STATUS_VARIANT: Record<
+  InvoiceStatus,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
   paid: "secondary",
   pending: "outline",
   overdue: "destructive",
@@ -29,7 +32,11 @@ export function InvoiceView({ invoice }: { invoice: Invoice }) {
     <Page
       title={invoice.customer}
       subtitle={`${invoice.number} · issued ${invoice.issuedDate} · due ${invoice.dueDate}`}
-      badge={<Badge variant={STATUS_VARIANT[invoice.status]}>{STATUS_LABEL[invoice.status]}</Badge>}
+      badge={
+        <Badge variant={STATUS_VARIANT[invoice.status]}>
+          {STATUS_LABEL[invoice.status]}
+        </Badge>
+      }
       hasPadding
     >
       <div className="flex flex-col gap-6">
@@ -47,15 +54,21 @@ export function InvoiceView({ invoice }: { invoice: Invoice }) {
               <TableRow key={li.id}>
                 <TableCell>{li.description}</TableCell>
                 <TableCell className="text-right">{li.quantity}</TableCell>
-                <TableCell className="text-right">{formatCurrency(li.unitPrice)}</TableCell>
-                <TableCell className="text-right">{formatCurrency(li.quantity * li.unitPrice)}</TableCell>
+                <TableCell className="text-right">
+                  {formatCurrency(li.unitPrice)}
+                </TableCell>
+                <TableCell className="text-right">
+                  {formatCurrency(li.quantity * li.unitPrice)}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
           <TableFooter>
             <TableRow>
               <TableCell colSpan={3}>Total</TableCell>
-              <TableCell className="text-right">{formatCurrency(invoiceTotal(invoice))}</TableCell>
+              <TableCell className="text-right">
+                {formatCurrency(invoiceTotal(invoice))}
+              </TableCell>
             </TableRow>
           </TableFooter>
         </Table>

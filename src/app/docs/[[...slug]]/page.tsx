@@ -56,11 +56,7 @@ export default async function Page({ params }: PageProps) {
         <div className="flex items-start justify-between gap-4">
           <div>
             <h1 className="mt-0">{page.data.title}</h1>
-            {page.data.description && (
-              <p>
-                {page.data.description}
-              </p>
-            )}
+            {page.data.description && <p>{page.data.description}</p>}
           </div>
           <DocsPageActions markdown={markdown} prev={prev} next={next} />
         </div>

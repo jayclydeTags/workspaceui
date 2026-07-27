@@ -95,9 +95,7 @@ export function DepartmentDialog({
               <Input
                 id="dept-code"
                 value={draft.code}
-                onChange={(e) =>
-                  patch({ code: e.target.value.toUpperCase() })
-                }
+                onChange={(e) => patch({ code: e.target.value.toUpperCase() })}
                 placeholder="e.g. ENG"
                 required
               />
@@ -139,7 +137,11 @@ export function DepartmentDialog({
           >
             Cancel
           </Button>
-          <Button type="submit" form="department-form" disabled={!isValid(draft)}>
+          <Button
+            type="submit"
+            form="department-form"
+            disabled={!isValid(draft)}
+          >
             {editing ? "Save changes" : "Create department"}
           </Button>
         </DialogFooter>

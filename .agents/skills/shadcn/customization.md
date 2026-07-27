@@ -54,7 +54,7 @@ Class-based toggle via `.dark` on the root element. In Next.js, use `next-themes
 ```tsx
 import { ThemeProvider } from "next-themes"
 
-<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+;<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
   {children}
 </ThemeProvider>
 ```
@@ -127,7 +127,7 @@ module.exports = {
 
 ```tsx
 // 3. Use in components.
-<div className="bg-warning text-warning-foreground">Warning</div>
+<div className="text-warning-foreground bg-warning">Warning</div>
 ```
 
 ---

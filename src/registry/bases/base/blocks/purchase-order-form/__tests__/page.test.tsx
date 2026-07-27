@@ -6,7 +6,9 @@ import { PurchaseOrderForm } from "../page"
 
 async function fillDetailsStep(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByRole("combobox", { name: /vendor/i }))
-  await user.click(await screen.findByRole("option", { name: "Acme Supply Co." }))
+  await user.click(
+    await screen.findByRole("option", { name: "Acme Supply Co." })
+  )
   await user.type(screen.getByLabelText("Requested by"), "Jamie Ortiz")
   await user.type(screen.getByLabelText("Needed by"), "2026-08-01")
 }
@@ -35,7 +37,9 @@ describe("PurchaseOrderForm", () => {
     expect(screen.getByText("Jamie Ortiz")).toBeInTheDocument()
     expect(screen.getByText("Shipping pallets")).toBeInTheDocument()
 
-    await user.click(screen.getByRole("button", { name: "Submit purchase order" }))
+    await user.click(
+      screen.getByRole("button", { name: "Submit purchase order" })
+    )
     expect(screen.getByText("Purchase order submitted")).toBeInTheDocument()
   })
 
@@ -49,7 +53,9 @@ describe("PurchaseOrderForm", () => {
     await user.click(screen.getByRole("button", { name: "Add line item" }))
     expect(screen.getAllByLabelText("Item")).toHaveLength(2)
 
-    await user.click(screen.getAllByRole("button", { name: "Remove line item" })[1]!)
+    await user.click(
+      screen.getAllByRole("button", { name: "Remove line item" })[1]!
+    )
     expect(screen.getAllByLabelText("Item")).toHaveLength(1)
   })
 })

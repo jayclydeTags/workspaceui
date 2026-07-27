@@ -109,7 +109,9 @@ export function AccountDialog({
               <FieldLabel htmlFor="account-tier">Tier</FieldLabel>
               <Select
                 value={draft.tier}
-                onValueChange={(v) => patch({ tier: (v as AccountTier) ?? "smb" })}
+                onValueChange={(v) =>
+                  patch({ tier: (v as AccountTier) ?? "smb" })
+                }
               >
                 <SelectTrigger id="account-tier">
                   <SelectValue />

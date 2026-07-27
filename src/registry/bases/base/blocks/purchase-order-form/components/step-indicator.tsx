@@ -25,12 +25,16 @@ export function StepIndicator({ currentStep }: { currentStep: number }) {
             <span
               className={cn(
                 "text-sm",
-                isActive ? "font-medium text-foreground" : "text-muted-foreground"
+                isActive
+                  ? "font-medium text-foreground"
+                  : "text-muted-foreground"
               )}
             >
               {label}
             </span>
-            {i < STEPS.length - 1 && <span className="mx-1 h-px w-8 bg-border" aria-hidden="true" />}
+            {i < STEPS.length - 1 && (
+              <span className="mx-1 h-px w-8 bg-border" aria-hidden="true" />
+            )}
           </div>
         )
       })}

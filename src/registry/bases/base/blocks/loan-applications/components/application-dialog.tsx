@@ -187,7 +187,9 @@ export function ApplicationDialog({
                 min="0"
                 step="100"
                 value={draft.monthlyIncome || ""}
-                onChange={(e) => patch({ monthlyIncome: Number(e.target.value) })}
+                onChange={(e) =>
+                  patch({ monthlyIncome: Number(e.target.value) })
+                }
                 required
               />
             </Field>
@@ -199,7 +201,9 @@ export function ApplicationDialog({
                 min="0"
                 step="100"
                 value={draft.monthlyDebts}
-                onChange={(e) => patch({ monthlyDebts: Number(e.target.value) })}
+                onChange={(e) =>
+                  patch({ monthlyDebts: Number(e.target.value) })
+                }
                 aria-invalid={overCeiling}
               />
               <FieldDescription>

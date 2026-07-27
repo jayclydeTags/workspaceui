@@ -15,12 +15,13 @@ import {
   type PickStatus,
 } from "../data"
 
-const STATUS_VARIANT: Record<PickStatus, "default" | "secondary" | "outline"> = {
-  completed: "default",
-  picked: "secondary",
-  picking: "outline",
-  pending: "outline",
-}
+const STATUS_VARIANT: Record<PickStatus, "default" | "secondary" | "outline"> =
+  {
+    completed: "default",
+    picked: "secondary",
+    picking: "outline",
+    pending: "outline",
+  }
 
 /** Lines closed (full or short) over total lines — the pick's progress. */
 function progress(list: PickList) {
@@ -53,7 +54,9 @@ export function DataTable({
             const status = pickStatus(list)
             return (
               <TableRow key={list.id}>
-                <TableCell className="px-6 font-medium">{list.orderId}</TableCell>
+                <TableCell className="px-6 font-medium">
+                  {list.orderId}
+                </TableCell>
                 <TableCell className="hidden text-muted-foreground @md:table-cell">
                   {list.warehouse}
                 </TableCell>

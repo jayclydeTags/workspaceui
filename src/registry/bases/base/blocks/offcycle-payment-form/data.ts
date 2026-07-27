@@ -1,6 +1,7 @@
 // ── Types ──────────────────────────────────────────────────────────────────
 
-export type PaymentType = "bonus" | "correction" | "reimbursement" | "commission"
+export type PaymentType =
+  "bonus" | "correction" | "reimbursement" | "commission"
 
 export interface OffcyclePayment {
   employeeId: string

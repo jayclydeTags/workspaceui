@@ -34,7 +34,9 @@ export function StockLevels() {
   function saveAdjustment(onHand: number, reorderPoint: number) {
     if (!adjusting) return
     setLevels((prev) =>
-      prev.map((s) => (s.id === adjusting.id ? { ...s, onHand, reorderPoint } : s))
+      prev.map((s) =>
+        s.id === adjusting.id ? { ...s, onHand, reorderPoint } : s
+      )
     )
     setAdjusting(null)
   }

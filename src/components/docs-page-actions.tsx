@@ -26,7 +26,11 @@ interface DocsPageActionsProps {
   next?: { href: string; title: string }
 }
 
-export function DocsPageActions({ markdown, prev, next }: DocsPageActionsProps) {
+export function DocsPageActions({
+  markdown,
+  prev,
+  next,
+}: DocsPageActionsProps) {
   const [copied, setCopied] = useState(false)
 
   async function copyPage() {
@@ -85,7 +89,12 @@ export function DocsPageActions({ markdown, prev, next }: DocsPageActionsProps) 
             <ChevronLeft />
           </Button>
         ) : (
-          <Button variant="outline" size="icon-sm" aria-label="No previous page" disabled>
+          <Button
+            variant="outline"
+            size="icon-sm"
+            aria-label="No previous page"
+            disabled
+          >
             <ChevronLeft />
           </Button>
         )}
@@ -100,7 +109,12 @@ export function DocsPageActions({ markdown, prev, next }: DocsPageActionsProps) 
             <ChevronRight />
           </Button>
         ) : (
-          <Button variant="outline" size="icon-sm" aria-label="No next page" disabled>
+          <Button
+            variant="outline"
+            size="icon-sm"
+            aria-label="No next page"
+            disabled
+          >
             <ChevronRight />
           </Button>
         )}

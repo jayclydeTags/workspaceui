@@ -129,7 +129,9 @@ export function DealDialog({
               <FieldLabel htmlFor="deal-stage">Stage</FieldLabel>
               <Select
                 value={draft.stage}
-                onValueChange={(v) => patch({ stage: (v as DealStage) ?? "qualify" })}
+                onValueChange={(v) =>
+                  patch({ stage: (v as DealStage) ?? "qualify" })
+                }
               >
                 <SelectTrigger id="deal-stage">
                   <SelectValue />

@@ -89,7 +89,7 @@ export function DataTable({
                 <TableCell className="text-right tabular-nums">
                   {stock.onHand.toLocaleString()}
                 </TableCell>
-                <TableCell className="hidden text-right tabular-nums text-muted-foreground @md:table-cell">
+                <TableCell className="hidden text-right text-muted-foreground tabular-nums @md:table-cell">
                   {stock.reorderPoint.toLocaleString()}
                 </TableCell>
                 <TableCell>

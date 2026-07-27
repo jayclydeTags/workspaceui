@@ -3,7 +3,13 @@ import userEvent from "@testing-library/user-event"
 import { describe, it, expect } from "vitest"
 
 import { Leads } from "../page"
-import { emptyDraft, isHot, isValid, qualificationRate, type Lead } from "../data"
+import {
+  emptyDraft,
+  isHot,
+  isValid,
+  qualificationRate,
+  type Lead,
+} from "../data"
 
 // The DataTable renders both a wide-pane table and a narrow-pane card list;
 // jsdom keeps both in the DOM (they're only hidden via CSS), so most queries
@@ -50,7 +56,9 @@ describe("isValid", () => {
 describe("Leads", () => {
   it("summarises hot and qualified leads", () => {
     render(<Leads />)
-    expect(screen.getByText("5 leads · 2 hot · 25% qualified")).toBeInTheDocument()
+    expect(
+      screen.getByText("5 leads · 2 hot · 25% qualified")
+    ).toBeInTheDocument()
     expect(screen.getAllByLabelText("Hot lead").length).toBeGreaterThan(0)
   })
 
@@ -75,7 +83,9 @@ describe("Leads", () => {
     await user.click(screen.getByRole("button", { name: "Create lead" }))
 
     expect(screen.getAllByText("Ken Adams").length).toBeGreaterThan(0)
-    expect(screen.getByText("6 leads · 2 hot · 25% qualified")).toBeInTheDocument()
+    expect(
+      screen.getByText("6 leads · 2 hot · 25% qualified")
+    ).toBeInTheDocument()
   })
 
   it("only lets a qualified lead be converted", async () => {
@@ -85,10 +95,9 @@ describe("Leads", () => {
     await user.click(
       screen.getAllByRole("button", { name: "Actions for Devon Park" })[0]
     )
-    expect(await screen.findByRole("menuitem", { name: "Convert" })).toHaveAttribute(
-      "aria-disabled",
-      "true"
-    )
+    expect(
+      await screen.findByRole("menuitem", { name: "Convert" })
+    ).toHaveAttribute("aria-disabled", "true")
   })
 
   it("converts a qualified lead out of the pipeline", async () => {
@@ -104,7 +113,9 @@ describe("Leads", () => {
     await user.click(within(dialog).getByRole("button", { name: "Convert" }))
 
     expect(screen.queryByText("Iris Muller")).not.toBeInTheDocument()
-    expect(screen.getByText("4 leads · 1 hot · 0% qualified")).toBeInTheDocument()
+    expect(
+      screen.getByText("4 leads · 1 hot · 0% qualified")
+    ).toBeInTheDocument()
   })
 
   it("deletes a lead after confirmation", async () => {
@@ -120,6 +131,8 @@ describe("Leads", () => {
     await user.click(within(dialog).getByRole("button", { name: "Delete" }))
 
     expect(screen.queryByText("Owen Blake")).not.toBeInTheDocument()
-    expect(screen.getByText("4 leads · 2 hot · 33% qualified")).toBeInTheDocument()
+    expect(
+      screen.getByText("4 leads · 2 hot · 33% qualified")
+    ).toBeInTheDocument()
   })
 })

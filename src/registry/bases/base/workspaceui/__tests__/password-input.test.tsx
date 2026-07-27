@@ -55,9 +55,9 @@ describe("PasswordInput", () => {
     const input = screen.getByLabelText("Password")
     await user.type(input, "abc")
     // "A lowercase letter" is met, "A number" is not.
-    expect(screen.getByText("A lowercase letter").closest("li")).toHaveTextContent(
-      /— met$/
-    )
+    expect(
+      screen.getByText("A lowercase letter").closest("li")
+    ).toHaveTextContent(/— met$/)
     expect(screen.getByText("A number").closest("li")).toHaveTextContent(
       /not met$/
     )
@@ -67,6 +67,8 @@ describe("PasswordInput", () => {
     expect(
       screen.getByText("At least 8 characters").closest("li")
     ).toHaveTextContent(/— met$/)
-    expect(screen.getByText("A symbol").closest("li")).toHaveTextContent(/— met$/)
+    expect(screen.getByText("A symbol").closest("li")).toHaveTextContent(
+      /— met$/
+    )
   })
 })

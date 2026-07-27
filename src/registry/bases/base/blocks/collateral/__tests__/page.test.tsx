@@ -77,14 +77,18 @@ describe("isAppraisalStale / canPerfect", () => {
 describe("isValid", () => {
   it("requires a description and a positive value", () => {
     expect(isValid({ ...emptyDraft(), description: "X", value: 0 })).toBe(false)
-    expect(isValid({ ...emptyDraft(), description: "X", value: 1000 })).toBe(true)
+    expect(isValid({ ...emptyDraft(), description: "X", value: 1000 })).toBe(
+      true
+    )
   })
 })
 
 describe("CollateralRegister", () => {
   it("summarises lendable security and flags under-secured loans", () => {
     render(<CollateralRegister />)
-    expect(screen.getByText("5 assets · $277,000 lendable security")).toBeInTheDocument()
+    expect(
+      screen.getByText("5 assets · $277,000 lendable security")
+    ).toBeInTheDocument()
     expect(
       screen.getByText("LN-2045 owes more than its lendable security.")
     ).toBeInTheDocument()
@@ -97,7 +101,9 @@ describe("CollateralRegister", () => {
     await user.click(screen.getByLabelText("Filter by loan"))
     await user.click(await screen.findByRole("option", { name: "LN-2043" }))
 
-    expect(screen.getAllByText("Office floor, Atlanta").length).toBeGreaterThan(0)
+    expect(screen.getAllByText("Office floor, Atlanta").length).toBeGreaterThan(
+      0
+    )
     expect(screen.queryByText("Delivery van, 2023")).not.toBeInTheDocument()
   })
 
@@ -106,7 +112,9 @@ describe("CollateralRegister", () => {
     render(<CollateralRegister />)
 
     await user.click(
-      screen.getAllByRole("button", { name: "Actions for Forklift fleet (3 units)" })[0]
+      screen.getAllByRole("button", {
+        name: "Actions for Forklift fleet (3 units)",
+      })[0]
     )
     expect(
       await screen.findByRole("menuitem", { name: "Appraisal stale" })
@@ -118,7 +126,9 @@ describe("CollateralRegister", () => {
     render(<CollateralRegister />)
 
     await user.click(
-      screen.getAllByRole("button", { name: "Actions for Forklift fleet (3 units)" })[0]
+      screen.getAllByRole("button", {
+        name: "Actions for Forklift fleet (3 units)",
+      })[0]
     )
     await user.click(await screen.findByRole("menuitem", { name: "Edit" }))
     await user.clear(screen.getByLabelText("Appraised on"))
@@ -126,9 +136,13 @@ describe("CollateralRegister", () => {
     await user.click(screen.getByRole("button", { name: "Save changes" }))
 
     await user.click(
-      screen.getAllByRole("button", { name: "Actions for Forklift fleet (3 units)" })[0]
+      screen.getAllByRole("button", {
+        name: "Actions for Forklift fleet (3 units)",
+      })[0]
     )
-    expect(await screen.findByRole("menuitem", { name: "Perfect lien" })).toBeInTheDocument()
+    expect(
+      await screen.findByRole("menuitem", { name: "Perfect lien" })
+    ).toBeInTheDocument()
   })
 
   it("releasing a lien drops it out of the loan's security", async () => {
@@ -136,11 +150,17 @@ describe("CollateralRegister", () => {
     render(<CollateralRegister />)
 
     await user.click(
-      screen.getAllByRole("button", { name: "Actions for Office floor, Atlanta" })[0]
+      screen.getAllByRole("button", {
+        name: "Actions for Office floor, Atlanta",
+      })[0]
     )
-    await user.click(await screen.findByRole("menuitem", { name: "Release lien" }))
+    await user.click(
+      await screen.findByRole("menuitem", { name: "Release lien" })
+    )
 
-    expect(screen.getByText("5 assets · $109,000 lendable security")).toBeInTheDocument()
+    expect(
+      screen.getByText("5 assets · $109,000 lendable security")
+    ).toBeInTheDocument()
     expect(
       screen.getByText("LN-2043, LN-2045 owes more than its lendable security.")
     ).toBeInTheDocument()
@@ -156,7 +176,9 @@ describe("CollateralRegister", () => {
     await user.click(screen.getByRole("button", { name: "Pledge" }))
 
     expect(screen.getAllByText("Land parcel 12").length).toBeGreaterThan(0)
-    expect(screen.getByText("6 assets · $317,000 lendable security")).toBeInTheDocument()
+    expect(
+      screen.getByText("6 assets · $317,000 lendable security")
+    ).toBeInTheDocument()
   })
 
   it("deletes collateral after confirmation", async () => {
@@ -164,14 +186,20 @@ describe("CollateralRegister", () => {
     render(<CollateralRegister />)
 
     await user.click(
-      screen.getAllByRole("button", { name: "Actions for Forklift fleet (3 units)" })[0]
+      screen.getAllByRole("button", {
+        name: "Actions for Forklift fleet (3 units)",
+      })[0]
     )
     await user.click(await screen.findByRole("menuitem", { name: "Delete" }))
 
     const dialog = screen.getByRole("alertdialog")
     await user.click(within(dialog).getByRole("button", { name: "Delete" }))
 
-    expect(screen.queryByText("Forklift fleet (3 units)")).not.toBeInTheDocument()
-    expect(screen.getByText("4 assets · $253,000 lendable security")).toBeInTheDocument()
+    expect(
+      screen.queryByText("Forklift fleet (3 units)")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByText("4 assets · $253,000 lendable security")
+    ).toBeInTheDocument()
   })
 })

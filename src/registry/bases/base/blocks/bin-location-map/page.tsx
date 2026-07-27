@@ -37,7 +37,10 @@ export function BinLocationMap() {
   const [selectedId, setSelectedId] = React.useState<string | null>(null)
   const [formOpen, setFormOpen] = React.useState(false)
   const [editing, setEditing] = React.useState<Bin | null>(null)
-  const [addSeed, setAddSeed] = React.useState<{ row: number; col: number } | null>(null)
+  const [addSeed, setAddSeed] = React.useState<{
+    row: number
+    col: number
+  } | null>(null)
   const [deleting, setDeleting] = React.useState<Bin | null>(null)
 
   function openAdd(seed: { row: number; col: number } | null) {
@@ -63,7 +66,9 @@ export function BinLocationMap() {
   }
 
   function handleAssign(bin: Bin, assignment: Assignment) {
-    setBins((prev) => prev.map((b) => (b.id === bin.id ? assign(b, assignment) : b)))
+    setBins((prev) =>
+      prev.map((b) => (b.id === bin.id ? assign(b, assignment) : b))
+    )
   }
 
   function handleClear(bin: Bin) {

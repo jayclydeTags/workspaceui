@@ -114,7 +114,7 @@ export function DataTable({
                 <TableCell className="px-6 font-medium">
                   {entry.employee}
                 </TableCell>
-                <TableCell className="hidden tabular-nums text-muted-foreground @md:table-cell">
+                <TableCell className="hidden text-muted-foreground tabular-nums @md:table-cell">
                   {entry.date}
                 </TableCell>
                 <TableCell className="tabular-nums">

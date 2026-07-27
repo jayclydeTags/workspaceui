@@ -64,7 +64,7 @@ export function AccountLocked() {
                 ) : (
                   <span>
                     Try again in{" "}
-                    <span className="font-medium tabular-nums text-foreground">
+                    <span className="font-medium text-foreground tabular-nums">
                       {formatClock(remaining)}
                     </span>
                   </span>

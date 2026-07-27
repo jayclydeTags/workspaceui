@@ -33,9 +33,22 @@ export function WorkspaceSinglePaneDemo() {
           {
             id: "main",
             tabs: [
-              { id: "home", title: "Home", icon: <Home className="size-3.5" />, pinned: true },
-              { id: "files", title: "Files", icon: <FolderOpen className="size-3.5" /> },
-              { id: "terminal", title: "Terminal", icon: <Terminal className="size-3.5" /> },
+              {
+                id: "home",
+                title: "Home",
+                icon: <Home className="size-3.5" />,
+                pinned: true,
+              },
+              {
+                id: "files",
+                title: "Files",
+                icon: <FolderOpen className="size-3.5" />,
+              },
+              {
+                id: "terminal",
+                title: "Terminal",
+                icon: <Terminal className="size-3.5" />,
+              },
             ],
           },
         ]}

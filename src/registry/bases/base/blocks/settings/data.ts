@@ -1,4 +1,5 @@
-export type SettingsSectionId = "general" | "notifications" | "billing" | "security"
+export type SettingsSectionId =
+  "general" | "notifications" | "billing" | "security"
 
 export interface SettingsSectionDef {
   id: SettingsSectionId
@@ -7,10 +8,22 @@ export interface SettingsSectionDef {
 }
 
 export const SETTINGS_SECTIONS: SettingsSectionDef[] = [
-  { id: "general", label: "Company Profile", description: "Legal name, tax ID, and contact info" },
-  { id: "notifications", label: "Notifications", description: "Alerts for invoices, payroll, and inventory" },
+  {
+    id: "general",
+    label: "Company Profile",
+    description: "Legal name, tax ID, and contact info",
+  },
+  {
+    id: "notifications",
+    label: "Notifications",
+    description: "Alerts for invoices, payroll, and inventory",
+  },
   { id: "billing", label: "Billing", description: "Plan, seats, and renewal" },
-  { id: "security", label: "Security", description: "Two-factor auth and active sessions" },
+  {
+    id: "security",
+    label: "Security",
+    description: "Two-factor auth and active sessions",
+  },
 ]
 
 export interface CompanyProfile {
@@ -73,7 +86,22 @@ export interface Session {
 }
 
 export const ACTIVE_SESSIONS: Session[] = [
-  { id: "s1", device: "Chrome on macOS", location: "Austin, TX", lastActive: "Active now" },
-  { id: "s2", device: "Safari on iPhone", location: "Austin, TX", lastActive: "2 hours ago" },
-  { id: "s3", device: "Chrome on Windows", location: "Denver, CO", lastActive: "3 days ago" },
+  {
+    id: "s1",
+    device: "Chrome on macOS",
+    location: "Austin, TX",
+    lastActive: "Active now",
+  },
+  {
+    id: "s2",
+    device: "Safari on iPhone",
+    location: "Austin, TX",
+    lastActive: "2 hours ago",
+  },
+  {
+    id: "s3",
+    device: "Chrome on Windows",
+    location: "Denver, CO",
+    lastActive: "3 days ago",
+  },
 ]

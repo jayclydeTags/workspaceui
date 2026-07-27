@@ -109,7 +109,9 @@ export function MemberDialog({
               <Select
                 value={draft.role}
                 disabled={lockRole}
-                onValueChange={(v) => patch({ role: (v as TeamRole) ?? "member" })}
+                onValueChange={(v) =>
+                  patch({ role: (v as TeamRole) ?? "member" })
+                }
               >
                 <SelectTrigger id="member-role">
                   <SelectValue />

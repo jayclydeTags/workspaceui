@@ -79,7 +79,9 @@ describe("Borrowers", () => {
     await user.click(
       screen.getAllByRole("button", { name: "Actions for Devon Park" })[0]
     )
-    await user.click(await screen.findByRole("menuitem", { name: "Mark verified" }))
+    await user.click(
+      await screen.findByRole("menuitem", { name: "Mark verified" })
+    )
 
     expect(
       screen.getByText("5 borrowers · 4 eligible · $197,700 outstanding")
@@ -123,7 +125,9 @@ describe("Borrowers", () => {
     await user.clear(screen.getByLabelText("Credit score"))
     await user.type(screen.getByLabelText("Credit score"), "900")
 
-    expect(screen.getByRole("button", { name: "Create borrower" })).toBeDisabled()
+    expect(
+      screen.getByRole("button", { name: "Create borrower" })
+    ).toBeDisabled()
     expect(screen.getByText("Must be between 300 and 850.")).toBeInTheDocument()
   })
 

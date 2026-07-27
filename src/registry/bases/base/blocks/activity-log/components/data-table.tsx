@@ -1,6 +1,11 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty"
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@/components/ui/empty"
 import {
   Table,
   TableBody,
@@ -21,18 +26,24 @@ function formatTime(date: Date): string {
   return date.toLocaleDateString()
 }
 
-const STATUS_VARIANT: Record<StatusType, "default" | "secondary" | "destructive" | "outline"> = {
+const STATUS_VARIANT: Record<
+  StatusType,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
   success: "default",
-  failed:  "destructive",
+  failed: "destructive",
   pending: "secondary",
 }
 
-const ACTION_VARIANT: Record<ActionType, "default" | "secondary" | "destructive" | "outline"> = {
-  created:  "default",
-  updated:  "secondary",
-  deleted:  "destructive",
-  viewed:   "outline",
-  shared:   "secondary",
+const ACTION_VARIANT: Record<
+  ActionType,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
+  created: "default",
+  updated: "secondary",
+  deleted: "destructive",
+  viewed: "outline",
+  shared: "secondary",
   exported: "outline",
 }
 
@@ -44,7 +55,9 @@ export function DataTable({ entries }: { entries: ActivityEntry[] }) {
       <Empty>
         <EmptyHeader>
           <EmptyTitle>No matching events</EmptyTitle>
-          <EmptyDescription>Try adjusting your search or filters.</EmptyDescription>
+          <EmptyDescription>
+            Try adjusting your search or filters.
+          </EmptyDescription>
         </EmptyHeader>
       </Empty>
     )
@@ -76,16 +89,24 @@ export function DataTable({ entries }: { entries: ActivityEntry[] }) {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={ACTION_VARIANT[e.action]} className="capitalize text-[11px]">
+                  <Badge
+                    variant={ACTION_VARIANT[e.action]}
+                    className="text-[11px] capitalize"
+                  >
                     {e.action}
                   </Badge>
                 </TableCell>
                 <TableCell className="hidden @md:table-cell">
                   <p className="max-w-[200px] truncate">{e.resource}</p>
-                  <p className="text-xs text-muted-foreground">{e.resourceType}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {e.resourceType}
+                  </p>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={STATUS_VARIANT[e.status]} className="capitalize text-[11px]">
+                  <Badge
+                    variant={STATUS_VARIANT[e.status]}
+                    className="text-[11px] capitalize"
+                  >
                     {e.status}
                   </Badge>
                 </TableCell>
@@ -108,17 +129,27 @@ export function DataTable({ entries }: { entries: ActivityEntry[] }) {
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between gap-2">
                 <span className="truncate text-sm font-medium">{e.user}</span>
-                <span className="shrink-0 text-xs text-muted-foreground">{formatTime(e.timestamp)}</span>
+                <span className="shrink-0 text-xs text-muted-foreground">
+                  {formatTime(e.timestamp)}
+                </span>
               </div>
               <div className="mt-0.5 flex flex-wrap items-center gap-1 text-xs">
-                <Badge variant={ACTION_VARIANT[e.action]} className="capitalize text-[10px]">
+                <Badge
+                  variant={ACTION_VARIANT[e.action]}
+                  className="text-[10px] capitalize"
+                >
                   {e.action}
                 </Badge>
                 <span className="text-muted-foreground">·</span>
-                <span className="truncate text-muted-foreground">{e.resource}</span>
+                <span className="truncate text-muted-foreground">
+                  {e.resource}
+                </span>
               </div>
               <div className="mt-1.5">
-                <Badge variant={STATUS_VARIANT[e.status]} className="capitalize text-[10px]">
+                <Badge
+                  variant={STATUS_VARIANT[e.status]}
+                  className="text-[10px] capitalize"
+                >
                   {e.status}
                 </Badge>
               </div>

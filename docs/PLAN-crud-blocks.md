@@ -15,20 +15,20 @@ The 80% core. Build these generic first — every domain module below just swaps
 the entity + fields.
 
 - [x] **Data table** — generic TanStack block `data-table` (sorting, column
-  filter, column visibility, row selection, pagination). Swap `Payment`/columns to reuse.
+      filter, column visibility, row selection, pagination). Swap `Payment`/columns to reuse.
 - [x] **Create/Edit form dialog** — `record-form-dialog`: standalone
-  create/edit dialog, one form for both, extracted from `department`'s inline pattern.
+      create/edit dialog, one form for both, extracted from `department`'s inline pattern.
 - [x] **Detail / record view** — `record-detail`: read-only header + grouped
-  label/value field sections, no tabs (distinct from `detail-tabs`/`invoice-detail`).
+      label/value field sections, no tabs (distinct from `detail-tabs`/`invoice-detail`).
 - [x] **Delete confirm dialog** — generic `confirm-dialog` block (controlled,
-  custom title/description/labels, destructive styling). Reusable for any irreversible action.
+      custom title/description/labels, destructive styling). Reusable for any irreversible action.
 - [x] **Search + filter bar** — `search-filter-bar` block (search box + faceted
-  Select filters + clear-all, filtered list with live count). *Date-range filter not included.*
+      Select filters + clear-all, filtered list with live count). _Date-range filter not included._
 - [x] **Bulk actions toolbar** — `bulk-actions-toolbar` block: row selection +
-  select-all + contextual toolbar (export/delete) with confirm on destructive action.
+      select-all + contextual toolbar (export/delete) with confirm on destructive action.
 - [x] **Detail tabs** — `detail-tabs` block: record header + Overview / Activity / Orders tabs.
 - [x] **Master–detail (list + panel)** — `master-detail`: resizable list +
-  detail split pane, lighter than `invoice-detail`'s tabbed Workspace pattern.
+      detail split pane, lighter than `invoice-detail`'s tabbed Workspace pattern.
 
 ## 1. Cross-cutting blocks (support CRUD, not domain-specific)
 
@@ -50,7 +50,8 @@ the entity + fields.
 Each domain = its core CRUD entities. Ship the list + form + detail per entity;
 reuse the universal blocks from §0.
 
-### Payroll  *(done)*
+### Payroll _(done)_
+
 - [x] Pay runs — `payroll-run`
 - [x] Payslips — `payslip-detail`
 - [x] Compensation — `compensation-table`
@@ -61,7 +62,8 @@ reuse the universal blocks from §0.
 - [x] Deductions / benefits — `deductions-benefits`
 - [x] Tax tables — `tax-tables`
 
-### Accounting / Finance  *(done)*
+### Accounting / Finance _(done)_
+
 - [x] Invoice detail — `invoice-detail`
 - [x] Purchase order form — `purchase-order-form`
 - [x] Chart of accounts — `chart-of-accounts`
@@ -70,39 +72,44 @@ reuse the universal blocks from §0.
 - [x] Payments — `payments`
 - [x] Bank reconciliation — `bank-reconciliation`
 
-### Inventory  *(done)*
+### Inventory _(done)_
+
 - [x] Products / SKUs — `products`
-- [x] Stock levels — `stock-levels` *(adjust-only; rows derive from product × warehouse)*
+- [x] Stock levels — `stock-levels` _(adjust-only; rows derive from product × warehouse)_
 - [x] Warehouses — `warehouses`
-- [x] Purchase orders *(reuse `purchase-order-form`)*
-- [x] Stock movements — `stock-movements` *(append-only ledger; no edit/delete)*
+- [x] Purchase orders _(reuse `purchase-order-form`)_
+- [x] Stock movements — `stock-movements` _(append-only ledger; no edit/delete)_
 
-### HRIS  *(done)*
+### HRIS _(done)_
+
 - [x] Departments — `department`
-- [x] Employees — `employee` *(shared with Payroll)*
-- [x] Leave requests — `leave-requests` *(approve/reject; no edit — decisions amend)*
-- [x] Attendance — `attendance` *(status derived from punches)*
-- [x] Performance reviews — `performance-reviews` *(can't complete an unrated review)*
+- [x] Employees — `employee` _(shared with Payroll)_
+- [x] Leave requests — `leave-requests` _(approve/reject; no edit — decisions amend)_
+- [x] Attendance — `attendance` _(status derived from punches)_
+- [x] Performance reviews — `performance-reviews` _(can't complete an unrated review)_
 
-### Project management  *(done)*
+### Project management _(done)_
+
 - [x] Projects — `projects`
 - [x] Tasks / Kanban board — `task-board`
-- [x] Timesheets — `timesheets` *(draft → submitted → approved; locked after submit)*
-- [x] Milestones — `milestones` *(state derived from due date + scope)*
-- [x] Team / assignees — `project-team` *(last lead can't be removed or demoted)*
+- [x] Timesheets — `timesheets` _(draft → submitted → approved; locked after submit)_
+- [x] Milestones — `milestones` _(state derived from due date + scope)_
+- [x] Team / assignees — `project-team` _(last lead can't be removed or demoted)_
 
-### CRM  *(done)*
-- [x] Leads — `leads` *(convert gated on qualified)*
-- [x] Contacts — `contacts` *(one primary per account)*
-- [x] Accounts — `accounts` *(health from contact recency; delete blocked on open deals)*
-- [x] Deals / pipeline — `deals-pipeline` *(weighted forecast; Kanban)*
-- [ ] Activities *(reuse `activity-feed`)*
+### CRM _(done)_
+
+- [x] Leads — `leads` _(convert gated on qualified)_
+- [x] Contacts — `contacts` _(one primary per account)_
+- [x] Accounts — `accounts` _(health from contact recency; delete blocked on open deals)_
+- [x] Deals / pipeline — `deals-pipeline` _(weighted forecast; Kanban)_
+- [ ] Activities _(reuse `activity-feed`)_
 
 ---
 
 ## 3. Additional verticals (requested)
 
 ### LMS
+
 - [ ] Courses
 - [ ] Enrollments
 - [ ] Lessons / modules
@@ -110,6 +117,7 @@ reuse the universal blocks from §0.
 - [ ] Grades / progress
 
 ### Fleet
+
 - [ ] Vehicles
 - [ ] Drivers
 - [ ] Trips / routes
@@ -117,20 +125,23 @@ reuse the universal blocks from §0.
 - [ ] Fuel / expense logs
 
 ### Field service
+
 - [ ] Work orders
 - [ ] Technicians / dispatch
 - [ ] Job scheduling (calendar)
 - [ ] Customers / sites
 - [ ] Service reports
 
-### Loan / lending  *(done)*
-- [x] Loan applications — `loan-applications` *(approve blocked above the DTI ceiling)*
-- [x] Borrowers — `borrowers` *(KYC gates eligibility; risk grade from score)*
-- [x] Repayment schedule — `repayment-schedule` *(amortisation derived, not stored; pay in order)*
-- [x] Disbursements — `disbursements` *(tranches can't overdraw approved principal)*
-- [x] Collateral — `collateral` *(no lien perfection on a stale appraisal)*
+### Loan / lending _(done)_
+
+- [x] Loan applications — `loan-applications` _(approve blocked above the DTI ceiling)_
+- [x] Borrowers — `borrowers` _(KYC gates eligibility; risk grade from score)_
+- [x] Repayment schedule — `repayment-schedule` _(amortisation derived, not stored; pay in order)_
+- [x] Disbursements — `disbursements` _(tranches can't overdraw approved principal)_
+- [x] Collateral — `collateral` _(no lien perfection on a stale appraisal)_
 
 ### Booking / scheduling
+
 - [ ] Appointments / bookings (calendar)
 - [ ] Resources / services
 - [ ] Availability / slots
@@ -138,6 +149,7 @@ reuse the universal blocks from §0.
 - [ ] Cancellations / reschedules
 
 ### Warehouse (WMS)
+
 - [ ] Inbound / receiving
 - [ ] Outbound / picking
 - [ ] Bin / location map
@@ -145,6 +157,7 @@ reuse the universal blocks from §0.
 - [ ] Shipments
 
 ### Manufacturing
+
 - [ ] Bill of materials (BOM)
 - [ ] Work orders
 - [ ] Production schedule
@@ -152,6 +165,7 @@ reuse the universal blocks from §0.
 - [ ] Quality checks
 
 ### Real estate / property management
+
 - [ ] Properties / units
 - [ ] Tenants / leases
 - [ ] Rent payments

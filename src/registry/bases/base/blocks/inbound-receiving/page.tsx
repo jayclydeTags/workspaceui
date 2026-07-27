@@ -3,7 +3,10 @@
 import * as React from "react"
 
 import { Page } from "@/registry/bases/base/workspaceui/page"
-import { assign, type Bin } from "@/registry/bases/base/blocks/bin-location-map/data"
+import {
+  assign,
+  type Bin,
+} from "@/registry/bases/base/blocks/bin-location-map/data"
 import {
   RECEIPTS,
   canPutAway,
@@ -36,7 +39,10 @@ export function InboundReceiving() {
       prev.map((r) =>
         r.id !== selectedId
           ? r
-          : { ...r, lines: r.lines.map((l) => (l.id === lineId ? change(l) : l)) }
+          : {
+              ...r,
+              lines: r.lines.map((l) => (l.id === lineId ? change(l) : l)),
+            }
       )
     )
   }

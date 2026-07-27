@@ -76,7 +76,12 @@ describe("receiptStatus", () => {
   it("is put-away only when every received unit is in a bin", () => {
     expect(
       receiptStatus([
-        line({ expectedQty: 100, receivedQty: 100, qc: "passed", putAwayQty: 100 }),
+        line({
+          expectedQty: 100,
+          receivedQty: 100,
+          qc: "passed",
+          putAwayQty: 100,
+        }),
       ])
     ).toBe("put-away")
   })
@@ -127,12 +132,16 @@ describe("InboundReceiving", () => {
     const user = userEvent.setup()
     render(<InboundReceiving />)
 
-    await user.click(screen.getByRole("button", { name: "Open receipt PO-5003" }))
+    await user.click(
+      screen.getByRole("button", { name: "Open receipt PO-5003" })
+    )
 
     expect(
       await screen.findByText(/is closed — no more stock can be received/)
     ).toBeInTheDocument()
-    expect(screen.queryByRole("button", { name: "Record" })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole("button", { name: "Record" })
+    ).not.toBeInTheDocument()
   })
 
   it("receives, QC-passes, and puts away a receipt through to put-away", async () => {
@@ -142,7 +151,9 @@ describe("InboundReceiving", () => {
     // Only receipt 3 starts put away.
     expect(screen.getAllByText("put away")).toHaveLength(1)
 
-    await user.click(screen.getByRole("button", { name: "Open receipt PO-5001" }))
+    await user.click(
+      screen.getByRole("button", { name: "Open receipt PO-5001" })
+    )
 
     // Line 1a: record (defaults to expected qty), pass QC, put away.
     await user.click(screen.getAllByRole("button", { name: "Record" })[0])

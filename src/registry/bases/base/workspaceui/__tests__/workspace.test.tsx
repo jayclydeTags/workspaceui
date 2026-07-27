@@ -1,7 +1,15 @@
 import * as React from "react"
 import { render, screen, act, fireEvent } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { describe, it, expect, vi, beforeAll, afterAll, afterEach } from "vitest"
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeAll,
+  afterAll,
+  afterEach,
+} from "vitest"
 
 import {
   Workspace,
@@ -12,7 +20,11 @@ import {
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-const pane = (id: string, tabs: string[], extra?: Partial<WorkspacePaneDef>): WorkspacePaneDef => ({
+const pane = (
+  id: string,
+  tabs: string[],
+  extra?: Partial<WorkspacePaneDef>
+): WorkspacePaneDef => ({
   id,
   tabs: tabs.map((t) => ({ id: t, title: t })),
   defaultActiveTabId: tabs[0],
@@ -28,7 +40,7 @@ const renderContent = (_paneId: string, tabId: string) => (
 function renderWorkspace(
   initialPanes: WorkspacePaneDef[],
   ref?: React.RefObject<WorkspaceHandle | null>,
-  extra?: Partial<React.ComponentProps<typeof Workspace>>,
+  extra?: Partial<React.ComponentProps<typeof Workspace>>
 ) {
   return render(
     <Workspace
@@ -36,7 +48,7 @@ function renderWorkspace(
       initialPanes={initialPanes}
       renderTabContent={renderContent}
       {...extra}
-    />,
+    />
   )
 }
 
@@ -60,8 +72,14 @@ function stubLayout() {
     if (!box) {
       const top = seen++ * 20
       box = {
-        x: 0, y: top, left: 0, top, right: 200, bottom: top + 20,
-        width: 200, height: 20,
+        x: 0,
+        y: top,
+        left: 0,
+        top,
+        right: 200,
+        bottom: top + 20,
+        width: 200,
+        height: 20,
         toJSON: () => ({}),
       } as DOMRect
       boxes.set(this, box)
@@ -77,18 +95,36 @@ function stubLayout() {
 
 function mockRect(el: Element, r: Partial<Omit<DOMRect, "toJSON">>) {
   vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
-    left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0, x: 0, y: 0,
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    width: 0,
+    height: 0,
+    x: 0,
+    y: 0,
     toJSON: () => {},
     ...r,
   } as DOMRect)
 }
 
 function dragStart(tab: HTMLElement, from = { x: 10, y: 20 }) {
-  fireEvent.pointerDown(tab, { pointerId: 1, clientX: from.x, clientY: from.y, bubbles: true })
+  fireEvent.pointerDown(tab, {
+    pointerId: 1,
+    clientX: from.x,
+    clientY: from.y,
+    bubbles: true,
+  })
 }
 
 function dragMove(to: { x: number; y: number }) {
-  document.dispatchEvent(new PointerEvent("pointermove", { clientX: to.x, clientY: to.y, bubbles: true }))
+  document.dispatchEvent(
+    new PointerEvent("pointermove", {
+      clientX: to.x,
+      clientY: to.y,
+      bubbles: true,
+    })
+  )
 }
 
 function dragDrop() {
@@ -96,7 +132,9 @@ function dragDrop() {
 }
 
 function pressEscape() {
-  document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }))
+  document.dispatchEvent(
+    new KeyboardEvent("keydown", { key: "Escape", bubbles: true })
+  )
 }
 
 // ── Tests ──────────────────────────────────────────────────────────────────
@@ -110,9 +148,17 @@ describe("Workspace", () => {
     })
 
     it("activates the defaultActiveTabId tab", () => {
-      renderWorkspace([pane("main", ["dashboard", "inbox"], { defaultActiveTabId: "inbox" })])
-      expect(screen.getByRole("tab", { name: "inbox" })).toHaveAttribute("aria-selected", "true")
-      expect(screen.getByRole("tab", { name: "dashboard" })).toHaveAttribute("aria-selected", "false")
+      renderWorkspace([
+        pane("main", ["dashboard", "inbox"], { defaultActiveTabId: "inbox" }),
+      ])
+      expect(screen.getByRole("tab", { name: "inbox" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      )
+      expect(screen.getByRole("tab", { name: "dashboard" })).toHaveAttribute(
+        "aria-selected",
+        "false"
+      )
     })
 
     it("renders the active tab's content", () => {
@@ -135,7 +181,10 @@ describe("Workspace", () => {
     it("switches to the clicked tab", async () => {
       renderWorkspace([pane("main", ["dashboard", "inbox"])])
       await userEvent.click(screen.getByRole("tab", { name: "inbox" }))
-      expect(screen.getByRole("tab", { name: "inbox" })).toHaveAttribute("aria-selected", "true")
+      expect(screen.getByRole("tab", { name: "inbox" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      )
       expect(screen.getByTestId("content-inbox")).toBeInTheDocument()
     })
   })
@@ -144,7 +193,9 @@ describe("Workspace", () => {
     it("removes the closed tab from the strip", async () => {
       renderWorkspace([pane("main", ["dashboard", "inbox"])])
       await userEvent.click(screen.getByRole("button", { name: "Close inbox" }))
-      expect(screen.queryByRole("tab", { name: "inbox" })).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole("tab", { name: "inbox" })
+      ).not.toBeInTheDocument()
     })
 
     it("activates the previous tab when the active tab is closed", async () => {
@@ -152,15 +203,19 @@ describe("Workspace", () => {
         pane("main", ["a", "b", "c"], { defaultActiveTabId: "b" }),
       ])
       await userEvent.click(screen.getByRole("button", { name: "Close b" }))
-      expect(screen.getByRole("tab", { name: "a" })).toHaveAttribute("aria-selected", "true")
+      expect(screen.getByRole("tab", { name: "a" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      )
     })
 
     it("activates the next tab when the first tab is closed", async () => {
-      renderWorkspace([
-        pane("main", ["a", "b"], { defaultActiveTabId: "a" }),
-      ])
+      renderWorkspace([pane("main", ["a", "b"], { defaultActiveTabId: "a" })])
       await userEvent.click(screen.getByRole("button", { name: "Close a" }))
-      expect(screen.getByRole("tab", { name: "b" })).toHaveAttribute("aria-selected", "true")
+      expect(screen.getByRole("tab", { name: "b" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      )
     })
 
     it("shows the fallback when the last tab in the last pane is closed", async () => {
@@ -180,20 +235,27 @@ describe("Workspace", () => {
           ],
         }),
       ])
-      expect(screen.queryByRole("button", { name: "Close pinned" })).not.toBeInTheDocument()
-      expect(screen.getByRole("button", { name: "Close normal" })).toBeInTheDocument()
+      expect(
+        screen.queryByRole("button", { name: "Close pinned" })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.getByRole("button", { name: "Close normal" })
+      ).toBeInTheDocument()
     })
 
     it("does not remove a pinned tab when closeTab is called via ref", () => {
       const ref = React.createRef<WorkspaceHandle>()
-      renderWorkspace([
-        pane("main", ["pinned", "normal"], {
-          tabs: [
-            { id: "pinned", title: "pinned", pinned: true },
-            { id: "normal", title: "normal" },
-          ],
-        }),
-      ], ref)
+      renderWorkspace(
+        [
+          pane("main", ["pinned", "normal"], {
+            tabs: [
+              { id: "pinned", title: "pinned", pinned: true },
+              { id: "normal", title: "normal" },
+            ],
+          }),
+        ],
+        ref
+      )
       ref.current?.closeTab("main", "pinned")
       expect(screen.getByRole("tab", { name: "pinned" })).toBeInTheDocument()
     })
@@ -207,7 +269,10 @@ describe("Workspace", () => {
         ref.current?.openTabInPane("main", { id: "b", title: "Beta" })
       })
       expect(screen.getByRole("tab", { name: "Beta" })).toBeInTheDocument()
-      expect(screen.getByRole("tab", { name: "Beta" })).toHaveAttribute("aria-selected", "true")
+      expect(screen.getByRole("tab", { name: "Beta" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      )
     })
 
     it("openTabInPane does not duplicate an already-open tab", async () => {
@@ -225,7 +290,10 @@ describe("Workspace", () => {
       await React.act(async () => {
         ref.current?.activateTab("main", "b")
       })
-      expect(screen.getByRole("tab", { name: "b" })).toHaveAttribute("aria-selected", "true")
+      expect(screen.getByRole("tab", { name: "b" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      )
     })
 
     it("updateTab changes a tab's title", async () => {
@@ -269,9 +337,9 @@ describe("Workspace", () => {
         useWorkspace()
         return null
       }
-      expect(() =>
-        render(<BadComponent />),
-      ).toThrow("useWorkspace must be used inside <Workspace>")
+      expect(() => render(<BadComponent />)).toThrow(
+        "useWorkspace must be used inside <Workspace>"
+      )
     })
 
     it("exposes the current panes list", () => {
@@ -284,7 +352,7 @@ describe("Workspace", () => {
         <Workspace
           initialPanes={[pane("main", ["a", "b"])]}
           renderTabContent={() => <Inspector />}
-        />,
+        />
       )
       expect(captured!.panes).toHaveLength(1)
       expect(captured!.panes[0]!.id).toBe("main")
@@ -301,7 +369,7 @@ describe("Workspace", () => {
           initialPanes={[]}
           renderTabContent={renderContent}
           fallback={<FallbackInspector />}
-        />,
+        />
       )
       expect(captured!.isShowingFallback).toBe(true)
     })
@@ -309,10 +377,7 @@ describe("Workspace", () => {
 
   describe("multi-pane layout", () => {
     it("renders tabs from both panes simultaneously", () => {
-      renderWorkspace([
-        pane("left", ["a"]),
-        pane("right", ["b"]),
-      ])
+      renderWorkspace([pane("left", ["a"]), pane("right", ["b"])])
       expect(screen.getByRole("tab", { name: "a" })).toBeInTheDocument()
       expect(screen.getByRole("tab", { name: "b" })).toBeInTheDocument()
     })
@@ -342,38 +407,70 @@ describe("Workspace", () => {
     it("TC-TAB-2: reorders tabs within the same pane", async () => {
       renderWorkspace([pane("p1", ["a", "b", "c"])])
 
-      const tabStrip = document.querySelector('[data-slot="workspace-tab-list"]')!
+      const tabStrip = document.querySelector(
+        '[data-slot="workspace-tab-list"]'
+      )!
       const tabs = screen.getAllByRole("tab")
 
       mockRect(tabStrip, { left: 0, top: 0, right: 450, bottom: 40 })
-      mockRect(tabs[0]!, { left: 0,   top: 0, right: 150, bottom: 40, width: 150 }) // "a"
-      mockRect(tabs[1]!, { left: 150, top: 0, right: 300, bottom: 40, width: 150 }) // "b"
-      mockRect(tabs[2]!, { left: 300, top: 0, right: 450, bottom: 40, width: 150 }) // "c"
+      mockRect(tabs[0]!, {
+        left: 0,
+        top: 0,
+        right: 150,
+        bottom: 40,
+        width: 150,
+      }) // "a"
+      mockRect(tabs[1]!, {
+        left: 150,
+        top: 0,
+        right: 300,
+        bottom: 40,
+        width: 150,
+      }) // "b"
+      mockRect(tabs[2]!, {
+        left: 300,
+        top: 0,
+        right: 450,
+        bottom: 40,
+        width: 150,
+      }) // "c"
 
       await act(async () => {
-        dragStart(tabs[0]!)           // grab "a" at x=10
-        dragMove({ x: 15, y: 20 })   // cross 4 px threshold
-        dragMove({ x: 320, y: 20 })  // left of "c" midpoint (375) → insertIndex 2
+        dragStart(tabs[0]!) // grab "a" at x=10
+        dragMove({ x: 15, y: 20 }) // cross 4 px threshold
+        dragMove({ x: 320, y: 20 }) // left of "c" midpoint (375) → insertIndex 2
         dragDrop()
       })
 
-      expect(screen.getAllByRole("tab").map((t) => t.textContent)).toEqual(["b", "a", "c"])
+      expect(screen.getAllByRole("tab").map((t) => t.textContent)).toEqual([
+        "b",
+        "a",
+        "c",
+      ])
     })
 
     it("TC-TAB-3: moves a tab from one pane into another pane's tab strip", async () => {
       renderWorkspace([pane("left", ["a"]), pane("right", ["b"])])
 
-      const tabStrips = document.querySelectorAll('[data-slot="workspace-tab-list"]')
+      const tabStrips = document.querySelectorAll(
+        '[data-slot="workspace-tab-list"]'
+      )
       const tabs = screen.getAllByRole("tab")
 
-      mockRect(tabStrips[0]!, { left: 0,   top: 0, right: 300, bottom: 40 })
+      mockRect(tabStrips[0]!, { left: 0, top: 0, right: 300, bottom: 40 })
       mockRect(tabStrips[1]!, { left: 300, top: 0, right: 600, bottom: 40 })
-      mockRect(tabs[1]!, { left: 300, top: 0, right: 500, bottom: 40, width: 200 }) // "b" midpoint=400
+      mockRect(tabs[1]!, {
+        left: 300,
+        top: 0,
+        right: 500,
+        bottom: 40,
+        width: 200,
+      }) // "b" midpoint=400
 
       await act(async () => {
-        dragStart(tabs[0]!)           // grab "a" from left pane
-        dragMove({ x: 15, y: 20 })   // cross threshold
-        dragMove({ x: 350, y: 20 })  // inside right strip, left of "b" midpoint → insertIndex 0
+        dragStart(tabs[0]!) // grab "a" from left pane
+        dragMove({ x: 15, y: 20 }) // cross threshold
+        dragMove({ x: 350, y: 20 }) // inside right strip, left of "b" midpoint → insertIndex 0
         dragDrop()
       })
 
@@ -385,12 +482,20 @@ describe("Workspace", () => {
     it("TC-TAB-5: dragging the last tab out of a pane removes that pane", async () => {
       renderWorkspace([pane("left", ["a"]), pane("right", ["b"])])
 
-      const tabStrips = document.querySelectorAll('[data-slot="workspace-tab-list"]')
+      const tabStrips = document.querySelectorAll(
+        '[data-slot="workspace-tab-list"]'
+      )
       const tabs = screen.getAllByRole("tab")
 
-      mockRect(tabStrips[0]!, { left: 0,   top: 0, right: 300, bottom: 40 })
+      mockRect(tabStrips[0]!, { left: 0, top: 0, right: 300, bottom: 40 })
       mockRect(tabStrips[1]!, { left: 300, top: 0, right: 600, bottom: 40 })
-      mockRect(tabs[1]!, { left: 300, top: 0, right: 500, bottom: 40, width: 200 })
+      mockRect(tabs[1]!, {
+        left: 300,
+        top: 0,
+        right: 500,
+        bottom: 40,
+        width: 200,
+      })
 
       await act(async () => {
         dragStart(tabs[0]!)
@@ -405,7 +510,9 @@ describe("Workspace", () => {
     it("TC-TAB-4: dragging to a snap zone creates a new pane", async () => {
       renderWorkspace([pane("left", ["a", "b"]), pane("right", ["c"])])
 
-      const paneWrappers = document.querySelectorAll('[data-slot="workspace-tabs"]')
+      const paneWrappers = document.querySelectorAll(
+        '[data-slot="workspace-tabs"]'
+      )
       const rightWrapper = paneWrappers[1]!.parentElement!
       const tabs = screen.getAllByRole("tab") // "a", "b", "c"
 
@@ -414,10 +521,10 @@ describe("Workspace", () => {
       mockRect(rightWrapper, { left: 300, top: 0, right: 600, bottom: 600 })
 
       await act(async () => {
-        dragStart(tabs[0]!)            // grab "a" from left pane
-        dragMove({ x: 15, y: 20 })    // cross threshold
+        dragStart(tabs[0]!) // grab "a" from left pane
+        dragMove({ x: 15, y: 20 }) // cross threshold
         // x=305 is 5 px inside right pane's left edge; snapSize=75 → zone "left"
-        dragMove({ x: 305, y: 300 })  // y=300 clears all tab strips (y 0–40)
+        dragMove({ x: 305, y: 300 }) // y=300 clears all tab strips (y 0–40)
         dragDrop()
       })
 
@@ -454,7 +561,11 @@ describe("Workspace", () => {
 
       await user.click(screen.getByRole("button", { name: "Close a" }))
 
-      expect(onBeforeCloseTab).toHaveBeenCalledWith("p1", "a", expect.objectContaining({ id: "a" }))
+      expect(onBeforeCloseTab).toHaveBeenCalledWith(
+        "p1",
+        "a",
+        expect.objectContaining({ id: "a" })
+      )
       expect(screen.getByRole("tab", { name: /a/ })).toBeInTheDocument()
     })
 
@@ -488,14 +599,18 @@ describe("Workspace", () => {
       renderWorkspace(
         [{ id: "p1", tabs: [{ id: "a", title: "a", pinned: true }] }],
         ref,
-        { onBeforeCloseTab },
+        { onBeforeCloseTab }
       )
 
       await act(async () => {
         await ref.current!.closePane("p1")
       })
 
-      expect(onBeforeCloseTab).toHaveBeenCalledWith("p1", "a", expect.objectContaining({ id: "a" }))
+      expect(onBeforeCloseTab).toHaveBeenCalledWith(
+        "p1",
+        "a",
+        expect.objectContaining({ id: "a" })
+      )
       expect(screen.queryByRole("tab", { name: /a/ })).not.toBeInTheDocument()
     })
   })
@@ -532,7 +647,11 @@ describe("Workspace", () => {
       renderWorkspace([pane("p1", ["a"]), pane("p2", ["gone"])], ref)
 
       const snapshot = ref.current!.serialize()
-      act(() => ref.current!.restore(snapshot, (id) => (id === "gone" ? undefined : resolve(id))))
+      act(() =>
+        ref.current!.restore(snapshot, (id) =>
+          id === "gone" ? undefined : resolve(id)
+        )
+      )
 
       const after = ref.current!.serialize()
       expect(after.columns).toHaveLength(1)
@@ -545,7 +664,11 @@ describe("Workspace", () => {
 
       act(() => ref.current!.activateTab("p1", "b"))
       const snapshot = ref.current!.serialize()
-      act(() => ref.current!.restore(snapshot, (id) => (id === "b" ? undefined : resolve(id))))
+      act(() =>
+        ref.current!.restore(snapshot, (id) =>
+          id === "b" ? undefined : resolve(id)
+        )
+      )
 
       expect(ref.current!.serialize().columns[0]!.topPane).toEqual({
         id: "p1",
@@ -564,10 +687,14 @@ describe("Workspace", () => {
       renderWorkspace([pane("p1", ["a", "b"])], ref)
 
       await user.click(screen.getByRole("button", { name: "Tab menu" }))
-      await user.click(await screen.findByRole("menuitem", { name: "Split right" }))
+      await user.click(
+        await screen.findByRole("menuitem", { name: "Split right" })
+      )
 
       expect(ref.current!.serialize().columns).toHaveLength(2)
-      expect(screen.getByRole("status")).toHaveTextContent("Moved a to a new column.")
+      expect(screen.getByRole("status")).toHaveTextContent(
+        "Moved a to a new column."
+      )
     })
 
     it("moves a tab into another pane from the tab menu and announces it", async () => {
@@ -578,8 +705,12 @@ describe("Workspace", () => {
         renderWorkspace([pane("p1", ["a", "b"]), pane("p2", ["c"])], ref)
 
         // Panes have no name of their own — they are labelled by their active tab.
-        await user.click(screen.getAllByRole("button", { name: "Tab menu" })[0]!)
-        await user.click(await screen.findByRole("menuitem", { name: "Move to c" }))
+        await user.click(
+          screen.getAllByRole("button", { name: "Tab menu" })[0]!
+        )
+        await user.click(
+          await screen.findByRole("menuitem", { name: "Move to c" })
+        )
 
         const columns = ref.current!.serialize().columns
         expect(columns).toHaveLength(2)
@@ -596,10 +727,17 @@ describe("Workspace", () => {
         const user = userEvent.setup()
         const ref = React.createRef<WorkspaceHandle>()
         // Same tab id open in both panes — the same document in two places.
-        renderWorkspace([pane("p1", ["docs", "a"]), pane("p2", ["docs", "b"])], ref)
+        renderWorkspace(
+          [pane("p1", ["docs", "a"]), pane("p2", ["docs", "b"])],
+          ref
+        )
 
-        await user.click(screen.getAllByRole("button", { name: "Tab menu" })[0]!)
-        await user.click(await screen.findByRole("menuitem", { name: "Move to docs" }))
+        await user.click(
+          screen.getAllByRole("button", { name: "Tab menu" })[0]!
+        )
+        await user.click(
+          await screen.findByRole("menuitem", { name: "Move to docs" })
+        )
 
         const columns = ref.current!.serialize().columns
         // Left behind in the source, and NOT duplicated in the target —
@@ -611,6 +749,5 @@ describe("Workspace", () => {
         restoreLayout()
       }
     })
-
   })
 })

@@ -90,9 +90,7 @@ export function DataTable({
             <TableRow>
               <TableHead className="px-6">Payee</TableHead>
               <TableHead>Method</TableHead>
-              <TableHead className="hidden @md:table-cell">
-                Reference
-              </TableHead>
+              <TableHead className="hidden @md:table-cell">Reference</TableHead>
               <TableHead className="hidden @lg:table-cell">Date</TableHead>
               <TableHead className="text-right">Amount</TableHead>
               <TableHead>Status</TableHead>

@@ -31,8 +31,10 @@ function Field({ label, value }: { label: string; value: string }) {
   )
 }
 
-const orderStatus: Record<Order["status"], "secondary" | "outline" | "destructive"> =
-  { paid: "secondary", pending: "outline", refunded: "destructive" }
+const orderStatus: Record<
+  Order["status"],
+  "secondary" | "outline" | "destructive"
+> = { paid: "secondary", pending: "outline", refunded: "destructive" }
 
 export function DetailTabs() {
   const c = CUSTOMER
@@ -131,9 +133,7 @@ export function DetailTabs() {
         </Tabs>
 
         <Separator />
-        <p className="text-xs text-muted-foreground">
-          Record ID: {c.id}
-        </p>
+        <p className="text-xs text-muted-foreground">Record ID: {c.id}</p>
       </div>
     </Page>
   )

@@ -149,7 +149,11 @@ export function DataTable({
                 <StatusBadge status={employee.status} />
               </div>
             </div>
-            <RowActions employee={employee} onEdit={onEdit} onDelete={onDelete} />
+            <RowActions
+              employee={employee}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
           </li>
         ))}
       </ul>

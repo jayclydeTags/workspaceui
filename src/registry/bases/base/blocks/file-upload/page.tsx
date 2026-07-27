@@ -30,12 +30,7 @@ import {
 } from "@/components/ui/empty"
 import { Spinner } from "@/components/ui/spinner"
 import { Page } from "@/registry/bases/base/workspaceui/page"
-import {
-  ATTACHMENTS,
-  extLabel,
-  formatBytes,
-  type FileAttachment,
-} from "./data"
+import { ATTACHMENTS, extLabel, formatBytes, type FileAttachment } from "./data"
 
 function fileIcon(name: string) {
   const ext = name.split(".").pop()?.toLowerCase() ?? ""

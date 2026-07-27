@@ -49,12 +49,18 @@ const server = createSearchAPI("advanced", {
         entry(page.url, page.data.title ?? page.url, page.data.description)
       ),
     ...blocksNav.flatMap((section) =>
-      [...(section.items ?? []), ...(section.groups ?? []).flatMap((g) => g.items)].map(
-        (item) => entry(item.href, item.title, item.description)
-      )
+      [
+        ...(section.items ?? []),
+        ...(section.groups ?? []).flatMap((g) => g.items),
+      ].map((item) => entry(item.href, item.title, item.description))
     ),
     ...templates.map((t) =>
-      entry(templateUrl(t.slug), t.title, t.description, `${t.type}. ${t.category}`)
+      entry(
+        templateUrl(t.slug),
+        t.title,
+        t.description,
+        `${t.type}. ${t.category}`
+      )
     ),
   ],
 })

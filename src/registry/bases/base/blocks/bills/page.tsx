@@ -74,9 +74,7 @@ export function Bills() {
           <Empty>
             <EmptyHeader>
               <EmptyTitle>No bills</EmptyTitle>
-              <EmptyDescription>
-                Create a bill to get started.
-              </EmptyDescription>
+              <EmptyDescription>Create a bill to get started.</EmptyDescription>
             </EmptyHeader>
           </Empty>
         ) : (
@@ -99,9 +97,8 @@ export function Bills() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete bill</AlertDialogTitle>
             <AlertDialogDescription>
-              Delete{" "}
-              <span className="font-medium">{deleting?.billNumber}</span>?
-              This action can&apos;t be undone.
+              Delete <span className="font-medium">{deleting?.billNumber}</span>
+              ? This action can&apos;t be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

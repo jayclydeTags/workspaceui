@@ -4,7 +4,13 @@ import { useState } from "react"
 import { Loader2, TriangleAlert } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import {
   Field,
   FieldDescription,
@@ -64,7 +70,10 @@ export function LoginSocial() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [status, setStatus] = useState<Status>("idle")
-  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({})
+  const [fieldErrors, setFieldErrors] = useState<{
+    email?: string
+    password?: string
+  }>({})
 
   const submitting = status === "submitting"
 
@@ -72,7 +81,8 @@ export function LoginSocial() {
     e.preventDefault()
     const next: { email?: string; password?: string } = {}
     if (!email.trim()) next.email = "Enter your email."
-    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) next.email = "Enter a valid email."
+    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))
+      next.email = "Enter a valid email."
     if (!password) next.password = "Enter your password."
     setFieldErrors(next)
     if (next.email || next.password) return
@@ -80,7 +90,9 @@ export function LoginSocial() {
     setStatus("submitting")
     // ponytail: fake latency so the pending state is visible; drop when wired.
     await new Promise((r) => setTimeout(r, 700))
-    setStatus(email === DEMO_EMAIL && password === DEMO_PASSWORD ? "success" : "error")
+    setStatus(
+      email === DEMO_EMAIL && password === DEMO_PASSWORD ? "success" : "error"
+    )
   }
 
   if (status === "success") {
@@ -104,16 +116,26 @@ export function LoginSocial() {
         <Card className="w-full max-w-sm">
           <CardHeader className="text-center">
             <CardTitle>Sign in to Acme</CardTitle>
-            <CardDescription>Continue with a provider or your email</CardDescription>
+            <CardDescription>
+              Continue with a provider or your email
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <FieldGroup>
               <div className="flex flex-col gap-2">
-                <Button variant="outline" className="w-full" disabled={submitting}>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  disabled={submitting}
+                >
                   <GoogleIcon data-icon="inline-start" />
                   Continue with Google
                 </Button>
-                <Button variant="outline" className="w-full" disabled={submitting}>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  disabled={submitting}
+                >
                   <GithubIcon data-icon="inline-start" />
                   Continue with GitHub
                 </Button>
@@ -145,7 +167,9 @@ export function LoginSocial() {
                       aria-invalid={!!fieldErrors.email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
-                    {fieldErrors.email && <FieldError>{fieldErrors.email}</FieldError>}
+                    {fieldErrors.email && (
+                      <FieldError>{fieldErrors.email}</FieldError>
+                    )}
                   </Field>
 
                   <Field data-invalid={!!fieldErrors.password}>
@@ -166,13 +190,22 @@ export function LoginSocial() {
                       aria-invalid={!!fieldErrors.password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
-                    {fieldErrors.password && <FieldError>{fieldErrors.password}</FieldError>}
+                    {fieldErrors.password && (
+                      <FieldError>{fieldErrors.password}</FieldError>
+                    )}
                   </Field>
 
                   <Field>
-                    <Button type="submit" className="w-full" disabled={submitting}>
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      disabled={submitting}
+                    >
                       {submitting && (
-                        <Loader2 data-icon="inline-start" className="animate-spin" />
+                        <Loader2
+                          data-icon="inline-start"
+                          className="animate-spin"
+                        />
                       )}
                       {submitting ? "Signing in…" : "Sign in"}
                     </Button>

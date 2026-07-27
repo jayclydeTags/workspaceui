@@ -232,7 +232,7 @@ export function BlockPreview({
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden">
-      <div className="mx-auto flex w-full min-h-0 max-w-[1600px] flex-1 flex-col gap-4 px-6 py-8">
+      <div className="mx-auto flex min-h-0 w-full max-w-[1600px] flex-1 flex-col gap-4 px-6 py-8">
         {/* ── Toolbar ──────────────────────────────────────────────────────── */}
         <div className="flex shrink-0 items-center gap-2 pr-4 pl-2">
           {/* Preview / Code toggle */}
@@ -341,10 +341,7 @@ export function BlockPreview({
               {/* bg-transparent drops the full-height divider line (it clashed
                   with the rounded frame); only the grip pill shows. after:w-3
                   gives a ~12px grab area without adding a layout gap. */}
-              <ResizableHandle
-                withHandle
-                className="bg-transparent w-3"
-              />
+              <ResizableHandle withHandle className="w-3 bg-transparent" />
               {/* Empty panel reveals the gray backdrop as the preview shrinks. */}
               <ResizablePanel defaultSize={0} />
             </ResizablePanelGroup>
@@ -368,7 +365,7 @@ export function BlockPreview({
                   viewport (role=region) grows to fill instead of capping at
                   fumadocs' default max-h-[600px]. Header (figure's first-child
                   div) is bumped h-9.5 → h-12 to line up with the Files header. */}
-              <div className="min-w-0 flex-1 [&_[role=region]]:max-h-none [&_[role=region]]:flex-1 [&_figure>div:first-child]:h-12 [&_figure]:m-0 [&_figure]:flex [&_figure]:h-full [&_figure]:flex-col [&_figure]:rounded-none [&_figure]:border-0 [&_figure]:border-l-0">
+              <div className="min-w-0 flex-1 [&_[role=region]]:max-h-none [&_[role=region]]:flex-1 [&_figure]:m-0 [&_figure]:flex [&_figure]:h-full [&_figure]:flex-col [&_figure]:rounded-none [&_figure]:border-0 [&_figure]:border-l-0 [&_figure>div:first-child]:h-12">
                 {activeCode && (
                   <DynamicCodeBlock
                     lang="tsx"

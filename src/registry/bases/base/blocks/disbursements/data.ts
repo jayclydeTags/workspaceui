@@ -52,7 +52,9 @@ export function committed(
   exceptId?: string
 ): number {
   return disbursements
-    .filter((d) => d.loan === loan && d.status !== "failed" && d.id !== exceptId)
+    .filter(
+      (d) => d.loan === loan && d.status !== "failed" && d.id !== exceptId
+    )
     .reduce((sum, d) => sum + d.amount, 0)
 }
 
@@ -61,7 +63,8 @@ export const remaining = (
   disbursements: Disbursement[],
   loan: string,
   exceptId?: string
-): number => (LOAN_PRINCIPAL[loan] ?? 0) - committed(disbursements, loan, exceptId)
+): number =>
+  (LOAN_PRINCIPAL[loan] ?? 0) - committed(disbursements, loan, exceptId)
 
 /** The core rule: tranches can't exceed the approved principal. */
 export const wouldOverdraw = (
@@ -84,9 +87,49 @@ export const releasedTotal = (disbursements: Disbursement[]): number =>
 // ── Mock data ──────────────────────────────────────────────────────────────
 
 export const DISBURSEMENTS: Disbursement[] = [
-  { id: "1", loan: "LN-2041", borrower: "Iris Muller", amount: 40000, method: "ach", date: "2026-06-15", status: "released" },
-  { id: "2", loan: "LN-2041", borrower: "Iris Muller", amount: 20000, method: "ach", date: "2026-07-15", status: "scheduled" },
-  { id: "3", loan: "LN-2043", borrower: "Nadia Rahman", amount: 100000, method: "wire", date: "2026-06-01", status: "released" },
-  { id: "4", loan: "LN-2043", borrower: "Nadia Rahman", amount: 25000, method: "wire", date: "2026-07-20", status: "scheduled" },
-  { id: "5", loan: "LN-2045", borrower: "Sofia Marchetti", amount: 18000, method: "check", date: "2026-06-28", status: "failed" },
+  {
+    id: "1",
+    loan: "LN-2041",
+    borrower: "Iris Muller",
+    amount: 40000,
+    method: "ach",
+    date: "2026-06-15",
+    status: "released",
+  },
+  {
+    id: "2",
+    loan: "LN-2041",
+    borrower: "Iris Muller",
+    amount: 20000,
+    method: "ach",
+    date: "2026-07-15",
+    status: "scheduled",
+  },
+  {
+    id: "3",
+    loan: "LN-2043",
+    borrower: "Nadia Rahman",
+    amount: 100000,
+    method: "wire",
+    date: "2026-06-01",
+    status: "released",
+  },
+  {
+    id: "4",
+    loan: "LN-2043",
+    borrower: "Nadia Rahman",
+    amount: 25000,
+    method: "wire",
+    date: "2026-07-20",
+    status: "scheduled",
+  },
+  {
+    id: "5",
+    loan: "LN-2045",
+    borrower: "Sofia Marchetti",
+    amount: 18000,
+    method: "check",
+    date: "2026-06-28",
+    status: "failed",
+  },
 ]

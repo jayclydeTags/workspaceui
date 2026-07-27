@@ -56,8 +56,13 @@ export function TaskCard({
             }
           />
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => onEdit(task)}>Edit</DropdownMenuItem>
-            <DropdownMenuItem variant="destructive" onClick={() => onDelete(task)}>
+            <DropdownMenuItem onClick={() => onEdit(task)}>
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => onDelete(task)}
+            >
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -81,7 +86,7 @@ export function TaskCard({
       </div>
 
       {task.due && (
-        <span className="text-xs tabular-nums text-muted-foreground">
+        <span className="text-xs text-muted-foreground tabular-nums">
           Due {task.due}
         </span>
       )}

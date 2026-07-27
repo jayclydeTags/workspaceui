@@ -23,6 +23,8 @@ describe("PayrollRun", () => {
     expect(
       screen.getAllByText(formatCurrency(totalNet)).length
     ).toBeGreaterThanOrEqual(1)
-    expect(screen.getAllByText(formatCurrency(totalGross)).length).toBeGreaterThanOrEqual(1)
+    expect(
+      screen.getAllByText(formatCurrency(totalGross)).length
+    ).toBeGreaterThanOrEqual(1)
   })
 })

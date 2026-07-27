@@ -83,7 +83,9 @@ export function CollateralDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{editing ? "Edit collateral" : "Pledge collateral"}</DialogTitle>
+          <DialogTitle>
+            {editing ? "Edit collateral" : "Pledge collateral"}
+          </DialogTitle>
         </DialogHeader>
         <form id="collateral-form" onSubmit={submit}>
           <FieldGroup>
@@ -106,7 +108,9 @@ export function CollateralDialog({
               </Select>
             </Field>
             <Field>
-              <FieldLabel htmlFor="collateral-description">Description</FieldLabel>
+              <FieldLabel htmlFor="collateral-description">
+                Description
+              </FieldLabel>
               <Input
                 id="collateral-description"
                 value={draft.description}
@@ -136,7 +140,9 @@ export function CollateralDialog({
               </Select>
             </Field>
             <Field>
-              <FieldLabel htmlFor="collateral-value">Appraised value</FieldLabel>
+              <FieldLabel htmlFor="collateral-value">
+                Appraised value
+              </FieldLabel>
               <Input
                 id="collateral-value"
                 type="number"
@@ -153,7 +159,9 @@ export function CollateralDialog({
               </FieldDescription>
             </Field>
             <Field data-invalid={stale || undefined}>
-              <FieldLabel htmlFor="collateral-appraised">Appraised on</FieldLabel>
+              <FieldLabel htmlFor="collateral-appraised">
+                Appraised on
+              </FieldLabel>
               <Input
                 id="collateral-appraised"
                 type="date"
@@ -164,8 +172,8 @@ export function CollateralDialog({
               />
               {stale && (
                 <FieldDescription>
-                  Over a year old — the lien can&apos;t be perfected until it&apos;s
-                  re-appraised.
+                  Over a year old — the lien can&apos;t be perfected until
+                  it&apos;s re-appraised.
                 </FieldDescription>
               )}
             </Field>
@@ -179,7 +187,11 @@ export function CollateralDialog({
           >
             Cancel
           </Button>
-          <Button type="submit" form="collateral-form" disabled={!isValid(draft)}>
+          <Button
+            type="submit"
+            form="collateral-form"
+            disabled={!isValid(draft)}
+          >
             {editing ? "Save changes" : "Pledge"}
           </Button>
         </DialogFooter>

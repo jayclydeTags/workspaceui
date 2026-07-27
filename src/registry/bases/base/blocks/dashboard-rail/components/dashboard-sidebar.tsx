@@ -8,8 +8,14 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
-import { AppRail, type AppId } from "@/registry/bases/base/blocks/dashboard-rail/components/app-rail"
-import { NavSidebar, type NavItem } from "@/registry/bases/base/blocks/dashboard-rail/components/nav-sidebar"
+import {
+  AppRail,
+  type AppId,
+} from "@/registry/bases/base/blocks/dashboard-rail/components/app-rail"
+import {
+  NavSidebar,
+  type NavItem,
+} from "@/registry/bases/base/blocks/dashboard-rail/components/nav-sidebar"
 
 export function DashboardSidebar({
   activeAppId,
@@ -30,7 +36,12 @@ export function DashboardSidebar({
 
   const rail = <AppRail activeAppId={activeAppId} onAppSelect={onAppSelect} />
   const nav = (
-    <NavSidebar title={navTitle} items={navItems} activeId={activeId} onNavClick={onNavClick} />
+    <NavSidebar
+      title={navTitle}
+      items={navItems}
+      activeId={activeId}
+      onNavClick={onNavClick}
+    />
   )
 
   if (isMobile) {
@@ -53,7 +64,10 @@ export function DashboardSidebar({
   }
 
   return (
-    <Sidebar collapsible="icon" className="overflow-hidden *:data-[sidebar=sidebar]:flex-row">
+    <Sidebar
+      collapsible="icon"
+      className="overflow-hidden *:data-[sidebar=sidebar]:flex-row"
+    >
       {rail}
       {nav}
     </Sidebar>

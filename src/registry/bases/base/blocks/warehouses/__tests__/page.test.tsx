@@ -9,8 +9,7 @@ import { utilization, type Warehouse } from "../data"
 // jsdom keeps both in the DOM (they're only hidden via CSS), so most queries
 // match twice — use the first match / getAllBy.
 
-const wh = (capacity: number, used: number) =>
-  ({ capacity, used }) as Warehouse
+const wh = (capacity: number, used: number) => ({ capacity, used }) as Warehouse
 
 describe("utilization", () => {
   it("returns a rounded percentage", () => {

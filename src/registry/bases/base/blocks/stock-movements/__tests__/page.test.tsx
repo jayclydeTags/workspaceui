@@ -11,7 +11,9 @@ import { isValid, netChange, emptyDraft, type Movement } from "../data"
 
 describe("data helpers", () => {
   it("sums signed quantities", () => {
-    expect(netChange([{ quantity: 500 }, { quantity: -150 }] as Movement[])).toBe(350)
+    expect(
+      netChange([{ quantity: 500 }, { quantity: -150 }] as Movement[])
+    ).toBe(350)
   })
 
   it("rejects a zero-quantity movement", () => {

@@ -3,8 +3,14 @@
 import * as React from "react"
 import { FileText } from "lucide-react"
 
-import { Workspace, type WorkspaceHandle } from "@/registry/bases/base/workspaceui/workspace"
-import { INVOICES, type Invoice } from "@/registry/bases/base/blocks/invoice-detail/data"
+import {
+  Workspace,
+  type WorkspaceHandle,
+} from "@/registry/bases/base/workspaceui/workspace"
+import {
+  INVOICES,
+  type Invoice,
+} from "@/registry/bases/base/blocks/invoice-detail/data"
 import { InvoiceList } from "@/registry/bases/base/blocks/invoice-detail/components/invoice-list"
 import { InvoiceView } from "@/registry/bases/base/blocks/invoice-detail/components/invoice-view"
 
@@ -19,7 +25,9 @@ const INITIAL_PANES = [
 
 export function InvoiceDetail({ className }: { className?: string }) {
   const workspaceRef = React.useRef<WorkspaceHandle>(null)
-  const [activeInvoiceId, setActiveInvoiceId] = React.useState<string | null>(null)
+  const [activeInvoiceId, setActiveInvoiceId] = React.useState<string | null>(
+    null
+  )
 
   function openInvoice(invoice: Invoice) {
     setActiveInvoiceId(invoice.id)
@@ -37,7 +45,12 @@ export function InvoiceDetail({ className }: { className?: string }) {
       initialPanes={INITIAL_PANES}
       renderTabContent={(paneId, activeTabId) => {
         if (paneId === "list") {
-          return <InvoiceList activeInvoiceId={activeInvoiceId} onSelect={openInvoice} />
+          return (
+            <InvoiceList
+              activeInvoiceId={activeInvoiceId}
+              onSelect={openInvoice}
+            />
+          )
         }
         const invoice = INVOICES.find((inv) => inv.id === activeTabId)
         return invoice ? <InvoiceView invoice={invoice} /> : null

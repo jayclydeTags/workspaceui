@@ -103,8 +103,7 @@ export function Payments() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete payment</AlertDialogTitle>
             <AlertDialogDescription>
-              Delete{" "}
-              <span className="font-medium">{deleting?.reference}</span>?
+              Delete <span className="font-medium">{deleting?.reference}</span>?
               This action can&apos;t be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>

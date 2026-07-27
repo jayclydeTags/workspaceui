@@ -59,7 +59,9 @@ export function Page({
               )}
               {breadcrumbs ? (
                 <>
-                  <h1 className="sr-only">{breadcrumbs[breadcrumbs.length - 1]?.label}</h1>
+                  <h1 className="sr-only">
+                    {breadcrumbs[breadcrumbs.length - 1]?.label}
+                  </h1>
                   <Breadcrumb className="not-prose min-w-0">
                     <BreadcrumbList className="flex-nowrap">
                       {breadcrumbs.map((crumb, i) => {
@@ -69,9 +71,14 @@ export function Page({
                             {i > 0 && <BreadcrumbSeparator />}
                             <BreadcrumbItem className="min-w-0">
                               {isLast ? (
-                                <BreadcrumbPage className="truncate">{crumb.label}</BreadcrumbPage>
+                                <BreadcrumbPage className="truncate">
+                                  {crumb.label}
+                                </BreadcrumbPage>
                               ) : (
-                                <BreadcrumbLink href={crumb.href} className="truncate">
+                                <BreadcrumbLink
+                                  href={crumb.href}
+                                  className="truncate"
+                                >
                                   {crumb.label}
                                 </BreadcrumbLink>
                               )}
@@ -83,7 +90,9 @@ export function Page({
                   </Breadcrumb>
                 </>
               ) : (
-                <h1 className="not-prose truncate text-lg font-semibold">{title}</h1>
+                <h1 className="not-prose truncate text-lg font-semibold">
+                  {title}
+                </h1>
               )}
               {badge}
             </div>
@@ -92,7 +101,9 @@ export function Page({
             )}
           </div>
           {subtitle && (
-            <p className="not-prose truncate text-sm text-muted-foreground">{subtitle}</p>
+            <p className="not-prose truncate text-sm text-muted-foreground">
+              {subtitle}
+            </p>
           )}
         </header>
       )}

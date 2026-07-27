@@ -4,7 +4,13 @@ import { useRef, useState } from "react"
 import { Check, Copy, Loader2, ShieldCheck, TriangleAlert } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import {
   InputOTP,
   InputOTPGroup,
@@ -82,7 +88,9 @@ export function TwoFactorSetup() {
               Your authenticator app is now set up. We&apos;ll ask for a code at
               each sign-in.
             </p>
-            <Button className="mt-4 w-full max-w-xs">View recovery codes</Button>
+            <Button className="mt-4 w-full max-w-xs">
+              View recovery codes
+            </Button>
           </div>
         </div>
       </Page>
@@ -98,8 +106,8 @@ export function TwoFactorSetup() {
           <CardHeader className="text-center">
             <CardTitle>Set up two-factor auth</CardTitle>
             <CardDescription>
-              Scan the QR code with your authenticator app, then enter the code it
-              shows
+              Scan the QR code with your authenticator app, then enter the code
+              it shows
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-4">
@@ -125,7 +133,9 @@ export function TwoFactorSetup() {
             </div>
 
             <div className="flex w-full flex-col items-center gap-2">
-              <p className="text-xs text-muted-foreground">Enter the 6-digit code</p>
+              <p className="text-xs text-muted-foreground">
+                Enter the 6-digit code
+              </p>
               <InputOTP
                 maxLength={6}
                 value={code}
@@ -136,7 +146,11 @@ export function TwoFactorSetup() {
               >
                 <InputOTPGroup>
                   {[0, 1, 2, 3, 4, 5].map((i) => (
-                    <InputOTPSlot key={i} index={i} aria-invalid={status === "error"} />
+                    <InputOTPSlot
+                      key={i}
+                      index={i}
+                      aria-invalid={status === "error"}
+                    />
                   ))}
                 </InputOTPGroup>
               </InputOTP>
@@ -149,7 +163,10 @@ export function TwoFactorSetup() {
                   </span>
                 )}
                 {status === "error" && (
-                  <span className="flex items-center gap-2 text-destructive" role="alert">
+                  <span
+                    className="flex items-center gap-2 text-destructive"
+                    role="alert"
+                  >
                     <TriangleAlert className="size-4" />
                     That code didn&apos;t match. Try again.
                   </span>

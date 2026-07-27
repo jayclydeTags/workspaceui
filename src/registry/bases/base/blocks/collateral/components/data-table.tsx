@@ -112,7 +112,9 @@ export function DataTable({
               <TableHead className="hidden @md:table-cell">Type</TableHead>
               <TableHead className="text-right">Appraised</TableHead>
               <TableHead className="text-right">Lendable</TableHead>
-              <TableHead className="hidden @md:table-cell">Appraised on</TableHead>
+              <TableHead className="hidden @md:table-cell">
+                Appraised on
+              </TableHead>
               <TableHead>Lien</TableHead>
               <TableHead className="w-0 pr-6" />
             </TableRow>
@@ -123,7 +125,9 @@ export function DataTable({
                 <TableCell className="px-6 font-medium">
                   {item.description}
                 </TableCell>
-                <TableCell className="text-muted-foreground">{item.loan}</TableCell>
+                <TableCell className="text-muted-foreground">
+                  {item.loan}
+                </TableCell>
                 <TableCell className="hidden text-muted-foreground @md:table-cell">
                   {item.type}
                 </TableCell>
@@ -166,12 +170,15 @@ export function DataTable({
                   {item.loan}
                 </Badge>
               </div>
-              <p className="mt-0.5 truncate text-xs tabular-nums text-muted-foreground">
+              <p className="mt-0.5 truncate text-xs text-muted-foreground tabular-nums">
                 {formatCurrency(item.value)} · lendable{" "}
                 {formatCurrency(lendableValue(item))}
               </p>
               <div className="mt-1.5 flex items-center gap-2 text-xs">
-                <Badge variant={LIEN_VARIANT[item.lien]} className="text-[10px]">
+                <Badge
+                  variant={LIEN_VARIANT[item.lien]}
+                  className="text-[10px]"
+                >
                   {item.lien}
                 </Badge>
                 <Appraisal item={item} />

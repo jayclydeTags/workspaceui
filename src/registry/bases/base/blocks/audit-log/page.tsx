@@ -191,7 +191,9 @@ export function AuditLog() {
                       <span className="whitespace-nowrap">{e.actor}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="whitespace-nowrap">{e.record}</TableCell>
+                  <TableCell className="whitespace-nowrap">
+                    {e.record}
+                  </TableCell>
                   <TableCell className="font-mono text-xs">{e.field}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1.5 text-xs">

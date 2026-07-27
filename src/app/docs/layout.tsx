@@ -8,7 +8,7 @@ import { SidebarNav } from "@/components/sidebar-nav"
 export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-[calc(100svh-3.5rem)]">
-      <aside className="fd-scroll-container sticky top-14 hidden h-[calc(100svh-3.5rem)] w-56 shrink-0 overflow-y-auto px-4 py-6 md:flex">
+      <aside className="sticky top-14 fd-scroll-container hidden h-[calc(100svh-3.5rem)] w-56 shrink-0 overflow-y-auto px-4 py-6 md:flex">
         <div className="w-full">
           <SidebarNav />
         </div>

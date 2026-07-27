@@ -5,7 +5,13 @@ import { CheckCircle2, Loader2, TriangleAlert } from "lucide-react"
 
 import { Alert, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   Field,
@@ -30,7 +36,10 @@ export function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [status, setStatus] = useState<Status>("idle")
-  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({})
+  const [fieldErrors, setFieldErrors] = useState<{
+    email?: string
+    password?: string
+  }>({})
 
   const submitting = status === "submitting"
 
@@ -38,7 +47,8 @@ export function Login() {
     e.preventDefault()
     const next: { email?: string; password?: string } = {}
     if (!email.trim()) next.email = "Enter your email."
-    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) next.email = "Enter a valid email."
+    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))
+      next.email = "Enter a valid email."
     if (!password) next.password = "Enter your password."
     setFieldErrors(next)
     if (next.email || next.password) return
@@ -77,7 +87,9 @@ export function Login() {
         <Card className="w-full max-w-sm">
           <CardHeader className="text-center">
             <CardTitle>Sign in to Acme</CardTitle>
-            <CardDescription>Enter your credentials to continue</CardDescription>
+            <CardDescription>
+              Enter your credentials to continue
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={onSubmit} noValidate>
@@ -137,9 +149,16 @@ export function Login() {
                 </Field>
 
                 <Field>
-                  <Button type="submit" className="w-full" disabled={submitting}>
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={submitting}
+                  >
                     {submitting && (
-                      <Loader2 data-icon="inline-start" className="animate-spin" />
+                      <Loader2
+                        data-icon="inline-start"
+                        className="animate-spin"
+                      />
                     )}
                     {submitting ? "Signing in…" : "Sign in"}
                   </Button>

@@ -46,7 +46,9 @@ export function LoanApplications() {
   const [formOpen, setFormOpen] = React.useState(false)
   const [editing, setEditing] = React.useState<LoanApplication | null>(null)
   const [deleting, setDeleting] = React.useState<LoanApplication | null>(null)
-  const [statusFilter, setStatusFilter] = React.useState<LoanStatus | "all">("all")
+  const [statusFilter, setStatusFilter] = React.useState<LoanStatus | "all">(
+    "all"
+  )
 
   const visible =
     statusFilter === "all"
@@ -104,7 +106,9 @@ export function LoanApplications() {
         <div className="border-b px-4 py-3 @sm:px-6">
           <Select
             value={statusFilter}
-            onValueChange={(v) => setStatusFilter((v as LoanStatus | "all") ?? "all")}
+            onValueChange={(v) =>
+              setStatusFilter((v as LoanStatus | "all") ?? "all")
+            }
           >
             <SelectTrigger aria-label="Filter by status" className="w-48">
               <SelectValue />
@@ -125,8 +129,8 @@ export function LoanApplications() {
             <EmptyHeader>
               <EmptyTitle>No applications</EmptyTitle>
               <EmptyDescription>
-                No {statusFilter === "all" ? "" : `${statusFilter} `}applications to
-                show.
+                No {statusFilter === "all" ? "" : `${statusFilter} `}
+                applications to show.
               </EmptyDescription>
             </EmptyHeader>
           </Empty>
@@ -158,8 +162,8 @@ export function LoanApplications() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete application</AlertDialogTitle>
             <AlertDialogDescription>
-              Delete <span className="font-medium">{deleting?.reference}</span>? This
-              action can&apos;t be undone.
+              Delete <span className="font-medium">{deleting?.reference}</span>?
+              This action can&apos;t be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

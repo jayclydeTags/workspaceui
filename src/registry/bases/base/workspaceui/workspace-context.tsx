@@ -18,7 +18,7 @@ export interface WorkspaceDragContextValue {
     sourcePaneId: string,
     tabId: string,
     tabTitle: string,
-    event: React.PointerEvent<Element>,
+    event: React.PointerEvent<Element>
   ) => void
   setLastActivePane: (paneId: string) => void
   /**
@@ -32,12 +32,14 @@ export interface WorkspaceDragContextValue {
   moveTab: (fromPaneId: string, tabId: string, toPaneId: string) => void
 }
 
-export const WorkspaceDragContext = React.createContext<WorkspaceDragContextValue | null>(null)
+export const WorkspaceDragContext =
+  React.createContext<WorkspaceDragContextValue | null>(null)
 
 /** Throws when used outside <Workspace>. For internal components that require the context. */
 export function useWorkspaceDrag(): WorkspaceDragContextValue {
   const ctx = React.useContext(WorkspaceDragContext)
-  if (ctx == null) throw new Error("useWorkspaceDrag must be used inside <Workspace>")
+  if (ctx == null)
+    throw new Error("useWorkspaceDrag must be used inside <Workspace>")
   return ctx
 }
 

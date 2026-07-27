@@ -4,7 +4,13 @@ import { useState } from "react"
 import { CheckCircle2, Loader2, LinkIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import {
   Field,
   FieldDescription,
@@ -84,7 +90,9 @@ export function ResetPassword() {
             <p className="mt-1 text-xs text-muted-foreground">
               Your password has been changed. You can now sign in with it.
             </p>
-            <Button className="mt-4 w-full max-w-xs">Continue to sign in</Button>
+            <Button className="mt-4 w-full max-w-xs">
+              Continue to sign in
+            </Button>
           </div>
         </div>
       </Page>
@@ -116,7 +124,9 @@ export function ResetPassword() {
                     aria-invalid={!!errors.password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
-                  {errors.password && <FieldError>{errors.password}</FieldError>}
+                  {errors.password && (
+                    <FieldError>{errors.password}</FieldError>
+                  )}
                 </Field>
 
                 <Field data-invalid={!!errors.confirm}>
@@ -133,9 +143,16 @@ export function ResetPassword() {
                 </Field>
 
                 <Field>
-                  <Button type="submit" className="w-full" disabled={submitting}>
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={submitting}
+                  >
                     {submitting && (
-                      <Loader2 data-icon="inline-start" className="animate-spin" />
+                      <Loader2
+                        data-icon="inline-start"
+                        className="animate-spin"
+                      />
                     )}
                     {submitting ? "Updating…" : "Update password"}
                   </Button>

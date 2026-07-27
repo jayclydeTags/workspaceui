@@ -15,8 +15,16 @@ import {
 // Icons live here, not in the snapshot — a ReactNode can't be JSON.
 const TABS: Record<string, WorkspaceTabDef> = {
   home: { id: "home", title: "Home", icon: <Home className="size-3.5" /> },
-  files: { id: "files", title: "Files", icon: <FolderOpen className="size-3.5" /> },
-  terminal: { id: "terminal", title: "Terminal", icon: <Terminal className="size-3.5" /> },
+  files: {
+    id: "files",
+    title: "Files",
+    icon: <FolderOpen className="size-3.5" />,
+  },
+  terminal: {
+    id: "terminal",
+    title: "Terminal",
+    icon: <Terminal className="size-3.5" />,
+  },
 }
 
 export function WorkspacePersistenceDemo() {
@@ -51,11 +59,15 @@ export function WorkspacePersistenceDemo() {
       <div className="h-[320px] w-full overflow-hidden rounded-lg border border-border shadow-sm">
         <Workspace
           ref={workspace}
-          initialPanes={[{ id: "main", tabs: [TABS.home!, TABS.files!, TABS.terminal!] }]}
+          initialPanes={[
+            { id: "main", tabs: [TABS.home!, TABS.files!, TABS.terminal!] },
+          ]}
           renderTabContent={(_paneId, tabId) => (
             <div className="flex h-full flex-col items-center justify-center gap-2 p-6">
               {TABS[tabId]?.icon}
-              <p className="text-sm text-muted-foreground">{TABS[tabId]?.title ?? tabId}</p>
+              <p className="text-sm text-muted-foreground">
+                {TABS[tabId]?.title ?? tabId}
+              </p>
             </div>
           )}
         />

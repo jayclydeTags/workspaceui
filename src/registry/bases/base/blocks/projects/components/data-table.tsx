@@ -49,7 +49,9 @@ function RowActions({ project, onEdit, onDelete }: RowProps) {
         }
       />
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => onEdit(project)}>Edit</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onEdit(project)}>
+          Edit
+        </DropdownMenuItem>
         <DropdownMenuItem
           variant="destructive"
           onClick={() => onDelete(project)}
@@ -83,7 +85,11 @@ function Progress({ value }: { value: number }) {
 /** A due date that has passed on an unfinished project reads as a warning. */
 function Due({ project }: { project: Project }) {
   return (
-    <span className={isOverdue(project) ? "font-medium text-destructive" : undefined}>
+    <span
+      className={
+        isOverdue(project) ? "font-medium text-destructive" : undefined
+      }
+    >
       {project.due}
     </span>
   )
@@ -171,11 +177,7 @@ export function DataTable({
                 <Progress value={project.progress} />
               </div>
             </div>
-            <RowActions
-              project={project}
-              onEdit={onEdit}
-              onDelete={onDelete}
-            />
+            <RowActions project={project} onEdit={onEdit} onDelete={onDelete} />
           </li>
         ))}
       </ul>

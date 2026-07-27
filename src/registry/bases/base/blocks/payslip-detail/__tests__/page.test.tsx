@@ -18,6 +18,8 @@ describe("PayslipDetail", () => {
   it("shows net pay as earnings minus deductions", () => {
     render(<PayslipDetail />)
     const net = sum(EARNINGS, "current") - sum(DEDUCTIONS, "current")
-    expect(screen.getAllByText(formatCurrency(net)).length).toBeGreaterThanOrEqual(1)
+    expect(
+      screen.getAllByText(formatCurrency(net)).length
+    ).toBeGreaterThanOrEqual(1)
   })
 })

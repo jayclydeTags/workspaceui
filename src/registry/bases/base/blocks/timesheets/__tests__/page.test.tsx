@@ -80,14 +80,15 @@ describe("Timesheets", () => {
 
     await open()
     // Editing and deleting are gone once the entry leaves draft.
-    expect(screen.queryByRole("menuitem", { name: "Edit" })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole("menuitem", { name: "Edit" })
+    ).not.toBeInTheDocument()
     await user.click(await screen.findByRole("menuitem", { name: "Approve" }))
 
     await open()
-    expect(await screen.findByRole("menuitem", { name: "Locked" })).toHaveAttribute(
-      "aria-disabled",
-      "true"
-    )
+    expect(
+      await screen.findByRole("menuitem", { name: "Locked" })
+    ).toHaveAttribute("aria-disabled", "true")
   })
 
   it("deletes a draft entry after confirmation", async () => {

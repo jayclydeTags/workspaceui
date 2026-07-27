@@ -49,7 +49,9 @@ export function Accounts() {
   const [tierFilter, setTierFilter] = React.useState<AccountTier | "all">("all")
 
   const visible =
-    tierFilter === "all" ? accounts : accounts.filter((a) => a.tier === tierFilter)
+    tierFilter === "all"
+      ? accounts
+      : accounts.filter((a) => a.tier === tierFilter)
 
   const atRisk = accounts.filter((a) => health(a) === "at-risk").length
 
@@ -94,7 +96,9 @@ export function Accounts() {
         <div className="border-b px-4 py-3 @sm:px-6">
           <Select
             value={tierFilter}
-            onValueChange={(v) => setTierFilter((v as AccountTier | "all") ?? "all")}
+            onValueChange={(v) =>
+              setTierFilter((v as AccountTier | "all") ?? "all")
+            }
           >
             <SelectTrigger aria-label="Filter by tier" className="w-48">
               <SelectValue />
@@ -115,7 +119,8 @@ export function Accounts() {
             <EmptyHeader>
               <EmptyTitle>No accounts</EmptyTitle>
               <EmptyDescription>
-                No {tierFilter === "all" ? "" : `${tierFilter} `}accounts to show.
+                No {tierFilter === "all" ? "" : `${tierFilter} `}accounts to
+                show.
               </EmptyDescription>
             </EmptyHeader>
           </Empty>

@@ -66,8 +66,10 @@ export function BinDialog({
   if (openKey !== seededKey) {
     setSeededKey(openKey)
     if (openKey !== null) {
-      const { code, warehouse, row, col, capacity, status } =
-        editing ?? { ...emptyDraft(defaultWarehouse), ...seed }
+      const { code, warehouse, row, col, capacity, status } = editing ?? {
+        ...emptyDraft(defaultWarehouse),
+        ...seed,
+      }
       setDraft({ code, warehouse, row, col, capacity, status })
     }
   }
@@ -184,7 +186,11 @@ export function BinDialog({
           </FieldGroup>
         </form>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+          >
             Cancel
           </Button>
           <Button type="submit" form="bin-form" disabled={!valid}>

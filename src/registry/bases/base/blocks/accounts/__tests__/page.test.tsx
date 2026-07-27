@@ -3,7 +3,13 @@ import userEvent from "@testing-library/user-event"
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest"
 
 import { Accounts } from "../page"
-import { daysSinceContact, emptyDraft, health, isValid, type Account } from "../data"
+import {
+  daysSinceContact,
+  emptyDraft,
+  health,
+  isValid,
+  type Account,
+} from "../data"
 
 // The DataTable renders both a wide-pane table and a narrow-pane card list;
 // jsdom keeps both in the DOM (they're only hidden via CSS), so most queries

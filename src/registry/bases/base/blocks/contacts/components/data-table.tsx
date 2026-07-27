@@ -41,14 +41,19 @@ function RowActions({ contact, onEdit, onSetPrimary, onDelete }: RowProps) {
         }
       />
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => onEdit(contact)}>Edit</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onEdit(contact)}>
+          Edit
+        </DropdownMenuItem>
         <DropdownMenuItem
           disabled={contact.primary}
           onClick={() => !contact.primary && onSetPrimary(contact)}
         >
           {contact.primary ? "Already primary" : "Make primary"}
         </DropdownMenuItem>
-        <DropdownMenuItem variant="destructive" onClick={() => onDelete(contact)}>
+        <DropdownMenuItem
+          variant="destructive"
+          onClick={() => onDelete(contact)}
+        >
           Delete
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -117,7 +122,7 @@ export function DataTable({
                 <TableCell className="hidden text-muted-foreground @md:table-cell">
                   {contact.email}
                 </TableCell>
-                <TableCell className="hidden tabular-nums text-muted-foreground @md:table-cell">
+                <TableCell className="hidden text-muted-foreground tabular-nums @md:table-cell">
                   {contact.phone}
                 </TableCell>
                 <TableCell className="pr-6">

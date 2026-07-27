@@ -17,14 +17,21 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
-import { RATING_LABELS, type Rating, type Review, type ReviewStatus } from "../data"
+import {
+  RATING_LABELS,
+  type Rating,
+  type Review,
+  type ReviewStatus,
+} from "../data"
 
-const STATUS_VARIANT: Record<ReviewStatus, "default" | "secondary" | "outline"> =
-  {
-    completed: "default",
-    "in-review": "secondary",
-    draft: "outline",
-  }
+const STATUS_VARIANT: Record<
+  ReviewStatus,
+  "default" | "secondary" | "outline"
+> = {
+  completed: "default",
+  "in-review": "secondary",
+  draft: "outline",
+}
 
 interface RowProps {
   review: Review
@@ -48,7 +55,10 @@ function RowActions({ review, onEdit, onDelete }: RowProps) {
       />
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => onEdit(review)}>Edit</DropdownMenuItem>
-        <DropdownMenuItem variant="destructive" onClick={() => onDelete(review)}>
+        <DropdownMenuItem
+          variant="destructive"
+          onClick={() => onDelete(review)}
+        >
           Delete
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -61,7 +71,8 @@ function StatusBadge({ status }: { status: ReviewStatus }) {
 }
 
 export function Stars({ rating }: { rating: Rating }) {
-  if (rating === 0) return <span className="text-muted-foreground">Unrated</span>
+  if (rating === 0)
+    return <span className="text-muted-foreground">Unrated</span>
   return (
     <span
       role="img"

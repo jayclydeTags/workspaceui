@@ -28,9 +28,44 @@ export const isValid = (d: DepartmentDraft): boolean =>
 // ── Mock data ──────────────────────────────────────────────────────────────
 
 export const DEPARTMENTS: Department[] = [
-  { id: "1", name: "Engineering", code: "ENG", manager: "Sarah Chen", headcount: 42, status: "active" },
-  { id: "2", name: "Sales", code: "SAL", manager: "Mike Johnson", headcount: 28, status: "active" },
-  { id: "3", name: "Design", code: "DSN", manager: "Emma Davis", headcount: 12, status: "active" },
-  { id: "4", name: "Customer Support", code: "SUP", manager: "David Lee", headcount: 19, status: "active" },
-  { id: "5", name: "Research", code: "RND", manager: "Priya Nair", headcount: 8, status: "archived" },
+  {
+    id: "1",
+    name: "Engineering",
+    code: "ENG",
+    manager: "Sarah Chen",
+    headcount: 42,
+    status: "active",
+  },
+  {
+    id: "2",
+    name: "Sales",
+    code: "SAL",
+    manager: "Mike Johnson",
+    headcount: 28,
+    status: "active",
+  },
+  {
+    id: "3",
+    name: "Design",
+    code: "DSN",
+    manager: "Emma Davis",
+    headcount: 12,
+    status: "active",
+  },
+  {
+    id: "4",
+    name: "Customer Support",
+    code: "SUP",
+    manager: "David Lee",
+    headcount: 19,
+    status: "active",
+  },
+  {
+    id: "5",
+    name: "Research",
+    code: "RND",
+    manager: "Priya Nair",
+    headcount: 8,
+    status: "archived",
+  },
 ]

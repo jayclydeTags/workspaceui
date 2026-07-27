@@ -24,7 +24,7 @@ describe("Dashboard block", () => {
     render(<Dashboard />)
     // The Page header renders the title as an <h1>; DashboardContent passes "Dashboard".
     expect(
-      screen.getByRole("heading", { level: 1, name: "Dashboard" }),
+      screen.getByRole("heading", { level: 1, name: "Dashboard" })
     ).toBeInTheDocument()
     expect(screen.getByText("Overview of your workspace")).toBeInTheDocument()
   })
@@ -38,14 +38,14 @@ describe("Dashboard block", () => {
 
     // Analytics tab now active — its Page-wrapped placeholder shows the title heading.
     expect(
-      screen.getByRole("heading", { level: 1, name: "Analytics" }),
+      screen.getByRole("heading", { level: 1, name: "Analytics" })
     ).toBeInTheDocument()
   })
 
   it("renders the sidebar trigger inside the sidebar", () => {
     render(<Dashboard />)
     expect(
-      screen.getByRole("button", { name: /toggle sidebar/i }),
+      screen.getByRole("button", { name: /toggle sidebar/i })
     ).toBeInTheDocument()
   })
 })

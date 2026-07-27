@@ -18,7 +18,11 @@ export const STATUS_LABEL: Record<ApprovalStatus, string> = {
   rejected: "Rejected",
 }
 
-export const STATUS_COLUMNS: ApprovalStatus[] = ["pending", "approved", "rejected"]
+export const STATUS_COLUMNS: ApprovalStatus[] = [
+  "pending",
+  "approved",
+  "rejected",
+]
 
 export const INITIAL_REQUESTS: ApprovalRequest[] = [
   {

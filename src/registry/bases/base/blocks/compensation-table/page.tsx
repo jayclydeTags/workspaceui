@@ -20,11 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Page } from "@/registry/bases/base/workspaceui/page"
-import {
-  COMP_RECORDS,
-  formatCurrency,
-  formatPct,
-} from "./data"
+import { COMP_RECORDS, formatCurrency, formatPct } from "./data"
 
 export function CompensationTable() {
   const [query, setQuery] = useState("")
@@ -79,7 +75,9 @@ export function CompensationTable() {
             {rows.map((r) => (
               <TableRow key={r.id}>
                 <TableCell className="font-medium">{r.name}</TableCell>
-                <TableCell className="text-muted-foreground">{r.role}</TableCell>
+                <TableCell className="text-muted-foreground">
+                  {r.role}
+                </TableCell>
                 <TableCell>
                   <Badge variant="outline">{r.band}</Badge>
                 </TableCell>

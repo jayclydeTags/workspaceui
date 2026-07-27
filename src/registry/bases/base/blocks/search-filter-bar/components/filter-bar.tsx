@@ -62,7 +62,10 @@ export function FilterBar({
         value={filters.status}
         onValueChange={(v) => patch({ status: v as Filters["status"] })}
       >
-        <SelectTrigger className="w-auto min-w-32" aria-label="Filter by status">
+        <SelectTrigger
+          className="w-auto min-w-32"
+          aria-label="Filter by status"
+        >
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -76,7 +79,11 @@ export function FilterBar({
       </Select>
 
       {active && (
-        <Button variant="ghost" size="sm" onClick={() => onChange({ query: "", role: "all", status: "all" })}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onChange({ query: "", role: "all", status: "all" })}
+        >
           <XIcon data-icon="inline-start" />
           Clear
         </Button>

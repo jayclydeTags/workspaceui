@@ -109,7 +109,9 @@ export function RequestDialog({
                 required
               />
             </Field>
-            <Field data-invalid={draft.end !== "" && days === 0 ? "" : undefined}>
+            <Field
+              data-invalid={draft.end !== "" && days === 0 ? "" : undefined}
+            >
               <FieldLabel htmlFor="leave-end">End date</FieldLabel>
               <Input
                 id="leave-end"

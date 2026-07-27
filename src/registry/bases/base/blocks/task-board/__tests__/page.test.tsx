@@ -60,7 +60,9 @@ describe("TaskBoard", () => {
     render(<TaskBoard />)
 
     await user.click(
-      screen.getByRole("button", { name: "Actions for Backfill invoice fixtures" })
+      screen.getByRole("button", {
+        name: "Actions for Backfill invoice fixtures",
+      })
     )
     await user.click(await screen.findByRole("menuitem", { name: "Edit" }))
 

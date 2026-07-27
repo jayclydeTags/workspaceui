@@ -32,7 +32,10 @@ import {
   type Bin,
 } from "../data"
 
-const STATUS_BADGE_VARIANT: Record<Bin["status"], "default" | "outline" | "secondary"> = {
+const STATUS_BADGE_VARIANT: Record<
+  Bin["status"],
+  "default" | "outline" | "secondary"
+> = {
   active: "default",
   blocked: "outline",
   quarantine: "secondary",
@@ -91,7 +94,9 @@ export function BinSheet({
 
         <div className="flex flex-col gap-4 px-4">
           <div className="flex items-center gap-2">
-            <Badge variant={STATUS_BADGE_VARIANT[bin.status]}>{bin.status}</Badge>
+            <Badge variant={STATUS_BADGE_VARIANT[bin.status]}>
+              {bin.status}
+            </Badge>
             <span className="text-sm text-muted-foreground">
               {bin.qty}/{bin.capacity} used
             </span>
@@ -146,7 +151,9 @@ export function BinSheet({
                 disabled={bin.status !== "active"}
                 onChange={(e) => setQty(Number(e.target.value))}
               />
-              {blockedReason && <FieldDescription>{blockedReason}</FieldDescription>}
+              {blockedReason && (
+                <FieldDescription>{blockedReason}</FieldDescription>
+              )}
             </Field>
             <Button
               type="button"
@@ -162,7 +169,12 @@ export function BinSheet({
         </div>
 
         <SheetFooter className="flex-row justify-between">
-          <Button type="button" variant="outline" size="sm" onClick={() => onEdit(bin)}>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => onEdit(bin)}
+          >
             Edit slot
           </Button>
           <Button

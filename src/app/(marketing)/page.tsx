@@ -26,8 +26,8 @@ export default function HomePage() {
         </h1>
         <p className="mb-8 text-lg text-muted-foreground">
           Open-source, accessible, and customizable workspace components. Built
-          with Tailwind CSS and shadcn&apos;s distribution model. Copy, own,
-          and adapt.
+          with Tailwind CSS and shadcn&apos;s distribution model. Copy, own, and
+          adapt.
         </p>
 
         <div className="mb-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
@@ -51,7 +51,10 @@ export default function HomePage() {
 
         {/* Install snippet */}
         <div className="mx-auto max-w-lg">
-          <DynamicCodeBlock lang="bash" code="npx shadcn@latest add jayclydeTags/workspaceui/workspace" />
+          <DynamicCodeBlock
+            lang="bash"
+            code="npx shadcn@latest add jayclydeTags/workspaceui/workspace"
+          />
         </div>
       </div>
 
@@ -99,7 +102,9 @@ export default function HomePage() {
             <div className="mb-3 inline-flex size-9 items-center justify-center rounded-lg border border-border bg-muted/50 text-foreground">
               <item.icon className="size-4.5" />
             </div>
-            <h3 className="mb-1.5 font-semibold text-foreground">{item.title}</h3>
+            <h3 className="mb-1.5 font-semibold text-foreground">
+              {item.title}
+            </h3>
             <p className="text-sm text-muted-foreground">{item.description}</p>
           </div>
         ))}

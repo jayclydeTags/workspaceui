@@ -58,7 +58,10 @@ function RowActions({ request, onDecide, onDelete }: RowProps) {
             </DropdownMenuItem>
           </>
         )}
-        <DropdownMenuItem variant="destructive" onClick={() => onDelete(request)}>
+        <DropdownMenuItem
+          variant="destructive"
+          onClick={() => onDelete(request)}
+        >
           Delete
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -114,7 +117,7 @@ export function DataTable({
                 <TableCell className="px-6 font-medium">
                   {request.employee}
                 </TableCell>
-                <TableCell className="capitalize text-muted-foreground">
+                <TableCell className="text-muted-foreground capitalize">
                   {request.type}
                 </TableCell>
                 <TableCell className="tabular-nums">

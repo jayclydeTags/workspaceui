@@ -60,10 +60,52 @@ export const totalHours = (entries: AttendanceEntry[]): number =>
 // ── Mock data ──────────────────────────────────────────────────────────────
 
 export const ATTENDANCE: AttendanceEntry[] = [
-  { id: "1", employee: "Ava Chen", date: "2026-07-07", clockIn: "08:56", clockOut: "17:32", status: "present" },
-  { id: "2", employee: "Marcus Webb", date: "2026-07-07", clockIn: "09:24", clockOut: "18:05", status: "late" },
-  { id: "3", employee: "Priya Nair", date: "2026-07-07", clockIn: "", clockOut: "", status: "leave" },
-  { id: "4", employee: "Tom Okafor", date: "2026-07-07", clockIn: "", clockOut: "", status: "absent" },
-  { id: "5", employee: "Lena Fischer", date: "2026-07-07", clockIn: "08:45", clockOut: "16:30", status: "present" },
-  { id: "6", employee: "Ava Chen", date: "2026-07-06", clockIn: "09:02", clockOut: "17:48", status: "late" },
+  {
+    id: "1",
+    employee: "Ava Chen",
+    date: "2026-07-07",
+    clockIn: "08:56",
+    clockOut: "17:32",
+    status: "present",
+  },
+  {
+    id: "2",
+    employee: "Marcus Webb",
+    date: "2026-07-07",
+    clockIn: "09:24",
+    clockOut: "18:05",
+    status: "late",
+  },
+  {
+    id: "3",
+    employee: "Priya Nair",
+    date: "2026-07-07",
+    clockIn: "",
+    clockOut: "",
+    status: "leave",
+  },
+  {
+    id: "4",
+    employee: "Tom Okafor",
+    date: "2026-07-07",
+    clockIn: "",
+    clockOut: "",
+    status: "absent",
+  },
+  {
+    id: "5",
+    employee: "Lena Fischer",
+    date: "2026-07-07",
+    clockIn: "08:45",
+    clockOut: "16:30",
+    status: "present",
+  },
+  {
+    id: "6",
+    employee: "Ava Chen",
+    date: "2026-07-06",
+    clockIn: "09:02",
+    clockOut: "17:48",
+    status: "late",
+  },
 ]

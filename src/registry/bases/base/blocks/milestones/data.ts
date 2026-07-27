@@ -51,7 +51,8 @@ export const progress = (m: Milestone | MilestoneDraft): number =>
 
 const daysUntil = (iso: string, today: Date) =>
   Math.ceil(
-    (Date.parse(iso) - Date.parse(today.toISOString().slice(0, 10))) / 86_400_000
+    (Date.parse(iso) - Date.parse(today.toISOString().slice(0, 10))) /
+      86_400_000
   )
 
 /**
@@ -72,9 +73,54 @@ export const openCount = (milestones: Milestone[]): number =>
 // ── Mock data ──────────────────────────────────────────────────────────────
 
 export const MILESTONES: Milestone[] = [
-  { id: "1", name: "Schema frozen", project: "PRJ-101", owner: "Ava Chen", due: "2026-07-10", tasksTotal: 8, tasksDone: 6, completedOn: "" },
-  { id: "2", name: "Dual-write live", project: "PRJ-101", owner: "Ava Chen", due: "2026-08-15", tasksTotal: 12, tasksDone: 3, completedOn: "" },
-  { id: "3", name: "Beta cut", project: "PRJ-102", owner: "Marcus Webb", due: "2026-06-30", tasksTotal: 10, tasksDone: 7, completedOn: "" },
-  { id: "4", name: "Discovery sign-off", project: "PRJ-103", owner: "Priya Nair", due: "2026-05-29", tasksTotal: 5, tasksDone: 5, completedOn: "2026-05-28" },
-  { id: "5", name: "Pilot warehouse live", project: "PRJ-103", owner: "Priya Nair", due: "2026-11-01", tasksTotal: 20, tasksDone: 2, completedOn: "" },
+  {
+    id: "1",
+    name: "Schema frozen",
+    project: "PRJ-101",
+    owner: "Ava Chen",
+    due: "2026-07-10",
+    tasksTotal: 8,
+    tasksDone: 6,
+    completedOn: "",
+  },
+  {
+    id: "2",
+    name: "Dual-write live",
+    project: "PRJ-101",
+    owner: "Ava Chen",
+    due: "2026-08-15",
+    tasksTotal: 12,
+    tasksDone: 3,
+    completedOn: "",
+  },
+  {
+    id: "3",
+    name: "Beta cut",
+    project: "PRJ-102",
+    owner: "Marcus Webb",
+    due: "2026-06-30",
+    tasksTotal: 10,
+    tasksDone: 7,
+    completedOn: "",
+  },
+  {
+    id: "4",
+    name: "Discovery sign-off",
+    project: "PRJ-103",
+    owner: "Priya Nair",
+    due: "2026-05-29",
+    tasksTotal: 5,
+    tasksDone: 5,
+    completedOn: "2026-05-28",
+  },
+  {
+    id: "5",
+    name: "Pilot warehouse live",
+    project: "PRJ-103",
+    owner: "Priya Nair",
+    due: "2026-11-01",
+    tasksTotal: 20,
+    tasksDone: 2,
+    completedOn: "",
+  },
 ]

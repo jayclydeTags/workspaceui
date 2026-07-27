@@ -23,7 +23,9 @@ describe("ChangePassword", () => {
     await user.type(screen.getByLabelText(/^new password$/i), "Ab1!xyzq")
     await user.type(screen.getByLabelText(/confirm new password/i), "Ab1!xyzq")
     await user.click(screen.getByRole("button", { name: /update password/i }))
-    expect(await screen.findByText(/current password is incorrect/i)).toBeInTheDocument()
+    expect(
+      await screen.findByText(/current password is incorrect/i)
+    ).toBeInTheDocument()
   })
 
   it("changes the password with the correct current password", async () => {

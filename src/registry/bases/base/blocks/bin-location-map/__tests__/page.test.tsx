@@ -33,13 +33,15 @@ describe("canAssign", () => {
   })
 
   it("rejects assignment that would overflow capacity", () => {
-    expect(canAssign(bin({ qty: 80 }), { sku: "SKU-1001", qty: 30 })).toBe(false)
+    expect(canAssign(bin({ qty: 80 }), { sku: "SKU-1001", qty: 30 })).toBe(
+      false
+    )
   })
 
   it("rejects a blocked or quarantine bin outright, even with room", () => {
-    expect(canAssign(bin({ status: "blocked" }), { sku: "SKU-1001", qty: 1 })).toBe(
-      false
-    )
+    expect(
+      canAssign(bin({ status: "blocked" }), { sku: "SKU-1001", qty: 1 })
+    ).toBe(false)
     expect(
       canAssign(bin({ status: "quarantine" }), { sku: "SKU-1001", qty: 1 })
     ).toBe(false)
@@ -77,14 +79,28 @@ describe("isPositionTaken", () => {
   it("flags a duplicate row/col within the same warehouse", () => {
     const bins = [bin({ id: "1", row: 0, col: 0 })]
     expect(
-      isPositionTaken(bins, { code: "Y", warehouse: "WH-CEN", row: 0, col: 0, capacity: 10, status: "active" })
+      isPositionTaken(bins, {
+        code: "Y",
+        warehouse: "WH-CEN",
+        row: 0,
+        col: 0,
+        capacity: 10,
+        status: "active",
+      })
     ).toBe(true)
   })
 
   it("ignores a different warehouse at the same position", () => {
     const bins = [bin({ id: "1", warehouse: "WH-CEN", row: 0, col: 0 })]
     expect(
-      isPositionTaken(bins, { code: "Y", warehouse: "WH-NW", row: 0, col: 0, capacity: 10, status: "active" })
+      isPositionTaken(bins, {
+        code: "Y",
+        warehouse: "WH-NW",
+        row: 0,
+        col: 0,
+        capacity: 10,
+        status: "active",
+      })
     ).toBe(false)
   })
 
@@ -93,7 +109,14 @@ describe("isPositionTaken", () => {
     expect(
       isPositionTaken(
         bins,
-        { code: "X", warehouse: "WH-CEN", row: 0, col: 0, capacity: 10, status: "active" },
+        {
+          code: "X",
+          warehouse: "WH-CEN",
+          row: 0,
+          col: 0,
+          capacity: 10,
+          status: "active",
+        },
         "1"
       )
     ).toBe(false)
@@ -108,13 +131,34 @@ describe("fillPct / isDraftValid", () => {
 
   it("requires a code and positive capacity", () => {
     expect(
-      isDraftValid({ code: "", warehouse: "WH-CEN", row: 0, col: 0, capacity: 10, status: "active" })
+      isDraftValid({
+        code: "",
+        warehouse: "WH-CEN",
+        row: 0,
+        col: 0,
+        capacity: 10,
+        status: "active",
+      })
     ).toBe(false)
     expect(
-      isDraftValid({ code: "A1", warehouse: "WH-CEN", row: 0, col: 0, capacity: 0, status: "active" })
+      isDraftValid({
+        code: "A1",
+        warehouse: "WH-CEN",
+        row: 0,
+        col: 0,
+        capacity: 0,
+        status: "active",
+      })
     ).toBe(false)
     expect(
-      isDraftValid({ code: "A1", warehouse: "WH-CEN", row: 0, col: 0, capacity: 10, status: "active" })
+      isDraftValid({
+        code: "A1",
+        warehouse: "WH-CEN",
+        row: 0,
+        col: 0,
+        capacity: 10,
+        status: "active",
+      })
     ).toBe(true)
   })
 })
@@ -124,7 +168,9 @@ describe("BinLocationMap", () => {
     render(<BinLocationMap />)
     const occupied = BINS.filter((b) => b.sku !== null && b.qty > 0).length
     expect(
-      screen.getByText(`${BINS.length} bins across 3 warehouses · ${occupied} occupied`)
+      screen.getByText(
+        `${BINS.length} bins across 3 warehouses · ${occupied} occupied`
+      )
     ).toBeInTheDocument()
   })
 
@@ -132,9 +178,13 @@ describe("BinLocationMap", () => {
     const user = userEvent.setup()
     render(<BinLocationMap />)
 
-    expect(screen.getByRole("button", { name: /^Bin CEN-A1,/ })).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: /^Bin CEN-A1,/ })
+    ).toBeInTheDocument()
     await user.click(screen.getByRole("tab", { name: "WH-NW" }))
-    expect(await screen.findByRole("button", { name: /^Bin NW-A1,/ })).toBeInTheDocument()
+    expect(
+      await screen.findByRole("button", { name: /^Bin NW-A1,/ })
+    ).toBeInTheDocument()
   })
 
   it("flags unavailable bins in the active warehouse", () => {
@@ -148,7 +198,9 @@ describe("BinLocationMap", () => {
     render(<BinLocationMap />)
 
     await user.click(screen.getByRole("button", { name: /^Bin CEN-A3,/ }))
-    expect(await screen.findByRole("heading", { name: "CEN-A3" })).toBeInTheDocument()
+    expect(
+      await screen.findByRole("heading", { name: "CEN-A3" })
+    ).toBeInTheDocument()
 
     await user.type(screen.getByLabelText("Quantity"), "50")
     await user.click(screen.getByRole("button", { name: "Assign" }))
@@ -203,7 +255,9 @@ describe("BinLocationMap", () => {
     await user.type(screen.getByLabelText("Capacity"), "100")
     await user.click(screen.getByRole("button", { name: "Add bin" }))
 
-    expect(screen.getByRole("button", { name: /^Bin CEN-C1,/ })).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: /^Bin CEN-C1,/ })
+    ).toBeInTheDocument()
   })
 
   it("quick-adds a bin by clicking an empty floor slot, pre-seeding its position", async () => {
@@ -220,7 +274,9 @@ describe("BinLocationMap", () => {
     await user.type(screen.getByLabelText("Code"), "CEN-A5")
     await user.click(screen.getByRole("button", { name: "Add bin" }))
 
-    expect(screen.getByRole("button", { name: /^Bin CEN-A5,/ })).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: /^Bin CEN-A5,/ })
+    ).toBeInTheDocument()
   })
 
   it("deletes a bin after confirmation", async () => {
@@ -233,6 +289,8 @@ describe("BinLocationMap", () => {
     const dialog = screen.getByRole("alertdialog")
     await user.click(within(dialog).getByRole("button", { name: "Delete" }))
 
-    expect(screen.queryByRole("button", { name: /^Bin CEN-A3,/ })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole("button", { name: /^Bin CEN-A3,/ })
+    ).not.toBeInTheDocument()
   })
 })

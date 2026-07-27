@@ -72,7 +72,10 @@ export function MasterDetail() {
                   </span>
                   <span className="flex items-center gap-2 text-xs text-muted-foreground">
                     {t.assignee}
-                    <Badge variant={STATUS_VARIANT[t.status]} className="text-[10px]">
+                    <Badge
+                      variant={STATUS_VARIANT[t.status]}
+                      className="text-[10px]"
+                    >
                       {STATUS_LABEL[t.status]}
                     </Badge>
                   </span>

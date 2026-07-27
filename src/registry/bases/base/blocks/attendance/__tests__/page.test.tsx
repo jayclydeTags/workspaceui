@@ -41,12 +41,19 @@ describe("deriveStatus", () => {
 
 describe("isValid", () => {
   it("rejects an inverted punch pair", () => {
-    const d = { ...emptyDraft(), employee: "X", clockIn: "17:00", clockOut: "09:00" }
+    const d = {
+      ...emptyDraft(),
+      employee: "X",
+      clockIn: "17:00",
+      clockOut: "09:00",
+    }
     expect(isValid(d)).toBe(false)
   })
 
   it("allows an open shift with no clock-out", () => {
-    expect(isValid({ ...emptyDraft(), employee: "X", clockIn: "09:00" })).toBe(true)
+    expect(isValid({ ...emptyDraft(), employee: "X", clockIn: "09:00" })).toBe(
+      true
+    )
   })
 })
 

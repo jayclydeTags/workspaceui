@@ -23,7 +23,9 @@ describe("isOverdue", () => {
   })
 
   it("ignores a missing due date", () => {
-    expect(isOverdue({ due: "", status: "active" } as Project, today)).toBe(false)
+    expect(isOverdue({ due: "", status: "active" } as Project, today)).toBe(
+      false
+    )
   })
 })
 

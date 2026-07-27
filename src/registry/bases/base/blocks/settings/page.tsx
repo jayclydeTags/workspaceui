@@ -27,8 +27,12 @@ import {
 
 export function Settings({ className }: { className?: string }) {
   const [activeId, setActiveId] = React.useState<SettingsSectionId>("general")
-  const [profile, setProfile] = React.useState<CompanyProfile>(initialCompanyProfile)
-  const [prefs, setPrefs] = React.useState<NotificationPrefs>(initialNotificationPrefs)
+  const [profile, setProfile] = React.useState<CompanyProfile>(
+    initialCompanyProfile
+  )
+  const [prefs, setPrefs] = React.useState<NotificationPrefs>(
+    initialNotificationPrefs
+  )
   const [billing, setBilling] = React.useState<BillingInfo>(BILLING_INFO)
   const [twoFactorEnabled, setTwoFactorEnabled] = React.useState(false)
   const [sessions, setSessions] = React.useState<Session[]>(ACTIVE_SESSIONS)
@@ -61,20 +65,37 @@ export function Settings({ className }: { className?: string }) {
         <div className="flex min-h-0 flex-1 flex-col">
           <div className="flex-1 overflow-y-auto p-6">
             {activeId === "general" && (
-              <GeneralSection profile={profile} onChange={withDirty((patch) => setProfile((p) => ({ ...p, ...patch })))} />
+              <GeneralSection
+                profile={profile}
+                onChange={withDirty((patch) =>
+                  setProfile((p) => ({ ...p, ...patch }))
+                )}
+              />
             )}
             {activeId === "notifications" && (
-              <NotificationsSection prefs={prefs} onChange={withDirty((patch) => setPrefs((p) => ({ ...p, ...patch })))} />
+              <NotificationsSection
+                prefs={prefs}
+                onChange={withDirty((patch) =>
+                  setPrefs((p) => ({ ...p, ...patch }))
+                )}
+              />
             )}
             {activeId === "billing" && (
-              <BillingSection billing={billing} onChange={withDirty((patch) => setBilling((b) => ({ ...b, ...patch })))} />
+              <BillingSection
+                billing={billing}
+                onChange={withDirty((patch) =>
+                  setBilling((b) => ({ ...b, ...patch }))
+                )}
+              />
             )}
             {activeId === "security" && (
               <SecuritySection
                 twoFactorEnabled={twoFactorEnabled}
                 onToggleTwoFactor={withDirty(setTwoFactorEnabled)}
                 sessions={sessions}
-                onRevoke={(id) => setSessions((prev) => prev.filter((s) => s.id !== id))}
+                onRevoke={(id) =>
+                  setSessions((prev) => prev.filter((s) => s.id !== id))
+                }
               />
             )}
           </div>
@@ -83,7 +104,9 @@ export function Settings({ className }: { className?: string }) {
             <Button size="sm" onClick={() => setSaved(true)}>
               Save changes
             </Button>
-            {saved && <span className="text-sm text-muted-foreground">Saved</span>}
+            {saved && (
+              <span className="text-sm text-muted-foreground">Saved</span>
+            )}
           </div>
         </div>
       </div>

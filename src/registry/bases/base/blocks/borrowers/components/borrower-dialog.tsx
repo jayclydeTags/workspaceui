@@ -78,7 +78,9 @@ export function BorrowerDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{editing ? "Edit borrower" : "New borrower"}</DialogTitle>
+          <DialogTitle>
+            {editing ? "Edit borrower" : "New borrower"}
+          </DialogTitle>
         </DialogHeader>
         <form id="borrower-form" onSubmit={submit}>
           <FieldGroup>
@@ -136,7 +138,9 @@ export function BorrowerDialog({
               <FieldLabel htmlFor="borrower-kyc">KYC</FieldLabel>
               <Select
                 value={draft.kyc}
-                onValueChange={(v) => patch({ kyc: (v as KycStatus) ?? "unverified" })}
+                onValueChange={(v) =>
+                  patch({ kyc: (v as KycStatus) ?? "unverified" })
+                }
               >
                 <SelectTrigger id="borrower-kyc">
                   <SelectValue />

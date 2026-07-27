@@ -30,14 +30,11 @@ import { DataTable } from "./components/data-table"
 import { ItemDialog } from "./components/item-dialog"
 
 export function DeductionsBenefits() {
-  const [items, setItems] = React.useState<DeductionBenefit[]>(
-    DEDUCTIONS_BENEFITS
-  )
+  const [items, setItems] =
+    React.useState<DeductionBenefit[]>(DEDUCTIONS_BENEFITS)
   const [formOpen, setFormOpen] = React.useState(false)
   const [editing, setEditing] = React.useState<DeductionBenefit | null>(null)
-  const [deleting, setDeleting] = React.useState<DeductionBenefit | null>(
-    null
-  )
+  const [deleting, setDeleting] = React.useState<DeductionBenefit | null>(null)
 
   function openCreate() {
     setEditing(null)
@@ -110,8 +107,8 @@ export function DeductionsBenefits() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete item</AlertDialogTitle>
             <AlertDialogDescription>
-              Delete <span className="font-medium">{deleting?.name}</span>?
-              This action can&apos;t be undone.
+              Delete <span className="font-medium">{deleting?.name}</span>? This
+              action can&apos;t be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

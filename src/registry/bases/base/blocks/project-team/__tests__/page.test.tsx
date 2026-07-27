@@ -87,10 +87,9 @@ describe("ProjectTeam", () => {
     await user.click(
       screen.getAllByRole("button", { name: "Actions for Ava Chen" })[0]
     )
-    expect(await screen.findByRole("menuitem", { name: "Last lead" })).toHaveAttribute(
-      "aria-disabled",
-      "true"
-    )
+    expect(
+      await screen.findByRole("menuitem", { name: "Last lead" })
+    ).toHaveAttribute("aria-disabled", "true")
 
     await user.click(screen.getByRole("menuitem", { name: "Edit" }))
     expect(screen.getByLabelText("Role")).toBeDisabled()

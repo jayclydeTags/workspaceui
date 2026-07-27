@@ -23,7 +23,13 @@ export function Heading({
   if (!props.id) return <As className={className}>{children}</As>
 
   return (
-    <As {...props} className={cn("group/heading flex flex-row items-center gap-1", className)}>
+    <As
+      {...props}
+      className={cn(
+        "group/heading flex flex-row items-center gap-1",
+        className
+      )}
+    >
       <a href={`#${props.id}`}>{children}</a>
       <Button
         variant="ghost"

@@ -139,9 +139,9 @@ export function LeaveRequests() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete leave request</AlertDialogTitle>
             <AlertDialogDescription>
-              Delete{" "}
-              <span className="font-medium">{deleting?.employee}</span>&apos;s{" "}
-              {deleting?.type} request? This action can&apos;t be undone.
+              Delete <span className="font-medium">{deleting?.employee}</span>
+              &apos;s {deleting?.type} request? This action can&apos;t be
+              undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

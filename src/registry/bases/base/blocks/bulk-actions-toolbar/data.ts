@@ -10,7 +10,12 @@ export interface Document {
 
 export const DOCUMENTS: Document[] = [
   { id: "1", name: "Q3 Financials.xlsx", size: "1.2 MB", owner: "Sarah Chen" },
-  { id: "2", name: "Brand Guidelines.pdf", size: "8.4 MB", owner: "Emma Davis" },
+  {
+    id: "2",
+    name: "Brand Guidelines.pdf",
+    size: "8.4 MB",
+    owner: "Emma Davis",
+  },
   { id: "3", name: "Roadmap 2026.key", size: "4.1 MB", owner: "Mike Johnson" },
   { id: "4", name: "Contract - Acme.docx", size: "220 KB", owner: "David Lee" },
   { id: "5", name: "User Research.pdf", size: "3.7 MB", owner: "Priya Nair" },

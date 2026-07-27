@@ -138,7 +138,7 @@ function LineCard({
       <div className="flex items-start justify-between gap-2">
         <div>
           <p className="text-sm font-medium">{line.sku}</p>
-          <p className="text-xs tabular-nums text-muted-foreground">
+          <p className="text-xs text-muted-foreground tabular-nums">
             {picked} / {line.requestedQty} picked
             {line.short && short > 0 && (
               <span className="text-destructive"> (short {short})</span>
@@ -156,7 +156,8 @@ function LineCard({
         <ul className="flex flex-col gap-0.5 text-xs text-muted-foreground">
           {line.allocations.map((a, i) => (
             <li key={i} className="tabular-nums">
-              {a.qty} from bin {bins.find((b) => b.id === a.binId)?.code ?? a.binId}
+              {a.qty} from bin{" "}
+              {bins.find((b) => b.id === a.binId)?.code ?? a.binId}
             </li>
           ))}
         </ul>
@@ -222,8 +223,8 @@ export function PickSheet({
             <Alert>
               <AlertTitle>Order {ORDER_STATUS[list.orderId]}</AlertTitle>
               <AlertDescription>
-                {list.orderId} is {ORDER_STATUS[list.orderId]} — it can no longer
-                be picked.
+                {list.orderId} is {ORDER_STATUS[list.orderId]} — it can no
+                longer be picked.
               </AlertDescription>
             </Alert>
           </div>

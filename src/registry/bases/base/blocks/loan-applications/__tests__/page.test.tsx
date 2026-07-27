@@ -65,13 +65,20 @@ describe("isApprovable", () => {
   })
 
   it("is false once decided", () => {
-    expect(isApprovable({ ...base, monthlyDebts: 0, status: "approved" })).toBe(false)
+    expect(isApprovable({ ...base, monthlyDebts: 0, status: "approved" })).toBe(
+      false
+    )
   })
 })
 
 describe("isValid", () => {
   it("requires an income to assess against", () => {
-    const d = { ...emptyDraft(), reference: "LN-1", borrower: "X", amount: 1000 }
+    const d = {
+      ...emptyDraft(),
+      reference: "LN-1",
+      borrower: "X",
+      amount: 1000,
+    }
     expect(isValid(d)).toBe(false)
     expect(isValid({ ...d, monthlyIncome: 5000 })).toBe(true)
   })
@@ -80,7 +87,9 @@ describe("isValid", () => {
 describe("LoanApplications", () => {
   it("summarises the pending pipeline", () => {
     render(<LoanApplications />)
-    expect(screen.getByText("3 pending · $253,000 in pipeline")).toBeInTheDocument()
+    expect(
+      screen.getByText("3 pending · $253,000 in pipeline")
+    ).toBeInTheDocument()
   })
 
   it("filters by status", async () => {
@@ -102,10 +111,9 @@ describe("LoanApplications", () => {
     await user.click(
       screen.getAllByRole("button", { name: "Actions for LN-2042" })[0]
     )
-    expect(await screen.findByRole("menuitem", { name: "DTI too high" })).toHaveAttribute(
-      "aria-disabled",
-      "true"
-    )
+    expect(
+      await screen.findByRole("menuitem", { name: "DTI too high" })
+    ).toHaveAttribute("aria-disabled", "true")
     // Rejecting is always available.
     expect(screen.getByRole("menuitem", { name: "Reject" })).toBeInTheDocument()
   })
@@ -119,7 +127,9 @@ describe("LoanApplications", () => {
     )
     await user.click(await screen.findByRole("menuitem", { name: "Approve" }))
 
-    expect(screen.getByText("2 pending · $253,000 in pipeline")).toBeInTheDocument()
+    expect(
+      screen.getByText("2 pending · $253,000 in pipeline")
+    ).toBeInTheDocument()
   })
 
   it("a decided application offers no further decision", async () => {
@@ -130,7 +140,9 @@ describe("LoanApplications", () => {
       screen.getAllByRole("button", { name: "Actions for LN-2043" })[0]
     )
     await screen.findByRole("menuitem", { name: "Edit" })
-    expect(screen.queryByRole("menuitem", { name: "Reject" })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole("menuitem", { name: "Reject" })
+    ).not.toBeInTheDocument()
   })
 
   it("lowering the debts brings an application back under the ceiling", async () => {
@@ -148,7 +160,9 @@ describe("LoanApplications", () => {
     await user.click(
       screen.getAllByRole("button", { name: "Actions for LN-2042" })[0]
     )
-    expect(await screen.findByRole("menuitem", { name: "Approve" })).toBeInTheDocument()
+    expect(
+      await screen.findByRole("menuitem", { name: "Approve" })
+    ).toBeInTheDocument()
   })
 
   it("deletes an application after confirmation", async () => {
@@ -164,6 +178,8 @@ describe("LoanApplications", () => {
     await user.click(within(dialog).getByRole("button", { name: "Delete" }))
 
     expect(screen.queryByText("LN-2045")).not.toBeInTheDocument()
-    expect(screen.getByText("2 pending · $235,000 in pipeline")).toBeInTheDocument()
+    expect(
+      screen.getByText("2 pending · $235,000 in pipeline")
+    ).toBeInTheDocument()
   })
 })

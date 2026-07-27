@@ -66,7 +66,8 @@ describe("buildSchedule", () => {
 })
 
 describe("status", () => {
-  const row = (over: Partial<Instalment>) => ({ paid: false, ...over }) as Instalment
+  const row = (over: Partial<Instalment>) =>
+    ({ paid: false, ...over }) as Instalment
 
   it("is paid whatever the due date", () => {
     expect(status(row({ paid: true, due: "2020-01-01" }), TODAY)).toBe("paid")
@@ -110,14 +111,18 @@ describe("RepaymentSchedule", () => {
   it("offers a payment only on the earliest unpaid instalment", () => {
     render(<RepaymentSchedule />)
     // One button in the table, one in the card list — same single instalment.
-    expect(screen.getAllByRole("button", { name: "Record payment" })).toHaveLength(2)
+    expect(
+      screen.getAllByRole("button", { name: "Record payment" })
+    ).toHaveLength(2)
   })
 
   it("recording a payment advances the cursor", async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     render(<RepaymentSchedule />)
 
-    await user.click(screen.getAllByRole("button", { name: "Record payment" })[0])
+    await user.click(
+      screen.getAllByRole("button", { name: "Record payment" })[0]
+    )
     const dialog = screen.getByRole("alertdialog")
     await user.click(within(dialog).getByRole("button", { name: "Record" }))
 
@@ -131,6 +136,8 @@ describe("RepaymentSchedule", () => {
     await user.click(screen.getByRole("button", { name: "Hide paid" }))
 
     expect(screen.queryAllByText("paid")).toHaveLength(0)
-    expect(screen.getByRole("button", { name: "Show paid" })).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: "Show paid" })
+    ).toBeInTheDocument()
   })
 })

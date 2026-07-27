@@ -12,11 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field"
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -49,7 +45,11 @@ export function OffcyclePaymentForm() {
 
   if (submitted) {
     return (
-      <Page title="Off-cycle Payment" subtitle="Submitted for approval" hasPadding>
+      <Page
+        title="Off-cycle Payment"
+        subtitle="Submitted for approval"
+        hasPadding
+      >
         <Card className="mx-auto max-w-md bg-primary/5 text-center ring-primary/40">
           <CardHeader>
             <CardTitle className="text-lg">Payment queued</CardTitle>
@@ -117,9 +117,7 @@ export function OffcyclePaymentForm() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {(
-                  Object.keys(PAYMENT_TYPE_LABEL) as PaymentType[]
-                ).map((t) => (
+                {(Object.keys(PAYMENT_TYPE_LABEL) as PaymentType[]).map((t) => (
                   <SelectItem key={t} value={t}>
                     {PAYMENT_TYPE_LABEL[t]}
                   </SelectItem>

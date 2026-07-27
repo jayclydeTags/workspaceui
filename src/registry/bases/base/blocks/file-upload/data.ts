@@ -30,8 +30,32 @@ export const extLabel = (name: string) =>
 // ── Mock data ──────────────────────────────────────────────────────────────
 
 export const ATTACHMENTS: FileAttachment[] = [
-  { id: "1", name: "Q3-financials.pdf", size: 2_411_520, progress: 100, status: "done" },
-  { id: "2", name: "logo-final.png", size: 184_320, progress: 100, status: "done" },
-  { id: "3", name: "vendor-contract.docx", size: 96_240, progress: 62, status: "uploading" },
-  { id: "4", name: "warehouse-photo.jpg", size: 5_242_880, progress: 100, status: "error" },
+  {
+    id: "1",
+    name: "Q3-financials.pdf",
+    size: 2_411_520,
+    progress: 100,
+    status: "done",
+  },
+  {
+    id: "2",
+    name: "logo-final.png",
+    size: 184_320,
+    progress: 100,
+    status: "done",
+  },
+  {
+    id: "3",
+    name: "vendor-contract.docx",
+    size: 96_240,
+    progress: 62,
+    status: "uploading",
+  },
+  {
+    id: "4",
+    name: "warehouse-photo.jpg",
+    size: 5_242_880,
+    progress: 100,
+    status: "error",
+  },
 ]

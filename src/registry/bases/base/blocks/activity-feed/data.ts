@@ -1,6 +1,7 @@
 // ── Types ──────────────────────────────────────────────────────────────────
 
-export type ActivityType = "updated" | "created" | "assigned" | "commented" | "deleted"
+export type ActivityType =
+  "updated" | "created" | "assigned" | "commented" | "deleted"
 
 export interface ActivityEntry {
   id: string

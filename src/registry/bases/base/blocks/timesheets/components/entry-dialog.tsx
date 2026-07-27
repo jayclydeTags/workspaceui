@@ -137,7 +137,9 @@ export function EntryDialog({
               <Checkbox
                 id="timesheet-billable"
                 checked={draft.billable}
-                onCheckedChange={(checked) => patch({ billable: checked === true })}
+                onCheckedChange={(checked) =>
+                  patch({ billable: checked === true })
+                }
               />
               <FieldLabel htmlFor="timesheet-billable">Billable</FieldLabel>
             </Field>
@@ -151,7 +153,11 @@ export function EntryDialog({
           >
             Cancel
           </Button>
-          <Button type="submit" form="timesheet-form" disabled={!isValid(draft)}>
+          <Button
+            type="submit"
+            form="timesheet-form"
+            disabled={!isValid(draft)}
+          >
             {editing ? "Save changes" : "Log entry"}
           </Button>
         </DialogFooter>

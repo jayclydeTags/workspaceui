@@ -71,17 +71,17 @@ export function ScheduleTable({
           <TableBody>
             {rows.map((row) => (
               <TableRow key={row.n}>
-                <TableCell className="px-6 tabular-nums text-muted-foreground">
+                <TableCell className="px-6 text-muted-foreground tabular-nums">
                   {row.n}
                 </TableCell>
                 <TableCell className="tabular-nums">{row.due}</TableCell>
                 <TableCell className="text-right font-medium tabular-nums">
                   {formatCurrency(row.payment)}
                 </TableCell>
-                <TableCell className="hidden text-right tabular-nums text-muted-foreground @md:table-cell">
+                <TableCell className="hidden text-right text-muted-foreground tabular-nums @md:table-cell">
                   {formatCurrency(row.interest)}
                 </TableCell>
-                <TableCell className="hidden text-right tabular-nums text-muted-foreground @md:table-cell">
+                <TableCell className="hidden text-right text-muted-foreground tabular-nums @md:table-cell">
                   {formatCurrency(row.principal)}
                 </TableCell>
                 <TableCell className="text-right tabular-nums">
@@ -112,7 +112,7 @@ export function ScheduleTable({
                   #{row.n}
                 </Badge>
               </div>
-              <p className="mt-0.5 truncate text-xs tabular-nums text-muted-foreground">
+              <p className="mt-0.5 truncate text-xs text-muted-foreground tabular-nums">
                 Due {row.due} · balance {formatCurrency(row.balance)}
               </p>
               <div className="mt-1.5">

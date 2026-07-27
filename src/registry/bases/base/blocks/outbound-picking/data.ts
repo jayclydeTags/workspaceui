@@ -97,9 +97,7 @@ export function pickStatus(list: PickList): PickStatus {
 
 /** Completion needs an assigned picker and every line closed (full or short). */
 export const canCompletePick = (list: PickList): boolean =>
-  list.picker !== null &&
-  !list.completed &&
-  list.lines.every(isLineClosed)
+  list.picker !== null && !list.completed && list.lines.every(isLineClosed)
 
 /**
  * The draw-down rule, the inverse of the bin block's `canAssign`: a bin can
@@ -155,8 +153,20 @@ export const PICK_LISTS: PickList[] = [
     picker: null,
     completed: false,
     lines: [
-      { id: "1a", sku: "SKU-1001", requestedQty: 200, allocations: [], short: false },
-      { id: "1b", sku: "SKU-1004", requestedQty: 100, allocations: [], short: false },
+      {
+        id: "1a",
+        sku: "SKU-1001",
+        requestedQty: 200,
+        allocations: [],
+        short: false,
+      },
+      {
+        id: "1b",
+        sku: "SKU-1004",
+        requestedQty: 100,
+        allocations: [],
+        short: false,
+      },
     ],
   },
   {
@@ -166,8 +176,20 @@ export const PICK_LISTS: PickList[] = [
     picker: "Dana Cruz",
     completed: false,
     lines: [
-      { id: "2a", sku: "SKU-1004", requestedQty: 80, allocations: [{ binId: "9", qty: 80 }], short: false },
-      { id: "2b", sku: "SKU-1005", requestedQty: 60, allocations: [], short: false },
+      {
+        id: "2a",
+        sku: "SKU-1004",
+        requestedQty: 80,
+        allocations: [{ binId: "9", qty: 80 }],
+        short: false,
+      },
+      {
+        id: "2b",
+        sku: "SKU-1005",
+        requestedQty: 60,
+        allocations: [],
+        short: false,
+      },
     ],
   },
   {
@@ -177,7 +199,13 @@ export const PICK_LISTS: PickList[] = [
     picker: "Rey Santos",
     completed: true,
     lines: [
-      { id: "3a", sku: "SKU-1006", requestedQty: 150, allocations: [{ binId: "15", qty: 150 }], short: false },
+      {
+        id: "3a",
+        sku: "SKU-1006",
+        requestedQty: 150,
+        allocations: [{ binId: "15", qty: 150 }],
+        short: false,
+      },
     ],
   },
 ]

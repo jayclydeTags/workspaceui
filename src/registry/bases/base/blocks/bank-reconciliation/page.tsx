@@ -61,7 +61,10 @@ export function BankReconciliation() {
             label="Statement balance"
             value={formatCurrency(STATEMENT_BALANCE)}
           />
-          <SummaryCard label="Cleared balance" value={formatCurrency(cleared)} />
+          <SummaryCard
+            label="Cleared balance"
+            value={formatCurrency(cleared)}
+          />
           <SummaryCard
             label="Difference"
             value={formatSigned(difference)}
@@ -124,8 +127,7 @@ function SummaryCard({
         <CardDescription>{label}</CardDescription>
         <CardTitle
           className={
-            "text-2xl tracking-tight " +
-            (emphasize ? "text-destructive" : "")
+            "text-2xl tracking-tight " + (emphasize ? "text-destructive" : "")
           }
         >
           {value}

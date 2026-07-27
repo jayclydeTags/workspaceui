@@ -42,7 +42,9 @@ describe("StockLevels", () => {
 
     await user.type(screen.getByLabelText("Search stock"), "notebook")
 
-    expect(screen.getAllByText("Recycled Notebook A5").length).toBeGreaterThan(0)
+    expect(screen.getAllByText("Recycled Notebook A5").length).toBeGreaterThan(
+      0
+    )
     expect(screen.queryByText("Canvas Tote Bag")).not.toBeInTheDocument()
   })
 

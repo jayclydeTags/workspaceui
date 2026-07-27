@@ -67,9 +67,19 @@ export function ImportExport() {
   }
 
   function exportCsv() {
-    const blob = new Blob([toCsv(parsed.headers.length ? parsed.headers : TARGET_FIELDS.map((t) => t.key), parsed.rows)], {
-      type: "text/csv",
-    })
+    const blob = new Blob(
+      [
+        toCsv(
+          parsed.headers.length
+            ? parsed.headers
+            : TARGET_FIELDS.map((t) => t.key),
+          parsed.rows
+        ),
+      ],
+      {
+        type: "text/csv",
+      }
+    )
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
@@ -101,8 +111,7 @@ export function ImportExport() {
                   className={cn(
                     "flex size-6 items-center justify-center rounded-full text-xs font-medium",
                     i < step && "bg-primary text-primary-foreground",
-                    i === step &&
-                      "border-2 border-primary text-foreground",
+                    i === step && "border-2 border-primary text-foreground",
                     i > step && "border text-muted-foreground"
                   )}
                 >
@@ -160,7 +169,10 @@ export function ImportExport() {
             <FieldGroup>
               {TARGET_FIELDS.map((t) => (
                 <Field key={t.key} orientation="horizontal">
-                  <FieldLabel htmlFor={`map-${t.key}`} className="w-32 shrink-0">
+                  <FieldLabel
+                    htmlFor={`map-${t.key}`}
+                    className="w-32 shrink-0"
+                  >
                     {t.label}
                   </FieldLabel>
                   <Select
@@ -220,7 +232,10 @@ export function ImportExport() {
               <Button variant="outline" onClick={() => setStep(0)}>
                 Back
               </Button>
-              <Button onClick={() => setStep(2)} disabled={parsed.rows.length === 0}>
+              <Button
+                onClick={() => setStep(2)}
+                disabled={parsed.rows.length === 0}
+              >
                 Import {parsed.rows.length} records
               </Button>
             </div>

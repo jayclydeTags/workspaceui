@@ -165,7 +165,8 @@ export function CollateralRegister() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete collateral</AlertDialogTitle>
             <AlertDialogDescription>
-              Remove <span className="font-medium">{deleting?.description}</span> from{" "}
+              Remove{" "}
+              <span className="font-medium">{deleting?.description}</span> from{" "}
               {deleting?.loan}? The loan may fall under-secured.
             </AlertDialogDescription>
           </AlertDialogHeader>

@@ -16,10 +16,7 @@ describe("CompensationTable", () => {
   it("filters rows by the search query", async () => {
     const user = userEvent.setup()
     render(<CompensationTable />)
-    await user.type(
-      screen.getByPlaceholderText(/search by name/i),
-      "Priya"
-    )
+    await user.type(screen.getByPlaceholderText(/search by name/i), "Priya")
     expect(screen.getByText("Priya Nair")).toBeInTheDocument()
     expect(screen.queryByText("Sarah Chen")).not.toBeInTheDocument()
   })

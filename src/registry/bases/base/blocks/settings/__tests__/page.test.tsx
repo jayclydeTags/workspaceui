@@ -7,7 +7,9 @@ import { Settings } from "../page"
 describe("Settings", () => {
   it("shows the company profile fields by default", () => {
     render(<Settings />)
-    expect(screen.getByLabelText("Display name")).toHaveValue("Northwind Traders")
+    expect(screen.getByLabelText("Display name")).toHaveValue(
+      "Northwind Traders"
+    )
     expect(screen.getByLabelText("Tax ID")).toHaveValue("84-1234567")
   })
 
@@ -17,8 +19,12 @@ describe("Settings", () => {
 
     await user.click(screen.getByRole("button", { name: /notifications/i }))
 
-    expect(screen.getByRole("checkbox", { name: "Invoice due reminders" })).toBeChecked()
-    expect(screen.getByRole("checkbox", { name: "Low stock alerts" })).not.toBeChecked()
+    expect(
+      screen.getByRole("checkbox", { name: "Invoice due reminders" })
+    ).toBeChecked()
+    expect(
+      screen.getByRole("checkbox", { name: "Low stock alerts" })
+    ).not.toBeChecked()
   })
 
   it("toggles a notification preference", async () => {

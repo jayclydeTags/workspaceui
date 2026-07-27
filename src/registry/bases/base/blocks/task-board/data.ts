@@ -60,10 +60,52 @@ export function completion(tasks: Task[]): number {
 // ── Mock data ──────────────────────────────────────────────────────────────
 
 export const TASKS: Task[] = [
-  { id: "1", title: "Map legacy billing tables", assignee: "Ava Chen", priority: "high", due: "2026-07-14", status: "in-progress" },
-  { id: "2", title: "Draft migration runbook", assignee: "Marcus Webb", priority: "medium", due: "2026-07-20", status: "todo" },
-  { id: "3", title: "Backfill invoice fixtures", assignee: "Priya Nair", priority: "low", due: "", status: "todo" },
-  { id: "4", title: "Dual-write shim", assignee: "Ava Chen", priority: "high", due: "2026-07-10", status: "review" },
-  { id: "5", title: "Retire the cron sync", assignee: "Tom Okafor", priority: "medium", due: "2026-07-02", status: "done" },
-  { id: "6", title: "Spike: change-data-capture", assignee: "Lena Fischer", priority: "low", due: "2026-06-28", status: "done" },
+  {
+    id: "1",
+    title: "Map legacy billing tables",
+    assignee: "Ava Chen",
+    priority: "high",
+    due: "2026-07-14",
+    status: "in-progress",
+  },
+  {
+    id: "2",
+    title: "Draft migration runbook",
+    assignee: "Marcus Webb",
+    priority: "medium",
+    due: "2026-07-20",
+    status: "todo",
+  },
+  {
+    id: "3",
+    title: "Backfill invoice fixtures",
+    assignee: "Priya Nair",
+    priority: "low",
+    due: "",
+    status: "todo",
+  },
+  {
+    id: "4",
+    title: "Dual-write shim",
+    assignee: "Ava Chen",
+    priority: "high",
+    due: "2026-07-10",
+    status: "review",
+  },
+  {
+    id: "5",
+    title: "Retire the cron sync",
+    assignee: "Tom Okafor",
+    priority: "medium",
+    due: "2026-07-02",
+    status: "done",
+  },
+  {
+    id: "6",
+    title: "Spike: change-data-capture",
+    assignee: "Lena Fischer",
+    priority: "low",
+    due: "2026-06-28",
+    status: "done",
+  },
 ]

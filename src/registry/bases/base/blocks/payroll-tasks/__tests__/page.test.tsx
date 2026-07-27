@@ -31,7 +31,10 @@ describe("PayrollTasks", () => {
     })
     expect(markComplete).toBeDisabled() // conditional button
 
-    await user.type(within(dialog).getByLabelText("Summary"), "Reviewed and approved.")
+    await user.type(
+      within(dialog).getByLabelText("Summary"),
+      "Reviewed and approved."
+    )
     expect(markComplete).toBeEnabled()
   })
 })

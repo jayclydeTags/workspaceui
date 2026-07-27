@@ -99,7 +99,9 @@ export function Leads() {
         <div className="border-b px-4 py-3 @sm:px-6">
           <Select
             value={stageFilter}
-            onValueChange={(v) => setStageFilter((v as LeadStage | "all") ?? "all")}
+            onValueChange={(v) =>
+              setStageFilter((v as LeadStage | "all") ?? "all")
+            }
           >
             <SelectTrigger aria-label="Filter by stage" className="w-48">
               <SelectValue />
@@ -120,7 +122,8 @@ export function Leads() {
             <EmptyHeader>
               <EmptyTitle>No leads</EmptyTitle>
               <EmptyDescription>
-                No {stageFilter === "all" ? "" : `${stageFilter} `}leads to show.
+                No {stageFilter === "all" ? "" : `${stageFilter} `}leads to
+                show.
               </EmptyDescription>
             </EmptyHeader>
           </Empty>
@@ -152,13 +155,15 @@ export function Leads() {
           <AlertDialogHeader>
             <AlertDialogTitle>Convert lead</AlertDialogTitle>
             <AlertDialogDescription>
-              Convert <span className="font-medium">{converting?.name}</span> into
-              an account and contact? The lead leaves the pipeline.
+              Convert <span className="font-medium">{converting?.name}</span>{" "}
+              into an account and contact? The lead leaves the pipeline.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmConvert}>Convert</AlertDialogAction>
+            <AlertDialogAction onClick={confirmConvert}>
+              Convert
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

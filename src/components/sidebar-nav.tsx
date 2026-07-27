@@ -41,7 +41,7 @@ export function SidebarNav({ sections = nav }: { sections?: NavSection[] }) {
     <div className="relative">
       <div
         ref={scrollRef}
-        className="w-full overflow-y-auto max-h-[calc(100svh-6rem)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="max-h-[calc(100svh-6rem)] w-full [scrollbar-width:none] overflow-y-auto [&::-webkit-scrollbar]:hidden"
       >
         <nav className="w-full">
           {sections.map((section) => {
@@ -69,7 +69,7 @@ export function SidebarNav({ sections = nav }: { sections?: NavSection[] }) {
                           </span>
                         </CollapsibleTrigger>
                         <CollapsibleContent>
-                          <ul className="grid gap-0.5 pl-4 pt-0.5">
+                          <ul className="grid gap-0.5 pt-0.5 pl-4">
                             {group.items.map((item) => (
                               <NavLink
                                 key={item.href}

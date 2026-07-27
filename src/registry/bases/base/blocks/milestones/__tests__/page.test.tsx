@@ -20,13 +20,19 @@ beforeAll(() => {
 afterAll(() => vi.useRealTimers())
 
 const m = (over: Partial<Milestone>): Milestone =>
-  ({ due: "2026-12-01", tasksTotal: 10, tasksDone: 0, completedOn: "", ...over }) as Milestone
+  ({
+    due: "2026-12-01",
+    tasksTotal: 10,
+    tasksDone: 0,
+    completedOn: "",
+    ...over,
+  }) as Milestone
 
 describe("state", () => {
   it("is completed once signed off, whatever the due date", () => {
-    expect(state(m({ due: "2020-01-01", completedOn: "2020-01-01" }), TODAY)).toBe(
-      "completed"
-    )
+    expect(
+      state(m({ due: "2020-01-01", completedOn: "2020-01-01" }), TODAY)
+    ).toBe("completed")
   })
 
   it("is overdue past the due date", () => {
@@ -38,7 +44,9 @@ describe("state", () => {
   })
 
   it("is on track when the scope is finished", () => {
-    expect(state(m({ due: "2026-07-10", tasksDone: 10 }), TODAY)).toBe("on-track")
+    expect(state(m({ due: "2026-07-10", tasksDone: 10 }), TODAY)).toBe(
+      "on-track"
+    )
   })
 })
 
@@ -75,7 +83,9 @@ describe("Milestones", () => {
     await user.click(
       screen.getAllByRole("button", { name: "Actions for Beta cut" })[0]
     )
-    await user.click(await screen.findByRole("menuitem", { name: "Mark complete" }))
+    await user.click(
+      await screen.findByRole("menuitem", { name: "Mark complete" })
+    )
 
     expect(screen.getByText("3 open · 0 overdue")).toBeInTheDocument()
     expect(screen.getAllByText("10/10").length).toBeGreaterThan(0)
@@ -86,7 +96,9 @@ describe("Milestones", () => {
     render(<Milestones />)
 
     await user.click(
-      screen.getAllByRole("button", { name: "Actions for Discovery sign-off" })[0]
+      screen.getAllByRole("button", {
+        name: "Actions for Discovery sign-off",
+      })[0]
     )
     await user.click(await screen.findByRole("menuitem", { name: "Reopen" }))
 
@@ -104,7 +116,9 @@ describe("Milestones", () => {
     await user.clear(screen.getByLabelText("Tasks done"))
     await user.type(screen.getByLabelText("Tasks done"), "4")
 
-    expect(screen.getByRole("button", { name: "Create milestone" })).toBeDisabled()
+    expect(
+      screen.getByRole("button", { name: "Create milestone" })
+    ).toBeDisabled()
     expect(
       screen.getByText("Can't finish more tasks than are in scope.")
     ).toBeInTheDocument()

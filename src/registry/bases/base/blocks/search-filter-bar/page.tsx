@@ -10,12 +10,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { Page } from "@/registry/bases/base/workspaceui/page"
-import {
-  MEMBERS,
-  emptyFilters,
-  filterMembers,
-  type Filters,
-} from "./data"
+import { MEMBERS, emptyFilters, filterMembers, type Filters } from "./data"
 import { FilterBar } from "./components/filter-bar"
 
 export function SearchFilterBar() {
@@ -58,7 +53,9 @@ export function SearchFilterBar() {
                     {m.role}
                   </Badge>
                   <Badge
-                    variant={m.status === "suspended" ? "destructive" : "secondary"}
+                    variant={
+                      m.status === "suspended" ? "destructive" : "secondary"
+                    }
                     className="capitalize"
                   >
                     {m.status}

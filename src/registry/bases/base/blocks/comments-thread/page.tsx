@@ -6,12 +6,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Page } from "@/registry/bases/base/workspaceui/page"
-import {
-  COMMENTS,
-  CURRENT_USER,
-  type Comment,
-  type Reply,
-} from "./data"
+import { COMMENTS, CURRENT_USER, type Comment, type Reply } from "./data"
 
 function CommentAvatar({ initials }: { initials: string }) {
   return (

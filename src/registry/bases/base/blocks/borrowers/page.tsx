@@ -47,7 +47,9 @@ export function Borrowers() {
   const q = query.trim().toLowerCase()
   const visible = q
     ? borrowers.filter((b) =>
-        [b.name, b.email, b.phone].some((field) => field.toLowerCase().includes(q))
+        [b.name, b.email, b.phone].some((field) =>
+          field.toLowerCase().includes(q)
+        )
       )
     : borrowers
 
@@ -148,8 +150,8 @@ export function Borrowers() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete borrower</AlertDialogTitle>
             <AlertDialogDescription>
-              Delete <span className="font-medium">{deleting?.name}</span>? Their
-              closed loans stay on file. This action can&apos;t be undone.
+              Delete <span className="font-medium">{deleting?.name}</span>?
+              Their closed loans stay on file. This action can&apos;t be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

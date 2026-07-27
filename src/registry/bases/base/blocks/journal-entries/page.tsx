@@ -30,9 +30,7 @@ import { DataTable } from "./components/data-table"
 import { EntryDialog } from "./components/entry-dialog"
 
 export function JournalEntries() {
-  const [entries, setEntries] = React.useState<JournalEntry[]>(
-    JOURNAL_ENTRIES
-  )
+  const [entries, setEntries] = React.useState<JournalEntry[]>(JOURNAL_ENTRIES)
   const [formOpen, setFormOpen] = React.useState(false)
   const [editing, setEditing] = React.useState<JournalEntry | null>(null)
   const [deleting, setDeleting] = React.useState<JournalEntry | null>(null)
@@ -109,8 +107,7 @@ export function JournalEntries() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete journal entry</AlertDialogTitle>
             <AlertDialogDescription>
-              Delete{" "}
-              <span className="font-medium">{deleting?.reference}</span>?
+              Delete <span className="font-medium">{deleting?.reference}</span>?
               This action can&apos;t be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>

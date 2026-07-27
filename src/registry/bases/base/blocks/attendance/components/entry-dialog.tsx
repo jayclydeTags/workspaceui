@@ -128,7 +128,11 @@ export function EntryDialog({
           >
             Cancel
           </Button>
-          <Button type="submit" form="attendance-form" disabled={!isValid(draft)}>
+          <Button
+            type="submit"
+            form="attendance-form"
+            disabled={!isValid(draft)}
+          >
             {editing ? "Save changes" : "Create entry"}
           </Button>
         </DialogFooter>

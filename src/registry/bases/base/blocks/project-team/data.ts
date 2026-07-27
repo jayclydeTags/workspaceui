@@ -56,9 +56,39 @@ export const initials = (name: string): string =>
 // ── Mock data ──────────────────────────────────────────────────────────────
 
 export const MEMBERS: Member[] = [
-  { id: "1", name: "Ava Chen", email: "ava.chen@example.com", role: "lead", allocation: 40 },
-  { id: "2", name: "Marcus Webb", email: "marcus.webb@example.com", role: "member", allocation: 30 },
-  { id: "3", name: "Priya Nair", email: "priya.nair@example.com", role: "member", allocation: 20 },
-  { id: "4", name: "Tom Okafor", email: "tom.okafor@example.com", role: "member", allocation: 10 },
-  { id: "5", name: "Dana Reyes", email: "dana.reyes@example.com", role: "viewer", allocation: 2 },
+  {
+    id: "1",
+    name: "Ava Chen",
+    email: "ava.chen@example.com",
+    role: "lead",
+    allocation: 40,
+  },
+  {
+    id: "2",
+    name: "Marcus Webb",
+    email: "marcus.webb@example.com",
+    role: "member",
+    allocation: 30,
+  },
+  {
+    id: "3",
+    name: "Priya Nair",
+    email: "priya.nair@example.com",
+    role: "member",
+    allocation: 20,
+  },
+  {
+    id: "4",
+    name: "Tom Okafor",
+    email: "tom.okafor@example.com",
+    role: "member",
+    allocation: 10,
+  },
+  {
+    id: "5",
+    name: "Dana Reyes",
+    email: "dana.reyes@example.com",
+    role: "viewer",
+    allocation: 2,
+  },
 ]

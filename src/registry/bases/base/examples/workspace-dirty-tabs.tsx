@@ -48,8 +48,16 @@ export function WorkspaceDirtyTabsDemo() {
             {
               id: "main",
               tabs: [
-                { id: "draft", title: "draft.md", icon: <FileText className="size-3.5" /> },
-                { id: "notes", title: "notes.md", icon: <FileText className="size-3.5" /> },
+                {
+                  id: "draft",
+                  title: "draft.md",
+                  icon: <FileText className="size-3.5" />,
+                },
+                {
+                  id: "notes",
+                  title: "notes.md",
+                  icon: <FileText className="size-3.5" />,
+                },
               ],
             },
           ]}
@@ -83,14 +91,20 @@ export function WorkspaceDirtyTabsDemo() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Discard changes to {pendingTitle}?</AlertDialogTitle>
+            <AlertDialogTitle>
+              Discard changes to {pendingTitle}?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               This tab has unsaved changes. Closing it will lose them.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => settle(false)}>Keep editing</AlertDialogCancel>
-            <AlertDialogAction onClick={() => settle(true)}>Discard</AlertDialogAction>
+            <AlertDialogCancel onClick={() => settle(false)}>
+              Keep editing
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={() => settle(true)}>
+              Discard
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

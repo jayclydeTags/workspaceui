@@ -27,19 +27,22 @@ import {
   type RiskGrade,
 } from "../data"
 
-const KYC_VARIANT: Record<KycStatus, "default" | "secondary" | "destructive"> = {
-  verified: "default",
-  pending: "secondary",
-  unverified: "destructive",
-}
-
-const GRADE_VARIANT: Record<RiskGrade, "default" | "secondary" | "destructive"> =
+const KYC_VARIANT: Record<KycStatus, "default" | "secondary" | "destructive"> =
   {
-    A: "default",
-    B: "default",
-    C: "secondary",
-    D: "destructive",
+    verified: "default",
+    pending: "secondary",
+    unverified: "destructive",
   }
+
+const GRADE_VARIANT: Record<
+  RiskGrade,
+  "default" | "secondary" | "destructive"
+> = {
+  A: "default",
+  B: "default",
+  C: "secondary",
+  D: "destructive",
+}
 
 interface RowProps {
   borrower: Borrower
@@ -67,7 +70,9 @@ function RowActions({ borrower, onEdit, onVerify, onDelete }: RowProps) {
         }
       />
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => onEdit(borrower)}>Edit</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onEdit(borrower)}>
+          Edit
+        </DropdownMenuItem>
         <DropdownMenuItem
           disabled={verified}
           onClick={() => !verified && onVerify(borrower)}
@@ -146,7 +151,7 @@ export function DataTable({
                 <TableCell className="px-6">
                   <Person borrower={borrower} />
                 </TableCell>
-                <TableCell className="hidden tabular-nums text-muted-foreground @md:table-cell">
+                <TableCell className="hidden text-muted-foreground tabular-nums @md:table-cell">
                   {borrower.phone}
                 </TableCell>
                 <TableCell className="text-right">
@@ -156,7 +161,9 @@ export function DataTable({
                   {formatCurrency(borrower.outstanding)}
                 </TableCell>
                 <TableCell>
-                  <Badge variant={KYC_VARIANT[borrower.kyc]}>{borrower.kyc}</Badge>
+                  <Badge variant={KYC_VARIANT[borrower.kyc]}>
+                    {borrower.kyc}
+                  </Badge>
                 </TableCell>
                 <TableCell className="pr-6">
                   <RowActions
@@ -179,7 +186,10 @@ export function DataTable({
             <div className="min-w-0 flex-1">
               <Person borrower={borrower} />
               <div className="mt-1.5 flex items-center gap-2 text-xs">
-                <Badge variant={KYC_VARIANT[borrower.kyc]} className="text-[10px]">
+                <Badge
+                  variant={KYC_VARIANT[borrower.kyc]}
+                  className="text-[10px]"
+                >
                   {borrower.kyc}
                 </Badge>
                 <Score borrower={borrower} />

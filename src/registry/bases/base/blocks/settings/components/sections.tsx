@@ -31,7 +31,11 @@ export function GeneralSection({
     <FieldGroup className="max-w-md">
       <Field>
         <FieldLabel htmlFor="settings-name">Display name</FieldLabel>
-        <Input id="settings-name" value={profile.name} onChange={(e) => onChange({ name: e.target.value })} />
+        <Input
+          id="settings-name"
+          value={profile.name}
+          onChange={(e) => onChange({ name: e.target.value })}
+        />
       </Field>
       <Field>
         <FieldLabel htmlFor="settings-legal-name">Legal name</FieldLabel>
@@ -43,7 +47,11 @@ export function GeneralSection({
       </Field>
       <Field>
         <FieldLabel htmlFor="settings-tax-id">Tax ID</FieldLabel>
-        <Input id="settings-tax-id" value={profile.taxId} onChange={(e) => onChange({ taxId: e.target.value })} />
+        <Input
+          id="settings-tax-id"
+          value={profile.taxId}
+          onChange={(e) => onChange({ taxId: e.target.value })}
+        />
       </Field>
       <Field>
         <FieldLabel htmlFor="settings-email">Billing email</FieldLabel>
@@ -74,16 +82,23 @@ export function NotificationsSection({
 }) {
   return (
     <div className="flex max-w-md flex-col gap-3">
-      {(Object.keys(NOTIFICATION_LABELS) as (keyof NotificationPrefs)[]).map((key) => (
-        <div key={key} className="flex items-center justify-between gap-4 rounded-md border border-border p-3 text-sm">
-          {NOTIFICATION_LABELS[key]}
-          <Checkbox
-            checked={prefs[key]}
-            onCheckedChange={(checked) => onChange({ [key]: checked === true })}
-            aria-label={NOTIFICATION_LABELS[key]}
-          />
-        </div>
-      ))}
+      {(Object.keys(NOTIFICATION_LABELS) as (keyof NotificationPrefs)[]).map(
+        (key) => (
+          <div
+            key={key}
+            className="flex items-center justify-between gap-4 rounded-md border border-border p-3 text-sm"
+          >
+            {NOTIFICATION_LABELS[key]}
+            <Checkbox
+              checked={prefs[key]}
+              onCheckedChange={(checked) =>
+                onChange({ [key]: checked === true })
+              }
+              aria-label={NOTIFICATION_LABELS[key]}
+            />
+          </div>
+        )
+      )}
     </div>
   )
 }
@@ -99,7 +114,10 @@ export function BillingSection({
     <div className="flex max-w-md flex-col gap-6">
       <Field>
         <FieldLabel htmlFor="settings-plan">Plan</FieldLabel>
-        <Select value={billing.plan} onValueChange={(v) => v && onChange({ plan: v as BillingPlan })}>
+        <Select
+          value={billing.plan}
+          onValueChange={(v) => v && onChange({ plan: v as BillingPlan })}
+        >
           <SelectTrigger id="settings-plan" className="w-full">
             <SelectValue />
           </SelectTrigger>
@@ -140,7 +158,9 @@ export function SecuritySection({
       <div className="flex items-center justify-between gap-4 rounded-md border border-border p-3 text-sm">
         <div className="flex flex-col gap-0.5">
           <span>Two-factor authentication</span>
-          <span className="text-xs text-muted-foreground">Require a code at sign-in</span>
+          <span className="text-xs text-muted-foreground">
+            Require a code at sign-in
+          </span>
         </div>
         <Checkbox
           checked={twoFactorEnabled}
@@ -152,7 +172,10 @@ export function SecuritySection({
       <div className="flex flex-col gap-2">
         <span className="text-sm font-medium">Active sessions</span>
         {sessions.map((session, i) => (
-          <div key={session.id} className="flex items-center justify-between gap-2 rounded-md border border-border p-3 text-sm">
+          <div
+            key={session.id}
+            className="flex items-center justify-between gap-2 rounded-md border border-border p-3 text-sm"
+          >
             <div className="flex flex-col gap-0.5">
               <div className="flex items-center gap-2">
                 <span>{session.device}</span>
@@ -163,7 +186,11 @@ export function SecuritySection({
               </span>
             </div>
             {i !== 0 && (
-              <Button variant="ghost" size="sm" onClick={() => onRevoke(session.id)}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onRevoke(session.id)}
+              >
                 Revoke
               </Button>
             )}

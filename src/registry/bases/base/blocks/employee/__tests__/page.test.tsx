@@ -24,9 +24,7 @@ describe("Employee", () => {
     await user.type(screen.getByLabelText("Name"), "Alex Kim")
     await user.type(screen.getByLabelText("Email"), "alex.kim@acme.co")
     await user.type(screen.getByLabelText("Department"), "Marketing")
-    await user.click(
-      screen.getByRole("button", { name: "Create employee" })
-    )
+    await user.click(screen.getByRole("button", { name: "Create employee" }))
 
     expect(screen.getAllByText("Alex Kim").length).toBeGreaterThan(0)
     expect(screen.getByText("8 employees")).toBeInTheDocument()

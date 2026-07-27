@@ -4,7 +4,13 @@ import { useEffect, useRef, useState } from "react"
 import { CheckCircle2, Loader2, ShieldCheck, TriangleAlert } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import {
   InputOTP,
   InputOTPGroup,
@@ -91,7 +97,7 @@ export function OtpVerify() {
       <div className="flex min-h-full items-center justify-center p-6">
         <Card className="w-full max-w-sm">
           <CardHeader className="items-center text-center">
-            <div className="flex size-11 items-center mx-auto justify-center rounded-full bg-muted">
+            <div className="mx-auto flex size-11 items-center justify-center rounded-full bg-muted">
               <ShieldCheck className="size-5" />
             </div>
             <CardTitle className="mt-2">Enter verification code</CardTitle>
@@ -110,7 +116,11 @@ export function OtpVerify() {
             >
               <InputOTPGroup>
                 {[0, 1, 2, 3, 4, 5].map((i) => (
-                  <InputOTPSlot key={i} index={i} aria-invalid={status === "error"} />
+                  <InputOTPSlot
+                    key={i}
+                    index={i}
+                    aria-invalid={status === "error"}
+                  />
                 ))}
               </InputOTPGroup>
             </InputOTP>
@@ -123,7 +133,10 @@ export function OtpVerify() {
                 </span>
               )}
               {status === "error" && (
-                <span className="flex items-center gap-2 text-destructive" role="alert">
+                <span
+                  className="flex items-center gap-2 text-destructive"
+                  role="alert"
+                >
                   <TriangleAlert className="size-4" />
                   Incorrect code. Try again.
                 </span>
@@ -142,7 +155,7 @@ export function OtpVerify() {
               ) : (
                 <>
                   Resend code in{" "}
-                  <span className="font-medium tabular-nums text-foreground">
+                  <span className="font-medium text-foreground tabular-nums">
                     {Math.ceil(remaining / 1000)}s
                   </span>
                 </>

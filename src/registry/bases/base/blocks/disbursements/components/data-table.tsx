@@ -62,7 +62,9 @@ function RowActions({ disbursement, onEdit, onSettle, onDelete }: RowProps) {
             <DropdownMenuItem onClick={() => onEdit(disbursement)}>
               Edit
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onSettle(disbursement, "released")}>
+            <DropdownMenuItem
+              onClick={() => onSettle(disbursement, "released")}
+            >
               Release
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onSettle(disbursement, "failed")}>
@@ -123,7 +125,9 @@ export function DataTable({
                 <TableCell className="hidden text-muted-foreground uppercase @md:table-cell">
                   {disbursement.method}
                 </TableCell>
-                <TableCell className="tabular-nums">{disbursement.date}</TableCell>
+                <TableCell className="tabular-nums">
+                  {disbursement.date}
+                </TableCell>
                 <TableCell>
                   <Badge variant={STATUS_VARIANT[disbursement.status]}>
                     {disbursement.status}
@@ -146,7 +150,10 @@ export function DataTable({
       {/* Card list — narrow pane (< @sm) */}
       <ul className="flex-1 divide-y divide-border overflow-auto @sm:hidden">
         {disbursements.map((disbursement) => (
-          <li key={disbursement.id} className="flex items-start gap-3 px-4 py-3">
+          <li
+            key={disbursement.id}
+            className="flex items-start gap-3 px-4 py-3"
+          >
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <span className="truncate text-sm font-medium tabular-nums">

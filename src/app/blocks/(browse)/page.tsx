@@ -23,7 +23,10 @@ function BlockThumb({ children }: { children: React.ReactNode }) {
   }, [])
 
   return (
-    <div ref={ref} className="pointer-events-none absolute inset-0 overflow-hidden">
+    <div
+      ref={ref}
+      className="pointer-events-none absolute inset-0 overflow-hidden"
+    >
       <div
         className="origin-top-left"
         style={{ width: 1280, height: 800, transform: `scale(${scale})` }}
@@ -46,8 +49,8 @@ export default function BlocksIndex() {
       <div className="mx-auto max-w-6xl">
         <h1 className="text-2xl font-semibold tracking-tight">Blocks</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Ready-made layouts built on the Workspace primitives. Click any block to preview,
-          copy, or install it.
+          Ready-made layouts built on the Workspace primitives. Click any block
+          to preview, copy, or install it.
         </p>
 
         <div className="mt-6 flex flex-wrap gap-2">
@@ -91,7 +94,9 @@ export default function BlocksIndex() {
                     {category}
                   </span>
                 </div>
-                <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{description}</p>
+                <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                  {description}
+                </p>
               </div>
             </div>
           ))}

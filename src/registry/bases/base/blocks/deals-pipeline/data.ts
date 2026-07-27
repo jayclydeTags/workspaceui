@@ -1,11 +1,6 @@
 // ── Types ──────────────────────────────────────────────────────────────────
 
-export type DealStage =
-  | "qualify"
-  | "proposal"
-  | "negotiation"
-  | "won"
-  | "lost"
+export type DealStage = "qualify" | "proposal" | "negotiation" | "won" | "lost"
 
 export interface Deal {
   id: string
@@ -93,10 +88,58 @@ export const stageValue = (deals: Deal[]): number =>
 // ── Mock data ──────────────────────────────────────────────────────────────
 
 export const DEALS: Deal[] = [
-  { id: "1", name: "Platform renewal", account: "Northwind", owner: "Ava Chen", value: 180000, closeDate: "2026-09-30", stage: "negotiation" },
-  { id: "2", name: "Warehouse add-on", account: "Northwind", owner: "Ava Chen", value: 45000, closeDate: "2026-08-14", stage: "proposal" },
-  { id: "3", name: "Pilot expansion", account: "Contoso", owner: "Marcus Webb", value: 60000, closeDate: "2026-10-01", stage: "qualify" },
-  { id: "4", name: "Analytics module", account: "Fabrikam", owner: "Priya Nair", value: 32000, closeDate: "2026-07-31", stage: "proposal" },
-  { id: "5", name: "Seat expansion", account: "Tailspin", owner: "Tom Okafor", value: 12000, closeDate: "2026-06-30", stage: "won" },
-  { id: "6", name: "Legacy migration", account: "Contoso", owner: "Marcus Webb", value: 90000, closeDate: "2026-06-15", stage: "lost" },
+  {
+    id: "1",
+    name: "Platform renewal",
+    account: "Northwind",
+    owner: "Ava Chen",
+    value: 180000,
+    closeDate: "2026-09-30",
+    stage: "negotiation",
+  },
+  {
+    id: "2",
+    name: "Warehouse add-on",
+    account: "Northwind",
+    owner: "Ava Chen",
+    value: 45000,
+    closeDate: "2026-08-14",
+    stage: "proposal",
+  },
+  {
+    id: "3",
+    name: "Pilot expansion",
+    account: "Contoso",
+    owner: "Marcus Webb",
+    value: 60000,
+    closeDate: "2026-10-01",
+    stage: "qualify",
+  },
+  {
+    id: "4",
+    name: "Analytics module",
+    account: "Fabrikam",
+    owner: "Priya Nair",
+    value: 32000,
+    closeDate: "2026-07-31",
+    stage: "proposal",
+  },
+  {
+    id: "5",
+    name: "Seat expansion",
+    account: "Tailspin",
+    owner: "Tom Okafor",
+    value: 12000,
+    closeDate: "2026-06-30",
+    stage: "won",
+  },
+  {
+    id: "6",
+    name: "Legacy migration",
+    account: "Contoso",
+    owner: "Marcus Webb",
+    value: 90000,
+    closeDate: "2026-06-15",
+    stage: "lost",
+  },
 ]

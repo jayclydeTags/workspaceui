@@ -47,8 +47,32 @@ export const ACTIVITY: Activity[] = [
 ]
 
 export const ORDERS: Order[] = [
-  { id: "1", number: "INV-1043", date: "May 2, 2026", total: "$2,400", status: "paid" },
-  { id: "2", number: "INV-0991", date: "Apr 2, 2026", total: "$2,400", status: "paid" },
-  { id: "3", number: "INV-0930", date: "Mar 2, 2026", total: "$1,200", status: "refunded" },
-  { id: "4", number: "INV-1102", date: "Jun 2, 2026", total: "$2,400", status: "pending" },
+  {
+    id: "1",
+    number: "INV-1043",
+    date: "May 2, 2026",
+    total: "$2,400",
+    status: "paid",
+  },
+  {
+    id: "2",
+    number: "INV-0991",
+    date: "Apr 2, 2026",
+    total: "$2,400",
+    status: "paid",
+  },
+  {
+    id: "3",
+    number: "INV-0930",
+    date: "Mar 2, 2026",
+    total: "$1,200",
+    status: "refunded",
+  },
+  {
+    id: "4",
+    number: "INV-1102",
+    date: "Jun 2, 2026",
+    total: "$2,400",
+    status: "pending",
+  },
 ]

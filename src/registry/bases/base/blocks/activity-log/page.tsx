@@ -40,14 +40,25 @@ import { Page } from "@/registry/bases/base/workspaceui/page"
 import { ENTRIES, type ActionType, type StatusType } from "./data"
 import { DataTable } from "./components/data-table"
 
-const ALL_ACTIONS: ActionType[] = ["created", "updated", "deleted", "viewed", "shared", "exported"]
+const ALL_ACTIONS: ActionType[] = [
+  "created",
+  "updated",
+  "deleted",
+  "viewed",
+  "shared",
+  "exported",
+]
 const ALL_STATUSES: StatusType[] = ["success", "failed", "pending"]
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100] as const
 
 export function ActivityLog() {
   const [search, setSearch] = React.useState("")
-  const [actionFilter, setActionFilter] = React.useState<Set<ActionType>>(new Set())
-  const [statusFilter, setStatusFilter] = React.useState<Set<StatusType>>(new Set())
+  const [actionFilter, setActionFilter] = React.useState<Set<ActionType>>(
+    new Set()
+  )
+  const [statusFilter, setStatusFilter] = React.useState<Set<StatusType>>(
+    new Set()
+  )
   const [page, setPage] = React.useState(1)
   const [pageSize, setPageSize] = React.useState<number>(10)
 
@@ -56,18 +67,25 @@ export function ActivityLog() {
       ENTRIES.filter((e) => {
         if (search) {
           const q = search.toLowerCase()
-          if (!e.user.toLowerCase().includes(q) && !e.resource.toLowerCase().includes(q)) return false
+          if (
+            !e.user.toLowerCase().includes(q) &&
+            !e.resource.toLowerCase().includes(q)
+          )
+            return false
         }
         if (actionFilter.size > 0 && !actionFilter.has(e.action)) return false
         if (statusFilter.size > 0 && !statusFilter.has(e.status)) return false
         return true
       }),
-    [search, actionFilter, statusFilter],
+    [search, actionFilter, statusFilter]
   )
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
   const currentPage = Math.min(page, totalPages)
-  const paged = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+  const paged = filtered.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  )
 
   const hasFilters = search || actionFilter.size > 0 || statusFilter.size > 0
 
@@ -75,7 +93,8 @@ export function ActivityLog() {
     setPage(1)
     setActionFilter((prev) => {
       const n = new Set(prev)
-      if (n.has(a)) n.delete(a); else n.add(a)
+      if (n.has(a)) n.delete(a)
+      else n.add(a)
       return n
     })
   }
@@ -84,7 +103,8 @@ export function ActivityLog() {
     setPage(1)
     setStatusFilter((prev) => {
       const n = new Set(prev)
-      if (n.has(s)) n.delete(s); else n.add(s)
+      if (n.has(s)) n.delete(s)
+      else n.add(s)
       return n
     })
   }
@@ -97,7 +117,10 @@ export function ActivityLog() {
       actions={
         <div className="flex flex-wrap gap-2">
           {/* Search */}
-          <InputGroup className="h-8 min-w-0 text-sm" style={{ flex: "1 1 160px" }}>
+          <InputGroup
+            className="h-8 min-w-0 text-sm"
+            style={{ flex: "1 1 160px" }}
+          >
             <InputGroupAddon>
               <Search />
             </InputGroupAddon>
@@ -114,11 +137,16 @@ export function ActivityLog() {
           {/* Action filter */}
           <DropdownMenu>
             <DropdownMenuTrigger
-              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-8 gap-1.5 text-xs")}
+              className={cn(
+                buttonVariants({ variant: "outline", size: "sm" }),
+                "h-8 gap-1.5 text-xs"
+              )}
             >
               Action
               {actionFilter.size > 0 && (
-                <Badge className="h-4 min-w-4 rounded-full px-1 text-[10px]">{actionFilter.size}</Badge>
+                <Badge className="h-4 min-w-4 rounded-full px-1 text-[10px]">
+                  {actionFilter.size}
+                </Badge>
               )}
               <ChevronDown className="size-3 text-muted-foreground" />
             </DropdownMenuTrigger>
@@ -143,11 +171,16 @@ export function ActivityLog() {
           {/* Status filter */}
           <DropdownMenu>
             <DropdownMenuTrigger
-              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-8 gap-1.5 text-xs")}
+              className={cn(
+                buttonVariants({ variant: "outline", size: "sm" }),
+                "h-8 gap-1.5 text-xs"
+              )}
             >
               Status
               {statusFilter.size > 0 && (
-                <Badge className="h-4 min-w-4 rounded-full px-1 text-[10px]">{statusFilter.size}</Badge>
+                <Badge className="h-4 min-w-4 rounded-full px-1 text-[10px]">
+                  {statusFilter.size}
+                </Badge>
               )}
               <ChevronDown className="size-3 text-muted-foreground" />
             </DropdownMenuTrigger>
@@ -224,7 +257,11 @@ export function ActivityLog() {
                 <PaginationPrevious
                   href="#"
                   aria-disabled={currentPage === 1}
-                  className={currentPage === 1 ? "pointer-events-none opacity-50" : undefined}
+                  className={
+                    currentPage === 1
+                      ? "pointer-events-none opacity-50"
+                      : undefined
+                  }
                   onClick={(e) => {
                     e.preventDefault()
                     setPage((p) => Math.max(1, p - 1))
@@ -249,7 +286,11 @@ export function ActivityLog() {
                 <PaginationNext
                   href="#"
                   aria-disabled={currentPage === totalPages}
-                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : undefined}
+                  className={
+                    currentPage === totalPages
+                      ? "pointer-events-none opacity-50"
+                      : undefined
+                  }
                   onClick={(e) => {
                     e.preventDefault()
                     setPage((p) => Math.min(totalPages, p + 1))

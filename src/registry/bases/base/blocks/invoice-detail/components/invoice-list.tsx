@@ -19,7 +19,10 @@ import {
   type InvoiceStatus,
 } from "@/registry/bases/base/blocks/invoice-detail/data"
 
-const STATUS_VARIANT: Record<InvoiceStatus, "default" | "secondary" | "destructive" | "outline"> = {
+const STATUS_VARIANT: Record<
+  InvoiceStatus,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
   paid: "secondary",
   pending: "outline",
   overdue: "destructive",
@@ -38,7 +41,9 @@ export function InvoiceList({ activeInvoiceId, onSelect }: InvoiceListProps) {
     const q = search.toLowerCase()
     if (!q) return INVOICES
     return INVOICES.filter(
-      (inv) => inv.customer.toLowerCase().includes(q) || inv.number.toLowerCase().includes(q)
+      (inv) =>
+        inv.customer.toLowerCase().includes(q) ||
+        inv.number.toLowerCase().includes(q)
     )
   }, [search])
 
@@ -72,7 +77,9 @@ export function InvoiceList({ activeInvoiceId, onSelect }: InvoiceListProps) {
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-medium">{inv.customer}</span>
-                  <Badge variant={STATUS_VARIANT[inv.status]}>{STATUS_LABEL[inv.status]}</Badge>
+                  <Badge variant={STATUS_VARIANT[inv.status]}>
+                    {STATUS_LABEL[inv.status]}
+                  </Badge>
                 </div>
                 <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
                   <span>{inv.number}</span>
@@ -83,7 +90,9 @@ export function InvoiceList({ activeInvoiceId, onSelect }: InvoiceListProps) {
           )
         })}
         {filtered.length === 0 && (
-          <li className="px-3 py-6 text-center text-sm text-muted-foreground">No invoices found.</li>
+          <li className="px-3 py-6 text-center text-sm text-muted-foreground">
+            No invoices found.
+          </li>
         )}
       </ul>
     </div>

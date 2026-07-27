@@ -43,7 +43,9 @@ function totals(receipt: Receipt) {
 function VarianceCell({ value }: { value: number }) {
   if (value === 0) return <span className="text-muted-foreground">—</span>
   return (
-    <span className={value < 0 ? "font-medium text-destructive" : "font-medium"}>
+    <span
+      className={value < 0 ? "font-medium text-destructive" : "font-medium"}
+    >
       {value > 0 ? `+${value}` : value}
     </span>
   )

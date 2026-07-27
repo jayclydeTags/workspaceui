@@ -28,7 +28,9 @@ describe("TwoFactorChallenge", () => {
   it("switches to recovery-code entry", async () => {
     const user = userEvent.setup()
     render(<TwoFactorChallenge />)
-    await user.click(screen.getByRole("button", { name: /use a recovery code/i }))
+    await user.click(
+      screen.getByRole("button", { name: /use a recovery code/i })
+    )
     expect(screen.getByLabelText(/recovery code/i)).toBeInTheDocument()
     await user.type(screen.getByLabelText(/recovery code/i), "acme-4x9k-7qp2")
     await user.click(screen.getByRole("button", { name: /^verify$/i }))

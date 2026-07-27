@@ -46,8 +46,13 @@ export function DealCard({
             }
           />
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => onEdit(deal)}>Edit</DropdownMenuItem>
-            <DropdownMenuItem variant="destructive" onClick={() => onDelete(deal)}>
+            <DropdownMenuItem onClick={() => onEdit(deal)}>
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => onDelete(deal)}
+            >
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -59,7 +64,7 @@ export function DealCard({
         <span className="tabular-nums">{formatCurrency(deal.value)}</span>
       </div>
 
-      <span className="text-xs tabular-nums text-muted-foreground">
+      <span className="text-xs text-muted-foreground tabular-nums">
         {deal.owner} · closes {deal.closeDate}
       </span>
     </div>

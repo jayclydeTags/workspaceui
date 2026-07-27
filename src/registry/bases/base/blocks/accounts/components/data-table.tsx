@@ -55,7 +55,9 @@ function RowActions({ account, onEdit, onDelete }: RowProps) {
         }
       />
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => onEdit(account)}>Edit</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onEdit(account)}>
+          Edit
+        </DropdownMenuItem>
         <DropdownMenuItem
           variant="destructive"
           disabled={locked}
@@ -93,7 +95,9 @@ export function DataTable({
               <TableHead className="hidden @md:table-cell">Owner</TableHead>
               <TableHead>Tier</TableHead>
               <TableHead className="text-right">ARR</TableHead>
-              <TableHead className="hidden @md:table-cell">Last contact</TableHead>
+              <TableHead className="hidden @md:table-cell">
+                Last contact
+              </TableHead>
               <TableHead>Health</TableHead>
               <TableHead className="w-0 pr-6" />
             </TableRow>
@@ -103,7 +107,9 @@ export function DataTable({
               <TableRow key={account.id}>
                 <TableCell className="px-6">
                   <span className="font-medium">{account.name}</span>{" "}
-                  <span className="text-muted-foreground">{account.industry}</span>
+                  <span className="text-muted-foreground">
+                    {account.industry}
+                  </span>
                 </TableCell>
                 <TableCell className="hidden @md:table-cell">
                   {account.owner}
@@ -114,7 +120,7 @@ export function DataTable({
                 <TableCell className="text-right tabular-nums">
                   {formatCurrency(account.arr)}
                 </TableCell>
-                <TableCell className="hidden tabular-nums text-muted-foreground @md:table-cell">
+                <TableCell className="hidden text-muted-foreground tabular-nums @md:table-cell">
                   {account.lastContact || "never"}
                 </TableCell>
                 <TableCell>
@@ -139,7 +145,9 @@ export function DataTable({
           <li key={account.id} className="flex items-start gap-3 px-4 py-3">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <span className="truncate text-sm font-medium">{account.name}</span>
+                <span className="truncate text-sm font-medium">
+                  {account.name}
+                </span>
                 <Badge variant="outline" className="text-[10px]">
                   {account.tier}
                 </Badge>

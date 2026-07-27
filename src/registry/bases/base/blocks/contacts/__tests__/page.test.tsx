@@ -40,10 +40,12 @@ describe("accountsWithoutPrimary", () => {
 
 describe("isValid", () => {
   it("requires a name and a well-formed email", () => {
-    expect(isValid({ ...emptyDraft(), name: "Iris", email: "iris@x" })).toBe(false)
-    expect(isValid({ ...emptyDraft(), name: "Iris", email: "iris@x.example" })).toBe(
-      true
+    expect(isValid({ ...emptyDraft(), name: "Iris", email: "iris@x" })).toBe(
+      false
     )
+    expect(
+      isValid({ ...emptyDraft(), name: "Iris", email: "iris@x.example" })
+    ).toBe(true)
   })
 })
 
@@ -51,7 +53,9 @@ describe("Contacts", () => {
   it("lists contacts and warns about accounts with no primary", () => {
     render(<Contacts />)
     expect(screen.getByText("5 contacts")).toBeInTheDocument()
-    expect(screen.getByText("Fabrikam has no primary contact.")).toBeInTheDocument()
+    expect(
+      screen.getByText("Fabrikam has no primary contact.")
+    ).toBeInTheDocument()
   })
 
   it("searches across name, account, and email", async () => {
@@ -71,7 +75,9 @@ describe("Contacts", () => {
     await user.click(
       screen.getAllByRole("button", { name: "Actions for Ray Whitfield" })[0]
     )
-    await user.click(await screen.findByRole("menuitem", { name: "Make primary" }))
+    await user.click(
+      await screen.findByRole("menuitem", { name: "Make primary" })
+    )
 
     expect(
       screen.getAllByLabelText("Primary contact for Northwind").length
@@ -91,7 +97,9 @@ describe("Contacts", () => {
     await user.click(
       screen.getAllByRole("button", { name: "Actions for Nadia Rahman" })[0]
     )
-    await user.click(await screen.findByRole("menuitem", { name: "Make primary" }))
+    await user.click(
+      await screen.findByRole("menuitem", { name: "Make primary" })
+    )
 
     expect(screen.queryByText(/has no primary contact/)).not.toBeInTheDocument()
   })

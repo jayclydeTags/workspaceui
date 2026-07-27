@@ -3,7 +3,13 @@ import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 
 import { DealsPipeline } from "../page"
-import { emptyDraft, isValid, weightedForecast, winRate, type Deal } from "../data"
+import {
+  emptyDraft,
+  isValid,
+  weightedForecast,
+  winRate,
+  type Deal,
+} from "../data"
 
 function makeDataTransfer(id: string) {
   return { setData: vi.fn(), getData: vi.fn(() => id), effectAllowed: "" }
@@ -44,12 +50,19 @@ describe("winRate", () => {
 
 describe("isValid", () => {
   it("requires a name, a value, and a close date", () => {
-    expect(isValid({ ...emptyDraft(), name: "X", value: 0, closeDate: "2026-09-01" })).toBe(
-      false
-    )
-    expect(isValid({ ...emptyDraft(), name: "X", value: 1000, closeDate: "" })).toBe(false)
     expect(
-      isValid({ ...emptyDraft(), name: "X", value: 1000, closeDate: "2026-09-01" })
+      isValid({ ...emptyDraft(), name: "X", value: 0, closeDate: "2026-09-01" })
+    ).toBe(false)
+    expect(
+      isValid({ ...emptyDraft(), name: "X", value: 1000, closeDate: "" })
+    ).toBe(false)
+    expect(
+      isValid({
+        ...emptyDraft(),
+        name: "X",
+        value: 1000,
+        closeDate: "2026-09-01",
+      })
     ).toBe(true)
   })
 })
@@ -59,7 +72,9 @@ describe("DealsPipeline", () => {
     render(<DealsPipeline />)
     expect(screen.getByText("Negotiation")).toBeInTheDocument()
     expect(screen.getByText("Platform renewal")).toBeInTheDocument()
-    expect(screen.getByText("$194,500 weighted · 50% win rate")).toBeInTheDocument()
+    expect(
+      screen.getByText("$194,500 weighted · 50% win rate")
+    ).toBeInTheDocument()
   })
 
   it("winning a deal drops it out of the forecast", () => {
@@ -72,7 +87,9 @@ describe("DealsPipeline", () => {
     fireEvent.dragStart(card, { dataTransfer })
     fireEvent.drop(wonColumn, { dataTransfer })
 
-    expect(screen.getByText("$50,500 weighted · 67% win rate")).toBeInTheDocument()
+    expect(
+      screen.getByText("$50,500 weighted · 67% win rate")
+    ).toBeInTheDocument()
   })
 
   it("creates a deal", async () => {
@@ -87,7 +104,9 @@ describe("DealsPipeline", () => {
 
     expect(screen.getByText("Support upgrade")).toBeInTheDocument()
     // +10,000 at qualify's 20% → +2,000 weighted.
-    expect(screen.getByText("$196,500 weighted · 50% win rate")).toBeInTheDocument()
+    expect(
+      screen.getByText("$196,500 weighted · 50% win rate")
+    ).toBeInTheDocument()
   })
 
   it("deletes a deal after confirmation", async () => {
@@ -103,6 +122,8 @@ describe("DealsPipeline", () => {
     await user.click(within(dialog).getByRole("button", { name: "Delete" }))
 
     expect(screen.queryByText("Analytics module")).not.toBeInTheDocument()
-    expect(screen.getByText("$178,500 weighted · 50% win rate")).toBeInTheDocument()
+    expect(
+      screen.getByText("$178,500 weighted · 50% win rate")
+    ).toBeInTheDocument()
   })
 })

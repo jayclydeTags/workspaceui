@@ -106,7 +106,9 @@ export function DataTable({
                   <Person member={member} />
                 </TableCell>
                 <TableCell>
-                  <Badge variant={ROLE_VARIANT[member.role]}>{member.role}</Badge>
+                  <Badge variant={ROLE_VARIANT[member.role]}>
+                    {member.role}
+                  </Badge>
                 </TableCell>
                 <TableCell className="text-right tabular-nums">
                   {member.allocation}h / wk
@@ -132,10 +134,13 @@ export function DataTable({
             <div className="min-w-0 flex-1">
               <Person member={member} />
               <div className="mt-1.5 flex items-center gap-2 text-xs">
-                <Badge variant={ROLE_VARIANT[member.role]} className="text-[10px]">
+                <Badge
+                  variant={ROLE_VARIANT[member.role]}
+                  className="text-[10px]"
+                >
                   {member.role}
                 </Badge>
-                <span className="tabular-nums text-muted-foreground">
+                <span className="text-muted-foreground tabular-nums">
                   {member.allocation}h / wk
                 </span>
               </div>

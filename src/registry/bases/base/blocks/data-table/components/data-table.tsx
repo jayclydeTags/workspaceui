@@ -73,33 +73,12 @@ export function DataTable({ data: initialData }: DataTableProps) {
 
   return (
     <div className="flex h-full flex-col gap-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        {/* min-w-0 lets this shrink below its content's natural width when
-            BulkToolbar appears; flex-1 is what gives DataFilter's own
-            ResizeObserver a real width to measure instead of shrink-wrapping
-            to its buttons and reading permanently narrow. Search reads first
-            (broad/fuzzy), filters follow (precise/boolean) — different
-            mental models, so they don't share one control. */}
-        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-          <DataSearch table={table} />
-          <DataFilter table={table} />
-        </div>
-        <BulkToolbar
-          count={selectedIds.length}
-          onClear={() => setRowSelection({})}
-        >
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setConfirmBulkDelete(true)}
-          >
-            <Trash2Icon data-icon="inline-start" />
-            Delete
-          </Button>
-        </BulkToolbar>
+      <div className="flex flex-wrap items-center gap-2">
+        <DataSearch table={table} />
+        <DataFilter table={table} />
       </div>
 
-      <div className="flex-1 overflow-auto">
+      <div className="relative flex-1 overflow-auto">
         <DataGrid
           table={table}
           onCellEdit={(rowId, columnId, value) => {
@@ -111,6 +90,21 @@ export function DataTable({ data: initialData }: DataTableProps) {
           }}
           onRowDelete={deleteRow}
         />
+        <BulkToolbar
+          count={selectedIds.length}
+          onClear={() => setRowSelection({})}
+          className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2"
+        >
+          <Button
+            variant="destructive"
+            size="sm"
+            className="bg-destructive text-white hover:bg-destructive/90"
+            onClick={() => setConfirmBulkDelete(true)}
+          >
+            <Trash2Icon data-icon="inline-start" />
+            Delete
+          </Button>
+        </BulkToolbar>
       </div>
 
       <AlertDialog open={confirmBulkDelete} onOpenChange={setConfirmBulkDelete}>

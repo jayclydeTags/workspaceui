@@ -287,7 +287,7 @@
       "type": "registry:ui",
       "title": "Bulk Toolbar",
       "description": "Contextual toolbar shown while rows are selected — a count, a clear control, and consumer-supplied action buttons as children. Renders nothing when count is 0.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react", "motion"],
       "registryDependencies": ["button", "separator"],
       "files": [
         {

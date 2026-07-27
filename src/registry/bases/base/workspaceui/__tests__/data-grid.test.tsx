@@ -1408,8 +1408,11 @@ describe("DataGrid", () => {
       expect(onRowDelete).toHaveBeenCalledTimes(2)
       expect(onRowDelete).toHaveBeenNthCalledWith(1, "1")
       expect(onRowDelete).toHaveBeenNthCalledWith(2, "2")
-      // Confirming once clears the selection and the bar along with it.
-      expect(screen.queryByRole("toolbar")).not.toBeInTheDocument()
+      // Confirming once clears the selection and the bar along with it
+      // (BulkToolbar animates its exit, so the node lingers briefly).
+      await waitFor(() =>
+        expect(screen.queryByRole("toolbar")).not.toBeInTheDocument()
+      )
     })
   })
 

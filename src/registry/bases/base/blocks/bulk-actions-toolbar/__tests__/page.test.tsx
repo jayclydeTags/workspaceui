@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react"
+import { render, screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect } from "vitest"
 
@@ -37,7 +37,10 @@ describe("BulkActionsToolbar", () => {
     await user.click(within(dialog).getByRole("button", { name: "Delete" }))
 
     expect(screen.getByText("No documents")).toBeInTheDocument()
-    expect(screen.queryByRole("toolbar")).not.toBeInTheDocument()
+    // BulkToolbar animates its exit, so the node lingers briefly.
+    await waitFor(() =>
+      expect(screen.queryByRole("toolbar")).not.toBeInTheDocument()
+    )
   })
 
   it("clears the selection", async () => {
@@ -47,6 +50,8 @@ describe("BulkActionsToolbar", () => {
     await user.click(screen.getByRole("checkbox", { name: "Select all" }))
     await user.click(screen.getByRole("button", { name: "Clear selection" }))
 
-    expect(screen.queryByRole("toolbar")).not.toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.queryByRole("toolbar")).not.toBeInTheDocument()
+    )
   })
 })

@@ -67,8 +67,9 @@ export function DataGridSelectionDemo() {
           onClear={() => setRowSelection({})}
         >
           <Button
-            variant="outline"
+            variant="destructive"
             size="sm"
+            className="bg-destructive text-white hover:bg-destructive/90"
             onClick={() => setConfirmBulkDelete(true)}
           >
             <Trash2Icon data-icon="inline-start" />

@@ -51,7 +51,7 @@ export function AppSidebar({
   onNavClick: (item: (typeof NAV_ITEMS)[number]) => void
 }) {
   return (
-    <Sidebar>
+    <Sidebar variant="inset">
       <SidebarHeader>
         <div className="px-2 py-1 text-sm font-semibold">My App</div>
       </SidebarHeader>

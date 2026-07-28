@@ -36,12 +36,6 @@ export const blocksNav: NavSection[] = [
               "Read-only DataGrid with row selection and select-all, plus a contextual toolbar for bulk export/delete and a confirm dialog for the destructive action.",
           },
           {
-            title: "Search + Filter Bar",
-            href: "/blocks/search-filter-bar",
-            description:
-              "Search box with faceted Select filters and a clear-all action over a filtered result list with live count.",
-          },
-          {
             title: "Responsive Table (Card Fallback)",
             href: "/blocks/activity-log",
             description:

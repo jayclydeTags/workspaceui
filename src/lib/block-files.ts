@@ -674,19 +674,6 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/confirm-dialog.tsx",
     },
   ],
-  "search-filter-bar": [
-    {
-      name: "page.tsx",
-      path: "app/search-filter-bar/page.tsx",
-      src: "page.tsx",
-    },
-    { name: "data.ts", path: "app/search-filter-bar/data.ts", src: "data.ts" },
-    {
-      name: "filter-bar.tsx",
-      path: "components/blocks/search-filter-bar/components/filter-bar.tsx",
-      src: "components/filter-bar.tsx",
-    },
-  ],
   "bulk-actions-toolbar": [
     {
       name: "page.tsx",

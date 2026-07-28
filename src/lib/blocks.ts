@@ -80,7 +80,6 @@ import { Shipments } from "@/registry/bases/base/blocks/shipments/page"
 import { JournalEntries } from "@/registry/bases/base/blocks/journal-entries/page"
 import { BankReconciliation } from "@/registry/bases/base/blocks/bank-reconciliation/page"
 import { SessionExpired } from "@/registry/bases/base/blocks/session-expired/page"
-import { SearchFilterBar } from "@/registry/bases/base/blocks/search-filter-bar/page"
 import { Settings } from "@/registry/bases/base/blocks/settings/page"
 import { VerifyEmail } from "@/registry/bases/base/blocks/verify-email/page"
 import { Unauthorized403 } from "@/registry/bases/base/blocks/unauthorized-403/page"
@@ -137,14 +136,6 @@ export const blocks: BlockMeta[] = [
       "Read-only DataGrid with row selection and select-all, plus a contextual toolbar for bulk export/delete and a confirm dialog for the destructive action.",
     category: "Tables",
     Component: BulkActionsToolbar,
-  },
-  {
-    slug: "search-filter-bar",
-    title: "Search + Filter Bar",
-    description:
-      "Search box with faceted Select filters and a clear-all action over a filtered result list with live count.",
-    category: "Tables",
-    Component: SearchFilterBar,
   },
   {
     slug: "activity-log",

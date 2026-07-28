@@ -441,6 +441,12 @@ export const blocksNav: NavSection[] = [
               "Collapsible sidebar nav paired with the Workspace component.",
           },
           {
+            title: "Top Nav Shell (GitHub-style)",
+            href: "/blocks/dashboard-02",
+            description:
+              "GitHub-style global top nav: logo, jump-to search, primary nav links, create/notifications/account menus — no sidebar.",
+          },
+          {
             title: "Rail + Sidebar Shell",
             href: "/blocks/dashboard-rail",
             description:

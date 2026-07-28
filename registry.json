@@ -892,6 +892,35 @@
       ]
     },
     {
+      "name": "dashboard-02",
+      "type": "registry:block",
+      "title": "Top Nav Shell (GitHub-style)",
+      "description": "GitHub-style global top nav: logo, jump-to search, primary nav links (Pull requests, Issues, Marketplace, Explore), create/notifications/account menus — no sidebar.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "avatar",
+        "button",
+        "dropdown-menu",
+        "input-group",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/dashboard-02/page.tsx",
+          "type": "registry:page",
+          "target": "app/dashboard-02/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/dashboard-02/components/top-nav.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/dashboard-02/components/dashboard-content.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "dashboard-rail",
       "type": "registry:block",
       "title": "Rail + Sidebar Shell",

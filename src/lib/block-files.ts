@@ -755,6 +755,19 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/dashboard-header.tsx",
     },
   ],
+  "dashboard-02": [
+    { name: "page.tsx", path: "app/dashboard-02/page.tsx", src: "page.tsx" },
+    {
+      name: "top-nav.tsx",
+      path: "components/blocks/dashboard-02/components/top-nav.tsx",
+      src: "components/top-nav.tsx",
+    },
+    {
+      name: "dashboard-content.tsx",
+      path: "components/blocks/dashboard-02/components/dashboard-content.tsx",
+      src: "components/dashboard-content.tsx",
+    },
+  ],
   "dashboard-rail": [
     { name: "page.tsx", path: "app/dashboard-rail/page.tsx", src: "page.tsx" },
     {

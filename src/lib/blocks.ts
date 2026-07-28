@@ -15,6 +15,7 @@ import { DataTable01 } from "@/registry/bases/base/blocks/data-table/page"
 import { Department } from "@/registry/bases/base/blocks/department/page"
 import { DetailTabs } from "@/registry/bases/base/blocks/detail-tabs/page"
 import { Dashboard01 } from "@/registry/bases/base/blocks/dashboard-01/page"
+import { Dashboard02 } from "@/registry/bases/base/blocks/dashboard-02/page"
 import { DashboardRail } from "@/registry/bases/base/blocks/dashboard-rail/page"
 import { FileUpload } from "@/registry/bases/base/blocks/file-upload/page"
 import { ForbiddenWorkspace } from "@/registry/bases/base/blocks/forbidden-workspace/page"
@@ -592,6 +593,14 @@ export const blocks: BlockMeta[] = [
       "Collapsible sidebar nav that swaps a single content area directly, no tabs.",
     category: "App Shells",
     Component: Dashboard01,
+  },
+  {
+    slug: "dashboard-02",
+    title: "Top Nav Shell (GitHub-style)",
+    description:
+      "GitHub-style global top nav: logo, jump-to search, primary nav links, create/notifications/account menus — no sidebar.",
+    category: "App Shells",
+    Component: Dashboard02,
   },
   {
     slug: "dashboard-rail",

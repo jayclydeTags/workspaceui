@@ -96,6 +96,7 @@ import {
   DataFilterChain,
   DataFilterChips,
   DataFilterPopover,
+  dataGridHasFilterableColumns,
 } from "@/registry/bases/base/workspaceui/data-filter"
 import { DataPagination } from "@/registry/bases/base/workspaceui/data-pagination"
 import { DataSearch } from "@/registry/bases/base/workspaceui/data-search"
@@ -514,6 +515,9 @@ export function DataGrid<TData>({
   // Same rule as the header's sort affordance: only offer search/filter when the
   // consumer actually wired a filtered row model, so neither can be a no-op.
   const canFilter = table.options.getFilteredRowModel != null
+  // Search works off any column; the filter UI needs at least one typed column,
+  // or it opens on "No columns."
+  const canFilterColumns = canFilter && dataGridHasFilterableColumns(table)
   const canSort = table.options.getSortedRowModel != null
   const canPaginate = table.options.getPaginationRowModel != null
   const hasDeleteColumn = onRowDelete != null
@@ -1430,7 +1434,7 @@ export function DataGrid<TData>({
                       </div>
                     </section>
                   )}
-                  {canFilter && (
+                  {canFilterColumns && (
                     <section>
                       <h3 className="px-4 py-1 text-xs font-medium text-muted-foreground">
                         Filters
@@ -1517,7 +1521,7 @@ export function DataGrid<TData>({
           <div className="flex items-center gap-2">
             {canFilter && <DataSearch table={table} />}
             <div className="ms-auto flex shrink-0 items-center gap-1.5">
-              {canFilter && (
+              {canFilterColumns && (
                 <DataFilterPopover
                   table={table}
                   trigger={
@@ -1573,7 +1577,7 @@ export function DataGrid<TData>({
               </Popover>
             </div>
           </div>
-          {canFilter && <DataFilterChips table={table} />}
+          {canFilterColumns && <DataFilterChips table={table} />}
           {/* aria-rowcount includes the header row, per the grid pattern's own convention. */}
           {/* Gridlines come from a trailing border on every cell (last column
               excluded) rather than a class on each TableHead/TableCell call

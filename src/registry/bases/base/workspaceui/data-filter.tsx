@@ -600,6 +600,16 @@ function ValueEditor<TData>({
   )
 }
 
+/**
+ * Whether any column can be filtered at all. Lets a consumer hide its filter
+ * affordance instead of opening a popover that can only say "No columns."
+ */
+export function dataGridHasFilterableColumns<TData>(
+  table: TanstackTable<TData>
+): boolean {
+  return getFilterableColumns(table).length > 0
+}
+
 /** Typed, filterable columns the chain can target — the rest have no operator set. */
 function getFilterableColumns<TData>(
   table: TanstackTable<TData>

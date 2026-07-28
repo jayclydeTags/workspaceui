@@ -1626,6 +1626,28 @@ describe("DataGrid", () => {
       expect(screen.getByRole("button", { name: "Columns" })).toBeVisible()
     })
 
+    it("keeps search but drops the filter button when no column is typed", () => {
+      // Read-only columns carry no meta.type, so the filter popover would have
+      // nothing to offer.
+      function ReadOnlyHarness() {
+        // eslint-disable-next-line react-hooks/incompatible-library
+        const table = useReactTable({
+          data: defaultData,
+          columns: [{ accessorKey: "role", header: "Role" }],
+          getCoreRowModel: getCoreRowModel(),
+          getFilteredRowModel: getFilteredRowModel(),
+          globalFilterFn: dataGridGlobalFilterFn,
+          getColumnCanGlobalFilter: dataGridGetColumnCanGlobalFilter,
+          getRowId: (row) => row.id,
+        })
+        return <DataGrid table={table} onCellEdit={vi.fn()} />
+      }
+
+      render(<ReadOnlyHarness />)
+      expect(screen.getByLabelText("Search")).toBeVisible()
+      expect(screen.queryByRole("button", { name: "Filter" })).toBeNull()
+    })
+
     it("filters rows from the search box", async () => {
       const user = userEvent.setup()
       render(<FilterHarness />)

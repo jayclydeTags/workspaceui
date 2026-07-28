@@ -657,6 +657,7 @@ export const nav: NavSection[] = [
       { title: "Data Grid", href: "/docs/components/data-grid" },
       { title: "Data Filter", href: "/docs/components/data-filter" },
       { title: "Data Search", href: "/docs/components/data-search" },
+      { title: "Data Pagination", href: "/docs/components/data-pagination" },
     ],
   },
 ]

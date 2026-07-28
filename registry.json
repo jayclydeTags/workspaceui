@@ -87,6 +87,7 @@
         "jayclydeTags/workspaceui/data-grid-types",
         "jayclydeTags/workspaceui/data-filter",
         "jayclydeTags/workspaceui/data-search",
+        "jayclydeTags/workspaceui/data-pagination",
         "table",
         "input",
         "checkbox",
@@ -143,6 +144,20 @@
       "files": [
         {
           "path": "src/registry/bases/base/workspaceui/data-search.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "data-pagination",
+      "type": "registry:ui",
+      "title": "Data Pagination",
+      "description": "A pagination footer over a consumer-owned useReactTable() instance: filtered selection count, a rows-per-page select, a \"Page X of Y\" indicator, and first/previous/next/last controls disabled at the boundaries. Drives TanStack's own pagination state and requires getPaginationRowModel(); DataGrid renders it automatically when the table it's given has one.",
+      "dependencies": ["@tanstack/react-table"],
+      "registryDependencies": ["button", "select", "pagination", "utils"],
+      "files": [
+        {
+          "path": "src/registry/bases/base/workspaceui/data-pagination.tsx",
           "type": "registry:ui"
         }
       ]
@@ -236,6 +251,7 @@
         "jayclydeTags/workspaceui/data-grid",
         "jayclydeTags/workspaceui/data-filter",
         "jayclydeTags/workspaceui/data-search",
+        "jayclydeTags/workspaceui/data-pagination",
         "jayclydeTags/workspaceui/bulk-toolbar"
       ],
       "files": [

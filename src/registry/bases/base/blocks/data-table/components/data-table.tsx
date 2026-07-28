@@ -7,6 +7,7 @@ import {
   type SortingState,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
@@ -60,6 +61,8 @@ export function DataTable({ data: initialData }: DataTableProps) {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    // DataGrid renders its pagination footer off the presence of this model.
+    getPaginationRowModel: getPaginationRowModel(),
     state: { sorting, columnFilters, rowSelection },
   })
 

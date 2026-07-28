@@ -97,6 +97,7 @@ import {
   DataFilterChips,
   DataFilterPopover,
 } from "@/registry/bases/base/workspaceui/data-filter"
+import { DataPagination } from "@/registry/bases/base/workspaceui/data-pagination"
 import { DataSearch } from "@/registry/bases/base/workspaceui/data-search"
 // Side-effect import: pulls in the column.meta type augmentation this
 // component reads (cell.column.columnDef.meta?.type).
@@ -508,6 +509,7 @@ export function DataGrid<TData>({
   // consumer actually wired a filtered row model, so neither can be a no-op.
   const canFilter = table.options.getFilteredRowModel != null
   const canSort = table.options.getSortedRowModel != null
+  const canPaginate = table.options.getPaginationRowModel != null
   const hasDeleteColumn = onRowDelete != null
   const hasSelectionColumn = hasRowSelectionEnabled(table)
   const totalColCount =
@@ -2258,6 +2260,7 @@ export function DataGrid<TData>({
           </Table>
         </>
       )}
+      {canPaginate && <DataPagination table={table} />}
       {showCards && displayRow && (
         <Drawer
           open={openRow != null}

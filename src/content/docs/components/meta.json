@@ -10,6 +10,7 @@
     "data-grid-types",
     "data-grid",
     "data-filter",
-    "data-search"
+    "data-search",
+    "data-pagination"
   ]
 }

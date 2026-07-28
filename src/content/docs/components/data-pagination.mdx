@@ -1,0 +1,96 @@
+---
+title: Data Pagination
+description: A pagination footer over a consumer-owned useReactTable() instance — selection count, rows-per-page select, page indicator, and first/prev/next/last controls.
+---
+
+<ComponentPreview name="data-pagination" />
+
+`DataPagination` is a headless-composition component over the same
+`useReactTable()` instance you'd pass to [Data Grid](/docs/components/data-grid),
+[Data Filter](/docs/components/data-filter), and
+[Data Search](/docs/components/data-search) — a sibling toolbar control, not a
+prop on any of them. It drives TanStack's own `pagination` state; it never
+slices rows itself.
+
+## Installation
+
+<CodeTabs>
+<TabsList>
+<TabsTrigger value="cli">CLI</TabsTrigger>
+<TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+<TabsContent value="cli">
+
+<CodeBlockCommand
+  __npm__="npx shadcn@latest add jayclydeTags/workspaceui/data-pagination"
+  __pnpm__="pnpm dlx shadcn@latest add jayclydeTags/workspaceui/data-pagination"
+  __yarn__="yarn dlx shadcn@latest add jayclydeTags/workspaceui/data-pagination"
+  __bun__="bun x shadcn@latest add jayclydeTags/workspaceui/data-pagination"
+/>
+
+</TabsContent>
+<TabsContent value="manual">
+
+### Install dependencies
+
+```bash
+npm install @tanstack/react-table
+npx shadcn@latest add button select pagination
+```
+
+### Copy the file into your project
+
+<ComponentSource name="data-pagination" />
+
+</TabsContent>
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { DataPagination } from "@/components/ui/data-pagination"
+```
+
+```tsx
+const table = useReactTable({
+  data,
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+  getPaginationRowModel: getPaginationRowModel(),
+})
+
+<DataPagination table={table} />
+```
+
+`getPaginationRowModel()` is required — without it `table.getRowModel()`
+returns every row and the controls page through nothing.
+
+Inside [Data Grid](/docs/components/data-grid) you don't render it yourself:
+the grid appends `DataPagination` automatically whenever the table it's given
+has a `getPaginationRowModel`, the same way it only offers search and filters
+when a filtered row model is present.
+
+## Features
+
+- **Selection count** — `N of M row(s) selected`, counted against the
+  _filtered_ row model so it reflects what's actually reachable. On a table
+  with `enableRowSelection: false` it degrades to a plain `M row(s)` count
+  instead of a permanent "0 of M selected".
+- **Rows per page** — a select bound to `table.setPageSize()`. Override the
+  choices with `pageSizeOptions`.
+- **Page indicator** — `Page X of Y`. An empty table reads "Page 1 of 1"
+  rather than TanStack's raw "of 0".
+- **First / previous / next / last** — laid out in the shadcn `Pagination`
+  nav/list structure, disabled at the boundaries via `getCanPreviousPage()` /
+  `getCanNextPage()`, each with an explicit `aria-label` since they're
+  icon-only. They're `Button`s rather than `PaginationLink`/`PaginationNext`:
+  those render an `<a>` with no `href`, which can't be disabled or activated
+  from the keyboard — and paging a client-side table isn't navigation.
+
+## API Reference
+
+| Prop              | Type           | Default                | Description                                                                              |
+| ----------------- | -------------- | ---------------------- | ---------------------------------------------------------------------------------------- |
+| `table`           | `Table<TData>` | -                      | A useReactTable() instance you create and own. Needs getPaginationRowModel(). (required) |
+| `pageSizeOptions` | `number[]`     | `[10, 20, 30, 40, 50]` | Choices in the rows-per-page select.                                                     |
+| `className`       | `string`       | -                      | Extra classes on the footer row.                                                         |

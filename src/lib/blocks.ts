@@ -98,515 +98,523 @@ export interface BlockMeta {
 // everywhere, must not import this).
 export const blocks: BlockMeta[] = [
   {
-    slug: "payroll-run",
-    title: "Payroll Run",
-    description:
-      "Payroll run summary with per-employee payslips — gross, deductions, and net pay.",
-    category: "Payroll",
-    Component: PayrollRun,
-  },
-  {
-    slug: "employee",
-    title: "Employee",
-    description:
-      "Employee directory with create/edit dialog form, row-action menu, and a delete confirmation.",
-    category: "Payroll",
-    Component: Employee,
-  },
-  {
-    slug: "deductions-benefits",
-    title: "Deductions & Benefits",
-    description:
-      "Deduction and benefit plan list with create/edit dialog form, row-action menu, and a delete confirmation.",
-    category: "Payroll",
-    Component: DeductionsBenefits,
-  },
-  {
     slug: "tax-tables",
-    title: "Tax Tables",
+    title: "Reference Table with Facet Filter",
     description:
       "Searchable tax bracket reference table filterable by jurisdiction, with income range and rate per filing status.",
-    category: "Payroll",
+    category: "Tables",
     Component: TaxTables,
   },
   {
     slug: "payroll-tasks",
-    title: "Payroll Tasks",
+    title: "Work Queue with Stat Cards",
     description:
       "Employee payroll task dashboard — pending/overdue/completed overview cards, a searchable task list, and a complete-with-summary dialog.",
-    category: "Payroll",
+    category: "Tables",
     Component: PayrollTasks,
   },
   {
-    slug: "payslip-detail",
-    title: "Payslip Detail",
-    description:
-      "Single-employee payslip breakdown — earnings, deductions, and employer contributions with YTD totals.",
-    category: "Payroll",
-    Component: PayslipDetail,
-  },
-  {
     slug: "compensation-table",
-    title: "Compensation Table",
+    title: "Table with Computed Columns",
     description:
       "Searchable org-wide salary overview with pay band, last adjustment, and change percentage.",
-    category: "Payroll",
+    category: "Tables",
     Component: CompensationTable,
   },
   {
-    slug: "payroll-calendar",
-    title: "Payroll Calendar",
-    description:
-      "Monthly pay schedule with timesheet cutoffs, pay dates, and the next upcoming run highlighted.",
-    category: "Payroll",
-    Component: PayrollCalendar,
-  },
-  {
-    slug: "offcycle-payment-form",
-    title: "Off-cycle Payment Form",
-    description:
-      "Form for issuing a one-off bonus, correction, or reimbursement outside the regular payroll run.",
-    category: "Payroll",
-    Component: OffcyclePaymentForm,
-  },
-  {
     slug: "data-table",
-    title: "Data Table",
+    title: "Editable Table",
     description:
       "Editable data table built on DataGrid, DataFilter, and BulkToolbar — filter chips, sorting, inline cell editing, and a contextual bulk-delete toolbar.",
-    category: "CRUD",
+    category: "Tables",
     Component: DataTable01,
   },
   {
     slug: "bulk-actions-toolbar",
-    title: "Bulk Actions Toolbar",
+    title: "Table with Bulk Actions",
     description:
       "Row selection with select-all and a contextual toolbar for bulk export/delete, with a confirm dialog for the destructive action.",
-    category: "CRUD",
+    category: "Tables",
     Component: BulkActionsToolbar,
-  },
-  {
-    slug: "confirm-dialog",
-    title: "Confirm Dialog",
-    description:
-      "Reusable confirm-before-you-act dialog for destructive actions — controlled open state, custom title/description/labels, destructive styling.",
-    category: "CRUD",
-    Component: ConfirmDialogDemo,
   },
   {
     slug: "search-filter-bar",
     title: "Search + Filter Bar",
     description:
       "Search box with faceted Select filters and a clear-all action over a filtered result list with live count.",
-    category: "CRUD",
+    category: "Tables",
     Component: SearchFilterBar,
   },
   {
-    slug: "detail-tabs",
-    title: "Detail Tabs",
-    description:
-      "Single-record detail view with a header and Overview / Activity / Orders tabs.",
-    category: "CRUD",
-    Component: DetailTabs,
-  },
-  {
-    slug: "record-form-dialog",
-    title: "Record Form Dialog",
-    description:
-      "Standalone create/edit dialog — one form handles both add and update, seeded from the record being edited.",
-    category: "CRUD",
-    Component: RecordFormDialog,
-  },
-  {
-    slug: "record-detail",
-    title: "Record Detail",
-    description:
-      "Read-only single-record view — header with avatar/status badge and grouped label/value field sections, no tabs.",
-    category: "CRUD",
-    Component: RecordDetail,
-  },
-  {
-    slug: "master-detail",
-    title: "Master-Detail",
-    description:
-      "Resizable list + detail split pane — select a row on the left to view its fields on the right, with an empty state when nothing's selected.",
-    category: "CRUD",
-    Component: MasterDetail,
-  },
-  {
-    slug: "department",
-    title: "Department",
-    description:
-      "Departments table with create/edit dialog form, row-action menu, and a delete confirmation.",
-    category: "CRUD",
-    Component: Department,
-  },
-  {
-    slug: "import-export",
-    title: "Import / Export",
-    description:
-      "CSV import wizard — paste or load data, map columns to entity fields with a live preview, then import. Includes a CSV export action.",
-    category: "CRUD",
-    Component: ImportExport,
-  },
-  {
-    slug: "file-upload",
-    title: "File Upload",
-    description:
-      "Attachments panel — click-or-drag dropzone, per-file upload/error states, type icons, retry, and remove.",
-    category: "CRUD",
-    Component: FileUpload,
-  },
-  {
-    slug: "notifications-inbox",
-    title: "Notifications Inbox",
-    description:
-      "Notification inbox with All/Unread tabs, per-type icons, unread indicators, mark-one-read on click, and mark-all-read.",
-    category: "Communication",
-    Component: NotificationsInbox,
-  },
-  {
-    slug: "notification-center",
-    title: "Notification Center",
-    description:
-      "Notification center with a header bell dropdown (unread badge capped at 9+, 5 most recent, mark-all-read) and a full page filtered by read state, severity, and date range with 20-per-page pagination.",
-    category: "Communication",
-    Component: NotificationCenter,
-  },
-  {
-    slug: "comments-thread",
-    title: "Comments Thread",
-    description:
-      "Threaded comments with avatars, inline reply composers, and a top-level composer, with a running comment count.",
-    category: "Communication",
-    Component: CommentsThread,
-  },
-  {
-    slug: "dashboard",
-    title: "Dashboard",
-    description:
-      "Icon-collapsible sidebar (trigger in the sidebar) with the Workspace component; each tab renders inside the Page component.",
-    category: "Dashboard",
-    Component: Dashboard,
-  },
-  {
-    slug: "dashboard-01",
-    title: "Dashboard 01",
-    description: "Collapsible sidebar nav paired with the Workspace component.",
-    category: "Dashboard",
-    Component: Dashboard01,
-  },
-  {
-    slug: "dashboard-rail",
-    title: "Dashboard Rail",
-    description:
-      "Fixed icon-only app rail (logo, app switcher, settings, profile) beside a collapsible nav sidebar and the Workspace component.",
-    category: "Dashboard",
-    Component: DashboardRail,
-  },
-  {
     slug: "activity-log",
-    title: "Activity Log",
+    title: "Responsive Table (Card Fallback)",
     description:
       "Filterable activity log with a responsive datatable — collapses to cards on narrow panes.",
-    category: "Activity",
+    category: "Tables",
     Component: ActivityLog,
   },
   {
-    slug: "activity-feed",
-    title: "Activity Feed",
-    description:
-      "Grouped activity timeline with type/user filters and running stats.",
-    category: "Activity",
-    Component: ActivityFeed,
-  },
-  {
     slug: "audit-log",
-    title: "Audit Log",
+    title: "Before / After Diff Table",
     description:
       "Field-level audit trail — who changed what field, with before → after values, actor avatars, and search/action filters.",
-    category: "Activity",
+    category: "Tables",
     Component: AuditLog,
   },
   {
-    slug: "access-control",
-    title: "Access Control",
-    description:
-      "Manage role permissions across resources with a per-role permission matrix.",
-    category: "Access",
-    Component: AccessControl,
-  },
-  {
-    slug: "invoice-detail",
-    title: "Invoice Detail",
-    description:
-      "Master-detail invoice workspace — select a row to open its line items in a new tab.",
-    category: "Finance",
-    Component: InvoiceDetail,
-  },
-  {
-    slug: "purchase-order-form",
-    title: "Purchase Order Form",
-    description:
-      "Three-step wizard for creating a purchase order — vendor details, line items, and review.",
-    category: "Finance",
-    Component: PurchaseOrderForm,
-  },
-  {
-    slug: "chart-of-accounts",
-    title: "Chart of Accounts",
-    description:
-      "Chart of accounts table with create/edit dialog form, row-action menu, and a delete confirmation.",
-    category: "Finance",
-    Component: ChartOfAccounts,
-  },
-  {
-    slug: "bills",
-    title: "Bills",
-    description:
-      "Accounts-payable bills list with create/edit dialog form, row-action menu, and a delete confirmation.",
-    category: "Finance",
-    Component: Bills,
-  },
-  {
-    slug: "payments",
-    title: "Payments",
-    description:
-      "Payments list with create/edit dialog form, row-action menu, and a delete confirmation.",
-    category: "Finance",
-    Component: Payments,
-  },
-  {
-    slug: "journal-entries",
-    title: "Journal Entries",
-    description:
-      "Journal entry list with a dynamic debit/credit line-item dialog that validates the entry balances before it can be saved.",
-    category: "Finance",
-    Component: JournalEntries,
-  },
-  {
     slug: "bank-reconciliation",
-    title: "Bank Reconciliation",
+    title: "Checklist Table with Running Totals",
     description:
       "Bank reconciliation checklist — mark transactions cleared against a statement balance, with live statement/cleared/difference summary cards.",
-    category: "Finance",
+    category: "Tables",
     Component: BankReconciliation,
   },
   {
-    slug: "products",
-    title: "Products",
-    description:
-      "Product / SKU catalog list with create/edit dialog form, row-action menu, and a delete confirmation.",
-    category: "Inventory",
-    Component: Products,
-  },
-  {
-    slug: "warehouses",
-    title: "Warehouses",
-    description:
-      "Warehouse list with capacity utilization, create/edit dialog form, row-action menu, and a delete confirmation.",
-    category: "Inventory",
-    Component: Warehouses,
-  },
-  {
     slug: "stock-levels",
-    title: "Stock Levels",
+    title: "Table with Derived Status + Inline Adjust",
     description:
       "On-hand stock per SKU and warehouse — searchable, with derived low/out-of-stock badges and a stock-take adjustment dialog.",
-    category: "Inventory",
+    category: "Tables",
     Component: StockLevels,
   },
   {
     slug: "stock-movements",
-    title: "Stock Movements",
+    title: "Append-only Ledger Table",
     description:
       "Append-only stock ledger — receipts, shipments, adjustments, and transfers with a type filter, running net change, and a record-movement dialog.",
-    category: "Inventory",
+    category: "Tables",
     Component: StockMovements,
   },
   {
+    slug: "repayment-schedule",
+    title: "Computed Schedule Table",
+    description:
+      "Amortisation table derived from the loan terms — per-instalment interest/principal split, derived paid/due/overdue status, and in-order payment recording.",
+    category: "Tables",
+    Component: RepaymentSchedule,
+  },
+  {
+    slug: "employee",
+    title: "CRUD Table (Employees)",
+    description:
+      "Employee directory with create/edit dialog form, row-action menu, and a delete confirmation.",
+    category: "CRUD Tables",
+    Component: Employee,
+  },
+  {
+    slug: "deductions-benefits",
+    title: "CRUD Table (Plans)",
+    description:
+      "Deduction and benefit plan list with create/edit dialog form, row-action menu, and a delete confirmation.",
+    category: "CRUD Tables",
+    Component: DeductionsBenefits,
+  },
+  {
+    slug: "department",
+    title: "CRUD Table (Departments)",
+    description:
+      "Departments table with create/edit dialog form, row-action menu, and a delete confirmation.",
+    category: "CRUD Tables",
+    Component: Department,
+  },
+  {
+    slug: "chart-of-accounts",
+    title: "CRUD Table (Tree-coded Records)",
+    description:
+      "Chart of accounts table with create/edit dialog form, row-action menu, and a delete confirmation.",
+    category: "CRUD Tables",
+    Component: ChartOfAccounts,
+  },
+  {
+    slug: "bills",
+    title: "CRUD Table (Bills)",
+    description:
+      "Accounts-payable bills list with create/edit dialog form, row-action menu, and a delete confirmation.",
+    category: "CRUD Tables",
+    Component: Bills,
+  },
+  {
+    slug: "payments",
+    title: "CRUD Table (Payments)",
+    description:
+      "Payments list with create/edit dialog form, row-action menu, and a delete confirmation.",
+    category: "CRUD Tables",
+    Component: Payments,
+  },
+  {
+    slug: "products",
+    title: "CRUD Table (Products)",
+    description:
+      "Product / SKU catalog list with create/edit dialog form, row-action menu, and a delete confirmation.",
+    category: "CRUD Tables",
+    Component: Products,
+  },
+  {
+    slug: "warehouses",
+    title: "CRUD Table with Utilization Bar",
+    description:
+      "Warehouse list with capacity utilization, create/edit dialog form, row-action menu, and a delete confirmation.",
+    category: "CRUD Tables",
+    Component: Warehouses,
+  },
+  {
     slug: "leave-requests",
-    title: "Leave Requests",
+    title: "CRUD Table with Approve / Reject Actions",
     description:
       "Leave request list with a status filter, approve/reject row actions, a submit-request dialog, and a delete confirmation.",
-    category: "HRIS",
+    category: "CRUD Tables",
     Component: LeaveRequests,
   },
   {
     slug: "attendance",
-    title: "Attendance",
+    title: "CRUD Table with Date Filter",
     description:
       "Daily attendance log with a date filter, punch-derived present/late/absent status, total hours, and create/edit/delete.",
-    category: "HRIS",
+    category: "CRUD Tables",
     Component: Attendance,
   },
   {
-    slug: "performance-reviews",
-    title: "Performance Reviews",
-    description:
-      "Performance review list with star ratings, a status filter, average-rating summary, and a create/edit dialog that blocks completing an unrated review.",
-    category: "HRIS",
-    Component: PerformanceReviews,
-  },
-  {
     slug: "projects",
-    title: "Projects",
+    title: "CRUD Table with Progress Bars",
     description:
       "Project portfolio list with a status filter, progress bars, overdue due-date highlighting, and create/edit/delete.",
-    category: "Project management",
+    category: "CRUD Tables",
     Component: Projects,
   },
   {
-    slug: "task-board",
-    title: "Task Board",
+    slug: "contacts",
+    title: "CRUD Table with Search",
     description:
-      "Drag-and-drop Kanban board for project tasks — to do / in progress / review / done, with priority, assignee, and a create/edit dialog.",
-    category: "Project management",
-    Component: TaskBoard,
+      "Contact book with search, one-primary-per-account enforced on promote, and a warning for accounts left without a primary.",
+    category: "CRUD Tables",
+    Component: Contacts,
+  },
+  {
+    slug: "journal-entries",
+    title: "Line-Item Form that Must Balance",
+    description:
+      "Journal entry list with a dynamic debit/credit line-item dialog that validates the entry balances before it can be saved.",
+    category: "Guarded CRUD",
+    Component: JournalEntries,
+  },
+  {
+    slug: "performance-reviews",
+    title: "CRUD with Completion Precondition",
+    description:
+      "Performance review list with star ratings, a status filter, average-rating summary, and a create/edit dialog that blocks completing an unrated review.",
+    category: "Guarded CRUD",
+    Component: PerformanceReviews,
   },
   {
     slug: "timesheets",
-    title: "Timesheets",
+    title: "CRUD with Locking Lifecycle",
     description:
       "Time entries per project with billable-utilization summary and a draft → submitted → approved lifecycle that locks an entry once submitted.",
-    category: "Project management",
+    category: "Guarded CRUD",
     Component: Timesheets,
   },
   {
-    slug: "milestones",
-    title: "Milestones",
-    description:
-      "Milestone tracker with task-scope progress and a state derived from the due date — completed, overdue, at risk, or on track.",
-    category: "Project management",
-    Component: Milestones,
-  },
-  {
     slug: "project-team",
-    title: "Project Team",
+    title: "CRUD with Capacity + Uniqueness Guards",
     description:
       "Project roster with roles, weekly allocation, and guards that keep one lead on the project and nobody booked past a full week.",
-    category: "Project management",
+    category: "Guarded CRUD",
     Component: ProjectTeam,
   },
   {
     slug: "leads",
-    title: "Leads",
+    title: "CRUD with Gated State Transition",
     description:
       "Lead pipeline with a stage filter, hot-lead scoring, qualification rate, and a convert action gated on the lead being qualified.",
-    category: "CRM",
+    category: "Guarded CRUD",
     Component: Leads,
   },
   {
-    slug: "contacts",
-    title: "Contacts",
-    description:
-      "Contact book with search, one-primary-per-account enforced on promote, and a warning for accounts left without a primary.",
-    category: "CRM",
-    Component: Contacts,
-  },
-  {
     slug: "accounts",
-    title: "Accounts",
+    title: "CRUD with Delete Blocked by Dependents",
     description:
       "Account book with tier filter, ARR roll-up, health derived from contact recency, and delete blocked while deals are open.",
-    category: "CRM",
+    category: "Guarded CRUD",
     Component: Accounts,
   },
   {
-    slug: "deals-pipeline",
-    title: "Deals Pipeline",
-    description:
-      "Drag-and-drop deal pipeline with per-stage value, a probability-weighted forecast, and win rate over closed deals.",
-    category: "CRM",
-    Component: DealsPipeline,
-  },
-  {
     slug: "loan-applications",
-    title: "Loan Applications",
+    title: "CRUD with Threshold-Gated Approval",
     description:
       "Loan application queue with amortised monthly payment, debt-to-income assessment, and approval blocked above the DTI ceiling.",
-    category: "Lending",
+    category: "Guarded CRUD",
     Component: LoanApplications,
   },
   {
     slug: "borrowers",
-    title: "Borrowers",
+    title: "CRUD with Eligibility Gate",
     description:
       "Borrower register with search, risk grade derived from credit score, KYC gating on eligibility, and delete blocked while loans are active.",
-    category: "Lending",
+    category: "Guarded CRUD",
     Component: Borrowers,
   },
   {
-    slug: "repayment-schedule",
-    title: "Repayment Schedule",
-    description:
-      "Amortisation table derived from the loan terms — per-instalment interest/principal split, derived paid/due/overdue status, and in-order payment recording.",
-    category: "Lending",
-    Component: RepaymentSchedule,
-  },
-  {
     slug: "disbursements",
-    title: "Disbursements",
+    title: "CRUD Capped by a Parent Total",
     description:
       "Loan disbursement tranches with a loan filter, release/fail settlement, and scheduling blocked from overdrawing the approved principal.",
-    category: "Lending",
+    category: "Guarded CRUD",
     Component: Disbursements,
   },
   {
     slug: "collateral",
-    title: "Collateral",
+    title: "CRUD with Staleness Guard",
     description:
       "Pledged-asset register with per-type advance rates, lien perfection blocked on a stale appraisal, and an under-secured loan warning.",
-    category: "Lending",
+    category: "Guarded CRUD",
     Component: CollateralRegister,
   },
   {
+    slug: "offcycle-payment-form",
+    title: "Single-Purpose Form",
+    description:
+      "Form for issuing a one-off bonus, correction, or reimbursement outside the regular payroll run.",
+    category: "Forms & Wizards",
+    Component: OffcyclePaymentForm,
+  },
+  {
+    slug: "import-export",
+    title: "CSV Import Wizard + Export",
+    description:
+      "CSV import wizard — paste or load data, map columns to entity fields with a live preview, then import. Includes a CSV export action.",
+    category: "Forms & Wizards",
+    Component: ImportExport,
+  },
+  {
+    slug: "file-upload",
+    title: "Dropzone Upload with Per-File State",
+    description:
+      "Attachments panel — click-or-drag dropzone, per-file upload/error states, type icons, retry, and remove.",
+    category: "Forms & Wizards",
+    Component: FileUpload,
+  },
+  {
+    slug: "purchase-order-form",
+    title: "Multi-step Form Wizard",
+    description:
+      "Three-step wizard for creating a purchase order — vendor details, line items, and review.",
+    category: "Forms & Wizards",
+    Component: PurchaseOrderForm,
+  },
+  {
+    slug: "confirm-dialog",
+    title: "Confirm Dialog",
+    description:
+      "Reusable confirm-before-you-act dialog for destructive actions — controlled open state, custom title/description/labels, destructive styling.",
+    category: "Dialogs",
+    Component: ConfirmDialogDemo,
+  },
+  {
+    slug: "record-form-dialog",
+    title: "Create / Edit Dialog",
+    description:
+      "Standalone create/edit dialog — one form handles both add and update, seeded from the record being edited.",
+    category: "Dialogs",
+    Component: RecordFormDialog,
+  },
+  {
+    slug: "payroll-run",
+    title: "Summary + Line Items View",
+    description:
+      "Payroll run summary with per-employee payslips — gross, deductions, and net pay.",
+    category: "Detail Views",
+    Component: PayrollRun,
+  },
+  {
+    slug: "payslip-detail",
+    title: "Statement / Breakdown View",
+    description:
+      "Single-employee payslip breakdown — earnings, deductions, and employer contributions with YTD totals.",
+    category: "Detail Views",
+    Component: PayslipDetail,
+  },
+  {
+    slug: "detail-tabs",
+    title: "Detail View with Tabs",
+    description:
+      "Single-record detail view with a header and Overview / Activity / Orders tabs.",
+    category: "Detail Views",
+    Component: DetailTabs,
+  },
+  {
+    slug: "record-detail",
+    title: "Read-only Record View",
+    description:
+      "Read-only single-record view — header with avatar/status badge and grouped label/value field sections, no tabs.",
+    category: "Detail Views",
+    Component: RecordDetail,
+  },
+  {
+    slug: "master-detail",
+    title: "Resizable Master–Detail Split",
+    description:
+      "Resizable list + detail split pane — select a row on the left to view its fields on the right, with an empty state when nothing's selected.",
+    category: "Detail Views",
+    Component: MasterDetail,
+  },
+  {
+    slug: "invoice-detail",
+    title: "Master–Detail that Opens a Tab",
+    description:
+      "Master-detail invoice workspace — select a row to open its line items in a new tab.",
+    category: "Detail Views",
+    Component: InvoiceDetail,
+  },
+  {
+    slug: "payroll-calendar",
+    title: "Schedule Calendar with Next-Up Highlight",
+    description:
+      "Monthly pay schedule with timesheet cutoffs, pay dates, and the next upcoming run highlighted.",
+    category: "Boards, Grids & Timelines",
+    Component: PayrollCalendar,
+  },
+  {
+    slug: "task-board",
+    title: "Kanban Board (Drag & Drop)",
+    description:
+      "Drag-and-drop Kanban board for project tasks — to do / in progress / review / done, with priority, assignee, and a create/edit dialog.",
+    category: "Boards, Grids & Timelines",
+    Component: TaskBoard,
+  },
+  {
+    slug: "milestones",
+    title: "Timeline with Derived State",
+    description:
+      "Milestone tracker with task-scope progress and a state derived from the due date — completed, overdue, at risk, or on track.",
+    category: "Boards, Grids & Timelines",
+    Component: Milestones,
+  },
+  {
+    slug: "deals-pipeline",
+    title: "Pipeline Board with Stage Roll-ups",
+    description:
+      "Drag-and-drop deal pipeline with per-stage value, a probability-weighted forecast, and win rate over closed deals.",
+    category: "Boards, Grids & Timelines",
+    Component: DealsPipeline,
+  },
+  {
     slug: "bin-location-map",
-    title: "Bin / Location Map",
+    title: "Slot / Floor-plan Grid",
     description:
       "Warehouse floor-plan grid of storage bins — assign or clear stock per bin, gated on capacity, single-SKU occupancy, and blocked/quarantine status.",
-    category: "Warehouse",
+    category: "Boards, Grids & Timelines",
     Component: BinLocationMap,
   },
   {
+    slug: "approval-board",
+    title: "Triage Board",
+    description:
+      "Drag-and-drop Kanban board for triaging expense, purchase order, and time-off approval requests.",
+    category: "Boards, Grids & Timelines",
+    Component: ApprovalBoard,
+  },
+  {
+    slug: "notifications-inbox",
+    title: "Inbox with Read / Unread Tabs",
+    description:
+      "Notification inbox with All/Unread tabs, per-type icons, unread indicators, mark-one-read on click, and mark-all-read.",
+    category: "Feeds & Notifications",
+    Component: NotificationsInbox,
+  },
+  {
+    slug: "notification-center",
+    title: "Notification Center (Bell + Full Page)",
+    description:
+      "Notification center with a header bell dropdown (unread badge capped at 9+, 5 most recent, mark-all-read) and a full page filtered by read state, severity, and date range with 20-per-page pagination.",
+    category: "Feeds & Notifications",
+    Component: NotificationCenter,
+  },
+  {
+    slug: "comments-thread",
+    title: "Threaded Comments",
+    description:
+      "Threaded comments with avatars, inline reply composers, and a top-level composer, with a running comment count.",
+    category: "Feeds & Notifications",
+    Component: CommentsThread,
+  },
+  {
+    slug: "activity-feed",
+    title: "Grouped Activity Timeline",
+    description:
+      "Grouped activity timeline with type/user filters and running stats.",
+    category: "Feeds & Notifications",
+    Component: ActivityFeed,
+  },
+  {
     slug: "inbound-receiving",
-    title: "Inbound / Receiving",
+    title: "Receive → QC → Put-away Flow",
     description:
       "Record stock arriving against a purchase order and put it away into bins — blocked receiving on a closed/cancelled PO, a QC gate before stock counts as available, and capacity-checked put-away reusing the bin/location-map contract.",
-    category: "Warehouse",
+    category: "Multi-step Workflows",
     Component: InboundReceiving,
   },
   {
     slug: "outbound-picking",
-    title: "Outbound / Picking",
+    title: "Claim → Pick → Complete Flow",
     description:
       "Claim and fulfil pick lists that draw stock out of bins for an outbound order — blocked picking on a closed/cancelled order, per-line allocations across bins capped at on-hand, short-pick handling, and a picker-claim gate. Emits a pickId + picked-quantity completion record for Shipments.",
-    category: "Warehouse",
+    category: "Multi-step Workflows",
     Component: OutboundPicking,
   },
   {
     slug: "inventory-adjustments",
-    title: "Inventory Adjustments",
+    title: "Variance Approval Flow",
     description:
       "Bin-level count-correction workflow — an absolute physical count raised against a bin with a reason code, where damage/shrinkage may only reduce a count, variance over 10% needs approval before it posts, and a bin held by a pick or receipt is locked. Approval posts to the bin in one step and emits a SKU/warehouse/delta record for stock levels.",
-    category: "Warehouse",
+    category: "Multi-step Workflows",
     Component: InventoryAdjustments,
   },
   {
     slug: "shipments",
-    title: "Shipments",
+    title: "Fulfilment Flow with Derived Status",
     description:
       "Outbound fulfilment records that ship a completed pick — a partially-picked order can never ship, a carrier and tracking number are required before a shipment moves to shipped, and a shipment already in transit can no longer be cancelled. Status is derived from the record, never stored: cancelled outranks exception outranks delivered outranks shipped.",
-    category: "Warehouse",
+    category: "Multi-step Workflows",
     Component: Shipments,
   },
   {
-    slug: "approval-board",
-    title: "Approval Board",
+    slug: "dashboard",
+    title: "Sidebar Shell (Icon-collapsible)",
     description:
-      "Drag-and-drop Kanban board for triaging expense, purchase order, and time-off approval requests.",
-    category: "Operations",
-    Component: ApprovalBoard,
+      "Icon-collapsible sidebar (trigger in the sidebar) with the Workspace component; each tab renders inside the Page component.",
+    category: "App Shells",
+    Component: Dashboard,
+  },
+  {
+    slug: "dashboard-01",
+    title: "Sidebar Shell (Collapsible)",
+    description: "Collapsible sidebar nav paired with the Workspace component.",
+    category: "App Shells",
+    Component: Dashboard01,
+  },
+  {
+    slug: "dashboard-rail",
+    title: "Rail + Sidebar Shell",
+    description:
+      "Fixed icon-only app rail (logo, app switcher, settings, profile) beside a collapsible nav sidebar and the Workspace component.",
+    category: "App Shells",
+    Component: DashboardRail,
+  },
+  {
+    slug: "access-control",
+    title: "Permission Matrix",
+    description:
+      "Manage role permissions across resources with a per-role permission matrix.",
+    category: "Settings & Permissions",
+    Component: AccessControl,
+  },
+  {
+    slug: "settings",
+    title: "Sectioned Settings Page",
+    description:
+      "Sectioned workspace settings — company profile, notifications, billing, and security.",
+    category: "Settings & Permissions",
+    Component: Settings,
   },
   {
     slug: "login",
@@ -681,46 +689,6 @@ export const blocks: BlockMeta[] = [
     Component: RecoveryCodes,
   },
   {
-    slug: "pending-approval",
-    title: "Pending Approval",
-    description:
-      "Account-under-review status screen — explains the pending admin approval, the notification email, and check-status/sign-out actions.",
-    category: "Authorization",
-    Component: PendingApproval,
-  },
-  {
-    slug: "forbidden-workspace",
-    title: "Forbidden Workspace",
-    description:
-      "Wrong-tenant screen — signed in but not a member of this workspace, with a switcher to workspaces you belong to and a switch-account action.",
-    category: "Authorization",
-    Component: ForbiddenWorkspace,
-  },
-  {
-    slug: "account-suspended",
-    title: "Account Suspended",
-    description:
-      "Suspended-account screen — shows the suspension reason and offers an appeal action with a submitted confirmation plus a contact-support link.",
-    category: "Authorization",
-    Component: AccountSuspended,
-  },
-  {
-    slug: "unauthorized-403",
-    title: "Unauthorized 403",
-    description:
-      "Signed-in-but-forbidden screen — explains the missing permission, offers a request-access action with a sent confirmation, and a back link.",
-    category: "Authorization",
-    Component: Unauthorized403,
-  },
-  {
-    slug: "upgrade-required",
-    title: "Upgrade Required",
-    description:
-      "Plan-gated feature screen — a signed-in user hits a Pro-only feature, with the perks it unlocks, an upgrade action, and an ask-an-admin fallback that confirms once sent.",
-    category: "Authorization",
-    Component: UpgradeRequired,
-  },
-  {
     slug: "magic-link-sent",
     title: "Magic Link Sent",
     description:
@@ -761,11 +729,43 @@ export const blocks: BlockMeta[] = [
     Component: AccountLocked,
   },
   {
-    slug: "settings",
-    title: "Settings",
+    slug: "pending-approval",
+    title: "Pending Approval",
     description:
-      "Sectioned workspace settings — company profile, notifications, billing, and security.",
-    category: "Settings",
-    Component: Settings,
+      "Account-under-review status screen — explains the pending admin approval, the notification email, and check-status/sign-out actions.",
+    category: "Authorization",
+    Component: PendingApproval,
+  },
+  {
+    slug: "forbidden-workspace",
+    title: "Forbidden Workspace",
+    description:
+      "Wrong-tenant screen — signed in but not a member of this workspace, with a switcher to workspaces you belong to and a switch-account action.",
+    category: "Authorization",
+    Component: ForbiddenWorkspace,
+  },
+  {
+    slug: "account-suspended",
+    title: "Account Suspended",
+    description:
+      "Suspended-account screen — shows the suspension reason and offers an appeal action with a submitted confirmation plus a contact-support link.",
+    category: "Authorization",
+    Component: AccountSuspended,
+  },
+  {
+    slug: "unauthorized-403",
+    title: "Unauthorized 403",
+    description:
+      "Signed-in-but-forbidden screen — explains the missing permission, offers a request-access action with a sent confirmation, and a back link.",
+    category: "Authorization",
+    Component: Unauthorized403,
+  },
+  {
+    slug: "upgrade-required",
+    title: "Upgrade Required",
+    description:
+      "Plan-gated feature screen — a signed-in user hits a Pro-only feature, with the perks it unlocks, an upgrade action, and an ask-an-admin fallback that confirms once sent.",
+    category: "Authorization",
+    Component: UpgradeRequired,
   },
 ]

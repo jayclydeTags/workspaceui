@@ -21,25 +21,19 @@ export const blocksNav: NavSection[] = [
     title: "Applications",
     groups: [
       {
-        title: "CRUD",
+        title: "Tables",
         items: [
           {
-            title: "Data Table",
+            title: "Editable Table",
             href: "/blocks/data-table",
             description:
-              "Generic TanStack data table — sortable columns, column filter, column visibility, row selection, and pagination.",
+              "Editable data table built on DataGrid, DataFilter, and BulkToolbar — filter chips, sorting, inline cell editing, and a contextual bulk-delete toolbar.",
           },
           {
-            title: "Bulk Actions Toolbar",
+            title: "Table with Bulk Actions",
             href: "/blocks/bulk-actions-toolbar",
             description:
               "Row selection with select-all and a contextual toolbar for bulk export/delete, with a confirm dialog for the destructive action.",
-          },
-          {
-            title: "Confirm Dialog",
-            href: "/blocks/confirm-dialog",
-            description:
-              "Reusable confirm-before-you-act dialog for destructive actions — controlled open state, custom title/description/labels, destructive styling.",
           },
           {
             title: "Search + Filter Bar",
@@ -48,380 +42,197 @@ export const blocksNav: NavSection[] = [
               "Search box with faceted Select filters and a clear-all action over a filtered result list with live count.",
           },
           {
-            title: "Detail Tabs",
-            href: "/blocks/detail-tabs",
-            description:
-              "Single-record detail view with a header and Overview / Activity / Orders tabs.",
-          },
-          {
-            title: "Record Form Dialog",
-            href: "/blocks/record-form-dialog",
-            description:
-              "Standalone create/edit dialog — one form handles both add and update, seeded from the record being edited.",
-          },
-          {
-            title: "Record Detail",
-            href: "/blocks/record-detail",
-            description:
-              "Read-only single-record view — header with avatar/status badge and grouped label/value field sections, no tabs.",
-          },
-          {
-            title: "Master-Detail",
-            href: "/blocks/master-detail",
-            description:
-              "Resizable list + detail split pane — select a row on the left to view its fields on the right, with an empty state when nothing's selected.",
-          },
-          {
-            title: "Department",
-            href: "/blocks/department",
-            description:
-              "Departments table with create/edit dialog form, row-action menu, and a delete confirmation.",
-          },
-          {
-            title: "Import / Export",
-            href: "/blocks/import-export",
-            description:
-              "CSV import wizard — paste or load data, map columns to entity fields with a live preview, then import. Includes a CSV export action.",
-          },
-          {
-            title: "File Upload",
-            href: "/blocks/file-upload",
-            description:
-              "Attachments panel — click-or-drag dropzone, per-file upload/error states, type icons, retry, and remove.",
-          },
-        ],
-      },
-      {
-        title: "Communication",
-        items: [
-          {
-            title: "Notifications Inbox",
-            href: "/blocks/notifications-inbox",
-            description:
-              "Notification inbox with All/Unread tabs, per-type icons, unread indicators, mark-one-read on click, and mark-all-read.",
-          },
-          {
-            title: "Notification Center",
-            href: "/blocks/notification-center",
-            description:
-              "Notification center with a header bell dropdown (unread badge capped at 9+, 5 most recent, mark-all-read) and a full page filtered by read state, severity, and date range with 20-per-page pagination.",
-          },
-          {
-            title: "Comments Thread",
-            href: "/blocks/comments-thread",
-            description:
-              "Threaded comments with avatars, inline reply composers, and a top-level composer, with a running comment count.",
-          },
-        ],
-      },
-      {
-        title: "Payroll",
-        items: [
-          {
-            title: "Payroll Run",
-            href: "/blocks/payroll-run",
-            description:
-              "Payroll run summary with per-employee payslips — gross, deductions, and net pay.",
-          },
-          {
-            title: "Employee",
-            href: "/blocks/employee",
-            description:
-              "Employee directory with create/edit dialog form, row-action menu, and a delete confirmation.",
-          },
-          {
-            title: "Deductions & Benefits",
-            href: "/blocks/deductions-benefits",
-            description:
-              "Deduction and benefit plan list with create/edit dialog form, row-action menu, and a delete confirmation.",
-          },
-          {
-            title: "Tax Tables",
-            href: "/blocks/tax-tables",
-            description:
-              "Searchable tax bracket reference table filterable by jurisdiction, with income range and rate per filing status.",
-          },
-          {
-            title: "Payroll Tasks",
-            href: "/blocks/payroll-tasks",
-            description:
-              "Employee payroll task dashboard — pending/overdue/completed overview cards, a searchable task list, and a complete-with-summary dialog.",
-          },
-          {
-            title: "Payslip Detail",
-            href: "/blocks/payslip-detail",
-            description:
-              "Single-employee payslip breakdown — earnings, deductions, and employer contributions with YTD totals.",
-          },
-          {
-            title: "Compensation Table",
-            href: "/blocks/compensation-table",
-            description:
-              "Searchable org-wide salary overview with pay band, last adjustment, and change percentage.",
-          },
-          {
-            title: "Payroll Calendar",
-            href: "/blocks/payroll-calendar",
-            description:
-              "Monthly pay schedule with timesheet cutoffs, pay dates, and the next upcoming run highlighted.",
-          },
-          {
-            title: "Off-cycle Payment Form",
-            href: "/blocks/offcycle-payment-form",
-            description:
-              "Form for issuing a one-off bonus, correction, or reimbursement outside the regular payroll run.",
-          },
-        ],
-      },
-      {
-        title: "Dashboard",
-        items: [
-          {
-            title: "Dashboard",
-            href: "/blocks/dashboard",
-            description:
-              "Icon-collapsible sidebar with the Workspace component; tabs render inside Page.",
-          },
-          {
-            title: "Dashboard 01",
-            href: "/blocks/dashboard-01",
-            description:
-              "Collapsible sidebar nav paired with the Workspace component.",
-          },
-          {
-            title: "Dashboard Rail",
-            href: "/blocks/dashboard-rail",
-            description:
-              "Fixed icon app rail beside a collapsible nav sidebar and the Workspace component.",
-          },
-        ],
-      },
-      {
-        title: "Activity",
-        items: [
-          {
-            title: "Activity Log",
+            title: "Responsive Table (Card Fallback)",
             href: "/blocks/activity-log",
             description:
               "Filterable activity log with a responsive datatable — collapses to cards on narrow panes.",
           },
           {
-            title: "Activity Feed",
-            href: "/blocks/activity-feed",
-            description:
-              "Grouped activity timeline with type/user filters and running stats.",
-          },
-          {
-            title: "Audit Log",
+            title: "Before / After Diff Table",
             href: "/blocks/audit-log",
             description:
               "Field-level audit trail — who changed what field, with before → after values, actor avatars, and search/action filters.",
           },
-        ],
-      },
-      {
-        title: "Access",
-        items: [
           {
-            title: "Access Control",
-            href: "/blocks/access-control",
+            title: "Table with Computed Columns",
+            href: "/blocks/compensation-table",
             description:
-              "Manage role permissions across resources with a per-role permission matrix.",
-          },
-        ],
-      },
-      {
-        title: "Finance",
-        items: [
-          {
-            title: "Invoice Detail",
-            href: "/blocks/invoice-detail",
-            description:
-              "Master-detail invoice workspace — select a row to open its line items in a new tab.",
+              "Searchable org-wide salary overview with pay band, last adjustment, and change percentage.",
           },
           {
-            title: "Purchase Order Form",
-            href: "/blocks/purchase-order-form",
+            title: "Reference Table with Facet Filter",
+            href: "/blocks/tax-tables",
             description:
-              "Three-step wizard for creating a purchase order — vendor details, line items, and review.",
+              "Searchable tax bracket reference table filterable by jurisdiction, with income range and rate per filing status.",
           },
           {
-            title: "Chart of Accounts",
-            href: "/blocks/chart-of-accounts",
-            description:
-              "Chart of accounts table with create/edit dialog form, row-action menu, and a delete confirmation.",
-          },
-          {
-            title: "Bills",
-            href: "/blocks/bills",
-            description:
-              "Accounts-payable bills list with create/edit dialog form, row-action menu, and a delete confirmation.",
-          },
-          {
-            title: "Payments",
-            href: "/blocks/payments",
-            description:
-              "Payments list with create/edit dialog form, row-action menu, and a delete confirmation.",
-          },
-          {
-            title: "Journal Entries",
-            href: "/blocks/journal-entries",
-            description:
-              "Journal entry list with a dynamic debit/credit line-item dialog that validates the entry balances before it can be saved.",
-          },
-          {
-            title: "Bank Reconciliation",
-            href: "/blocks/bank-reconciliation",
-            description:
-              "Bank reconciliation checklist — mark transactions cleared against a statement balance, with live statement/cleared/difference summary cards.",
-          },
-        ],
-      },
-      {
-        title: "Inventory",
-        items: [
-          {
-            title: "Products",
-            href: "/blocks/products",
-            description:
-              "Product / SKU catalog list with create/edit dialog form, row-action menu, and a delete confirmation.",
-          },
-          {
-            title: "Warehouses",
-            href: "/blocks/warehouses",
-            description:
-              "Warehouse list with capacity utilization, create/edit dialog form, row-action menu, and a delete confirmation.",
-          },
-          {
-            title: "Stock Levels",
+            title: "Table with Derived Status + Inline Adjust",
             href: "/blocks/stock-levels",
             description:
               "On-hand stock per SKU and warehouse — searchable, with derived low/out-of-stock badges and a stock-take adjustment dialog.",
           },
           {
-            title: "Stock Movements",
+            title: "Append-only Ledger Table",
             href: "/blocks/stock-movements",
             description:
               "Append-only stock ledger — receipts, shipments, adjustments, and transfers with a type filter, running net change, and a record-movement dialog.",
           },
-        ],
-      },
-      {
-        title: "HRIS",
-        items: [
           {
-            title: "Leave Requests",
-            href: "/blocks/leave-requests",
-            description:
-              "Leave request list with a status filter, approve/reject row actions, a submit-request dialog, and a delete confirmation.",
-          },
-          {
-            title: "Attendance",
-            href: "/blocks/attendance",
-            description:
-              "Daily attendance log with a date filter, punch-derived present/late/absent status, total hours, and create/edit/delete.",
-          },
-          {
-            title: "Performance Reviews",
-            href: "/blocks/performance-reviews",
-            description:
-              "Performance review list with star ratings, a status filter, average-rating summary, and a create/edit dialog that blocks completing an unrated review.",
-          },
-        ],
-      },
-      {
-        title: "Project management",
-        items: [
-          {
-            title: "Projects",
-            href: "/blocks/projects",
-            description:
-              "Project portfolio list with a status filter, progress bars, overdue due-date highlighting, and create/edit/delete.",
-          },
-          {
-            title: "Task Board",
-            href: "/blocks/task-board",
-            description:
-              "Drag-and-drop Kanban board for project tasks — to do / in progress / review / done, with priority, assignee, and a create/edit dialog.",
-          },
-          {
-            title: "Timesheets",
-            href: "/blocks/timesheets",
-            description:
-              "Time entries per project with billable-utilization summary and a draft → submitted → approved lifecycle that locks an entry once submitted.",
-          },
-          {
-            title: "Milestones",
-            href: "/blocks/milestones",
-            description:
-              "Milestone tracker with task-scope progress and a state derived from the due date — completed, overdue, at risk, or on track.",
-          },
-          {
-            title: "Project Team",
-            href: "/blocks/project-team",
-            description:
-              "Project roster with roles, weekly allocation, and guards that keep one lead on the project and nobody booked past a full week.",
-          },
-        ],
-      },
-      {
-        title: "CRM",
-        items: [
-          {
-            title: "Leads",
-            href: "/blocks/leads",
-            description:
-              "Lead pipeline with a stage filter, hot-lead scoring, qualification rate, and a convert action gated on the lead being qualified.",
-          },
-          {
-            title: "Contacts",
-            href: "/blocks/contacts",
-            description:
-              "Contact book with search, one-primary-per-account enforced on promote, and a warning for accounts left without a primary.",
-          },
-          {
-            title: "Accounts",
-            href: "/blocks/accounts",
-            description:
-              "Account book with tier filter, ARR roll-up, health derived from contact recency, and delete blocked while deals are open.",
-          },
-          {
-            title: "Deals Pipeline",
-            href: "/blocks/deals-pipeline",
-            description:
-              "Drag-and-drop deal pipeline with per-stage value, a probability-weighted forecast, and win rate over closed deals.",
-          },
-        ],
-      },
-      {
-        title: "Lending",
-        items: [
-          {
-            title: "Loan Applications",
-            href: "/blocks/loan-applications",
-            description:
-              "Loan application queue with amortised monthly payment, debt-to-income assessment, and approval blocked above the DTI ceiling.",
-          },
-          {
-            title: "Borrowers",
-            href: "/blocks/borrowers",
-            description:
-              "Borrower register with search, risk grade derived from credit score, KYC gating on eligibility, and delete blocked while loans are active.",
-          },
-          {
-            title: "Repayment Schedule",
+            title: "Computed Schedule Table",
             href: "/blocks/repayment-schedule",
             description:
               "Amortisation table derived from the loan terms — per-instalment interest/principal split, derived paid/due/overdue status, and in-order payment recording.",
           },
           {
-            title: "Disbursements",
+            title: "Checklist Table with Running Totals",
+            href: "/blocks/bank-reconciliation",
+            description:
+              "Bank reconciliation checklist — mark transactions cleared against a statement balance, with live statement/cleared/difference summary cards.",
+          },
+          {
+            title: "Work Queue with Stat Cards",
+            href: "/blocks/payroll-tasks",
+            description:
+              "Employee payroll task dashboard — pending/overdue/completed overview cards, a searchable task list, and a complete-with-summary dialog.",
+          },
+        ],
+      },
+      {
+        title: "CRUD Tables",
+        items: [
+          {
+            title: "CRUD Table (Departments)",
+            href: "/blocks/department",
+            description:
+              "Departments table with create/edit dialog form, row-action menu, and a delete confirmation.",
+          },
+          {
+            title: "CRUD Table (Employees)",
+            href: "/blocks/employee",
+            description:
+              "Employee directory with create/edit dialog form, row-action menu, and a delete confirmation.",
+          },
+          {
+            title: "CRUD Table (Products)",
+            href: "/blocks/products",
+            description:
+              "Product / SKU catalog list with create/edit dialog form, row-action menu, and a delete confirmation.",
+          },
+          {
+            title: "CRUD Table with Utilization Bar",
+            href: "/blocks/warehouses",
+            description:
+              "Warehouse list with capacity utilization, create/edit dialog form, row-action menu, and a delete confirmation.",
+          },
+          {
+            title: "CRUD Table (Tree-coded Records)",
+            href: "/blocks/chart-of-accounts",
+            description:
+              "Chart of accounts table with create/edit dialog form, row-action menu, and a delete confirmation.",
+          },
+          {
+            title: "CRUD Table (Bills)",
+            href: "/blocks/bills",
+            description:
+              "Accounts-payable bills list with create/edit dialog form, row-action menu, and a delete confirmation.",
+          },
+          {
+            title: "CRUD Table (Payments)",
+            href: "/blocks/payments",
+            description:
+              "Payments list with create/edit dialog form, row-action menu, and a delete confirmation.",
+          },
+          {
+            title: "CRUD Table (Plans)",
+            href: "/blocks/deductions-benefits",
+            description:
+              "Deduction and benefit plan list with create/edit dialog form, row-action menu, and a delete confirmation.",
+          },
+          {
+            title: "CRUD Table with Progress Bars",
+            href: "/blocks/projects",
+            description:
+              "Project portfolio list with a status filter, progress bars, overdue due-date highlighting, and create/edit/delete.",
+          },
+          {
+            title: "CRUD Table with Date Filter",
+            href: "/blocks/attendance",
+            description:
+              "Daily attendance log with a date filter, punch-derived present/late/absent status, total hours, and create/edit/delete.",
+          },
+          {
+            title: "CRUD Table with Approve / Reject Actions",
+            href: "/blocks/leave-requests",
+            description:
+              "Leave request list with a status filter, approve/reject row actions, a submit-request dialog, and a delete confirmation.",
+          },
+          {
+            title: "CRUD Table with Search",
+            href: "/blocks/contacts",
+            description:
+              "Contact book with search, one-primary-per-account enforced on promote, and a warning for accounts left without a primary.",
+          },
+        ],
+      },
+      {
+        title: "Guarded CRUD",
+        items: [
+          {
+            title: "Line-Item Form that Must Balance",
+            href: "/blocks/journal-entries",
+            description:
+              "Journal entry list with a dynamic debit/credit line-item dialog that validates the entry balances before it can be saved.",
+          },
+          {
+            title: "CRUD with Delete Blocked by Dependents",
+            href: "/blocks/accounts",
+            description:
+              "Account book with tier filter, ARR roll-up, health derived from contact recency, and delete blocked while deals are open.",
+          },
+          {
+            title: "CRUD with Capacity + Uniqueness Guards",
+            href: "/blocks/project-team",
+            description:
+              "Project roster with roles, weekly allocation, and guards that keep one lead on the project and nobody booked past a full week.",
+          },
+          {
+            title: "CRUD with Gated State Transition",
+            href: "/blocks/leads",
+            description:
+              "Lead pipeline with a stage filter, hot-lead scoring, qualification rate, and a convert action gated on the lead being qualified.",
+          },
+          {
+            title: "CRUD with Threshold-Gated Approval",
+            href: "/blocks/loan-applications",
+            description:
+              "Loan application queue with amortised monthly payment, debt-to-income assessment, and approval blocked above the DTI ceiling.",
+          },
+          {
+            title: "CRUD with Eligibility Gate",
+            href: "/blocks/borrowers",
+            description:
+              "Borrower register with search, risk grade derived from credit score, KYC gating on eligibility, and delete blocked while loans are active.",
+          },
+          {
+            title: "CRUD with Completion Precondition",
+            href: "/blocks/performance-reviews",
+            description:
+              "Performance review list with star ratings, a status filter, average-rating summary, and a create/edit dialog that blocks completing an unrated review.",
+          },
+          {
+            title: "CRUD with Locking Lifecycle",
+            href: "/blocks/timesheets",
+            description:
+              "Time entries per project with billable-utilization summary and a draft → submitted → approved lifecycle that locks an entry once submitted.",
+          },
+          {
+            title: "CRUD Capped by a Parent Total",
             href: "/blocks/disbursements",
             description:
               "Loan disbursement tranches with a loan filter, release/fail settlement, and scheduling blocked from overdrawing the approved principal.",
           },
           {
-            title: "Collateral",
+            title: "CRUD with Staleness Guard",
             href: "/blocks/collateral",
             description:
               "Pledged-asset register with per-type advance rates, lien perfection blocked on a stale appraisal, and an under-secured loan warning.",
@@ -429,34 +240,185 @@ export const blocksNav: NavSection[] = [
         ],
       },
       {
-        title: "Warehouse",
+        title: "Forms & Wizards",
         items: [
           {
-            title: "Bin / Location Map",
+            title: "Multi-step Form Wizard",
+            href: "/blocks/purchase-order-form",
+            description:
+              "Three-step wizard for creating a purchase order — vendor details, line items, and review.",
+          },
+          {
+            title: "CSV Import Wizard + Export",
+            href: "/blocks/import-export",
+            description:
+              "CSV import wizard — paste or load data, map columns to entity fields with a live preview, then import. Includes a CSV export action.",
+          },
+          {
+            title: "Dropzone Upload with Per-File State",
+            href: "/blocks/file-upload",
+            description:
+              "Attachments panel — click-or-drag dropzone, per-file upload/error states, type icons, retry, and remove.",
+          },
+          {
+            title: "Single-Purpose Form",
+            href: "/blocks/offcycle-payment-form",
+            description:
+              "Form for issuing a one-off bonus, correction, or reimbursement outside the regular payroll run.",
+          },
+        ],
+      },
+      {
+        title: "Dialogs",
+        items: [
+          {
+            title: "Confirm Dialog",
+            href: "/blocks/confirm-dialog",
+            description:
+              "Reusable confirm-before-you-act dialog for destructive actions — controlled open state, custom title/description/labels, destructive styling.",
+          },
+          {
+            title: "Create / Edit Dialog",
+            href: "/blocks/record-form-dialog",
+            description:
+              "Standalone create/edit dialog — one form handles both add and update, seeded from the record being edited.",
+          },
+        ],
+      },
+      {
+        title: "Detail Views",
+        items: [
+          {
+            title: "Read-only Record View",
+            href: "/blocks/record-detail",
+            description:
+              "Read-only single-record view — header with avatar/status badge and grouped label/value field sections, no tabs.",
+          },
+          {
+            title: "Detail View with Tabs",
+            href: "/blocks/detail-tabs",
+            description:
+              "Single-record detail view with a header and Overview / Activity / Orders tabs.",
+          },
+          {
+            title: "Resizable Master–Detail Split",
+            href: "/blocks/master-detail",
+            description:
+              "Resizable list + detail split pane — select a row on the left to view its fields on the right, with an empty state when nothing's selected.",
+          },
+          {
+            title: "Master–Detail that Opens a Tab",
+            href: "/blocks/invoice-detail",
+            description:
+              "Master-detail invoice workspace — select a row to open its line items in a new tab.",
+          },
+          {
+            title: "Statement / Breakdown View",
+            href: "/blocks/payslip-detail",
+            description:
+              "Single-employee payslip breakdown — earnings, deductions, and employer contributions with YTD totals.",
+          },
+          {
+            title: "Summary + Line Items View",
+            href: "/blocks/payroll-run",
+            description:
+              "Payroll run summary with per-employee payslips — gross, deductions, and net pay.",
+          },
+        ],
+      },
+      {
+        title: "Boards, Grids & Timelines",
+        items: [
+          {
+            title: "Kanban Board (Drag & Drop)",
+            href: "/blocks/task-board",
+            description:
+              "Drag-and-drop Kanban board for project tasks — to do / in progress / review / done, with priority, assignee, and a create/edit dialog.",
+          },
+          {
+            title: "Pipeline Board with Stage Roll-ups",
+            href: "/blocks/deals-pipeline",
+            description:
+              "Drag-and-drop deal pipeline with per-stage value, a probability-weighted forecast, and win rate over closed deals.",
+          },
+          {
+            title: "Triage Board",
+            href: "/blocks/approval-board",
+            description:
+              "Drag-and-drop Kanban board for triaging expense, purchase order, and time-off approval requests.",
+          },
+          {
+            title: "Slot / Floor-plan Grid",
             href: "/blocks/bin-location-map",
             description:
               "Warehouse floor-plan grid of storage bins — assign or clear stock per bin, gated on capacity, single-SKU occupancy, and blocked/quarantine status.",
           },
           {
-            title: "Inbound / Receiving",
+            title: "Timeline with Derived State",
+            href: "/blocks/milestones",
+            description:
+              "Milestone tracker with task-scope progress and a state derived from the due date — completed, overdue, at risk, or on track.",
+          },
+          {
+            title: "Schedule Calendar with Next-Up Highlight",
+            href: "/blocks/payroll-calendar",
+            description:
+              "Monthly pay schedule with timesheet cutoffs, pay dates, and the next upcoming run highlighted.",
+          },
+        ],
+      },
+      {
+        title: "Feeds & Notifications",
+        items: [
+          {
+            title: "Inbox with Read / Unread Tabs",
+            href: "/blocks/notifications-inbox",
+            description:
+              "Notification inbox with All/Unread tabs, per-type icons, unread indicators, mark-one-read on click, and mark-all-read.",
+          },
+          {
+            title: "Notification Center (Bell + Full Page)",
+            href: "/blocks/notification-center",
+            description:
+              "Notification center with a header bell dropdown (unread badge capped at 9+, 5 most recent, mark-all-read) and a full page filtered by read state, severity, and date range with 20-per-page pagination.",
+          },
+          {
+            title: "Threaded Comments",
+            href: "/blocks/comments-thread",
+            description:
+              "Threaded comments with avatars, inline reply composers, and a top-level composer, with a running comment count.",
+          },
+          {
+            title: "Grouped Activity Timeline",
+            href: "/blocks/activity-feed",
+            description:
+              "Grouped activity timeline with type/user filters and running stats.",
+          },
+        ],
+      },
+      {
+        title: "Multi-step Workflows",
+        items: [
+          {
+            title: "Receive → QC → Put-away Flow",
             href: "/blocks/inbound-receiving",
             description:
               "Record stock arriving against a purchase order and put it away into bins — blocked receiving on a closed/cancelled PO, a QC gate before stock counts as available, and capacity-checked put-away reusing the bin/location-map contract.",
           },
           {
-            title: "Outbound / Picking",
+            title: "Claim → Pick → Complete Flow",
             href: "/blocks/outbound-picking",
             description:
               "Claim and fulfil pick lists that draw stock out of bins for an outbound order — blocked picking on a closed/cancelled order, per-line allocations across bins capped at on-hand, short-pick handling, and a picker-claim gate. Emits a pickId + picked-quantity completion record for Shipments.",
           },
           {
-            title: "Inventory Adjustments",
+            title: "Variance Approval Flow",
             href: "/blocks/inventory-adjustments",
             description:
               "Bin-level count-correction workflow — an absolute physical count raised against a bin with a reason code, where damage/shrinkage may only reduce a count, variance over 10% needs approval before it posts, and a bin held by a pick or receipt is locked. Approval posts to the bin in one step and emits a SKU/warehouse/delta record for stock levels.",
           },
           {
-            title: "Shipments",
+            title: "Fulfilment Flow with Derived Status",
             href: "/blocks/shipments",
             description:
               "Outbound fulfilment records that ship a completed pick — a partially-picked order can never ship, a carrier and tracking number are required before a shipment moves to shipped, and a shipment already in transit can no longer be cancelled. Status is derived from the record, never stored: cancelled outranks exception outranks delivered outranks shipped.",
@@ -464,24 +426,42 @@ export const blocksNav: NavSection[] = [
         ],
       },
       {
-        title: "Operations",
+        title: "App Shells",
         items: [
           {
-            title: "Approval Board",
-            href: "/blocks/approval-board",
+            title: "Sidebar Shell (Icon-collapsible)",
+            href: "/blocks/dashboard",
             description:
-              "Drag-and-drop Kanban board for triaging expense, purchase order, and time-off approval requests.",
+              "Icon-collapsible sidebar (trigger in the sidebar) with the Workspace component; each tab renders inside the Page component.",
+          },
+          {
+            title: "Sidebar Shell (Collapsible)",
+            href: "/blocks/dashboard-01",
+            description:
+              "Collapsible sidebar nav paired with the Workspace component.",
+          },
+          {
+            title: "Rail + Sidebar Shell",
+            href: "/blocks/dashboard-rail",
+            description:
+              "Fixed icon-only app rail (logo, app switcher, settings, profile) beside a collapsible nav sidebar and the Workspace component.",
           },
         ],
       },
       {
-        title: "Settings",
+        title: "Settings & Permissions",
         items: [
           {
-            title: "Settings",
+            title: "Sectioned Settings Page",
             href: "/blocks/settings",
             description:
               "Sectioned workspace settings — company profile, notifications, billing, and security.",
+          },
+          {
+            title: "Permission Matrix",
+            href: "/blocks/access-control",
+            description:
+              "Manage role permissions across resources with a per-role permission matrix.",
           },
         ],
       },

@@ -165,7 +165,7 @@
     {
       "name": "payroll-run",
       "type": "registry:block",
-      "title": "Payroll Run",
+      "title": "Summary + Line Items View",
       "description": "Payroll run summary with per-employee payslips \u2014 gross, deductions, and net pay.",
       "registryDependencies": [
         "badge",
@@ -188,7 +188,7 @@
     {
       "name": "payroll-tasks",
       "type": "registry:block",
-      "title": "Payroll Tasks",
+      "title": "Work Queue with Stat Cards",
       "description": "Employee payroll task dashboard \u2014 pending/overdue/completed overview cards, a searchable task list, and a complete-with-summary dialog.",
       "registryDependencies": [
         "badge",
@@ -218,7 +218,7 @@
     {
       "name": "payslip-detail",
       "type": "registry:block",
-      "title": "Payslip Detail",
+      "title": "Statement / Breakdown View",
       "description": "Single-employee payslip breakdown \u2014 earnings, deductions, and employer contributions with YTD totals.",
       "registryDependencies": [
         "badge",
@@ -241,7 +241,7 @@
     {
       "name": "data-table",
       "type": "registry:block",
-      "title": "Data Table",
+      "title": "Editable Table",
       "description": "Editable data table built on DataGrid, DataFilter, DataSearch, and BulkToolbar \u2014 global search, column filter chips, sorting, inline cell editing, row selection with a contextual bulk-delete toolbar, and a confirm dialog for the destructive action.",
       "dependencies": ["@tanstack/react-table", "lucide-react"],
       "registryDependencies": [
@@ -277,7 +277,7 @@
     {
       "name": "bulk-actions-toolbar",
       "type": "registry:block",
-      "title": "Bulk Actions Toolbar",
+      "title": "Table with Bulk Actions",
       "description": "Row selection with select-all and a contextual toolbar for bulk export/delete, with a confirm dialog for the destructive action.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -371,7 +371,7 @@
     {
       "name": "detail-tabs",
       "type": "registry:block",
-      "title": "Detail Tabs",
+      "title": "Detail View with Tabs",
       "description": "Single-record detail view with a header and Overview / Activity / Orders tabs.",
       "registryDependencies": [
         "avatar",
@@ -396,7 +396,7 @@
     {
       "name": "record-form-dialog",
       "type": "registry:block",
-      "title": "Record Form Dialog",
+      "title": "Create / Edit Dialog",
       "description": "Standalone create/edit dialog \u2014 one form handles both add and update, seeded from the record being edited.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -429,7 +429,7 @@
     {
       "name": "record-detail",
       "type": "registry:block",
-      "title": "Record Detail",
+      "title": "Read-only Record View",
       "description": "Read-only single-record view \u2014 header with avatar/status badge and grouped label/value field sections, no tabs.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -454,7 +454,7 @@
     {
       "name": "master-detail",
       "type": "registry:block",
-      "title": "Master-Detail",
+      "title": "Resizable Master–Detail Split",
       "description": "Resizable list + detail split pane \u2014 select a row on the left to view its fields on the right, with an empty state when nothing's selected.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -478,7 +478,7 @@
     {
       "name": "department",
       "type": "registry:block",
-      "title": "Department",
+      "title": "CRUD Table (Departments)",
       "description": "Departments table with create/edit dialog form, row-action menu, and a delete confirmation.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -516,7 +516,7 @@
     {
       "name": "employee",
       "type": "registry:block",
-      "title": "Employee",
+      "title": "CRUD Table (Employees)",
       "description": "Employee directory with create/edit dialog form, row-action menu, and a delete confirmation.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -555,7 +555,7 @@
     {
       "name": "deductions-benefits",
       "type": "registry:block",
-      "title": "Deductions & Benefits",
+      "title": "CRUD Table (Plans)",
       "description": "Deduction and benefit plan list with create/edit dialog form, row-action menu, and a delete confirmation.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -595,7 +595,7 @@
     {
       "name": "tax-tables",
       "type": "registry:block",
-      "title": "Tax Tables",
+      "title": "Reference Table with Facet Filter",
       "description": "Searchable tax bracket reference table filterable by jurisdiction, with income range and rate per filing status.",
       "dependencies": [],
       "registryDependencies": [
@@ -619,7 +619,7 @@
     {
       "name": "import-export",
       "type": "registry:block",
-      "title": "Import / Export",
+      "title": "CSV Import Wizard + Export",
       "description": "CSV import wizard \u2014 paste or load data, map columns to entity fields with a live preview, then import. Includes a CSV export action.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -646,7 +646,7 @@
     {
       "name": "file-upload",
       "type": "registry:block",
-      "title": "File Upload",
+      "title": "Dropzone Upload with Per-File State",
       "description": "Attachments panel \u2014 click-or-drag dropzone, per-file upload/error states, type icons, retry, and remove.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -671,7 +671,7 @@
     {
       "name": "notifications-inbox",
       "type": "registry:block",
-      "title": "Notifications Inbox",
+      "title": "Inbox with Read / Unread Tabs",
       "description": "Notification inbox with All/Unread tabs, per-type icons, unread indicators, mark-one-read on click, and mark-all-read.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -696,7 +696,7 @@
     {
       "name": "notification-center",
       "type": "registry:block",
-      "title": "Notification Center",
+      "title": "Notification Center (Bell + Full Page)",
       "description": "Notification center with a header bell dropdown (unread badge capped at 9+, 5 most recent, mark-all-read) and a full page filtered by read state, severity, and date range with 20-per-page pagination.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -732,7 +732,7 @@
     {
       "name": "comments-thread",
       "type": "registry:block",
-      "title": "Comments Thread",
+      "title": "Threaded Comments",
       "description": "Threaded comments with avatars, inline reply composers, and a top-level composer, with a running comment count.",
       "dependencies": [],
       "registryDependencies": [
@@ -756,7 +756,7 @@
     {
       "name": "audit-log",
       "type": "registry:block",
-      "title": "Audit Log",
+      "title": "Before / After Diff Table",
       "description": "Field-level audit trail \u2014 who changed what field, with before \u2192 after values, actor avatars, and search/action filters.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -784,7 +784,7 @@
     {
       "name": "compensation-table",
       "type": "registry:block",
-      "title": "Compensation Table",
+      "title": "Table with Computed Columns",
       "description": "Searchable org-wide salary overview with pay band, last adjustment, and change percentage.",
       "registryDependencies": [
         "badge",
@@ -808,7 +808,7 @@
     {
       "name": "payroll-calendar",
       "type": "registry:block",
-      "title": "Payroll Calendar",
+      "title": "Schedule Calendar with Next-Up Highlight",
       "description": "Monthly pay schedule with timesheet cutoffs, pay dates, and the next upcoming run highlighted.",
       "registryDependencies": [
         "badge",
@@ -831,7 +831,7 @@
     {
       "name": "offcycle-payment-form",
       "type": "registry:block",
-      "title": "Off-cycle Payment Form",
+      "title": "Single-Purpose Form",
       "description": "Form for issuing a one-off bonus, correction, or reimbursement outside the regular payroll run.",
       "registryDependencies": [
         "badge",
@@ -858,7 +858,7 @@
     {
       "name": "dashboard-01",
       "type": "registry:block",
-      "title": "Dashboard 01",
+      "title": "Sidebar Shell (Collapsible)",
       "description": "Collapsible sidebar nav paired with the Workspace component. Sidebar items open tabs; repeat clicks focus the existing tab.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -885,7 +885,7 @@
     {
       "name": "dashboard-rail",
       "type": "registry:block",
-      "title": "Dashboard Rail",
+      "title": "Rail + Sidebar Shell",
       "description": "Dual-sidebar shell: a fixed icon-only app rail (logo, app switcher, settings, profile) beside a collapsible nav sidebar, paired with the Workspace component.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -921,7 +921,7 @@
     {
       "name": "dashboard",
       "type": "registry:block",
-      "title": "Dashboard",
+      "title": "Sidebar Shell (Icon-collapsible)",
       "description": "Icon-collapsible sidebar (trigger lives in the sidebar) paired with the Workspace component; each tab renders inside the Page component.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -949,7 +949,7 @@
     {
       "name": "activity-log",
       "type": "registry:block",
-      "title": "Activity Log",
+      "title": "Responsive Table (Card Fallback)",
       "description": "Filterable activity log with a responsive datatable \u2014 collapses to cards on narrow panes.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -983,7 +983,7 @@
     {
       "name": "activity-feed",
       "type": "registry:block",
-      "title": "Activity Feed",
+      "title": "Grouped Activity Timeline",
       "description": "Grouped activity timeline with type/user filters and running stats.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -1007,7 +1007,7 @@
     {
       "name": "access-control",
       "type": "registry:block",
-      "title": "Access Control",
+      "title": "Permission Matrix",
       "description": "Manage role permissions across resources with a per-role permission matrix.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -1039,7 +1039,7 @@
     {
       "name": "invoice-detail",
       "type": "registry:block",
-      "title": "Invoice Detail",
+      "title": "Master–Detail that Opens a Tab",
       "description": "Master-detail invoice workspace \u2014 select a row to open its line items in a new tab.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -1072,7 +1072,7 @@
     {
       "name": "purchase-order-form",
       "type": "registry:block",
-      "title": "Purchase Order Form",
+      "title": "Multi-step Form Wizard",
       "description": "Three-step wizard for creating a purchase order \u2014 vendor details, line items, and review.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -1108,7 +1108,7 @@
     {
       "name": "chart-of-accounts",
       "type": "registry:block",
-      "title": "Chart of Accounts",
+      "title": "CRUD Table (Tree-coded Records)",
       "description": "Chart of accounts table with create/edit dialog form, row-action menu, and a delete confirmation.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -1147,7 +1147,7 @@
     {
       "name": "products",
       "type": "registry:block",
-      "title": "Products",
+      "title": "CRUD Table (Products)",
       "description": "Product / SKU catalog list with create/edit dialog form, row-action menu, and a delete confirmation.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -1186,7 +1186,7 @@
     {
       "name": "warehouses",
       "type": "registry:block",
-      "title": "Warehouses",
+      "title": "CRUD Table with Utilization Bar",
       "description": "Warehouse list with capacity utilization, create/edit dialog form, row-action menu, and a delete confirmation.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -1225,7 +1225,7 @@
     {
       "name": "stock-levels",
       "type": "registry:block",
-      "title": "Stock Levels",
+      "title": "Table with Derived Status + Inline Adjust",
       "description": "On-hand stock per SKU and warehouse — searchable, with derived low/out-of-stock badges and a stock-take adjustment dialog.",
       "registryDependencies": [
         "badge",
@@ -1260,7 +1260,7 @@
     {
       "name": "stock-movements",
       "type": "registry:block",
-      "title": "Stock Movements",
+      "title": "Append-only Ledger Table",
       "description": "Append-only stock ledger — receipts, shipments, adjustments, and transfers with a type filter, running net change, and a record-movement dialog.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -1297,7 +1297,7 @@
     {
       "name": "collateral",
       "type": "registry:block",
-      "title": "Collateral",
+      "title": "CRUD with Staleness Guard",
       "description": "Pledged-asset register with per-type advance rates, lien perfection blocked on a stale appraisal, and an under-secured loan warning.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -1337,7 +1337,7 @@
     {
       "name": "bin-location-map",
       "type": "registry:block",
-      "title": "Bin / Location Map",
+      "title": "Slot / Floor-plan Grid",
       "description": "Warehouse floor-plan grid of storage bins — assign or clear stock per bin, gated on capacity, single-SKU occupancy, and blocked/quarantine status.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -1382,7 +1382,7 @@
     {
       "name": "inbound-receiving",
       "type": "registry:block",
-      "title": "Inbound / Receiving",
+      "title": "Receive → QC → Put-away Flow",
       "description": "Record stock arriving against a purchase order and put it away into bins — blocked receiving on a closed/cancelled PO, a QC gate before stock counts as available, and capacity-checked put-away reusing the bin/location-map contract.",
       "dependencies": [],
       "registryDependencies": [
@@ -1419,7 +1419,7 @@
     {
       "name": "outbound-picking",
       "type": "registry:block",
-      "title": "Outbound / Picking",
+      "title": "Claim → Pick → Complete Flow",
       "description": "Claim and fulfil pick lists that draw stock out of bins for an outbound order — blocked picking on a closed/cancelled order, per-line allocations across bins capped at on-hand, short-pick handling, and a picker-claim gate. Emits a pickId + picked-quantity completion record for Shipments.",
       "dependencies": [],
       "registryDependencies": [
@@ -1456,7 +1456,7 @@
     {
       "name": "inventory-adjustments",
       "type": "registry:block",
-      "title": "Inventory Adjustments",
+      "title": "Variance Approval Flow",
       "description": "Bin-level count-correction workflow — an absolute physical count raised against a bin with a reason code, where damage/shrinkage may only reduce a count, variance over 10% needs approval before it posts, and a bin held by a pick or receipt is locked. Approval posts to the bin in one step and emits a SKU/warehouse/delta record for stock levels.",
       "dependencies": [],
       "registryDependencies": [
@@ -1501,7 +1501,7 @@
     {
       "name": "shipments",
       "type": "registry:block",
-      "title": "Shipments",
+      "title": "Fulfilment Flow with Derived Status",
       "description": "Outbound fulfilment records that ship a completed pick — a partially-picked order can never ship, a carrier and tracking number are required before a shipment moves to shipped, and a shipment already in transit can no longer be cancelled. Status is derived from the record, never stored: cancelled outranks exception outranks delivered outranks shipped.",
       "dependencies": [],
       "registryDependencies": [
@@ -1539,7 +1539,7 @@
     {
       "name": "disbursements",
       "type": "registry:block",
-      "title": "Disbursements",
+      "title": "CRUD Capped by a Parent Total",
       "description": "Loan disbursement tranches with a loan filter, release/fail settlement, and scheduling blocked from overdrawing the approved principal.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -1578,7 +1578,7 @@
     {
       "name": "repayment-schedule",
       "type": "registry:block",
-      "title": "Repayment Schedule",
+      "title": "Computed Schedule Table",
       "description": "Amortisation table derived from the loan terms — per-instalment interest/principal split, derived paid/due/overdue status, and in-order payment recording.",
       "registryDependencies": [
         "alert-dialog",
@@ -1607,7 +1607,7 @@
     {
       "name": "borrowers",
       "type": "registry:block",
-      "title": "Borrowers",
+      "title": "CRUD with Eligibility Gate",
       "description": "Borrower register with search, risk grade derived from credit score, KYC gating on eligibility, and delete blocked while loans are active.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -1648,7 +1648,7 @@
     {
       "name": "loan-applications",
       "type": "registry:block",
-      "title": "Loan Applications",
+      "title": "CRUD with Threshold-Gated Approval",
       "description": "Loan application queue with amortised monthly payment, debt-to-income assessment, and approval blocked above the DTI ceiling.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -1687,7 +1687,7 @@
     {
       "name": "deals-pipeline",
       "type": "registry:block",
-      "title": "Deals Pipeline",
+      "title": "Pipeline Board with Stage Roll-ups",
       "description": "Drag-and-drop deal pipeline with per-stage value, a probability-weighted forecast, and win rate over closed deals.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -1729,7 +1729,7 @@
     {
       "name": "accounts",
       "type": "registry:block",
-      "title": "Accounts",
+      "title": "CRUD with Delete Blocked by Dependents",
       "description": "Account book with tier filter, ARR roll-up, health derived from contact recency, and delete blocked while deals are open.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -1768,7 +1768,7 @@
     {
       "name": "contacts",
       "type": "registry:block",
-      "title": "Contacts",
+      "title": "CRUD Table with Search",
       "description": "Contact book with search, one-primary-per-account enforced on promote, and a warning for accounts left without a primary.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -1810,7 +1810,7 @@
     {
       "name": "leads",
       "type": "registry:block",
-      "title": "Leads",
+      "title": "CRUD with Gated State Transition",
       "description": "Lead pipeline with a stage filter, hot-lead scoring, qualification rate, and a convert action gated on the lead being qualified.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -1849,7 +1849,7 @@
     {
       "name": "project-team",
       "type": "registry:block",
-      "title": "Project Team",
+      "title": "CRUD with Capacity + Uniqueness Guards",
       "description": "Project roster with roles, weekly allocation, and guards that keep one lead on the project and nobody booked past a full week.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -1889,7 +1889,7 @@
     {
       "name": "milestones",
       "type": "registry:block",
-      "title": "Milestones",
+      "title": "Timeline with Derived State",
       "description": "Milestone tracker with task-scope progress and a state derived from the due date — completed, overdue, at risk, or on track.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -1927,7 +1927,7 @@
     {
       "name": "timesheets",
       "type": "registry:block",
-      "title": "Timesheets",
+      "title": "CRUD with Locking Lifecycle",
       "description": "Time entries per project with billable-utilization summary and a draft → submitted → approved lifecycle that locks an entry once submitted.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -1967,7 +1967,7 @@
     {
       "name": "task-board",
       "type": "registry:block",
-      "title": "Task Board",
+      "title": "Kanban Board (Drag & Drop)",
       "description": "Drag-and-drop Kanban board for project tasks — to do / in progress / review / done, with priority, assignee, and a create/edit dialog.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -2010,7 +2010,7 @@
     {
       "name": "projects",
       "type": "registry:block",
-      "title": "Projects",
+      "title": "CRUD Table with Progress Bars",
       "description": "Project portfolio list with a status filter, progress bars, overdue due-date highlighting, and create/edit/delete.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -2049,7 +2049,7 @@
     {
       "name": "performance-reviews",
       "type": "registry:block",
-      "title": "Performance Reviews",
+      "title": "CRUD with Completion Precondition",
       "description": "Performance review list with star ratings, a status filter, average-rating summary, and a create/edit dialog that blocks completing an unrated review.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -2090,7 +2090,7 @@
     {
       "name": "attendance",
       "type": "registry:block",
-      "title": "Attendance",
+      "title": "CRUD Table with Date Filter",
       "description": "Daily attendance log with a date filter, punch-derived present/late/absent status, total hours, and create/edit/delete.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -2129,7 +2129,7 @@
     {
       "name": "leave-requests",
       "type": "registry:block",
-      "title": "Leave Requests",
+      "title": "CRUD Table with Approve / Reject Actions",
       "description": "Leave request list with a status filter, approve/reject row actions, a submit-request dialog, and a delete confirmation.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -2169,7 +2169,7 @@
     {
       "name": "bills",
       "type": "registry:block",
-      "title": "Bills",
+      "title": "CRUD Table (Bills)",
       "description": "Accounts-payable bills list with create/edit dialog form, row-action menu, and a delete confirmation.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -2208,7 +2208,7 @@
     {
       "name": "payments",
       "type": "registry:block",
-      "title": "Payments",
+      "title": "CRUD Table (Payments)",
       "description": "Payments list with create/edit dialog form, row-action menu, and a delete confirmation.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -2247,7 +2247,7 @@
     {
       "name": "journal-entries",
       "type": "registry:block",
-      "title": "Journal Entries",
+      "title": "Line-Item Form that Must Balance",
       "description": "Journal entry list with a dynamic debit/credit line-item dialog that validates the entry balances before it can be saved.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
@@ -2286,7 +2286,7 @@
     {
       "name": "bank-reconciliation",
       "type": "registry:block",
-      "title": "Bank Reconciliation",
+      "title": "Checklist Table with Running Totals",
       "description": "Bank reconciliation checklist \u2014 mark transactions cleared against a statement balance, with live statement/cleared/difference summary cards.",
       "dependencies": [],
       "registryDependencies": [
@@ -2311,7 +2311,7 @@
     {
       "name": "approval-board",
       "type": "registry:block",
-      "title": "Approval Board",
+      "title": "Triage Board",
       "description": "Drag-and-drop Kanban board for triaging expense, purchase order, and time-off approval requests.",
       "registryDependencies": [
         "avatar",
@@ -2724,7 +2724,7 @@
     {
       "name": "settings",
       "type": "registry:block",
-      "title": "Settings",
+      "title": "Sectioned Settings Page",
       "description": "Sectioned workspace settings \u2014 company profile, notifications, billing, and security.",
       "registryDependencies": [
         "badge",

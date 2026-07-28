@@ -18,6 +18,8 @@ import type { ActivityEntry, ActionType, StatusType } from "../data"
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
+// Date.now() ticks between the server render and client hydration passes, so
+// its output legitimately differs — callers must suppressHydrationWarning.
 function formatTime(date: Date): string {
   const mins = Math.floor((Date.now() - date.getTime()) / 60_000)
   if (mins < 60) return `${mins}m ago`
@@ -110,7 +112,10 @@ export function DataTable({ entries }: { entries: ActivityEntry[] }) {
                     {e.status}
                   </Badge>
                 </TableCell>
-                <TableCell className="pr-6 text-right text-xs text-muted-foreground">
+                <TableCell
+                  className="pr-6 text-right text-xs text-muted-foreground"
+                  suppressHydrationWarning
+                >
                   {formatTime(e.timestamp)}
                 </TableCell>
               </TableRow>
@@ -129,7 +134,10 @@ export function DataTable({ entries }: { entries: ActivityEntry[] }) {
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between gap-2">
                 <span className="truncate text-sm font-medium">{e.user}</span>
-                <span className="shrink-0 text-xs text-muted-foreground">
+                <span
+                  className="shrink-0 text-xs text-muted-foreground"
+                  suppressHydrationWarning
+                >
                   {formatTime(e.timestamp)}
                 </span>
               </div>

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 import type { Metadata } from "next"
+import Script from "next/script"
 import { ThemeProvider } from "@/components/theme-provider"
 
 import { SiteHeader } from "@/components/site-header"
@@ -25,10 +26,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       className={cn("font-sans", geist.variable)}
     >
       <body>
-        {/* No-flash theme init: external (src) script so it runs before paint
-            without tripping React 19's inline-"script tag while rendering" warning.
+        {/* No-flash theme init: next/script's beforeInteractive strategy injects
+            this into <head> ahead of hydration, so it runs before paint without
+            React warning about a script rendered inside a component tree.
             Source lives in public/theme-init.js. */}
-        <script src="/theme-init.js" />
+        <Script src="/theme-init.js" strategy="beforeInteractive" />
         <ThemeProvider>
           <SiteHeader />
           {children}

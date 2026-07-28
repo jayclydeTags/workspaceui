@@ -4,17 +4,11 @@ import * as React from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   BarChartIcon,
-  DashboardSquare01Icon,
   File01Icon,
   Setting06Icon,
 } from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
-import {
-  Workspace,
-  type WorkspaceHandle,
-  type WorkspaceTabDef,
-} from "@/registry/bases/base/workspaceui/workspace"
 import {
   SidebarInset,
   SidebarProvider,
@@ -29,28 +23,8 @@ import {
   PlaceholderContent,
 } from "@/registry/bases/base/blocks/dashboard-01/components/dashboard-content"
 
-const INITIAL_PANES = [
-  {
-    id: "main",
-    tabs: [
-      {
-        id: "dashboard",
-        title: "Dashboard",
-        icon: (
-          <HugeiconsIcon
-            icon={DashboardSquare01Icon}
-            strokeWidth={2}
-            className="size-3.5"
-          />
-        ),
-        pinned: true,
-      },
-    ],
-  },
-]
-
-// ponytail: TAB_CONTENT at module level avoids re-creating ReactNodes on each render
-const TAB_CONTENT: Record<string, React.ReactNode> = {
+// ponytail: CONTENT at module level avoids re-creating ReactNodes on each render
+const CONTENT: Record<string, React.ReactNode> = {
   dashboard: <EmptyContent />,
   documents: (
     <PlaceholderContent
@@ -79,37 +53,25 @@ const TAB_CONTENT: Record<string, React.ReactNode> = {
 }
 
 export function Dashboard01({ className }: { className?: string }) {
-  const workspaceRef = React.useRef<WorkspaceHandle>(null)
-
-  function openTab(item: (typeof NAV_ITEMS)[number]) {
-    const tab: WorkspaceTabDef = {
-      id: item.id,
-      title: item.title,
-      icon: <item.Icon className="size-3.5" />,
-      pinned: item.pinned,
-    }
-    workspaceRef.current?.openTabInPane("main", tab)
-  }
+  const [activeId, setActiveId] = React.useState<string>(NAV_ITEMS[0].id)
 
   return (
     <SidebarProvider className={cn("h-full min-h-0", className)}>
-      <AppSidebar onNavClick={openTab} />
+      <AppSidebar
+        activeId={activeId}
+        onNavClick={(item) => setActiveId(item.id)}
+      />
       <SidebarInset>
         <header className="flex h-10 shrink-0 items-center gap-2 border-b border-border px-3">
           <SidebarTrigger />
         </header>
-        <Workspace
-          ref={workspaceRef}
-          initialPanes={INITIAL_PANES}
-          renderTabContent={(_paneId, tabId) =>
-            TAB_CONTENT[tabId] ?? (
-              <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                {tabId}
-              </div>
-            )
-          }
-          className="min-h-0 flex-1"
-        />
+        <div className="min-h-0 flex-1">
+          {CONTENT[activeId] ?? (
+            <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+              {activeId}
+            </div>
+          )}
+        </div>
       </SidebarInset>
     </SidebarProvider>
   )

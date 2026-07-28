@@ -37,15 +37,17 @@ function SettingsIcon(props: ComponentProps<"svg">) {
 }
 
 export const NAV_ITEMS = [
-  { id: "dashboard", title: "Dashboard", Icon: DashboardIcon, pinned: true },
-  { id: "documents", title: "Documents", Icon: DocumentsIcon, pinned: false },
-  { id: "analytics", title: "Analytics", Icon: AnalyticsIcon, pinned: false },
-  { id: "settings", title: "Settings", Icon: SettingsIcon, pinned: false },
+  { id: "dashboard", title: "Dashboard", Icon: DashboardIcon },
+  { id: "documents", title: "Documents", Icon: DocumentsIcon },
+  { id: "analytics", title: "Analytics", Icon: AnalyticsIcon },
+  { id: "settings", title: "Settings", Icon: SettingsIcon },
 ] as const
 
 export function AppSidebar({
+  activeId,
   onNavClick,
 }: {
+  activeId: string
   onNavClick: (item: (typeof NAV_ITEMS)[number]) => void
 }) {
   return (
@@ -60,7 +62,10 @@ export function AppSidebar({
             <SidebarMenu>
               {NAV_ITEMS.map((item) => (
                 <SidebarMenuItem key={item.id}>
-                  <SidebarMenuButton onClick={() => onNavClick(item)}>
+                  <SidebarMenuButton
+                    isActive={item.id === activeId}
+                    onClick={() => onNavClick(item)}
+                  >
                     <item.Icon />
                     <span>{item.title}</span>
                   </SidebarMenuButton>

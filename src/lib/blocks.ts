@@ -596,9 +596,9 @@ export const blocks: BlockMeta[] = [
   },
   {
     slug: "dashboard-02",
-    title: "Top Nav Shell (GitHub-style)",
+    title: "Icon Rail Shell (Top Bar)",
     description:
-      "GitHub-style global top nav: logo, jump-to search, primary nav links, create/notifications/account menus — no sidebar.",
+      "App icon + org switcher and search in a full-width top bar, paired with a fixed icon-only nav rail (settings and profile pinned to the bottom).",
     category: "App Shells",
     Component: Dashboard02,
   },

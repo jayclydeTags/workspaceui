@@ -1,25 +1,42 @@
 "use client"
 
-import { Home, FolderOpen, Terminal } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  Home01Icon,
+  FolderOpenIcon,
+  TerminalIcon,
+} from "@hugeicons/core-free-icons"
 
 import { Workspace } from "@/registry/bases/base/workspaceui/workspace"
 
 const TAB_CONTENT: Record<string, React.ReactNode> = {
   home: (
     <div className="flex h-full flex-col items-center justify-center gap-2 p-6">
-      <Home className="size-8 text-muted-foreground/40" />
+      <HugeiconsIcon
+        icon={Home01Icon}
+        strokeWidth={2}
+        className="size-8 text-muted-foreground/40"
+      />
       <p className="text-sm text-muted-foreground">Home</p>
     </div>
   ),
   files: (
     <div className="flex h-full flex-col items-center justify-center gap-2 p-6">
-      <FolderOpen className="size-8 text-muted-foreground/40" />
+      <HugeiconsIcon
+        icon={FolderOpenIcon}
+        strokeWidth={2}
+        className="size-8 text-muted-foreground/40"
+      />
       <p className="text-sm text-muted-foreground">Files</p>
     </div>
   ),
   terminal: (
     <div className="flex h-full flex-col items-center justify-center gap-2 p-6">
-      <Terminal className="size-8 text-muted-foreground/40" />
+      <HugeiconsIcon
+        icon={TerminalIcon}
+        strokeWidth={2}
+        className="size-8 text-muted-foreground/40"
+      />
       <p className="text-sm text-muted-foreground">Terminal</p>
     </div>
   ),
@@ -36,18 +53,36 @@ export function WorkspaceSinglePaneDemo() {
               {
                 id: "home",
                 title: "Home",
-                icon: <Home className="size-3.5" />,
+                icon: (
+                  <HugeiconsIcon
+                    icon={Home01Icon}
+                    strokeWidth={2}
+                    className="size-3.5"
+                  />
+                ),
                 pinned: true,
               },
               {
                 id: "files",
                 title: "Files",
-                icon: <FolderOpen className="size-3.5" />,
+                icon: (
+                  <HugeiconsIcon
+                    icon={FolderOpenIcon}
+                    strokeWidth={2}
+                    className="size-3.5"
+                  />
+                ),
               },
               {
                 id: "terminal",
                 title: "Terminal",
-                icon: <Terminal className="size-3.5" />,
+                icon: (
+                  <HugeiconsIcon
+                    icon={TerminalIcon}
+                    strokeWidth={2}
+                    className="size-3.5"
+                  />
+                ),
               },
             ],
           },

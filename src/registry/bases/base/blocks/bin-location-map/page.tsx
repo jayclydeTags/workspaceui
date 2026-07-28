@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { PlusIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { PlusSignIcon } from "@hugeicons/core-free-icons"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
@@ -94,7 +95,11 @@ export function BinLocationMap() {
       hasPadding
       actions={
         <Button size="sm" onClick={() => openAdd(null)}>
-          <PlusIcon data-icon="inline-start" />
+          <HugeiconsIcon
+            icon={PlusSignIcon}
+            strokeWidth={2}
+            data-icon="inline-start"
+          />
           Add bin
         </Button>
       }

@@ -1,7 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { ChevronDown, Search, X } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  ArrowDown01Icon,
+  Search01Icon,
+  Cancel01Icon,
+} from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -122,7 +127,7 @@ export function ActivityLog() {
             style={{ flex: "1 1 160px" }}
           >
             <InputGroupAddon>
-              <Search />
+              <HugeiconsIcon icon={Search01Icon} strokeWidth={2} />
             </InputGroupAddon>
             <InputGroupInput
               placeholder="Search user or resource…"
@@ -148,7 +153,11 @@ export function ActivityLog() {
                   {actionFilter.size}
                 </Badge>
               )}
-              <ChevronDown className="size-3 text-muted-foreground" />
+              <HugeiconsIcon
+                icon={ArrowDown01Icon}
+                strokeWidth={2}
+                className="size-3 text-muted-foreground"
+              />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
               <DropdownMenuGroup>
@@ -182,7 +191,11 @@ export function ActivityLog() {
                   {statusFilter.size}
                 </Badge>
               )}
-              <ChevronDown className="size-3 text-muted-foreground" />
+              <HugeiconsIcon
+                icon={ArrowDown01Icon}
+                strokeWidth={2}
+                className="size-3 text-muted-foreground"
+              />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
               <DropdownMenuGroup>
@@ -214,7 +227,11 @@ export function ActivityLog() {
                 setStatusFilter(new Set())
               }}
             >
-              <X data-icon="inline-start" />
+              <HugeiconsIcon
+                icon={Cancel01Icon}
+                strokeWidth={2}
+                data-icon="inline-start"
+              />
               Clear
             </Button>
           )}

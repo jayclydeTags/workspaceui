@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { FileText } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { File01Icon } from "@hugeicons/core-free-icons"
 
 import { Textarea } from "@/components/ui/textarea"
 import {
@@ -51,12 +52,24 @@ export function WorkspaceDirtyTabsDemo() {
                 {
                   id: "draft",
                   title: "draft.md",
-                  icon: <FileText className="size-3.5" />,
+                  icon: (
+                    <HugeiconsIcon
+                      icon={File01Icon}
+                      strokeWidth={2}
+                      className="size-3.5"
+                    />
+                  ),
                 },
                 {
                   id: "notes",
                   title: "notes.md",
-                  icon: <FileText className="size-3.5" />,
+                  icon: (
+                    <HugeiconsIcon
+                      icon={File01Icon}
+                      strokeWidth={2}
+                      className="size-3.5"
+                    />
+                  ),
                 },
               ],
             },

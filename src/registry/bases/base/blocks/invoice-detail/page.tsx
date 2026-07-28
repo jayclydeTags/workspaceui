@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { FileText } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { File01Icon } from "@hugeicons/core-free-icons"
 
 import {
   Workspace,
@@ -34,7 +35,9 @@ export function InvoiceDetail({ className }: { className?: string }) {
     workspaceRef.current?.openTabInPane("detail", {
       id: invoice.id,
       title: invoice.number,
-      icon: <FileText className="size-3.5" />,
+      icon: (
+        <HugeiconsIcon icon={File01Icon} strokeWidth={2} className="size-3.5" />
+      ),
     })
   }
 

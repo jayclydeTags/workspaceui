@@ -1,7 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { Ban, LifeBuoy, MailCheck } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  BanIcon,
+  LifebuoyIcon,
+  MailValidation02Icon,
+} from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -19,7 +24,11 @@ export function AccountSuspended() {
       <div className="flex min-h-full items-center justify-center p-6">
         <div className="flex w-full max-w-sm flex-col items-center text-center">
           <div className="flex size-11 items-center justify-center rounded-full bg-destructive/10">
-            <Ban className="size-5 text-destructive" />
+            <HugeiconsIcon
+              icon={BanIcon}
+              strokeWidth={2}
+              className="size-5 text-destructive"
+            />
           </div>
 
           <h1 className="mt-4 text-sm font-medium" role="alert">
@@ -40,7 +49,11 @@ export function AccountSuspended() {
           <div className="mt-6 flex w-full flex-col gap-2" aria-live="polite">
             {appealed ? (
               <div className="flex items-center justify-center gap-2 rounded-md border border-dashed py-2 text-xs text-muted-foreground">
-                <MailCheck className="size-3.5 shrink-0 text-foreground" />
+                <HugeiconsIcon
+                  icon={MailValidation02Icon}
+                  strokeWidth={2}
+                  className="size-3.5 shrink-0 text-foreground"
+                />
                 Appeal submitted — we&apos;ll be in touch
               </div>
             ) : (
@@ -49,7 +62,11 @@ export function AccountSuspended() {
               </Button>
             )}
             <Button variant="ghost" className="w-full text-muted-foreground">
-              <LifeBuoy data-icon="inline-start" />
+              <HugeiconsIcon
+                icon={LifebuoyIcon}
+                strokeWidth={2}
+                data-icon="inline-start"
+              />
               Contact support
             </Button>
           </div>

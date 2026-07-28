@@ -1,6 +1,11 @@
 "use client"
 
-import { Building2, ChevronRight, ShieldX } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  Building02Icon,
+  ArrowRight01Icon,
+  ShieldBanIcon,
+} from "@hugeicons/core-free-icons"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -30,7 +35,11 @@ export function ForbiddenWorkspace() {
       <div className="flex min-h-full items-center justify-center p-6">
         <div className="flex w-full max-w-sm flex-col items-center text-center">
           <div className="flex size-11 items-center justify-center rounded-full bg-destructive/10">
-            <ShieldX className="size-5 text-destructive" />
+            <HugeiconsIcon
+              icon={ShieldBanIcon}
+              strokeWidth={2}
+              className="size-5 text-destructive"
+            />
           </div>
 
           <h1 className="mt-4 text-sm font-medium" role="alert">
@@ -60,7 +69,11 @@ export function ForbiddenWorkspace() {
                       {ws.role}
                     </p>
                   </div>
-                  <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+                  <HugeiconsIcon
+                    icon={ArrowRight01Icon}
+                    strokeWidth={2}
+                    className="size-4 shrink-0 text-muted-foreground"
+                  />
                 </button>
               ))}
             </CardContent>
@@ -68,7 +81,11 @@ export function ForbiddenWorkspace() {
 
           <div className="mt-4 flex w-full flex-col gap-2">
             <Button variant="outline" className="w-full">
-              <Building2 data-icon="inline-start" />
+              <HugeiconsIcon
+                icon={Building02Icon}
+                strokeWidth={2}
+                data-icon="inline-start"
+              />
               Request access to {BLOCKED}
             </Button>
             <Button variant="ghost" className="w-full text-muted-foreground">

@@ -1,6 +1,7 @@
 "use client"
 
-import { MoreHorizontalIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { MoreHorizontalIcon } from "@hugeicons/core-free-icons"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -51,7 +52,7 @@ export function TaskCard({
                 className="-mt-1 -mr-1 shrink-0"
                 aria-label={`Actions for ${task.title}`}
               >
-                <MoreHorizontalIcon />
+                <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
               </Button>
             }
           />

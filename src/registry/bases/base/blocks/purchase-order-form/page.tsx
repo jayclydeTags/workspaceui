@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { CheckCircle2 } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { CheckmarkCircle02Icon } from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -69,7 +70,11 @@ export function PurchaseOrderForm({ className }: { className?: string }) {
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">
-              <CheckCircle2 className="text-primary" />
+              <HugeiconsIcon
+                icon={CheckmarkCircle02Icon}
+                strokeWidth={2}
+                className="text-primary"
+              />
             </EmptyMedia>
             <EmptyTitle>Purchase order submitted</EmptyTitle>
             <EmptyDescription>

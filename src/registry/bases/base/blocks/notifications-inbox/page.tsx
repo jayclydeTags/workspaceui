@@ -1,14 +1,15 @@
 "use client"
 
 import * as React from "react"
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
-  AtSign,
-  BellRing,
-  CheckCheck,
-  MessageSquare,
-  Settings2,
-  ShieldCheck,
-} from "lucide-react"
+  AtSignIcon,
+  BellRingIcon,
+  Message01Icon,
+  Setting06Icon,
+  Shield01Icon,
+  TickDouble02Icon,
+} from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -28,10 +29,18 @@ const TYPE_ICON: Record<
   NotificationType,
   React.ComponentType<{ className?: string }>
 > = {
-  mention: AtSign,
-  comment: MessageSquare,
-  approval: ShieldCheck,
-  system: Settings2,
+  mention: (props) => (
+    <HugeiconsIcon icon={AtSignIcon} strokeWidth={2} {...props} />
+  ),
+  comment: (props) => (
+    <HugeiconsIcon icon={Message01Icon} strokeWidth={2} {...props} />
+  ),
+  approval: (props) => (
+    <HugeiconsIcon icon={Shield01Icon} strokeWidth={2} {...props} />
+  ),
+  system: (props) => (
+    <HugeiconsIcon icon={Setting06Icon} strokeWidth={2} {...props} />
+  ),
 }
 
 export function NotificationsInbox() {
@@ -53,7 +62,7 @@ export function NotificationsInbox() {
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">
-              <BellRing />
+              <HugeiconsIcon icon={BellRingIcon} strokeWidth={2} />
             </EmptyMedia>
             <EmptyTitle>No unread notifications</EmptyTitle>
             <EmptyDescription>You&apos;re all caught up.</EmptyDescription>
@@ -125,7 +134,11 @@ export function NotificationsInbox() {
           onClick={markAllRead}
           disabled={unreadCount === 0}
         >
-          <CheckCheck data-icon="inline-start" />
+          <HugeiconsIcon
+            icon={TickDouble02Icon}
+            strokeWidth={2}
+            data-icon="inline-start"
+          />
           Mark all read
         </Button>
       }

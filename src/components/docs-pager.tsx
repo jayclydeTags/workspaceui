@@ -1,5 +1,6 @@
 import Link from "next/link"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons"
 
 import { nav } from "@/lib/nav"
 import { Button } from "@/components/ui/button"
@@ -26,7 +27,7 @@ export function DocsPager({ slug }: { slug?: string[] }) {
             nativeButton={false}
             render={<Link href={prev.href} />}
           >
-            <ChevronLeft />
+            <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={2} />
             {prev.title}
           </Button>
         ) : (
@@ -39,7 +40,7 @@ export function DocsPager({ slug }: { slug?: string[] }) {
             render={<Link href={next.href} />}
           >
             {next.title}
-            <ChevronRight />
+            <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
           </Button>
         ) : (
           <div />

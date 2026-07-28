@@ -1,12 +1,13 @@
 "use client"
 
 import type { Table as TanstackTable } from "@tanstack/react-table"
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronsLeftIcon,
-  ChevronsRightIcon,
-} from "lucide-react"
+  ArrowLeft01Icon,
+  ArrowRight01Icon,
+  ArrowLeftDoubleIcon,
+  ArrowRightDoubleIcon,
+} from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -95,7 +96,11 @@ export function DataPagination<TData>({
                 disabled={!table.getCanPreviousPage()}
                 onClick={() => table.setPageIndex(0)}
               >
-                <ChevronsLeftIcon className="size-4" />
+                <HugeiconsIcon
+                  icon={ArrowLeftDoubleIcon}
+                  strokeWidth={2}
+                  className="size-4"
+                />
               </Button>
             </PaginationItem>
             <PaginationItem>
@@ -106,7 +111,11 @@ export function DataPagination<TData>({
                 disabled={!table.getCanPreviousPage()}
                 onClick={() => table.previousPage()}
               >
-                <ChevronLeftIcon className="size-4" />
+                <HugeiconsIcon
+                  icon={ArrowLeft01Icon}
+                  strokeWidth={2}
+                  className="size-4"
+                />
               </Button>
             </PaginationItem>
             <PaginationItem>
@@ -117,7 +126,11 @@ export function DataPagination<TData>({
                 disabled={!table.getCanNextPage()}
                 onClick={() => table.nextPage()}
               >
-                <ChevronRightIcon className="size-4" />
+                <HugeiconsIcon
+                  icon={ArrowRight01Icon}
+                  strokeWidth={2}
+                  className="size-4"
+                />
               </Button>
             </PaginationItem>
             <PaginationItem>
@@ -128,7 +141,11 @@ export function DataPagination<TData>({
                 disabled={!table.getCanNextPage()}
                 onClick={() => table.setPageIndex(pageCount - 1)}
               >
-                <ChevronsRightIcon className="size-4" />
+                <HugeiconsIcon
+                  icon={ArrowRightDoubleIcon}
+                  strokeWidth={2}
+                  className="size-4"
+                />
               </Button>
             </PaginationItem>
           </PaginationContent>

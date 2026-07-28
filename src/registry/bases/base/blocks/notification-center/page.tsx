@@ -1,7 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { CheckCheck, ChevronDown, X } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  ArrowDown01Icon,
+  Cancel01Icon,
+  TickDouble02Icon,
+} from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -129,7 +134,11 @@ export function NotificationCenter() {
             onClick={markAllRead}
             disabled={unread === 0}
           >
-            <CheckCheck data-icon="inline-start" />
+            <HugeiconsIcon
+              icon={TickDouble02Icon}
+              strokeWidth={2}
+              data-icon="inline-start"
+            />
             Mark all as read
           </Button>
           <NotificationBell
@@ -151,7 +160,11 @@ export function NotificationCenter() {
               )}
             >
               {READ_STATES.find((r) => r.value === readState)?.label}
-              <ChevronDown className="size-3 text-muted-foreground" />
+              <HugeiconsIcon
+                icon={ArrowDown01Icon}
+                strokeWidth={2}
+                className="size-3 text-muted-foreground"
+              />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
               <DropdownMenuGroup>
@@ -187,7 +200,11 @@ export function NotificationCenter() {
                   {severities.size}
                 </Badge>
               )}
-              <ChevronDown className="size-3 text-muted-foreground" />
+              <HugeiconsIcon
+                icon={ArrowDown01Icon}
+                strokeWidth={2}
+                className="size-3 text-muted-foreground"
+              />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
               <DropdownMenuGroup>
@@ -245,7 +262,11 @@ export function NotificationCenter() {
               className="gap-1 text-xs text-muted-foreground"
               onClick={clearFilters}
             >
-              <X data-icon="inline-start" />
+              <HugeiconsIcon
+                icon={Cancel01Icon}
+                strokeWidth={2}
+                data-icon="inline-start"
+              />
               Clear
             </Button>
           )}

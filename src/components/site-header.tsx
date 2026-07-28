@@ -3,7 +3,8 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { MenuIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Menu01Icon } from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import { WorkspaceUILogo } from "@/components/workspaceui-logo"
@@ -105,7 +106,7 @@ export function SiteHeader() {
             aria-label="Toggle menu"
             onClick={() => setMobileOpen(true)}
           >
-            <MenuIcon />
+            <HugeiconsIcon icon={Menu01Icon} strokeWidth={2} />
           </Button>
         </div>
       </div>

@@ -1,13 +1,14 @@
 import Link from "next/link"
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
-  ArrowRight,
-  Accessibility,
-  Copy,
-  Move,
-  Palette,
-  Zap,
-  Braces,
-} from "lucide-react"
+  ArrowRight01Icon,
+  AccessibilityIcon,
+  Copy01Icon,
+  Move01Icon,
+  ColorsIcon,
+  FlashIcon,
+  SourceCodeIcon,
+} from "@hugeicons/core-free-icons"
 
 import { DynamicCodeBlock } from "@/components/dynamic-codeblock"
 import { GithubIcon } from "@/components/github-icon"
@@ -36,7 +37,11 @@ export default function HomePage() {
             className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Get started
-            <ArrowRight className="size-4" />
+            <HugeiconsIcon
+              icon={ArrowRight01Icon}
+              strokeWidth={2}
+              className="size-4"
+            />
           </Link>
           <a
             href="https://github.com/jayclydeTags/workspaceui"
@@ -62,37 +67,53 @@ export default function HomePage() {
       <div className="mt-24 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
         {[
           {
-            icon: Copy,
+            icon: (props: React.ComponentProps<"svg">) => (
+              <HugeiconsIcon icon={Copy01Icon} {...props} strokeWidth={2} />
+            ),
             title: "Copy, own, adapt",
             description:
               "Distributed via shadcn's model — the code lands in your repo. No black-box package to fight, no version lock-in.",
           },
           {
-            icon: Accessibility,
+            icon: (props: React.ComponentProps<"svg">) => (
+              <HugeiconsIcon
+                icon={AccessibilityIcon}
+                {...props}
+                strokeWidth={2}
+              />
+            ),
             title: "Accessible by default",
             description:
               "Built on Base UI primitives with full keyboard navigation and correct ARIA out of the box.",
           },
           {
-            icon: Move,
+            icon: (props: React.ComponentProps<"svg">) => (
+              <HugeiconsIcon icon={Move01Icon} {...props} strokeWidth={2} />
+            ),
             title: "Drag, drop & split",
             description:
               "Multi-pane layouts with cross-pane tab transfers and snap-zone splitting — an IDE workspace in a component.",
           },
           {
-            icon: Palette,
+            icon: (props: React.ComponentProps<"svg">) => (
+              <HugeiconsIcon icon={ColorsIcon} {...props} strokeWidth={2} />
+            ),
             title: "Tailwind v4 themeable",
             description:
               "Styled with theme tokens, not hard-coded colors. Retheme to match your app by editing CSS variables.",
           },
           {
-            icon: Braces,
+            icon: (props: React.ComponentProps<"svg">) => (
+              <HugeiconsIcon icon={SourceCodeIcon} {...props} strokeWidth={2} />
+            ),
             title: "Fully typed",
             description:
               "Strict TypeScript with exported prop interfaces, so autocomplete and type-checking work end to end.",
           },
           {
-            icon: Zap,
+            icon: (props: React.ComponentProps<"svg">) => (
+              <HugeiconsIcon icon={FlashIcon} {...props} strokeWidth={2} />
+            ),
             title: "Zero-config install",
             description:
               "One shadcn CLI command pulls the component and its dependencies straight from GitHub — no build step.",
@@ -117,14 +138,22 @@ export default function HomePage() {
           className="inline-flex items-center gap-1 text-sm font-medium text-foreground hover:underline"
         >
           Browse components
-          <ArrowRight className="size-3.5" />
+          <HugeiconsIcon
+            icon={ArrowRight01Icon}
+            strokeWidth={2}
+            className="size-3.5"
+          />
         </Link>
         <Link
           href="/blocks"
           className="inline-flex items-center gap-1 text-sm font-medium text-foreground hover:underline"
         >
           Explore blocks
-          <ArrowRight className="size-3.5" />
+          <HugeiconsIcon
+            icon={ArrowRight01Icon}
+            strokeWidth={2}
+            className="size-3.5"
+          />
         </Link>
       </div>
     </main>

@@ -1,6 +1,7 @@
 "use client"
 
-import { Clock, Mail } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Clock01Icon, Mail01Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -16,7 +17,11 @@ export function PendingApproval() {
       <div className="flex min-h-full items-center justify-center p-6">
         <div className="flex w-full max-w-sm flex-col items-center text-center">
           <div className="flex size-11 items-center justify-center rounded-full bg-amber-500/10">
-            <Clock className="size-5 text-amber-600 dark:text-amber-500" />
+            <HugeiconsIcon
+              icon={Clock01Icon}
+              strokeWidth={2}
+              className="size-5 text-amber-600 dark:text-amber-500"
+            />
           </div>
 
           <h1 className="mt-4 text-sm font-medium" role="status">
@@ -29,7 +34,11 @@ export function PendingApproval() {
 
           <Card size="sm" className="mt-4 w-full bg-muted/50">
             <CardContent className="flex items-center gap-2 text-left text-xs text-muted-foreground">
-              <Mail className="size-3.5 shrink-0" />
+              <HugeiconsIcon
+                icon={Mail01Icon}
+                strokeWidth={2}
+                className="size-3.5 shrink-0"
+              />
               We&apos;ll email{" "}
               <span className="font-medium text-foreground">{EMAIL}</span> once
               you&apos;re approved

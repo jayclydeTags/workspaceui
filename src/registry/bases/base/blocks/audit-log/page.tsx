@@ -1,7 +1,13 @@
 "use client"
 
 import * as React from "react"
-import { ArrowRight, ChevronDown, Search, X } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  ArrowRight01Icon,
+  ArrowDown01Icon,
+  Search01Icon,
+  Cancel01Icon,
+} from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -94,7 +100,7 @@ export function AuditLog() {
             style={{ flex: "1 1 160px" }}
           >
             <InputGroupAddon>
-              <Search />
+              <HugeiconsIcon icon={Search01Icon} strokeWidth={2} />
             </InputGroupAddon>
             <InputGroupInput
               placeholder="Search actor, record, field…"
@@ -116,7 +122,11 @@ export function AuditLog() {
                   {actionFilter.size}
                 </Badge>
               )}
-              <ChevronDown className="size-3 text-muted-foreground" />
+              <HugeiconsIcon
+                icon={ArrowDown01Icon}
+                strokeWidth={2}
+                className="size-3 text-muted-foreground"
+              />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
               <DropdownMenuGroup>
@@ -146,7 +156,11 @@ export function AuditLog() {
                 setActionFilter(new Set())
               }}
             >
-              <X data-icon="inline-start" />
+              <HugeiconsIcon
+                icon={Cancel01Icon}
+                strokeWidth={2}
+                data-icon="inline-start"
+              />
               Clear
             </Button>
           )}
@@ -200,7 +214,11 @@ export function AuditLog() {
                       <span className="text-muted-foreground line-through">
                         {e.before ?? "∅"}
                       </span>
-                      <ArrowRight className="size-3 shrink-0 text-muted-foreground" />
+                      <HugeiconsIcon
+                        icon={ArrowRight01Icon}
+                        strokeWidth={2}
+                        className="size-3 shrink-0 text-muted-foreground"
+                      />
                       <span className="font-medium">{e.after ?? "∅"}</span>
                     </div>
                   </TableCell>

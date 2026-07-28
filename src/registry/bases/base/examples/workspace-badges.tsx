@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Inbox, Bell, MessageSquare } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { InboxIcon, BellIcon, Message01Icon } from "@hugeicons/core-free-icons"
 
 import { Workspace } from "@/registry/bases/base/workspaceui/workspace"
 
@@ -17,9 +18,24 @@ function Centered({ icon, label }: { icon: React.ReactNode; label: string }) {
 // Numeric badges on tabs.
 export function WorkspaceBadgesDemo() {
   const content: Record<string, React.ReactNode> = {
-    inbox: <Centered icon={<Inbox />} label="Inbox" />,
-    chat: <Centered icon={<MessageSquare />} label="Chat" />,
-    alerts: <Centered icon={<Bell />} label="Alerts" />,
+    inbox: (
+      <Centered
+        icon={<HugeiconsIcon icon={InboxIcon} strokeWidth={2} />}
+        label="Inbox"
+      />
+    ),
+    chat: (
+      <Centered
+        icon={<HugeiconsIcon icon={Message01Icon} strokeWidth={2} />}
+        label="Chat"
+      />
+    ),
+    alerts: (
+      <Centered
+        icon={<HugeiconsIcon icon={BellIcon} strokeWidth={2} />}
+        label="Alerts"
+      />
+    ),
   }
   return (
     <div className="h-[360px] w-full overflow-hidden rounded-lg border border-border shadow-sm">
@@ -31,20 +47,38 @@ export function WorkspaceBadgesDemo() {
               {
                 id: "inbox",
                 title: "Inbox",
-                icon: <Inbox className="size-3.5" />,
+                icon: (
+                  <HugeiconsIcon
+                    icon={InboxIcon}
+                    strokeWidth={2}
+                    className="size-3.5"
+                  />
+                ),
                 badge: 12,
                 pinned: true,
               },
               {
                 id: "chat",
                 title: "Chat",
-                icon: <MessageSquare className="size-3.5" />,
+                icon: (
+                  <HugeiconsIcon
+                    icon={Message01Icon}
+                    strokeWidth={2}
+                    className="size-3.5"
+                  />
+                ),
                 badge: 3,
               },
               {
                 id: "alerts",
                 title: "Alerts",
-                icon: <Bell className="size-3.5" />,
+                icon: (
+                  <HugeiconsIcon
+                    icon={BellIcon}
+                    strokeWidth={2}
+                    className="size-3.5"
+                  />
+                ),
               },
             ],
           },

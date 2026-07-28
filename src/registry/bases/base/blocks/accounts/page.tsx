@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { PlusIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { PlusSignIcon } from "@hugeicons/core-free-icons"
 
 import {
   AlertDialog,
@@ -87,7 +88,11 @@ export function Accounts() {
             setFormOpen(true)
           }}
         >
-          <PlusIcon data-icon="inline-start" />
+          <HugeiconsIcon
+            icon={PlusSignIcon}
+            strokeWidth={2}
+            data-icon="inline-start"
+          />
           New account
         </Button>
       }

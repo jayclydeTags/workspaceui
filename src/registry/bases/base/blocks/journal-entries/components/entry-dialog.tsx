@@ -1,5 +1,6 @@
 import * as React from "react"
-import { Plus, Trash2 } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { PlusSignIcon, Delete02Icon } from "@hugeicons/core-free-icons"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -224,7 +225,7 @@ export function EntryDialog({
                         onClick={() => removeLine(line.id)}
                         disabled={draft.lines.length <= 2}
                       >
-                        <Trash2 />
+                        <HugeiconsIcon icon={Delete02Icon} strokeWidth={2} />
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -251,7 +252,11 @@ export function EntryDialog({
                 size="sm"
                 onClick={addLine}
               >
-                <Plus data-icon="inline-start" />
+                <HugeiconsIcon
+                  icon={PlusSignIcon}
+                  strokeWidth={2}
+                  data-icon="inline-start"
+                />
                 Add line
               </Button>
               <Badge variant={balanced ? "secondary" : "destructive"}>

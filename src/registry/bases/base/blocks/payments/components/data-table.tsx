@@ -1,4 +1,5 @@
-import { MoreHorizontalIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { MoreHorizontalIcon } from "@hugeicons/core-free-icons"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -45,7 +46,7 @@ function RowActions({
             size="icon"
             aria-label={`Actions for ${payment.reference}`}
           >
-            <MoreHorizontalIcon />
+            <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
           </Button>
         }
       />

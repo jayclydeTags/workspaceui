@@ -1,4 +1,5 @@
-import { MoreHorizontalIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { MoreHorizontalIcon } from "@hugeicons/core-free-icons"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -65,7 +66,7 @@ function RowActions({ borrower, onEdit, onVerify, onDelete }: RowProps) {
             size="icon"
             aria-label={`Actions for ${borrower.name}`}
           >
-            <MoreHorizontalIcon />
+            <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
           </Button>
         }
       />

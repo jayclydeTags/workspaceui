@@ -13,25 +13,26 @@ import {
 } from "@tanstack/react-table"
 import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox"
 import { motion } from "motion/react"
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  CheckIcon,
-  ChevronRightIcon,
-  ChevronsUpDownIcon,
-  Columns3Icon,
+  ArrowDown01Icon,
+  ArrowUp01Icon,
+  Tick02Icon,
+  ArrowRight01Icon,
+  UnfoldMoreIcon,
+  LayoutThreeColumnIcon,
   EyeIcon,
   EyeOffIcon,
   FilterIcon,
   GripVerticalIcon,
-  MinusIcon,
+  MinusSignIcon,
   MoreHorizontalIcon,
   MoreVerticalIcon,
   PinIcon,
-  PlusIcon,
+  PlusSignIcon,
   SlidersHorizontalIcon,
-  Trash2Icon,
-} from "lucide-react"
+  Delete02Icon,
+} from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import {
@@ -179,11 +180,28 @@ function pinActionLabel(current: PinPosition): string {
 // Reflects TanStack's getIsSorted() (false | "asc" | "desc"). The unsorted glyph
 // only surfaces on header hover, so it hints at sortability without adding noise.
 function sortIcon(direction: false | "asc" | "desc") {
-  if (direction === "asc") return <ArrowUpIcon className="size-3.5 shrink-0" />
+  if (direction === "asc")
+    return (
+      <HugeiconsIcon
+        icon={ArrowUp01Icon}
+        strokeWidth={2}
+        className="size-3.5 shrink-0"
+      />
+    )
   if (direction === "desc")
-    return <ArrowDownIcon className="size-3.5 shrink-0" />
+    return (
+      <HugeiconsIcon
+        icon={ArrowDown01Icon}
+        strokeWidth={2}
+        className="size-3.5 shrink-0"
+      />
+    )
   return (
-    <ChevronsUpDownIcon className="size-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-60" />
+    <HugeiconsIcon
+      icon={UnfoldMoreIcon}
+      strokeWidth={2}
+      className="size-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-60"
+    />
   )
 }
 
@@ -223,7 +241,11 @@ function SelectAllCheckbox({
         data-slot="checkbox-indicator"
         className="grid place-content-center text-current transition-none [&>svg]:size-3.5"
       >
-        {indeterminate ? <MinusIcon /> : <CheckIcon />}
+        {indeterminate ? (
+          <HugeiconsIcon icon={MinusSignIcon} strokeWidth={2} />
+        ) : (
+          <HugeiconsIcon icon={Tick02Icon} strokeWidth={2} />
+        )}
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
   )
@@ -843,7 +865,11 @@ export function DataGrid<TData>({
           aria-hidden="true"
           className="flex size-5 shrink-0 cursor-grab items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground active:cursor-grabbing"
         >
-          <GripVerticalIcon className="size-4" />
+          <HugeiconsIcon
+            icon={GripVerticalIcon}
+            strokeWidth={2}
+            className="size-4"
+          />
         </span>
         <span className="flex-1 truncate">{label}</span>
         <Button
@@ -855,7 +881,11 @@ export function DataGrid<TData>({
           onClick={() => column.pin(nextPinPosition(pinned))}
           className="shrink-0"
         >
-          <PinIcon className={cn(pinned && "fill-current")} />
+          <HugeiconsIcon
+            icon={PinIcon}
+            strokeWidth={2}
+            className={cn(pinned && "fill-current")}
+          />
         </Button>
         {column.getCanHide() && (
           <Button
@@ -866,7 +896,11 @@ export function DataGrid<TData>({
             onClick={() => column.toggleVisibility(hidden)}
             className="shrink-0"
           >
-            {hidden ? <EyeOffIcon /> : <EyeIcon />}
+            {hidden ? (
+              <HugeiconsIcon icon={EyeOffIcon} strokeWidth={2} />
+            ) : (
+              <HugeiconsIcon icon={EyeIcon} strokeWidth={2} />
+            )}
           </Button>
         )}
       </motion.li>
@@ -904,9 +938,17 @@ export function DataGrid<TData>({
         {getColumnLabel(column)}
         {isPrimary &&
           (primary.desc ? (
-            <ArrowDownIcon className="size-3.5" />
+            <HugeiconsIcon
+              icon={ArrowDown01Icon}
+              strokeWidth={2}
+              className="size-3.5"
+            />
           ) : (
-            <ArrowUpIcon className="size-3.5" />
+            <HugeiconsIcon
+              icon={ArrowUp01Icon}
+              strokeWidth={2}
+              className="size-3.5"
+            />
           ))}
       </button>
     )
@@ -929,9 +971,13 @@ export function DataGrid<TData>({
       >
         {getColumnLabel(column)}
         {visible ? (
-          <EyeIcon className="size-3.5" />
+          <HugeiconsIcon icon={EyeIcon} strokeWidth={2} className="size-3.5" />
         ) : (
-          <EyeOffIcon className="size-3.5 text-muted-foreground" />
+          <HugeiconsIcon
+            icon={EyeOffIcon}
+            strokeWidth={2}
+            className="size-3.5 text-muted-foreground"
+          />
         )}
       </button>
     )
@@ -1410,7 +1456,11 @@ export function DataGrid<TData>({
                     aria-label="Options"
                     className="relative ms-auto shrink-0"
                   >
-                    <SlidersHorizontalIcon className="size-4" />
+                    <HugeiconsIcon
+                      icon={SlidersHorizontalIcon}
+                      strokeWidth={2}
+                      className="size-4"
+                    />
                     {optionsCount > 0 && (
                       <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
                         {optionsCount}
@@ -1493,7 +1543,9 @@ export function DataGrid<TData>({
                           </span>
                         )}
                       </span>
-                      <ChevronRightIcon
+                      <HugeiconsIcon
+                        icon={ArrowRight01Icon}
+                        strokeWidth={2}
                         aria-hidden="true"
                         className="size-4 shrink-0 text-muted-foreground"
                       />
@@ -1509,7 +1561,11 @@ export function DataGrid<TData>({
                   onClick={() => handleRowAdd()}
                   className="flex w-full items-center gap-1.5 px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent/30 hover:text-foreground"
                 >
-                  <PlusIcon className="size-3.5" />
+                  <HugeiconsIcon
+                    icon={PlusSignIcon}
+                    strokeWidth={2}
+                    className="size-3.5"
+                  />
                   New row
                 </button>
               </li>
@@ -1526,7 +1582,11 @@ export function DataGrid<TData>({
                   table={table}
                   trigger={
                     <Button variant="outline" size="icon" aria-label="Filter">
-                      <FilterIcon className="size-4" />
+                      <HugeiconsIcon
+                        icon={FilterIcon}
+                        strokeWidth={2}
+                        className="size-4"
+                      />
                     </Button>
                   }
                 />
@@ -1543,7 +1603,11 @@ export function DataGrid<TData>({
                               size="icon"
                               aria-label="Columns"
                             >
-                              <Columns3Icon className="size-4" />
+                              <HugeiconsIcon
+                                icon={LayoutThreeColumnIcon}
+                                strokeWidth={2}
+                                className="size-4"
+                              />
                             </Button>
                           }
                         />
@@ -1685,7 +1749,10 @@ export function DataGrid<TData>({
                                       aria-label={`${getColumnLabel(header.column)} column options`}
                                       className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 data-[popup-open]:opacity-100"
                                     >
-                                      <MoreVerticalIcon />
+                                      <HugeiconsIcon
+                                        icon={MoreVerticalIcon}
+                                        strokeWidth={2}
+                                      />
                                     </Button>
                                   }
                                 />
@@ -1776,7 +1843,11 @@ export function DataGrid<TData>({
                         className="absolute inset-x-0 bottom-0 z-10 flex h-4 translate-y-1/2 items-center justify-center opacity-0 transition-opacity group-hover/row:opacity-100 focus-visible:opacity-100"
                       >
                         <span className="flex size-5 items-center justify-center rounded-full border bg-background shadow-sm">
-                          <PlusIcon className="size-3" />
+                          <HugeiconsIcon
+                            icon={PlusSignIcon}
+                            strokeWidth={2}
+                            className="size-3"
+                          />
                         </span>
                       </button>
                     )
@@ -2264,7 +2335,11 @@ export function DataGrid<TData>({
                                     aria-label={`Row ${r + 1} actions`}
                                     className="size-7 opacity-0 group-hover/row:opacity-100 focus-visible:opacity-100 data-[popup-open]:opacity-100"
                                   >
-                                    <MoreHorizontalIcon className="size-3.5" />
+                                    <HugeiconsIcon
+                                      icon={MoreHorizontalIcon}
+                                      strokeWidth={2}
+                                      className="size-3.5"
+                                    />
                                   </Button>
                                 }
                               />
@@ -2292,7 +2367,11 @@ export function DataGrid<TData>({
                         onClick={() => handleRowAdd()}
                         className="flex w-full items-center gap-1.5 px-2 py-2 text-sm text-muted-foreground hover:bg-accent/30 hover:text-foreground"
                       >
-                        <PlusIcon className="size-3.5" />
+                        <HugeiconsIcon
+                          icon={PlusSignIcon}
+                          strokeWidth={2}
+                          className="size-3.5"
+                        />
                         New row
                       </button>
                     </TableCell>
@@ -2513,7 +2592,11 @@ export function DataGrid<TData>({
                   variant="destructive"
                   onClick={() => setDeleteTarget(displayRow.id)}
                 >
-                  <Trash2Icon className="size-4" />
+                  <HugeiconsIcon
+                    icon={Delete02Icon}
+                    strokeWidth={2}
+                    className="size-4"
+                  />
                   Delete row
                 </Button>
               </DrawerFooter>

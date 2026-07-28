@@ -1,4 +1,5 @@
-import { MoreHorizontalIcon, StarIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { MoreHorizontalIcon, StarIcon } from "@hugeicons/core-free-icons"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -36,7 +37,7 @@ function RowActions({ contact, onEdit, onSetPrimary, onDelete }: RowProps) {
             size="icon"
             aria-label={`Actions for ${contact.name}`}
           >
-            <MoreHorizontalIcon />
+            <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
           </Button>
         }
       />
@@ -71,7 +72,9 @@ function Person({ contact }: { contact: Contact }) {
         <div className="flex items-center gap-1.5">
           <span className="truncate font-medium">{contact.name}</span>
           {contact.primary && (
-            <StarIcon
+            <HugeiconsIcon
+              icon={StarIcon}
+              strokeWidth={2}
               aria-label={`Primary contact for ${contact.account}`}
               className="size-3.5 shrink-0 fill-current"
             />

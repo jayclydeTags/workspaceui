@@ -1,7 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { ArrowLeft, Loader2, MailCheck } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  ArrowLeft01Icon,
+  Loading03Icon,
+  MailValidation02Icon,
+} from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -54,7 +59,11 @@ export function ForgotPassword() {
         <div className="flex min-h-full items-center justify-center p-6">
           <div className="flex w-full max-w-sm flex-col items-center text-center">
             <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
-              <MailCheck className="size-5 text-primary" />
+              <HugeiconsIcon
+                icon={MailValidation02Icon}
+                strokeWidth={2}
+                className="size-5 text-primary"
+              />
             </div>
             <h1 className="mt-4 text-sm font-medium">Check your email</h1>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -110,7 +119,9 @@ export function ForgotPassword() {
                     disabled={submitting}
                   >
                     {submitting && (
-                      <Loader2
+                      <HugeiconsIcon
+                        icon={Loading03Icon}
+                        strokeWidth={2}
                         data-icon="inline-start"
                         className="animate-spin"
                       />
@@ -122,7 +133,11 @@ export function ForgotPassword() {
                       href="#"
                       className="inline-flex items-center gap-1 underline-offset-4 hover:underline"
                     >
-                      <ArrowLeft className="size-3" />
+                      <HugeiconsIcon
+                        icon={ArrowLeft01Icon}
+                        strokeWidth={2}
+                        className="size-3"
+                      />
                       Back to sign in
                     </a>
                   </FieldDescription>

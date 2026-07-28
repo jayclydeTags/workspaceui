@@ -1,7 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Clock, Lock, Mail, MailCheck } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  Clock01Icon,
+  LockIcon,
+  Mail01Icon,
+  MailValidation02Icon,
+} from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -38,7 +44,11 @@ export function AccountLocked() {
       <div className="flex min-h-full items-center justify-center p-6">
         <div className="flex w-full max-w-sm flex-col items-center text-center">
           <div className="flex size-11 items-center justify-center rounded-full bg-destructive/10">
-            <Lock className="size-5 text-destructive" />
+            <HugeiconsIcon
+              icon={LockIcon}
+              strokeWidth={2}
+              className="size-5 text-destructive"
+            />
           </div>
 
           <h1 className="mt-4 text-sm font-medium" role="alert">
@@ -51,14 +61,22 @@ export function AccountLocked() {
           <Card size="sm" className="mt-4 w-full bg-muted/50">
             <CardContent className="flex flex-col gap-2 text-left">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Mail className="size-3.5 shrink-0" />
+                <HugeiconsIcon
+                  icon={Mail01Icon}
+                  strokeWidth={2}
+                  className="size-3.5 shrink-0"
+                />
                 {EMAIL}
               </div>
               <div
                 className="flex items-center gap-2 text-xs text-muted-foreground"
                 aria-live="polite"
               >
-                <Clock className="size-3.5 shrink-0" />
+                <HugeiconsIcon
+                  icon={Clock01Icon}
+                  strokeWidth={2}
+                  className="size-3.5 shrink-0"
+                />
                 {unlocked ? (
                   "You can sign in again now"
                 ) : (
@@ -78,7 +96,11 @@ export function AccountLocked() {
               <Button className="w-full">Return to sign in</Button>
             ) : resetSent ? (
               <div className="flex items-center justify-center gap-2 rounded-md border border-dashed py-2 text-xs text-muted-foreground">
-                <MailCheck className="size-3.5 shrink-0 text-foreground" />
+                <HugeiconsIcon
+                  icon={MailValidation02Icon}
+                  strokeWidth={2}
+                  className="size-3.5 shrink-0 text-foreground"
+                />
                 Reset link sent to {EMAIL}
               </div>
             ) : (

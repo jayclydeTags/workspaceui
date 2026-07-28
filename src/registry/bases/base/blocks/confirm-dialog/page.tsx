@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Trash2Icon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Delete02Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -56,7 +57,7 @@ export function ConfirmDialogDemo() {
                 aria-label={`Revoke ${key.name}`}
                 onClick={() => setDeleting(key)}
               >
-                <Trash2Icon />
+                <HugeiconsIcon icon={Delete02Icon} strokeWidth={2} />
               </Button>
             </li>
           ))}

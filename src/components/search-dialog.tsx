@@ -16,7 +16,8 @@ import {
 } from "@/components/ui/command"
 import { Button } from "@/components/ui/button"
 import { Kbd } from "@/components/ui/kbd"
-import { SearchIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Search01Icon } from "@hugeicons/core-free-icons"
 
 const client = oramaStaticClient({ from: "/api/search" })
 
@@ -45,7 +46,11 @@ export function SearchDialog() {
         className="h-8 w-full max-w-56 justify-start gap-2 rounded-full px-3 text-muted-foreground shadow-none sm:w-56"
         onClick={() => setOpen(true)}
       >
-        <SearchIcon className="size-4 shrink-0" />
+        <HugeiconsIcon
+          icon={Search01Icon}
+          strokeWidth={2}
+          className="size-4 shrink-0"
+        />
         <span className="flex-1 truncate text-left text-sm">
           Search documentation...
         </span>

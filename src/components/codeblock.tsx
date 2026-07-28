@@ -1,5 +1,6 @@
 "use client"
-import { Check, Clipboard } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Tick02Icon, ClipboardIcon } from "@hugeicons/core-free-icons"
 import {
   type ComponentProps,
   createContext,
@@ -190,7 +191,11 @@ function CopyButton({
       onClick={onClick}
       {...props}
     >
-      {checked ? <Check /> : <Clipboard />}
+      {checked ? (
+        <HugeiconsIcon icon={Tick02Icon} strokeWidth={2} />
+      ) : (
+        <HugeiconsIcon icon={ClipboardIcon} strokeWidth={2} />
+      )}
     </Button>
   )
 }

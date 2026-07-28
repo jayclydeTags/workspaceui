@@ -1,7 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { CheckCircle2, Loader2, LinkIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  CheckmarkCircle02Icon,
+  Loading03Icon,
+  Link01Icon,
+} from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -62,7 +67,11 @@ export function ResetPassword() {
         <div className="flex min-h-full items-center justify-center p-6">
           <div className="flex w-full max-w-sm flex-col items-center text-center">
             <div className="flex size-11 items-center justify-center rounded-full bg-destructive/10">
-              <LinkIcon className="size-5 text-destructive" />
+              <HugeiconsIcon
+                icon={Link01Icon}
+                strokeWidth={2}
+                className="size-5 text-destructive"
+              />
             </div>
             <h1 className="mt-4 text-sm font-medium" role="alert">
               Reset link expired
@@ -84,7 +93,11 @@ export function ResetPassword() {
         <div className="flex min-h-full items-center justify-center p-6">
           <div className="flex w-full max-w-sm flex-col items-center text-center">
             <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
-              <CheckCircle2 className="size-5 text-primary" />
+              <HugeiconsIcon
+                icon={CheckmarkCircle02Icon}
+                strokeWidth={2}
+                className="size-5 text-primary"
+              />
             </div>
             <h1 className="mt-4 text-sm font-medium">Password updated</h1>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -149,7 +162,9 @@ export function ResetPassword() {
                     disabled={submitting}
                   >
                     {submitting && (
-                      <Loader2
+                      <HugeiconsIcon
+                        icon={Loading03Icon}
+                        strokeWidth={2}
                         data-icon="inline-start"
                         className="animate-spin"
                       />

@@ -1,6 +1,11 @@
 "use client"
 
-import { Bell, BellRing, CheckCheck } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  BellIcon,
+  BellRingIcon,
+  TickDouble02Icon,
+} from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -53,7 +58,11 @@ export function NotificationBell({
           "relative"
         )}
       >
-        {unread > 0 ? <BellRing /> : <Bell />}
+        {unread > 0 ? (
+          <HugeiconsIcon icon={BellRingIcon} strokeWidth={2} />
+        ) : (
+          <HugeiconsIcon icon={BellIcon} strokeWidth={2} />
+        )}
         {unread > 0 && (
           <Badge className="absolute -inset-e-1 -top-1 h-4 min-w-4 justify-center rounded-full px-1 text-[10px]">
             {unread > 9 ? "9+" : unread}
@@ -73,7 +82,11 @@ export function NotificationBell({
             disabled={unread === 0}
             onClick={onMarkAllRead}
           >
-            <CheckCheck data-icon="inline-start" />
+            <HugeiconsIcon
+              icon={TickDouble02Icon}
+              strokeWidth={2}
+              data-icon="inline-start"
+            />
             Mark all as read
           </Button>
         </div>
@@ -83,7 +96,7 @@ export function NotificationBell({
           <Empty className="py-6">
             <EmptyHeader>
               <EmptyMedia variant="icon">
-                <BellRing />
+                <HugeiconsIcon icon={BellRingIcon} strokeWidth={2} />
               </EmptyMedia>
               <EmptyTitle>You&apos;re all caught up</EmptyTitle>
               <EmptyDescription>New alerts will show up here.</EmptyDescription>

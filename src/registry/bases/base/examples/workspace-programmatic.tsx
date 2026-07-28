@@ -1,7 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { LayoutDashboard, FileText, Settings } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  DashboardSquare01Icon,
+  File01Icon,
+  Setting06Icon,
+} from "@hugeicons/core-free-icons"
 
 import {
   Workspace,
@@ -24,17 +29,31 @@ export function WorkspaceProgrammaticDemo() {
     {
       id: "dashboard",
       title: "Dashboard",
-      icon: <LayoutDashboard className="size-4" />,
+      icon: (
+        <HugeiconsIcon
+          icon={DashboardSquare01Icon}
+          strokeWidth={2}
+          className="size-4"
+        />
+      ),
     },
     {
       id: "documents",
       title: "Documents",
-      icon: <FileText className="size-4" />,
+      icon: (
+        <HugeiconsIcon icon={File01Icon} strokeWidth={2} className="size-4" />
+      ),
     },
     {
       id: "settings",
       title: "Settings",
-      icon: <Settings className="size-4" />,
+      icon: (
+        <HugeiconsIcon
+          icon={Setting06Icon}
+          strokeWidth={2}
+          className="size-4"
+        />
+      ),
     },
   ]
   return (
@@ -73,14 +92,23 @@ export function WorkspaceProgrammaticDemo() {
                 {
                   id: "dashboard",
                   title: "Dashboard",
-                  icon: <LayoutDashboard className="size-3.5" />,
+                  icon: (
+                    <HugeiconsIcon
+                      icon={DashboardSquare01Icon}
+                      strokeWidth={2}
+                      className="size-3.5"
+                    />
+                  ),
                   pinned: true,
                 },
               ],
             },
           ]}
           renderTabContent={(_p, tabId) => (
-            <Centered icon={<FileText />} label={tabId} />
+            <Centered
+              icon={<HugeiconsIcon icon={File01Icon} strokeWidth={2} />}
+              label={tabId}
+            />
           )}
         />
       </div>

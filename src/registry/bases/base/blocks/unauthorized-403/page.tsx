@@ -1,7 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { ArrowLeft, MailCheck, ShieldX } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  ArrowLeft01Icon,
+  MailValidation02Icon,
+  ShieldBanIcon,
+} from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -20,7 +25,11 @@ export function Unauthorized403() {
       <div className="flex min-h-full items-center justify-center p-6">
         <div className="flex w-full max-w-sm flex-col items-center text-center">
           <div className="flex size-11 items-center justify-center rounded-full bg-destructive/10">
-            <ShieldX className="size-5 text-destructive" />
+            <HugeiconsIcon
+              icon={ShieldBanIcon}
+              strokeWidth={2}
+              className="size-5 text-destructive"
+            />
           </div>
 
           <h1 className="mt-4 text-sm font-medium" role="alert">
@@ -42,7 +51,11 @@ export function Unauthorized403() {
           <div className="mt-6 flex w-full flex-col gap-2" aria-live="polite">
             {requested ? (
               <div className="flex items-center justify-center gap-2 rounded-md border border-dashed py-2 text-xs text-muted-foreground">
-                <MailCheck className="size-3.5 shrink-0 text-foreground" />
+                <HugeiconsIcon
+                  icon={MailValidation02Icon}
+                  strokeWidth={2}
+                  className="size-3.5 shrink-0 text-foreground"
+                />
                 Access request sent to your admin
               </div>
             ) : (
@@ -51,7 +64,11 @@ export function Unauthorized403() {
               </Button>
             )}
             <Button variant="ghost" className="w-full text-muted-foreground">
-              <ArrowLeft data-icon="inline-start" />
+              <HugeiconsIcon
+                icon={ArrowLeft01Icon}
+                strokeWidth={2}
+                data-icon="inline-start"
+              />
               Back to dashboard
             </Button>
           </div>

@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { ListChecks } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { CheckListIcon } from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -115,7 +116,7 @@ export function MasterDetail() {
             <Empty>
               <EmptyHeader>
                 <EmptyMedia variant="icon">
-                  <ListChecks />
+                  <HugeiconsIcon icon={CheckListIcon} strokeWidth={2} />
                 </EmptyMedia>
                 <EmptyTitle>No task selected</EmptyTitle>
                 <EmptyDescription>

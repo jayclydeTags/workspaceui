@@ -1,4 +1,5 @@
-import { SearchIcon, XIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Search01Icon, Cancel01Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -32,7 +33,7 @@ export function FilterBar({
     <div className="flex flex-wrap items-center gap-2">
       <InputGroup className="w-full sm:w-64">
         <InputGroupAddon>
-          <SearchIcon />
+          <HugeiconsIcon icon={Search01Icon} strokeWidth={2} />
         </InputGroupAddon>
         <InputGroupInput
           placeholder="Search name or email…"
@@ -84,7 +85,11 @@ export function FilterBar({
           size="sm"
           onClick={() => onChange({ query: "", role: "all", status: "all" })}
         >
-          <XIcon data-icon="inline-start" />
+          <HugeiconsIcon
+            icon={Cancel01Icon}
+            strokeWidth={2}
+            data-icon="inline-start"
+          />
           Clear
         </Button>
       )}

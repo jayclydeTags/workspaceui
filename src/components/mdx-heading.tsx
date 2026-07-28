@@ -2,7 +2,8 @@
 
 import type { ComponentProps } from "react"
 import { useCopyButton } from "@fumadocs/base-ui/utils/use-copy-button"
-import { CopyCheckIcon, LinkIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { CopyCheckIcon, Link01Icon } from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -38,7 +39,11 @@ export function Heading({
         onClick={onCopy}
         className="shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover/heading:opacity-100"
       >
-        {isChecked ? <CopyCheckIcon /> : <LinkIcon />}
+        {isChecked ? (
+          <HugeiconsIcon icon={CopyCheckIcon} strokeWidth={2} />
+        ) : (
+          <HugeiconsIcon icon={Link01Icon} strokeWidth={2} />
+        )}
       </Button>
     </As>
   )

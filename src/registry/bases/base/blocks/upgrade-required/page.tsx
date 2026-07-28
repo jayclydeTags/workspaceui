@@ -1,7 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { Check, MailCheck, Sparkles } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  Tick02Icon,
+  MailValidation02Icon,
+  SparklesIcon,
+} from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -28,7 +33,11 @@ export function UpgradeRequired() {
       <div className="flex min-h-full items-center justify-center p-6">
         <div className="flex w-full max-w-sm flex-col items-center text-center">
           <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
-            <Sparkles className="size-5 text-primary" />
+            <HugeiconsIcon
+              icon={SparklesIcon}
+              strokeWidth={2}
+              className="size-5 text-primary"
+            />
           </div>
 
           <h1 className="mt-4 text-sm font-medium" role="alert">
@@ -46,7 +55,11 @@ export function UpgradeRequired() {
             <CardContent className="flex flex-col gap-2 text-left text-xs text-muted-foreground">
               {PERKS.map((perk) => (
                 <div key={perk} className="flex items-center gap-2">
-                  <Check className="size-3.5 shrink-0 text-primary" />
+                  <HugeiconsIcon
+                    icon={Tick02Icon}
+                    strokeWidth={2}
+                    className="size-3.5 shrink-0 text-primary"
+                  />
                   {perk}
                 </div>
               ))}
@@ -57,7 +70,11 @@ export function UpgradeRequired() {
             <Button className="w-full">Upgrade to {REQUIRED_PLAN}</Button>
             {requested ? (
               <div className="flex items-center justify-center gap-2 rounded-md border border-dashed py-2 text-xs text-muted-foreground">
-                <MailCheck className="size-3.5 shrink-0 text-foreground" />
+                <HugeiconsIcon
+                  icon={MailValidation02Icon}
+                  strokeWidth={2}
+                  className="size-3.5 shrink-0 text-foreground"
+                />
                 Upgrade request sent to your admin
               </div>
             ) : (

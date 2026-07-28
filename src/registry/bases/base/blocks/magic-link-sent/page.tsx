@@ -1,7 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { ArrowLeft, MailCheck } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  ArrowLeft01Icon,
+  MailValidation02Icon,
+} from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import { Page } from "@/registry/bases/base/workspaceui/page"
@@ -35,7 +39,11 @@ export function MagicLinkSent() {
       <div className="flex min-h-full items-center justify-center p-6">
         <div className="flex w-full max-w-sm flex-col items-center text-center">
           <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
-            <MailCheck className="size-5 text-primary" />
+            <HugeiconsIcon
+              icon={MailValidation02Icon}
+              strokeWidth={2}
+              className="size-5 text-primary"
+            />
           </div>
 
           <h1 className="mt-4 text-sm font-medium">Check your email</h1>
@@ -59,7 +67,11 @@ export function MagicLinkSent() {
               )}
             </Button>
             <Button variant="ghost" className="w-full text-muted-foreground">
-              <ArrowLeft data-icon="inline-start" />
+              <HugeiconsIcon
+                icon={ArrowLeft01Icon}
+                strokeWidth={2}
+                data-icon="inline-start"
+              />
               Use a different email
             </Button>
           </div>

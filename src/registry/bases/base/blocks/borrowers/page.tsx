@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { PlusIcon, SearchIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { PlusSignIcon, Search01Icon } from "@hugeicons/core-free-icons"
 
 import {
   AlertDialog,
@@ -87,7 +88,11 @@ export function Borrowers() {
             setFormOpen(true)
           }}
         >
-          <PlusIcon data-icon="inline-start" />
+          <HugeiconsIcon
+            icon={PlusSignIcon}
+            strokeWidth={2}
+            data-icon="inline-start"
+          />
           New borrower
         </Button>
       }
@@ -96,7 +101,7 @@ export function Borrowers() {
         <div className="border-b px-4 py-3 @sm:px-6">
           <InputGroup>
             <InputGroupAddon>
-              <SearchIcon />
+              <HugeiconsIcon icon={Search01Icon} strokeWidth={2} />
             </InputGroupAddon>
             <InputGroupInput
               value={query}

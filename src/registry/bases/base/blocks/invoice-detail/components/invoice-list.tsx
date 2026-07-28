@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Search } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Search01Icon } from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -52,7 +53,7 @@ export function InvoiceList({ activeInvoiceId, onSelect }: InvoiceListProps) {
       <div className="shrink-0 border-b border-border p-3">
         <InputGroup className="h-8 text-sm">
           <InputGroupAddon>
-            <Search />
+            <HugeiconsIcon icon={Search01Icon} strokeWidth={2} />
           </InputGroupAddon>
           <InputGroupInput
             placeholder="Search invoices…"

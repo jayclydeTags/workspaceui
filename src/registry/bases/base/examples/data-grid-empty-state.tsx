@@ -6,7 +6,8 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ListPlusIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ListPlusIcon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -71,7 +72,7 @@ export function DataGridEmptyStateDemo() {
           <Empty className="border-0">
             <EmptyHeader>
               <EmptyMedia variant="icon">
-                <ListPlusIcon />
+                <HugeiconsIcon icon={ListPlusIcon} strokeWidth={2} />
               </EmptyMedia>
               <EmptyTitle>No tasks yet</EmptyTitle>
               <EmptyDescription>

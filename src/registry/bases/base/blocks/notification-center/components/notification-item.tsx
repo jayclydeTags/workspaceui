@@ -1,7 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { Info, ShieldAlert, TriangleAlert } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  Alert01Icon,
+  InformationCircleIcon,
+  Shield02Icon,
+} from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -20,9 +25,27 @@ export const SEVERITY_META: Record<
     variant: React.ComponentProps<typeof Badge>["variant"]
   }
 > = {
-  info: { label: "Info", Icon: Info, variant: "secondary" },
-  warning: { label: "Warning", Icon: TriangleAlert, variant: "outline" },
-  critical: { label: "Critical", Icon: ShieldAlert, variant: "destructive" },
+  info: {
+    label: "Info",
+    Icon: (props) => (
+      <HugeiconsIcon icon={InformationCircleIcon} strokeWidth={2} {...props} />
+    ),
+    variant: "secondary",
+  },
+  warning: {
+    label: "Warning",
+    Icon: (props) => (
+      <HugeiconsIcon icon={Alert01Icon} strokeWidth={2} {...props} />
+    ),
+    variant: "outline",
+  },
+  critical: {
+    label: "Critical",
+    Icon: (props) => (
+      <HugeiconsIcon icon={Shield02Icon} strokeWidth={2} {...props} />
+    ),
+    variant: "destructive",
+  },
 }
 
 /**

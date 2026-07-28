@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { FileText, Inbox } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { File01Icon, InboxIcon } from "@hugeicons/core-free-icons"
 
 import { Workspace } from "@/registry/bases/base/workspaceui/workspace"
 
@@ -26,17 +27,30 @@ export function WorkspaceFallbackDemo() {
               {
                 id: "scratch",
                 title: "Scratch",
-                icon: <FileText className="size-3.5" />,
+                icon: (
+                  <HugeiconsIcon
+                    icon={File01Icon}
+                    strokeWidth={2}
+                    className="size-3.5"
+                  />
+                ),
               },
             ],
           },
         ]}
         renderTabContent={(_p, tabId) => (
-          <Centered icon={<FileText />} label={tabId} />
+          <Centered
+            icon={<HugeiconsIcon icon={File01Icon} strokeWidth={2} />}
+            label={tabId}
+          />
         )}
         fallback={
           <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-            <Inbox className="size-8 text-muted-foreground/40" />
+            <HugeiconsIcon
+              icon={InboxIcon}
+              strokeWidth={2}
+              className="size-8 text-muted-foreground/40"
+            />
             <p className="text-sm text-muted-foreground">No panels open</p>
             <p className="text-xs text-muted-foreground/70">
               Close the tab above to land here.

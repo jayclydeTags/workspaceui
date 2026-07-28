@@ -8,7 +8,8 @@ import {
   getFilteredRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { DownloadIcon, Trash2Icon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Download01Icon, Delete02Icon } from "@hugeicons/core-free-icons"
 
 import {
   AlertDialog,
@@ -99,7 +100,11 @@ export function BulkActionsToolbar() {
           className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2"
         >
           <Button variant="outline" size="sm">
-            <DownloadIcon data-icon="inline-start" />
+            <HugeiconsIcon
+              icon={Download01Icon}
+              strokeWidth={2}
+              data-icon="inline-start"
+            />
             Export
           </Button>
           <Button
@@ -107,7 +112,11 @@ export function BulkActionsToolbar() {
             size="sm"
             onClick={() => setConfirmDelete(true)}
           >
-            <Trash2Icon data-icon="inline-start" />
+            <HugeiconsIcon
+              icon={Delete02Icon}
+              strokeWidth={2}
+              data-icon="inline-start"
+            />
             Delete
           </Button>
         </BulkToolbar>

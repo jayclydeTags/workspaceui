@@ -1,6 +1,7 @@
 "use client"
 
-import { Moon, Sun } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Moon02Icon, Sun01Icon } from "@hugeicons/core-free-icons"
 import { useTheme } from "@/components/theme-provider"
 import { Button } from "@/components/ui/button"
 
@@ -14,8 +15,16 @@ export function ThemeToggle() {
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
       aria-label="Toggle theme"
     >
-      <Sun className="size-4 dark:hidden" />
-      <Moon className="hidden size-4 dark:block" />
+      <HugeiconsIcon
+        icon={Sun01Icon}
+        strokeWidth={2}
+        className="size-4 dark:hidden"
+      />
+      <HugeiconsIcon
+        icon={Moon02Icon}
+        strokeWidth={2}
+        className="hidden size-4 dark:block"
+      />
     </Button>
   )
 }

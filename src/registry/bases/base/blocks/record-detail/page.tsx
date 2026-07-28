@@ -1,4 +1,5 @@
-import { PencilIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { PencilEdit02Icon } from "@hugeicons/core-free-icons"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -57,7 +58,11 @@ export function RecordDetail() {
       hasPadding
       actions={
         <Button variant="outline" size="sm">
-          <PencilIcon data-icon="inline-start" />
+          <HugeiconsIcon
+            icon={PencilEdit02Icon}
+            strokeWidth={2}
+            data-icon="inline-start"
+          />
           Edit
         </Button>
       }

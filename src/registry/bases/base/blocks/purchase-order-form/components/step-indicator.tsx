@@ -1,4 +1,5 @@
-import { Check } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Tick02Icon } from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 
@@ -20,7 +21,15 @@ export function StepIndicator({ currentStep }: { currentStep: number }) {
                 !isDone && !isActive && "border-border text-muted-foreground"
               )}
             >
-              {isDone ? <Check className="size-3" /> : i + 1}
+              {isDone ? (
+                <HugeiconsIcon
+                  icon={Tick02Icon}
+                  strokeWidth={2}
+                  className="size-3"
+                />
+              ) : (
+                i + 1
+              )}
             </span>
             <span
               className={cn(

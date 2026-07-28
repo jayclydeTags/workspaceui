@@ -1,7 +1,14 @@
 "use client"
 
 import * as React from "react"
-import { Home, FolderOpen, Terminal, Save, RotateCcw } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  Home01Icon,
+  FolderOpenIcon,
+  TerminalIcon,
+  SaveIcon,
+  RotateClockwiseIcon,
+} from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -14,16 +21,30 @@ import {
 // A snapshot holds tab *ids*, so restore needs somewhere to look them up.
 // Icons live here, not in the snapshot — a ReactNode can't be JSON.
 const TABS: Record<string, WorkspaceTabDef> = {
-  home: { id: "home", title: "Home", icon: <Home className="size-3.5" /> },
+  home: {
+    id: "home",
+    title: "Home",
+    icon: (
+      <HugeiconsIcon icon={Home01Icon} strokeWidth={2} className="size-3.5" />
+    ),
+  },
   files: {
     id: "files",
     title: "Files",
-    icon: <FolderOpen className="size-3.5" />,
+    icon: (
+      <HugeiconsIcon
+        icon={FolderOpenIcon}
+        strokeWidth={2}
+        className="size-3.5"
+      />
+    ),
   },
   terminal: {
     id: "terminal",
     title: "Terminal",
-    icon: <Terminal className="size-3.5" />,
+    icon: (
+      <HugeiconsIcon icon={TerminalIcon} strokeWidth={2} className="size-3.5" />
+    ),
   },
 }
 
@@ -39,7 +60,7 @@ export function WorkspacePersistenceDemo() {
           variant="outline"
           onClick={() => setSaved(workspace.current!.serialize())}
         >
-          <Save /> Save layout
+          <HugeiconsIcon icon={SaveIcon} strokeWidth={2} /> Save layout
         </Button>
         <Button
           size="sm"
@@ -47,7 +68,7 @@ export function WorkspacePersistenceDemo() {
           disabled={saved === null}
           onClick={() => workspace.current!.restore(saved!, (id) => TABS[id])}
         >
-          <RotateCcw /> Restore
+          <HugeiconsIcon icon={RotateClockwiseIcon} strokeWidth={2} /> Restore
         </Button>
         <p className="text-xs text-muted-foreground">
           {saved

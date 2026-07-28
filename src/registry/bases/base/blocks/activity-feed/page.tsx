@@ -1,14 +1,15 @@
 "use client"
 
 import * as React from "react"
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
-  ChevronDown,
-  MessageSquare,
-  Pencil,
-  Plus,
-  Trash2,
-  UserPlus,
-} from "lucide-react"
+  ArrowDown01Icon,
+  Message01Icon,
+  PencilEdit02Icon,
+  PlusSignIcon,
+  Delete02Icon,
+  UserAdd01Icon,
+} from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -38,11 +39,21 @@ const TYPE_ICON: Record<
   ActivityType,
   React.ComponentType<{ className?: string }>
 > = {
-  updated: Pencil,
-  created: Plus,
-  assigned: UserPlus,
-  commented: MessageSquare,
-  deleted: Trash2,
+  updated: (props) => (
+    <HugeiconsIcon icon={PencilEdit02Icon} strokeWidth={2} {...props} />
+  ),
+  created: (props) => (
+    <HugeiconsIcon icon={PlusSignIcon} strokeWidth={2} {...props} />
+  ),
+  assigned: (props) => (
+    <HugeiconsIcon icon={UserAdd01Icon} strokeWidth={2} {...props} />
+  ),
+  commented: (props) => (
+    <HugeiconsIcon icon={Message01Icon} strokeWidth={2} {...props} />
+  ),
+  deleted: (props) => (
+    <HugeiconsIcon icon={Delete02Icon} strokeWidth={2} {...props} />
+  ),
 }
 
 function groupLabel(date: Date): string {
@@ -108,7 +119,11 @@ export function ActivityFeed() {
               <span className="capitalize">
                 {typeFilter === "all" ? "All Types" : typeFilter}
               </span>
-              <ChevronDown className="opacity-50" />
+              <HugeiconsIcon
+                icon={ArrowDown01Icon}
+                strokeWidth={2}
+                className="opacity-50"
+              />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuGroup>
@@ -147,7 +162,11 @@ export function ActivityFeed() {
               <span className="truncate">
                 {userFilter === "all" ? "All users" : userFilter}
               </span>
-              <ChevronDown className="opacity-50" />
+              <HugeiconsIcon
+                icon={ArrowDown01Icon}
+                strokeWidth={2}
+                className="opacity-50"
+              />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuGroup>
@@ -223,7 +242,11 @@ export function ActivityFeed() {
         </div>
         <div className="shrink-0 px-4 py-2">
           <Button variant="ghost" size="sm" className="w-full text-xs">
-            <ChevronDown data-icon="inline-start" />
+            <HugeiconsIcon
+              icon={ArrowDown01Icon}
+              strokeWidth={2}
+              data-icon="inline-start"
+            />
             Load More
           </Button>
         </div>

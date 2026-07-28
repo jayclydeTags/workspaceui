@@ -1,4 +1,5 @@
-import { Plus, Trash2 } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { PlusSignIcon, Delete02Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
@@ -165,7 +166,7 @@ export function LineItemsStep({
                   onClick={() => remove(li.id)}
                   disabled={items.length === 1}
                 >
-                  <Trash2 />
+                  <HugeiconsIcon icon={Delete02Icon} strokeWidth={2} />
                 </Button>
               </TableCell>
             </TableRow>
@@ -189,7 +190,11 @@ export function LineItemsStep({
         className="self-start"
         onClick={() => onChange([...items, emptyLineItem()])}
       >
-        <Plus data-icon="inline-start" />
+        <HugeiconsIcon
+          icon={PlusSignIcon}
+          strokeWidth={2}
+          data-icon="inline-start"
+        />
         Add line item
       </Button>
     </div>

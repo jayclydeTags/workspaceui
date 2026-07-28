@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Trash2Icon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Delete02Icon } from "@hugeicons/core-free-icons"
 import {
   type ColumnDef,
   type RowSelectionState,
@@ -72,7 +73,11 @@ export function DataGridSelectionDemo() {
             className="bg-destructive text-white hover:bg-destructive/90"
             onClick={() => setConfirmBulkDelete(true)}
           >
-            <Trash2Icon data-icon="inline-start" />
+            <HugeiconsIcon
+              icon={Delete02Icon}
+              strokeWidth={2}
+              data-icon="inline-start"
+            />
             Delete
           </Button>
         </BulkToolbar>

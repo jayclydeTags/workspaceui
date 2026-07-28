@@ -1,7 +1,13 @@
 "use client"
 
 import * as React from "react"
-import { Check, Eye, EyeOff, X } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  Tick02Icon,
+  EyeIcon,
+  EyeOffIcon,
+  Cancel01Icon,
+} from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import {
@@ -115,7 +121,11 @@ export function PasswordInput({
             disabled={props.disabled}
             onClick={() => setVisible((v) => !v)}
           >
-            {visible ? <EyeOff /> : <Eye />}
+            {visible ? (
+              <HugeiconsIcon icon={EyeOffIcon} strokeWidth={2} />
+            ) : (
+              <HugeiconsIcon icon={EyeIcon} strokeWidth={2} />
+            )}
           </InputGroupButton>
         </InputGroupAddon>
       </InputGroup>
@@ -155,9 +165,19 @@ export function PasswordInput({
                 )}
               >
                 {met ? (
-                  <Check className="size-3.5 shrink-0" aria-hidden="true" />
+                  <HugeiconsIcon
+                    icon={Tick02Icon}
+                    strokeWidth={2}
+                    className="size-3.5 shrink-0"
+                    aria-hidden="true"
+                  />
                 ) : (
-                  <X className="size-3.5 shrink-0" aria-hidden="true" />
+                  <HugeiconsIcon
+                    icon={Cancel01Icon}
+                    strokeWidth={2}
+                    className="size-3.5 shrink-0"
+                    aria-hidden="true"
+                  />
                 )}
                 <span>{label}</span>
                 <span className="sr-only">{met ? "— met" : "— not met"}</span>

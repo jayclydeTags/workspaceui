@@ -1,7 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { CheckCircle2, Loader2 } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  CheckmarkCircle02Icon,
+  Loading03Icon,
+} from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -70,7 +74,11 @@ export function ChangePassword() {
         <div className="flex min-h-full items-center justify-center p-6">
           <div className="flex w-full max-w-sm flex-col items-center text-center">
             <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
-              <CheckCircle2 className="size-5 text-primary" />
+              <HugeiconsIcon
+                icon={CheckmarkCircle02Icon}
+                strokeWidth={2}
+                className="size-5 text-primary"
+              />
             </div>
             <h1 className="mt-4 text-sm font-medium">Password changed</h1>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -145,7 +153,9 @@ export function ChangePassword() {
                     disabled={submitting}
                   >
                     {submitting && (
-                      <Loader2
+                      <HugeiconsIcon
+                        icon={Loading03Icon}
+                        strokeWidth={2}
                         data-icon="inline-start"
                         className="animate-spin"
                       />

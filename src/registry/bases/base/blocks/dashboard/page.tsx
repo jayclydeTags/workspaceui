@@ -1,7 +1,13 @@
 "use client"
 
 import * as React from "react"
-import { BarChart2, FileText, LayoutDashboard, Settings } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  BarChartIcon,
+  DashboardSquare01Icon,
+  File01Icon,
+  Setting06Icon,
+} from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import {
@@ -26,7 +32,13 @@ const INITIAL_PANES = [
       {
         id: "dashboard",
         title: "Dashboard",
-        icon: <LayoutDashboard className="size-3.5" />,
+        icon: (
+          <HugeiconsIcon
+            icon={DashboardSquare01Icon}
+            strokeWidth={2}
+            className="size-3.5"
+          />
+        ),
         pinned: true,
       },
     ],
@@ -36,9 +48,30 @@ const INITIAL_PANES = [
 // ponytail: TAB_CONTENT at module level avoids re-creating ReactNodes on each render
 const TAB_CONTENT: Record<string, React.ReactNode> = {
   dashboard: <DashboardContent />,
-  documents: <PlaceholderContent Icon={FileText} title="Documents" />,
-  analytics: <PlaceholderContent Icon={BarChart2} title="Analytics" />,
-  settings: <PlaceholderContent Icon={Settings} title="Settings" />,
+  documents: (
+    <PlaceholderContent
+      Icon={(props) => (
+        <HugeiconsIcon icon={File01Icon} strokeWidth={2} {...props} />
+      )}
+      title="Documents"
+    />
+  ),
+  analytics: (
+    <PlaceholderContent
+      Icon={(props) => (
+        <HugeiconsIcon icon={BarChartIcon} strokeWidth={2} {...props} />
+      )}
+      title="Analytics"
+    />
+  ),
+  settings: (
+    <PlaceholderContent
+      Icon={(props) => (
+        <HugeiconsIcon icon={Setting06Icon} strokeWidth={2} {...props} />
+      )}
+      title="Settings"
+    />
+  ),
 }
 
 export function Dashboard({ className }: { className?: string }) {

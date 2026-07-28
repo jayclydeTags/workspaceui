@@ -1,6 +1,13 @@
 "use client"
 
-import { LayoutGrid, Mail, Settings, User } from "lucide-react"
+import type { ComponentProps } from "react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  LayoutGridIcon,
+  Mail01Icon,
+  Setting06Icon,
+  UserIcon,
+} from "@hugeicons/core-free-icons"
 
 import {
   Sidebar,
@@ -14,9 +21,16 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 
+function WorkspaceIcon(props: ComponentProps<"svg">) {
+  return <HugeiconsIcon icon={LayoutGridIcon} {...props} strokeWidth={2} />
+}
+function EmailIcon(props: ComponentProps<"svg">) {
+  return <HugeiconsIcon icon={Mail01Icon} {...props} strokeWidth={2} />
+}
+
 export const RAIL_APPS = [
-  { id: "workspace", title: "Workspace", Icon: LayoutGrid },
-  { id: "email", title: "Email", Icon: Mail },
+  { id: "workspace", title: "Workspace", Icon: WorkspaceIcon },
+  { id: "email", title: "Email", Icon: EmailIcon },
 ] as const
 
 export type AppId = (typeof RAIL_APPS)[number]["id"]
@@ -73,7 +87,7 @@ export function AppRail({
               tooltip={{ children: "Settings", hidden: false }}
               className="justify-center"
             >
-              <Settings />
+              <HugeiconsIcon icon={Setting06Icon} strokeWidth={2} />
               <span className="sr-only">Settings</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -82,7 +96,7 @@ export function AppRail({
               tooltip={{ children: "Profile", hidden: false }}
               className="justify-center"
             >
-              <User />
+              <HugeiconsIcon icon={UserIcon} strokeWidth={2} />
               <span className="sr-only">Profile</span>
             </SidebarMenuButton>
           </SidebarMenuItem>

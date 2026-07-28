@@ -6,13 +6,14 @@ import type {
   FilterFn,
   Table as TanstackTable,
 } from "@tanstack/react-table"
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  ChevronLeftIcon,
-  PlusIcon,
-  XIcon,
-} from "lucide-react"
+  ArrowDown01Icon,
+  ArrowUp01Icon,
+  ArrowLeft01Icon,
+  PlusSignIcon,
+  Cancel01Icon,
+} from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -400,7 +401,11 @@ function FilterBackButton({
       onClick={onClick}
       className="flex items-center gap-1 rounded-sm px-2 py-1 text-xs text-muted-foreground hover:bg-muted hover:text-foreground"
     >
-      <ChevronLeftIcon className="size-3" />
+      <HugeiconsIcon
+        icon={ArrowLeft01Icon}
+        strokeWidth={2}
+        className="size-3"
+      />
       {label}
     </button>
   )
@@ -892,9 +897,17 @@ function NarrowSortDrawer<TData>({
               <>
                 {getColumnLabel(primaryColumn)}
                 {primary!.desc ? (
-                  <ArrowDownIcon className="size-3" />
+                  <HugeiconsIcon
+                    icon={ArrowDown01Icon}
+                    strokeWidth={2}
+                    className="size-3"
+                  />
                 ) : (
-                  <ArrowUpIcon className="size-3" />
+                  <HugeiconsIcon
+                    icon={ArrowUp01Icon}
+                    strokeWidth={2}
+                    className="size-3"
+                  />
                 )}
                 {extraCount > 0 && (
                   <span className="text-muted-foreground">
@@ -928,9 +941,17 @@ function NarrowSortDrawer<TData>({
                 {getColumnLabel(column)}
                 {isPrimary &&
                   (primary!.desc ? (
-                    <ArrowDownIcon className="size-3.5" />
+                    <HugeiconsIcon
+                      icon={ArrowDown01Icon}
+                      strokeWidth={2}
+                      className="size-3.5"
+                    />
                   ) : (
-                    <ArrowUpIcon className="size-3.5" />
+                    <HugeiconsIcon
+                      icon={ArrowUp01Icon}
+                      strokeWidth={2}
+                      className="size-3.5"
+                    />
                   ))}
               </button>
             )
@@ -1067,13 +1088,21 @@ export function DataFilterChain<TData>({
                   onClick={() => column.setFilterValue(undefined)}
                   className="shrink-0 rounded-sm p-1 hover:bg-accent"
                 >
-                  <XIcon className="size-3" />
+                  <HugeiconsIcon
+                    icon={Cancel01Icon}
+                    strokeWidth={2}
+                    className="size-3"
+                  />
                 </button>
               </div>
             )
           })}
           <Button variant="outline" onClick={startAdd}>
-            <PlusIcon className="size-4" />
+            <HugeiconsIcon
+              icon={PlusSignIcon}
+              strokeWidth={2}
+              className="size-4"
+            />
             Add filter
           </Button>
         </div>
@@ -1252,7 +1281,7 @@ export function DataFilter<TData>({ table }: DataFilterProps<TData>) {
                     aria-label={`Remove ${getColumnLabel(column)} filter`}
                     onClick={() => removeFilter(filter.id)}
                   >
-                    <XIcon />
+                    <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} />
                   </Button>
                 </ButtonGroup>
               )
@@ -1274,7 +1303,11 @@ export function DataFilter<TData>({ table }: DataFilterProps<TData>) {
         table={table}
         trigger={
           <Button variant="outline" size="sm">
-            <PlusIcon className="size-4" />
+            <HugeiconsIcon
+              icon={PlusSignIcon}
+              strokeWidth={2}
+              className="size-4"
+            />
             Filter
           </Button>
         }
@@ -1343,7 +1376,11 @@ export function DataFilterChips<TData>({
               onClick={() => column.setFilterValue(undefined)}
               className="shrink-0 rounded-e-full p-1.5 hover:bg-accent"
             >
-              <XIcon className="size-3" />
+              <HugeiconsIcon
+                icon={Cancel01Icon}
+                strokeWidth={2}
+                className="size-3"
+              />
             </button>
           </span>
         )

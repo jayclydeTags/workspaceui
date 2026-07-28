@@ -1,7 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { LayoutDashboard, FileText, Settings } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  DashboardSquare01Icon,
+  File01Icon,
+  Setting06Icon,
+} from "@hugeicons/core-free-icons"
 
 import { Workspace } from "@/registry/bases/base/workspaceui/workspace"
 
@@ -17,9 +22,24 @@ function Centered({ icon, label }: { icon: React.ReactNode; label: string }) {
 // Two side-by-side panes — drag a tab across the divider to transfer it.
 export function WorkspaceSplitDemo() {
   const content: Record<string, React.ReactNode> = {
-    dashboard: <Centered icon={<LayoutDashboard />} label="Dashboard" />,
-    docs: <Centered icon={<FileText />} label="Documentation" />,
-    settings: <Centered icon={<Settings />} label="Settings" />,
+    dashboard: (
+      <Centered
+        icon={<HugeiconsIcon icon={DashboardSquare01Icon} strokeWidth={2} />}
+        label="Dashboard"
+      />
+    ),
+    docs: (
+      <Centered
+        icon={<HugeiconsIcon icon={File01Icon} strokeWidth={2} />}
+        label="Documentation"
+      />
+    ),
+    settings: (
+      <Centered
+        icon={<HugeiconsIcon icon={Setting06Icon} strokeWidth={2} />}
+        label="Settings"
+      />
+    ),
   }
   return (
     <div className="h-[360px] w-full overflow-hidden rounded-lg border border-border shadow-sm">
@@ -32,13 +52,25 @@ export function WorkspaceSplitDemo() {
               {
                 id: "dashboard",
                 title: "Dashboard",
-                icon: <LayoutDashboard className="size-3.5" />,
+                icon: (
+                  <HugeiconsIcon
+                    icon={DashboardSquare01Icon}
+                    strokeWidth={2}
+                    className="size-3.5"
+                  />
+                ),
                 pinned: true,
               },
               {
                 id: "docs",
                 title: "Documentation",
-                icon: <FileText className="size-3.5" />,
+                icon: (
+                  <HugeiconsIcon
+                    icon={File01Icon}
+                    strokeWidth={2}
+                    className="size-3.5"
+                  />
+                ),
               },
             ],
           },
@@ -49,7 +81,13 @@ export function WorkspaceSplitDemo() {
               {
                 id: "settings",
                 title: "Settings",
-                icon: <Settings className="size-3.5" />,
+                icon: (
+                  <HugeiconsIcon
+                    icon={Setting06Icon}
+                    strokeWidth={2}
+                    className="size-3.5"
+                  />
+                ),
                 pinned: true,
               },
             ],

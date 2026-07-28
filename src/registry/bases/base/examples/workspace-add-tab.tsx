@@ -1,7 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { Home, FileText, Plus } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  Home01Icon,
+  File01Icon,
+  PlusSignIcon,
+} from "@hugeicons/core-free-icons"
 
 import {
   Workspace,
@@ -32,7 +37,13 @@ export function WorkspaceAddTabDemo() {
               {
                 id: "start",
                 title: "Start",
-                icon: <Home className="size-3.5" />,
+                icon: (
+                  <HugeiconsIcon
+                    icon={Home01Icon}
+                    strokeWidth={2}
+                    className="size-3.5"
+                  />
+                ),
                 pinned: true,
               },
             ],
@@ -41,16 +52,28 @@ export function WorkspaceAddTabDemo() {
               workspace.current?.openTabInPane("main", {
                 id: `tab-${n}`,
                 title: `Untitled ${n}`,
-                icon: <FileText className="size-3.5" />,
+                icon: (
+                  <HugeiconsIcon
+                    icon={File01Icon}
+                    strokeWidth={2}
+                    className="size-3.5"
+                  />
+                ),
               })
             },
           },
         ]}
         renderTabContent={(_p, tabId) =>
           tabId === "start" ? (
-            <Centered icon={<Plus />} label="Press + to open a tab" />
+            <Centered
+              icon={<HugeiconsIcon icon={PlusSignIcon} strokeWidth={2} />}
+              label="Press + to open a tab"
+            />
           ) : (
-            <Centered icon={<FileText />} label={tabId} />
+            <Centered
+              icon={<HugeiconsIcon icon={File01Icon} strokeWidth={2} />}
+              label={tabId}
+            />
           )
         }
       />

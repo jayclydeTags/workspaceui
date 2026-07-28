@@ -1,17 +1,18 @@
 "use client"
 
 import type { ComponentType } from "react"
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
-  Archive,
-  BarChart2,
-  FileEdit,
-  FileText,
-  Inbox,
-  LayoutDashboard,
-  Send,
-  Settings,
-  Trash2,
-} from "lucide-react"
+  ArchiveIcon,
+  BarChartIcon,
+  DashboardSquare01Icon,
+  Delete02Icon,
+  File01Icon,
+  FileEditIcon,
+  InboxIcon,
+  SentIcon,
+  Setting06Icon,
+} from "@hugeicons/core-free-icons"
 
 import {
   Sidebar,
@@ -32,24 +33,72 @@ export type NavItem = {
   pinned: boolean
 }
 
+function DashboardIcon({ className }: { className?: string }) {
+  return (
+    <HugeiconsIcon
+      icon={DashboardSquare01Icon}
+      strokeWidth={2}
+      className={className}
+    />
+  )
+}
+function DocumentsIcon({ className }: { className?: string }) {
+  return (
+    <HugeiconsIcon icon={File01Icon} strokeWidth={2} className={className} />
+  )
+}
+function AnalyticsIcon({ className }: { className?: string }) {
+  return (
+    <HugeiconsIcon icon={BarChartIcon} strokeWidth={2} className={className} />
+  )
+}
+function SettingsIcon({ className }: { className?: string }) {
+  return (
+    <HugeiconsIcon icon={Setting06Icon} strokeWidth={2} className={className} />
+  )
+}
+function InboxNavIcon({ className }: { className?: string }) {
+  return (
+    <HugeiconsIcon icon={InboxIcon} strokeWidth={2} className={className} />
+  )
+}
+function SentIconNav({ className }: { className?: string }) {
+  return <HugeiconsIcon icon={SentIcon} strokeWidth={2} className={className} />
+}
+function DraftsIcon({ className }: { className?: string }) {
+  return (
+    <HugeiconsIcon icon={FileEditIcon} strokeWidth={2} className={className} />
+  )
+}
+function ArchiveNavIcon({ className }: { className?: string }) {
+  return (
+    <HugeiconsIcon icon={ArchiveIcon} strokeWidth={2} className={className} />
+  )
+}
+function TrashIcon({ className }: { className?: string }) {
+  return (
+    <HugeiconsIcon icon={Delete02Icon} strokeWidth={2} className={className} />
+  )
+}
+
 export const APPS_NAV = {
   workspace: [
     {
       id: "dashboard",
       title: "Dashboard",
-      Icon: LayoutDashboard,
+      Icon: DashboardIcon,
       pinned: true,
     },
-    { id: "documents", title: "Documents", Icon: FileText, pinned: false },
-    { id: "analytics", title: "Analytics", Icon: BarChart2, pinned: false },
-    { id: "settings", title: "Settings", Icon: Settings, pinned: false },
+    { id: "documents", title: "Documents", Icon: DocumentsIcon, pinned: false },
+    { id: "analytics", title: "Analytics", Icon: AnalyticsIcon, pinned: false },
+    { id: "settings", title: "Settings", Icon: SettingsIcon, pinned: false },
   ],
   email: [
-    { id: "inbox", title: "Inbox", Icon: Inbox, pinned: true },
-    { id: "sent", title: "Sent", Icon: Send, pinned: false },
-    { id: "drafts", title: "Drafts", Icon: FileEdit, pinned: false },
-    { id: "archive", title: "Archive", Icon: Archive, pinned: false },
-    { id: "trash", title: "Trash", Icon: Trash2, pinned: false },
+    { id: "inbox", title: "Inbox", Icon: InboxNavIcon, pinned: true },
+    { id: "sent", title: "Sent", Icon: SentIconNav, pinned: false },
+    { id: "drafts", title: "Drafts", Icon: DraftsIcon, pinned: false },
+    { id: "archive", title: "Archive", Icon: ArchiveNavIcon, pinned: false },
+    { id: "trash", title: "Trash", Icon: TrashIcon, pinned: false },
   ],
 } as const satisfies Record<string, readonly NavItem[]>
 

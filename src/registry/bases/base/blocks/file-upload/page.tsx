@@ -1,15 +1,15 @@
 "use client"
 
 import * as React from "react"
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
-  FileImage,
-  FileText,
-  File as FileIcon,
-  RefreshCw,
-  TriangleAlert,
-  UploadCloud,
-  X,
-} from "lucide-react"
+  FileImageIcon,
+  File01Icon,
+  RefreshIcon,
+  Alert01Icon,
+  CloudUploadIcon,
+  Cancel01Icon,
+} from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import {
@@ -35,10 +35,10 @@ import { ATTACHMENTS, extLabel, formatBytes, type FileAttachment } from "./data"
 function fileIcon(name: string) {
   const ext = name.split(".").pop()?.toLowerCase() ?? ""
   if (["png", "jpg", "jpeg", "gif", "webp", "svg"].includes(ext))
-    return <FileImage />
+    return <HugeiconsIcon icon={FileImageIcon} strokeWidth={2} />
   if (["pdf", "doc", "docx", "txt", "md", "csv", "xlsx"].includes(ext))
-    return <FileText />
-  return <FileIcon />
+    return <HugeiconsIcon icon={File01Icon} strokeWidth={2} />
+  return <HugeiconsIcon icon={File01Icon} strokeWidth={2} />
 }
 
 function FileRow({
@@ -56,7 +56,7 @@ function FileRow({
         {file.status === "uploading" ? (
           <Spinner />
         ) : file.status === "error" ? (
-          <TriangleAlert />
+          <HugeiconsIcon icon={Alert01Icon} strokeWidth={2} />
         ) : (
           fileIcon(file.name)
         )}
@@ -77,14 +77,14 @@ function FileRow({
             aria-label={`Retry ${file.name}`}
             onClick={() => onRetry(file.id)}
           >
-            <RefreshCw />
+            <HugeiconsIcon icon={RefreshIcon} strokeWidth={2} />
           </AttachmentAction>
         )}
         <AttachmentAction
           aria-label={`Remove ${file.name}`}
           onClick={() => onRemove(file.id)}
         >
-          <X />
+          <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} />
         </AttachmentAction>
       </AttachmentActions>
     </Attachment>
@@ -156,7 +156,11 @@ export function FileUpload() {
               : "border-border hover:border-primary/50 hover:bg-accent/50"
           )}
         >
-          <UploadCloud className="size-8 text-muted-foreground" />
+          <HugeiconsIcon
+            icon={CloudUploadIcon}
+            strokeWidth={2}
+            className="size-8 text-muted-foreground"
+          />
           <p className="text-sm font-medium">
             Drop files here, or click to browse
           </p>
@@ -181,7 +185,7 @@ export function FileUpload() {
           <Empty>
             <EmptyHeader>
               <EmptyMedia variant="icon">
-                <UploadCloud />
+                <HugeiconsIcon icon={CloudUploadIcon} strokeWidth={2} />
               </EmptyMedia>
               <EmptyTitle>No attachments</EmptyTitle>
               <EmptyDescription>

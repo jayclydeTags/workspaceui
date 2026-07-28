@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
-import { ChevronDown } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowDown01Icon } from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import { nav, type NavItem, type NavSection } from "@/lib/nav"
@@ -62,7 +63,11 @@ export function SidebarNav({ sections = nav }: { sections?: NavSection[] }) {
                       // ponytail: uncontrolled, default-closed
                       <Collapsible key={group.title} className="mb-1">
                         <CollapsibleTrigger className="group flex w-full items-center gap-1.5 rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted">
-                          <ChevronDown className="size-3.5 shrink-0 -rotate-90 text-muted-foreground transition-transform group-data-panel-open:rotate-0" />
+                          <HugeiconsIcon
+                            icon={ArrowDown01Icon}
+                            strokeWidth={2}
+                            className="size-3.5 shrink-0 -rotate-90 text-muted-foreground transition-transform group-data-panel-open:rotate-0"
+                          />
                           {group.title}
                           <span className="text-xs text-muted-foreground/70">
                             ({group.items.length})

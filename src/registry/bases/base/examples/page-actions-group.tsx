@@ -1,6 +1,7 @@
 "use client"
 
-import { Download, Share2 } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Download01Icon, Share08Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import { Page } from "@/registry/bases/base/workspaceui/page"
@@ -14,11 +15,19 @@ export function PageWithActionsGroupDemo() {
         actions={
           <div className="flex items-center gap-2">
             <Button size="sm" variant="outline">
-              <Share2 className="size-4" />
+              <HugeiconsIcon
+                icon={Share08Icon}
+                strokeWidth={2}
+                className="size-4"
+              />
               Share
             </Button>
             <Button size="sm">
-              <Download className="size-4" />
+              <HugeiconsIcon
+                icon={Download01Icon}
+                strokeWidth={2}
+                className="size-4"
+              />
               Export
             </Button>
           </div>

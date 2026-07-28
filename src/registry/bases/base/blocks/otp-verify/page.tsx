@@ -1,7 +1,13 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { CheckCircle2, Loader2, ShieldCheck, TriangleAlert } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  Alert01Icon,
+  CheckmarkCircle02Icon,
+  Loading03Icon,
+  Shield01Icon,
+} from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -78,7 +84,11 @@ export function OtpVerify() {
         <div className="flex min-h-full items-center justify-center p-6">
           <div className="flex w-full max-w-sm flex-col items-center text-center">
             <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
-              <CheckCircle2 className="size-5 text-primary" />
+              <HugeiconsIcon
+                icon={CheckmarkCircle02Icon}
+                strokeWidth={2}
+                className="size-5 text-primary"
+              />
             </div>
             <h1 className="mt-4 text-sm font-medium">Verified</h1>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -98,7 +108,11 @@ export function OtpVerify() {
         <Card className="w-full max-w-sm">
           <CardHeader className="items-center text-center">
             <div className="mx-auto flex size-11 items-center justify-center rounded-full bg-muted">
-              <ShieldCheck className="size-5" />
+              <HugeiconsIcon
+                icon={Shield01Icon}
+                strokeWidth={2}
+                className="size-5"
+              />
             </div>
             <CardTitle className="mt-2">Enter verification code</CardTitle>
             <CardDescription>
@@ -128,7 +142,11 @@ export function OtpVerify() {
             <div className="h-5 text-sm" aria-live="polite">
               {verifying && (
                 <span className="flex items-center gap-2 text-muted-foreground">
-                  <Loader2 className="size-4 animate-spin" />
+                  <HugeiconsIcon
+                    icon={Loading03Icon}
+                    strokeWidth={2}
+                    className="size-4 animate-spin"
+                  />
                   Verifying…
                 </span>
               )}
@@ -137,7 +155,11 @@ export function OtpVerify() {
                   className="flex items-center gap-2 text-destructive"
                   role="alert"
                 >
-                  <TriangleAlert className="size-4" />
+                  <HugeiconsIcon
+                    icon={Alert01Icon}
+                    strokeWidth={2}
+                    className="size-4"
+                  />
                   Incorrect code. Try again.
                 </span>
               )}

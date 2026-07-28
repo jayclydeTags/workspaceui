@@ -1,7 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { Clock, Loader2, TriangleAlert } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  Clock01Icon,
+  Loading03Icon,
+  Alert01Icon,
+} from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -69,7 +74,11 @@ export function SessionExpired() {
         <Card className="w-full max-w-sm">
           <CardHeader className="items-center text-center">
             <div className="mx-auto flex size-11 items-center justify-center rounded-full bg-muted">
-              <Clock className="size-5" />
+              <HugeiconsIcon
+                icon={Clock01Icon}
+                strokeWidth={2}
+                className="size-5"
+              />
             </div>
             <CardTitle className="mt-2">Session expired</CardTitle>
             <CardDescription>
@@ -86,7 +95,11 @@ export function SessionExpired() {
                     role="alert"
                     className="flex items-center gap-2 rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive"
                   >
-                    <TriangleAlert className="size-4 shrink-0" />
+                    <HugeiconsIcon
+                      icon={Alert01Icon}
+                      strokeWidth={2}
+                      className="size-4 shrink-0"
+                    />
                     Incorrect password.
                   </div>
                 )}
@@ -112,7 +125,9 @@ export function SessionExpired() {
                     disabled={submitting}
                   >
                     {submitting && (
-                      <Loader2
+                      <HugeiconsIcon
+                        icon={Loading03Icon}
+                        strokeWidth={2}
                         data-icon="inline-start"
                         className="animate-spin"
                       />

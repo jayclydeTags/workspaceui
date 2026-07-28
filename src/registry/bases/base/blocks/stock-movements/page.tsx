@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { PlusIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { PlusSignIcon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -56,7 +57,11 @@ export function StockMovements() {
       className="@container overflow-hidden"
       actions={
         <Button size="sm" onClick={() => setFormOpen(true)}>
-          <PlusIcon data-icon="inline-start" />
+          <HugeiconsIcon
+            icon={PlusSignIcon}
+            strokeWidth={2}
+            data-icon="inline-start"
+          />
           Record movement
         </Button>
       }

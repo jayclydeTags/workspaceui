@@ -1,6 +1,11 @@
 "use client"
 import { useCopyButton } from "@fumadocs/base-ui/utils/use-copy-button"
-import { Check, Clipboard, Terminal } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  Tick02Icon,
+  ClipboardIcon,
+  TerminalIcon,
+} from "@hugeicons/core-free-icons"
 import { useRef } from "react"
 
 import { useConfig } from "@/hooks/use-config"
@@ -52,7 +57,11 @@ export function CodeBlockCommand({
         className="gap-0"
       >
         <div className="flex items-center gap-2 border-b px-3 pt-1">
-          <Terminal className="size-3.5 text-muted-foreground" />
+          <HugeiconsIcon
+            icon={TerminalIcon}
+            strokeWidth={2}
+            className="size-3.5 text-muted-foreground"
+          />
           <TabsList variant="line" className="bg-transparent">
             {available.map(([key]) => (
               <TabsTrigger key={key} value={key}>
@@ -82,7 +91,11 @@ export function CodeBlockCommand({
         onClick={onCopy}
       >
         <span className="sr-only">Copy</span>
-        {checked ? <Check /> : <Clipboard />}
+        {checked ? (
+          <HugeiconsIcon icon={Tick02Icon} strokeWidth={2} />
+        ) : (
+          <HugeiconsIcon icon={ClipboardIcon} strokeWidth={2} />
+        )}
       </Button>
     </div>
   )

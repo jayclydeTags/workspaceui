@@ -6,7 +6,8 @@ import type {
   FilterFn,
   Table as TanstackTable,
 } from "@tanstack/react-table"
-import { SearchIcon, XIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Search01Icon, Cancel01Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -119,7 +120,11 @@ export function DataSearch<TData>({
 
   return (
     <div className="relative w-full max-w-64">
-      <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
+      <HugeiconsIcon
+        icon={Search01Icon}
+        strokeWidth={2}
+        className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
+      />
       <Input
         value={value}
         onChange={(e) => setValue(e.target.value)}
@@ -136,7 +141,7 @@ export function DataSearch<TData>({
           className="absolute top-1/2 right-1 -translate-y-1/2"
           onClick={() => setValue("")}
         >
-          <XIcon />
+          <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} />
         </Button>
       )}
     </div>

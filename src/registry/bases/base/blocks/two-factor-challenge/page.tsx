@@ -7,7 +7,13 @@ import {
   useAnimate,
   useReducedMotion,
 } from "motion/react"
-import { KeyRound, Loader2, Smartphone, TriangleAlert } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  Key01Icon,
+  Loading03Icon,
+  SmartPhone01Icon,
+  Alert01Icon,
+} from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -184,9 +190,17 @@ export function TwoFactorChallenge() {
                     exit={reduceMotion ? undefined : { opacity: 0 }}
                   >
                     {mode === "totp" ? (
-                      <Smartphone className="size-5" />
+                      <HugeiconsIcon
+                        icon={SmartPhone01Icon}
+                        strokeWidth={2}
+                        className="size-5"
+                      />
                     ) : (
-                      <KeyRound className="size-5" />
+                      <HugeiconsIcon
+                        icon={Key01Icon}
+                        strokeWidth={2}
+                        className="size-5"
+                      />
                     )}
                   </motion.div>
                 )}
@@ -256,7 +270,11 @@ export function TwoFactorChallenge() {
                           <div className="h-5 text-sm" aria-live="polite">
                             {verifying && (
                               <span className="flex items-center gap-2 text-muted-foreground">
-                                <Loader2 className="size-4 animate-spin" />
+                                <HugeiconsIcon
+                                  icon={Loading03Icon}
+                                  strokeWidth={2}
+                                  className="size-4 animate-spin"
+                                />
                                 Verifying…
                               </span>
                             )}
@@ -265,7 +283,11 @@ export function TwoFactorChallenge() {
                                 className="flex items-center gap-2 text-destructive"
                                 role="alert"
                               >
-                                <TriangleAlert className="size-4" />
+                                <HugeiconsIcon
+                                  icon={Alert01Icon}
+                                  strokeWidth={2}
+                                  className="size-4"
+                                />
                                 Incorrect code. Try again.
                               </span>
                             )}
@@ -307,7 +329,9 @@ export function TwoFactorChallenge() {
                             disabled={verifying}
                           >
                             {verifying && (
-                              <Loader2
+                              <HugeiconsIcon
+                                icon={Loading03Icon}
+                                strokeWidth={2}
                                 data-icon="inline-start"
                                 className="animate-spin"
                               />

@@ -1,6 +1,7 @@
 import * as React from "react"
 import { AnimatePresence, motion } from "motion/react"
-import { XIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Cancel01Icon } from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -47,7 +48,7 @@ export function BulkToolbar({
             onClick={onClear}
             className="text-background hover:bg-background/10 hover:text-background"
           >
-            <XIcon />
+            <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} />
           </Button>
           <span className="text-sm font-medium text-background">
             {count} selected

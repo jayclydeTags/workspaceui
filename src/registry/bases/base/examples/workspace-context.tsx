@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { LayoutDashboard, FileText } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { DashboardSquare01Icon, File01Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -23,7 +24,11 @@ function OverviewPanel() {
   const { openTabInPane } = useWorkspace()
   return (
     <div className="flex h-full flex-col items-center justify-center gap-3 p-6">
-      <LayoutDashboard className="size-8 text-muted-foreground/40" />
+      <HugeiconsIcon
+        icon={DashboardSquare01Icon}
+        strokeWidth={2}
+        className="size-8 text-muted-foreground/40"
+      />
       <Button
         size="sm"
         variant="outline"
@@ -31,7 +36,13 @@ function OverviewPanel() {
           openTabInPane("main", {
             id: "details",
             title: "Details",
-            icon: <FileText className="size-3.5" />,
+            icon: (
+              <HugeiconsIcon
+                icon={File01Icon}
+                strokeWidth={2}
+                className="size-3.5"
+              />
+            ),
           })
         }
       >
@@ -52,7 +63,13 @@ export function WorkspaceContextDemo() {
               {
                 id: "overview",
                 title: "Overview",
-                icon: <LayoutDashboard className="size-3.5" />,
+                icon: (
+                  <HugeiconsIcon
+                    icon={DashboardSquare01Icon}
+                    strokeWidth={2}
+                    className="size-3.5"
+                  />
+                ),
                 pinned: true,
               },
             ],
@@ -62,7 +79,10 @@ export function WorkspaceContextDemo() {
           tabId === "overview" ? (
             <OverviewPanel />
           ) : (
-            <Centered icon={<FileText />} label={tabId} />
+            <Centered
+              icon={<HugeiconsIcon icon={File01Icon} strokeWidth={2} />}
+              label={tabId}
+            />
           )
         }
       />

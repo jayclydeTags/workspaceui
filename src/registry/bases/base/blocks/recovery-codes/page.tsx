@@ -1,7 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { Check, Copy, Download, RefreshCw } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  Tick02Icon,
+  Copy01Icon,
+  Download01Icon,
+  RefreshIcon,
+} from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -88,14 +94,26 @@ export function RecoveryCodes() {
             <div className="flex gap-2">
               <Button variant="outline" className="flex-1" onClick={copyAll}>
                 {copied ? (
-                  <Check data-icon="inline-start" />
+                  <HugeiconsIcon
+                    icon={Tick02Icon}
+                    strokeWidth={2}
+                    data-icon="inline-start"
+                  />
                 ) : (
-                  <Copy data-icon="inline-start" />
+                  <HugeiconsIcon
+                    icon={Copy01Icon}
+                    strokeWidth={2}
+                    data-icon="inline-start"
+                  />
                 )}
                 {copied ? "Copied" : "Copy"}
               </Button>
               <Button variant="outline" className="flex-1" onClick={download}>
-                <Download data-icon="inline-start" />
+                <HugeiconsIcon
+                  icon={Download01Icon}
+                  strokeWidth={2}
+                  data-icon="inline-start"
+                />
                 Download
               </Button>
               <Button
@@ -103,7 +121,7 @@ export function RecoveryCodes() {
                 onClick={regenerate}
                 aria-label="Regenerate codes"
               >
-                <RefreshCw />
+                <HugeiconsIcon icon={RefreshIcon} strokeWidth={2} />
               </Button>
             </div>
 

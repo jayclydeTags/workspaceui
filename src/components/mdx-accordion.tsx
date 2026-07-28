@@ -4,7 +4,12 @@
 // primitive rather than ./ui/accordion, which shadcn owns and overwrites on
 // every re-install (that overwrite drops AccordionHeader and breaks this).
 import { Accordion as Primitive } from "@base-ui/react/accordion"
-import { Check, ChevronRight, LinkIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  Tick02Icon,
+  ArrowRight01Icon,
+  Link01Icon,
+} from "@hugeicons/core-free-icons"
 import {
   type ComponentProps,
   type ReactNode,
@@ -76,7 +81,11 @@ export function Accordion({
         className="not-prose flex scroll-m-24 flex-row items-center font-medium text-fd-card-foreground has-focus-visible:bg-fd-accent"
       >
         <Primitive.Trigger className="group flex flex-1 items-center gap-2 px-3 py-2.5 text-start focus-visible:outline-none">
-          <ChevronRight className="size-4 shrink-0 text-fd-muted-foreground transition-transform duration-200 group-data-[panel-open]:rotate-90" />
+          <HugeiconsIcon
+            icon={ArrowRight01Icon}
+            strokeWidth={2}
+            className="size-4 shrink-0 text-fd-muted-foreground transition-transform duration-200 group-data-[panel-open]:rotate-90"
+          />
           {title}
         </Primitive.Trigger>
         {id ? <CopyButton id={id} /> : null}
@@ -115,9 +124,9 @@ function CopyButton({ id }: { id: string }) {
       onClick={onClick}
     >
       {checked ? (
-        <Check className="size-3.5" />
+        <HugeiconsIcon icon={Tick02Icon} strokeWidth={2} className="size-3.5" />
       ) : (
-        <LinkIcon className="size-3.5" />
+        <HugeiconsIcon icon={Link01Icon} strokeWidth={2} className="size-3.5" />
       )}
     </button>
   )

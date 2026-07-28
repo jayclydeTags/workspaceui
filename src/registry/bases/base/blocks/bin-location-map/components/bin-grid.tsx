@@ -1,5 +1,6 @@
 import * as React from "react"
-import { PlusIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { PlusSignIcon } from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import {
@@ -216,7 +217,7 @@ function GhostSlot({
       onClick={() => onAdd({ row, col })}
       className="flex h-[4.5rem] items-center justify-center rounded-sm border border-dashed border-muted-foreground/20 text-muted-foreground/40 transition-colors hover:border-ring hover:bg-muted/40 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
     >
-      <PlusIcon className="size-4" />
+      <HugeiconsIcon icon={PlusSignIcon} strokeWidth={2} className="size-4" />
     </button>
   )
 }

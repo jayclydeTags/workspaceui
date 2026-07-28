@@ -1,7 +1,12 @@
 "use client"
 
 import { cva } from "class-variance-authority"
-import { FileIcon, FolderIcon, FolderOpen } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  File01Icon,
+  Folder01Icon,
+  FolderOpenIcon,
+} from "@hugeicons/core-free-icons"
 import { type HTMLAttributes, type ReactNode, useState } from "react"
 import { cn } from "@/lib/utils"
 import {
@@ -48,7 +53,7 @@ export interface FolderProps extends HTMLAttributes<HTMLDivElement> {
 
 export function File({
   name,
-  icon = <FileIcon />,
+  icon = <HugeiconsIcon icon={File01Icon} strokeWidth={2} />,
   className,
   ...rest
 }: FileProps): React.ReactElement {
@@ -70,7 +75,11 @@ export function Folder({
   return (
     <Collapsible open={open} onOpenChange={setOpen} {...props}>
       <CollapsibleTrigger className={cn(itemVariants({ className: "w-full" }))}>
-        {open ? <FolderOpen /> : <FolderIcon />}
+        {open ? (
+          <HugeiconsIcon icon={FolderOpenIcon} strokeWidth={2} />
+        ) : (
+          <HugeiconsIcon icon={Folder01Icon} strokeWidth={2} />
+        )}
         {name}
       </CollapsibleTrigger>
       <CollapsibleContent>

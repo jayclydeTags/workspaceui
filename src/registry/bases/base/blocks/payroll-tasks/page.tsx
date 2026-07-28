@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Search } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Search01Icon } from "@hugeicons/core-free-icons"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -121,7 +122,7 @@ export function PayrollTasks() {
             style={{ flex: "1 1 200px" }}
           >
             <InputGroupAddon>
-              <Search />
+              <HugeiconsIcon icon={Search01Icon} strokeWidth={2} />
             </InputGroupAddon>
             <InputGroupInput
               placeholder="Search task or employee…"

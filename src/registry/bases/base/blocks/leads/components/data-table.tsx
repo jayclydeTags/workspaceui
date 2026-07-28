@@ -1,4 +1,5 @@
-import { FlameIcon, MoreHorizontalIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { FlameIcon, MoreHorizontalIcon } from "@hugeicons/core-free-icons"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -47,7 +48,7 @@ function RowActions({ lead, onEdit, onConvert, onDelete }: RowProps) {
             size="icon"
             aria-label={`Actions for ${lead.name}`}
           >
-            <MoreHorizontalIcon />
+            <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
           </Button>
         }
       />
@@ -71,7 +72,9 @@ function Score({ lead }: { lead: Lead }) {
   return (
     <span className="flex items-center justify-end gap-1 tabular-nums">
       {isHot(lead) && (
-        <FlameIcon
+        <HugeiconsIcon
+          icon={FlameIcon}
+          strokeWidth={2}
           className="size-3.5 text-destructive"
           aria-label="Hot lead"
         />

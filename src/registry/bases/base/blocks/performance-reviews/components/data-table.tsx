@@ -1,4 +1,5 @@
-import { MoreHorizontalIcon, StarIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { MoreHorizontalIcon, StarIcon } from "@hugeicons/core-free-icons"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -49,7 +50,7 @@ function RowActions({ review, onEdit, onDelete }: RowProps) {
             size="icon"
             aria-label={`Actions for ${review.employee}`}
           >
-            <MoreHorizontalIcon />
+            <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
           </Button>
         }
       />
@@ -80,7 +81,9 @@ export function Stars({ rating }: { rating: Rating }) {
       aria-label={`${rating} of 5 — ${RATING_LABELS[rating]}`}
     >
       {[1, 2, 3, 4, 5].map((n) => (
-        <StarIcon
+        <HugeiconsIcon
+          icon={StarIcon}
+          strokeWidth={2}
           key={n}
           aria-hidden
           className={cn(

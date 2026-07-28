@@ -1,6 +1,13 @@
 "use client"
 
-import { BarChart2, FileText, LayoutDashboard, Settings } from "lucide-react"
+import type { ComponentProps } from "react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  BarChartIcon,
+  DashboardSquare01Icon,
+  File01Icon,
+  Setting06Icon,
+} from "@hugeicons/core-free-icons"
 
 import {
   Sidebar,
@@ -15,11 +22,26 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
+function DashboardIcon(props: ComponentProps<"svg">) {
+  return (
+    <HugeiconsIcon icon={DashboardSquare01Icon} {...props} strokeWidth={2} />
+  )
+}
+function DocumentsIcon(props: ComponentProps<"svg">) {
+  return <HugeiconsIcon icon={File01Icon} {...props} strokeWidth={2} />
+}
+function AnalyticsIcon(props: ComponentProps<"svg">) {
+  return <HugeiconsIcon icon={BarChartIcon} {...props} strokeWidth={2} />
+}
+function SettingsIcon(props: ComponentProps<"svg">) {
+  return <HugeiconsIcon icon={Setting06Icon} {...props} strokeWidth={2} />
+}
+
 export const NAV_ITEMS = [
-  { id: "dashboard", title: "Dashboard", Icon: LayoutDashboard, pinned: true },
-  { id: "documents", title: "Documents", Icon: FileText, pinned: false },
-  { id: "analytics", title: "Analytics", Icon: BarChart2, pinned: false },
-  { id: "settings", title: "Settings", Icon: Settings, pinned: false },
+  { id: "dashboard", title: "Dashboard", Icon: DashboardIcon, pinned: true },
+  { id: "documents", title: "Documents", Icon: DocumentsIcon, pinned: false },
+  { id: "analytics", title: "Analytics", Icon: AnalyticsIcon, pinned: false },
+  { id: "settings", title: "Settings", Icon: SettingsIcon, pinned: false },
 ] as const
 
 export function AppSidebar({

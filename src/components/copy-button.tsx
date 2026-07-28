@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Check, Copy } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Tick02Icon, Copy01Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 
@@ -28,7 +29,11 @@ export function CopyButton({
       className={className}
       aria-label="Copy to clipboard"
     >
-      {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+      {copied ? (
+        <HugeiconsIcon icon={Tick02Icon} strokeWidth={2} className="size-3.5" />
+      ) : (
+        <HugeiconsIcon icon={Copy01Icon} strokeWidth={2} className="size-3.5" />
+      )}
     </Button>
   )
 }

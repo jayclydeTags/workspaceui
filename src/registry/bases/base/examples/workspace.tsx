@@ -1,6 +1,11 @@
 "use client"
 
-import { LayoutDashboard, FileText, Settings } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  DashboardSquare01Icon,
+  File01Icon,
+  Setting06Icon,
+} from "@hugeicons/core-free-icons"
 
 import { Workspace } from "@/registry/bases/base/workspaceui/workspace"
 
@@ -11,13 +16,25 @@ const INITIAL_PANES = [
       {
         id: "dashboard",
         title: "Dashboard",
-        icon: <LayoutDashboard className="size-3.5" />,
+        icon: (
+          <HugeiconsIcon
+            icon={DashboardSquare01Icon}
+            strokeWidth={2}
+            className="size-3.5"
+          />
+        ),
         pinned: true,
       },
       {
         id: "docs",
         title: "Documentation",
-        icon: <FileText className="size-3.5" />,
+        icon: (
+          <HugeiconsIcon
+            icon={File01Icon}
+            strokeWidth={2}
+            className="size-3.5"
+          />
+        ),
       },
     ],
     defaultSize: 60,
@@ -29,7 +46,13 @@ const INITIAL_PANES = [
       {
         id: "settings",
         title: "Settings",
-        icon: <Settings className="size-3.5" />,
+        icon: (
+          <HugeiconsIcon
+            icon={Setting06Icon}
+            strokeWidth={2}
+            className="size-3.5"
+          />
+        ),
         pinned: true,
       },
     ],
@@ -41,19 +64,31 @@ const INITIAL_PANES = [
 const TAB_CONTENT: Record<string, React.ReactNode> = {
   dashboard: (
     <div className="flex h-full flex-col items-center justify-center gap-2 p-6">
-      <LayoutDashboard className="size-8 text-muted-foreground/40" />
+      <HugeiconsIcon
+        icon={DashboardSquare01Icon}
+        strokeWidth={2}
+        className="size-8 text-muted-foreground/40"
+      />
       <p className="text-sm text-muted-foreground">Dashboard</p>
     </div>
   ),
   docs: (
     <div className="flex h-full flex-col items-center justify-center gap-2 p-6">
-      <FileText className="size-8 text-muted-foreground/40" />
+      <HugeiconsIcon
+        icon={File01Icon}
+        strokeWidth={2}
+        className="size-8 text-muted-foreground/40"
+      />
       <p className="text-sm text-muted-foreground">Documentation</p>
     </div>
   ),
   settings: (
     <div className="flex h-full flex-col items-center justify-center gap-2 p-6">
-      <Settings className="size-8 text-muted-foreground/40" />
+      <HugeiconsIcon
+        icon={Setting06Icon}
+        strokeWidth={2}
+        className="size-8 text-muted-foreground/40"
+      />
       <p className="text-sm text-muted-foreground">Settings</p>
     </div>
   ),

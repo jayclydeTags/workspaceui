@@ -1,7 +1,14 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { Check, Copy, Loader2, ShieldCheck, TriangleAlert } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  Tick02Icon,
+  Copy01Icon,
+  Loading03Icon,
+  Shield01Icon,
+  Alert01Icon,
+} from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -81,7 +88,11 @@ export function TwoFactorSetup() {
         <div className="flex min-h-full items-center justify-center p-6">
           <div className="flex w-full max-w-sm flex-col items-center text-center">
             <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
-              <ShieldCheck className="size-5 text-primary" />
+              <HugeiconsIcon
+                icon={Shield01Icon}
+                strokeWidth={2}
+                className="size-5 text-primary"
+              />
             </div>
             <h1 className="mt-4 text-sm font-medium">Two-factor enabled</h1>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -124,9 +135,17 @@ export function TwoFactorSetup() {
               >
                 {SECRET}
                 {copied ? (
-                  <Check className="size-3.5 text-primary" />
+                  <HugeiconsIcon
+                    icon={Tick02Icon}
+                    strokeWidth={2}
+                    className="size-3.5 text-primary"
+                  />
                 ) : (
-                  <Copy className="size-3.5 text-muted-foreground" />
+                  <HugeiconsIcon
+                    icon={Copy01Icon}
+                    strokeWidth={2}
+                    className="size-3.5 text-muted-foreground"
+                  />
                 )}
                 <span className="sr-only">Copy setup key</span>
               </button>
@@ -158,7 +177,11 @@ export function TwoFactorSetup() {
               <div className="h-5 text-sm" aria-live="polite">
                 {verifying && (
                   <span className="flex items-center gap-2 text-muted-foreground">
-                    <Loader2 className="size-4 animate-spin" />
+                    <HugeiconsIcon
+                      icon={Loading03Icon}
+                      strokeWidth={2}
+                      className="size-4 animate-spin"
+                    />
                     Verifying…
                   </span>
                 )}
@@ -167,7 +190,11 @@ export function TwoFactorSetup() {
                     className="flex items-center gap-2 text-destructive"
                     role="alert"
                   >
-                    <TriangleAlert className="size-4" />
+                    <HugeiconsIcon
+                      icon={Alert01Icon}
+                      strokeWidth={2}
+                      className="size-4"
+                    />
                     That code didn&apos;t match. Try again.
                   </span>
                 )}

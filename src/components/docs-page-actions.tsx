@@ -2,14 +2,15 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
-  Check,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  Copy,
-  FileText,
-} from "lucide-react"
+  Tick02Icon,
+  ArrowDown01Icon,
+  ArrowLeft01Icon,
+  ArrowRight01Icon,
+  Copy01Icon,
+  File01Icon,
+} from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import { ButtonGroup } from "@/components/ui/button-group"
@@ -54,7 +55,11 @@ export function DocsPageActions({
     <div className="flex items-center gap-1.5">
       <ButtonGroup>
         <Button variant="outline" size="sm" onClick={copyPage}>
-          {copied ? <Check /> : <Copy />}
+          {copied ? (
+            <HugeiconsIcon icon={Tick02Icon} strokeWidth={2} />
+          ) : (
+            <HugeiconsIcon icon={Copy01Icon} strokeWidth={2} />
+          )}
           Copy Page
         </Button>
         <DropdownMenu>
@@ -67,11 +72,11 @@ export function DocsPageActions({
               />
             }
           >
-            <ChevronDown />
+            <HugeiconsIcon icon={ArrowDown01Icon} strokeWidth={2} />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={viewAsMarkdown}>
-              <FileText />
+              <HugeiconsIcon icon={File01Icon} strokeWidth={2} />
               View as Markdown
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -86,7 +91,7 @@ export function DocsPageActions({
             nativeButton={false}
             render={<Link href={prev.href} />}
           >
-            <ChevronLeft />
+            <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={2} />
           </Button>
         ) : (
           <Button
@@ -95,7 +100,7 @@ export function DocsPageActions({
             aria-label="No previous page"
             disabled
           >
-            <ChevronLeft />
+            <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={2} />
           </Button>
         )}
         {next ? (
@@ -106,7 +111,7 @@ export function DocsPageActions({
             nativeButton={false}
             render={<Link href={next.href} />}
           >
-            <ChevronRight />
+            <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
           </Button>
         ) : (
           <Button
@@ -115,7 +120,7 @@ export function DocsPageActions({
             aria-label="No next page"
             disabled
           >
-            <ChevronRight />
+            <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
           </Button>
         )}
       </div>

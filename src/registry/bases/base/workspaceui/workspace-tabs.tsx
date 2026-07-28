@@ -1,7 +1,13 @@
 "use client"
 
 import * as React from "react"
-import { Check, ChevronDown, Plus, X } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  Tick02Icon,
+  ArrowDown01Icon,
+  PlusSignIcon,
+  Cancel01Icon,
+} from "@hugeicons/core-free-icons"
 import { Tabs } from "@base-ui/react/tabs"
 
 import { cn } from "@/lib/utils"
@@ -127,7 +133,7 @@ function WorkspaceTabs({
                 />
               }
             >
-              <ChevronDown />
+              <HugeiconsIcon icon={ArrowDown01Icon} strokeWidth={2} />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="min-w-56">
               {tabs.map((tab) => (
@@ -145,7 +151,9 @@ function WorkspaceTabs({
                       {tab.badge > 99 ? "99+" : tab.badge}
                     </Badge>
                   )}
-                  <Check
+                  <HugeiconsIcon
+                    icon={Tick02Icon}
+                    strokeWidth={2}
                     className={cn(
                       "size-3.5 shrink-0",
                       tab.id !== activeTabId && "invisible"
@@ -303,10 +311,18 @@ function WorkspaceTabs({
                             aria-hidden
                             className="size-2 rounded-full bg-foreground/60 group-hover:hidden"
                           />
-                          <X className="hidden size-3 group-hover:block" />
+                          <HugeiconsIcon
+                            icon={Cancel01Icon}
+                            strokeWidth={2}
+                            className="hidden size-3 group-hover:block"
+                          />
                         </>
                       ) : (
-                        <X className="size-3" />
+                        <HugeiconsIcon
+                          icon={Cancel01Icon}
+                          strokeWidth={2}
+                          className="size-3"
+                        />
                       )}
                     </div>
                   )}
@@ -327,7 +343,7 @@ function WorkspaceTabs({
             onClick={onAddTab}
             className="mx-1 shrink-0 self-center rounded-[8px] text-foreground/50 hover:bg-foreground/5"
           >
-            <Plus />
+            <HugeiconsIcon icon={PlusSignIcon} strokeWidth={2} />
           </Button>
         )}
       </div>

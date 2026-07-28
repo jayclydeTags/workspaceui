@@ -1,7 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { CheckCircle2, Download, FileUp } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  CheckmarkCircle02Icon,
+  Download01Icon,
+  FileUploadIcon,
+} from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -96,7 +101,11 @@ export function ImportExport() {
       hasPadding
       actions={
         <Button size="sm" variant="outline" onClick={exportCsv}>
-          <Download data-icon="inline-start" />
+          <HugeiconsIcon
+            icon={Download01Icon}
+            strokeWidth={2}
+            data-icon="inline-start"
+          />
           Export CSV
         </Button>
       }
@@ -153,7 +162,11 @@ export function ImportExport() {
                 size="sm"
                 onClick={() => setCsvText(SAMPLE_CSV)}
               >
-                <FileUp data-icon="inline-start" />
+                <HugeiconsIcon
+                  icon={FileUploadIcon}
+                  strokeWidth={2}
+                  data-icon="inline-start"
+                />
                 Load sample
               </Button>
               <Button onClick={goToMapping} disabled={csvText.trim() === ""}>
@@ -247,7 +260,7 @@ export function ImportExport() {
           <Empty>
             <EmptyHeader>
               <EmptyMedia variant="icon">
-                <CheckCircle2 />
+                <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={2} />
               </EmptyMedia>
               <EmptyTitle>Import complete</EmptyTitle>
               <EmptyDescription>

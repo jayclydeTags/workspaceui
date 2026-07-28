@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Loader2, TriangleAlert } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Alert01Icon, Loading03Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -150,7 +151,11 @@ export function LoginSocial() {
                       role="alert"
                       className="flex items-center gap-2 rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive"
                     >
-                      <TriangleAlert className="size-4 shrink-0" />
+                      <HugeiconsIcon
+                        icon={Alert01Icon}
+                        strokeWidth={2}
+                        className="size-4 shrink-0"
+                      />
                       Incorrect email or password.
                     </div>
                   )}
@@ -202,7 +207,9 @@ export function LoginSocial() {
                       disabled={submitting}
                     >
                       {submitting && (
-                        <Loader2
+                        <HugeiconsIcon
+                          icon={Loading03Icon}
+                          strokeWidth={2}
                           data-icon="inline-start"
                           className="animate-spin"
                         />

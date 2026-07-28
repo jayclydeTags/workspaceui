@@ -1,19 +1,20 @@
 "use client"
 
 import { useRef, useState } from "react"
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
-  Check,
-  ChevronRight,
-  File as FileIcon,
-  Folder as FolderIcon,
-  Maximize2,
-  Monitor,
-  RotateCw,
-  Smartphone,
-  Tablet,
-  Terminal,
-  X,
-} from "lucide-react"
+  Tick02Icon,
+  ArrowRight01Icon,
+  File01Icon,
+  Folder01Icon,
+  Maximize02Icon,
+  ComputerIcon,
+  RotateClockwiseIcon,
+  SmartPhone01Icon,
+  Tablet01Icon,
+  TerminalIcon,
+  Cancel01Icon,
+} from "@hugeicons/core-free-icons"
 import { DynamicCodeBlock } from "@/components/dynamic-codeblock"
 import type { PanelImperativeHandle } from "react-resizable-panels"
 
@@ -58,9 +59,15 @@ const VIEWPORT_SIZE: Record<Viewport, string> = {
 }
 
 const VIEWPORT_ICONS = {
-  desktop: Monitor,
-  tablet: Tablet,
-  mobile: Smartphone,
+  desktop: (props: React.ComponentProps<"svg">) => (
+    <HugeiconsIcon icon={ComputerIcon} {...props} strokeWidth={2} />
+  ),
+  tablet: (props: React.ComponentProps<"svg">) => (
+    <HugeiconsIcon icon={Tablet01Icon} {...props} strokeWidth={2} />
+  ),
+  mobile: (props: React.ComponentProps<"svg">) => (
+    <HugeiconsIcon icon={SmartPhone01Icon} {...props} strokeWidth={2} />
+  ),
 } satisfies Record<Viewport, React.ComponentType<{ className?: string }>>
 
 // Small extension badge shown in the code header (e.g. "TS", "CSS"), matching
@@ -135,13 +142,19 @@ function TreeFolder({
         style={indent(depth)}
         className={cn(rowClass, "text-foreground hover:bg-muted")}
       >
-        <ChevronRight
+        <HugeiconsIcon
+          icon={ArrowRight01Icon}
+          strokeWidth={2}
           className={cn(
             "text-muted-foreground transition-transform",
             open && "rotate-90"
           )}
         />
-        <FolderIcon className="text-muted-foreground" />
+        <HugeiconsIcon
+          icon={Folder01Icon}
+          strokeWidth={2}
+          className="text-muted-foreground"
+        />
         {node.name}
       </CollapsibleTrigger>
       <CollapsibleContent>
@@ -191,7 +204,11 @@ function FileTree({
       >
         {/* chevron spacer so file icons align under folder icons */}
         <span className="size-4 shrink-0" />
-        <FileIcon className="text-muted-foreground" />
+        <HugeiconsIcon
+          icon={File01Icon}
+          strokeWidth={2}
+          className="text-muted-foreground"
+        />
         {node.name}
       </button>
     )
@@ -281,7 +298,7 @@ export function BlockPreview({
                   title="Fullscreen"
                   className="flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground [&_svg]:size-4"
                 >
-                  <Maximize2 />
+                  <HugeiconsIcon icon={Maximize02Icon} strokeWidth={2} />
                 </button>
                 <Divider className="mx-0.5" />
                 <button
@@ -290,7 +307,7 @@ export function BlockPreview({
                   title="Refresh"
                   className="flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground [&_svg]:size-4"
                 >
-                  <RotateCw />
+                  <HugeiconsIcon icon={RotateClockwiseIcon} strokeWidth={2} />
                 </button>
               </div>
               <Divider className="mx-1" />
@@ -305,9 +322,17 @@ export function BlockPreview({
             className="flex h-8 items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 text-sm font-medium transition-colors hover:bg-muted [&_svg]:size-4 [&_svg]:shrink-0"
           >
             {copied ? (
-              <Check className="text-emerald-600" />
+              <HugeiconsIcon
+                icon={Tick02Icon}
+                strokeWidth={2}
+                className="text-emerald-600"
+              />
             ) : (
-              <Terminal className="text-muted-foreground" />
+              <HugeiconsIcon
+                icon={TerminalIcon}
+                strokeWidth={2}
+                className="text-muted-foreground"
+              />
             )}
             <span className="truncate">{installCmd}</span>
           </button>
@@ -395,7 +420,7 @@ export function BlockPreview({
               title="Exit fullscreen"
               className="flex size-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground [&_svg]:size-4"
             >
-              <X />
+              <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} />
             </button>
           </div>
           <div className="min-h-0 flex-1 overflow-hidden">

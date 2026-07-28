@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { PlusIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { PlusSignIcon } from "@hugeicons/core-free-icons"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -49,7 +50,11 @@ export function RecordFormDialog() {
       hasPadding
       actions={
         <Button size="sm" onClick={openCreate}>
-          <PlusIcon data-icon="inline-start" />
+          <HugeiconsIcon
+            icon={PlusSignIcon}
+            strokeWidth={2}
+            data-icon="inline-start"
+          />
           New contact
         </Button>
       }

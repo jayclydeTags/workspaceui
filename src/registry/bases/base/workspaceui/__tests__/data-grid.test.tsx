@@ -811,6 +811,30 @@ describe("DataGrid", () => {
   })
 
   describe("typed cell editors", () => {
+    it("right-aligns number and currency columns, header included", () => {
+      renderTypedGrid()
+      const cells = screen.getAllByRole("gridcell")
+      expect(within(cells[0]!).getByRole("spinbutton")).toHaveClass(
+        "text-right"
+      )
+      expect(within(cells[1]!).getByRole("textbox")).toHaveClass("text-right")
+      // The date column is the control case: still left-aligned. Queried by
+      // tag — a type="date" input has no implicit ARIA role.
+      expect(cells[4]!.querySelector("input")).not.toHaveClass("text-right")
+      // This harness wires no sorted row model, so headers render the plain
+      // label span rather than the sort button.
+      expect(
+        within(screen.getByRole("columnheader", { name: /Qty/ })).getByText(
+          "Qty"
+        ).className
+      ).toContain("text-right")
+      expect(
+        within(
+          screen.getByRole("columnheader", { name: /Ships on/ })
+        ).getByText("Ships on").className
+      ).not.toContain("text-right")
+    })
+
     it("number cells edit through a numeric input and commit a number", async () => {
       const user = userEvent.setup()
       const { onCellEdit } = renderTypedGrid()

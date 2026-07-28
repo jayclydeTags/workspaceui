@@ -119,6 +119,10 @@ Eight column types are available, each with a matching cell editor:
 `user`. `multiSelect` and `user` render a shared popover picker (chips or an
 avatar, opening a searchable list); the rest are plain inline controls.
 
+`number` and `currency` render right-aligned in tabular figures, header
+included, so decimal points line up down the column and the label sits over
+its values. Every other type stays left-aligned.
+
 Full field reference (`options`, `users`, `maxChips`, `summary`) lives in
 [Data Grid Types](/docs/components/data-grid-types) — install it once as a
 `registryDependencies` entry, no separate import needed beyond the

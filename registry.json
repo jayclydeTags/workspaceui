@@ -859,13 +859,9 @@
       "name": "dashboard-01",
       "type": "registry:block",
       "title": "Sidebar Shell (Collapsible)",
-      "description": "Collapsible sidebar nav paired with the Workspace component. Sidebar items open tabs; repeat clicks focus the existing tab.",
+      "description": "Collapsible sidebar nav that swaps a single content area directly, no tabs.",
       "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "jayclydeTags/workspaceui/workspace",
-        "sidebar",
-        "utils"
-      ],
+      "registryDependencies": ["sidebar", "utils"],
       "files": [
         {
           "path": "src/registry/bases/base/blocks/dashboard-01/page.tsx",

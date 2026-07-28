@@ -588,7 +588,8 @@ export const blocks: BlockMeta[] = [
   {
     slug: "dashboard-01",
     title: "Sidebar Shell (Collapsible)",
-    description: "Collapsible sidebar nav paired with the Workspace component.",
+    description:
+      "Collapsible sidebar nav that swaps a single content area directly, no tabs.",
     category: "App Shells",
     Component: Dashboard01,
   },

@@ -144,6 +144,22 @@ it never filters rows itself.
     the full edit chain, since three independent hit targets don't fit at
     this width.
 
+## Composable parts
+
+`DataFilter` bundles sort + filter into one bar. When a host toolbar wants to
+place the pieces itself (as [`DataGrid`](/docs/components/data-grid) does),
+two of them are exported separately, both taking the same `table`:
+
+- **`<DataFilterPopover table trigger />`** — the column → operator → value
+  chain behind a trigger element you supply.
+- **`<DataFilterChips table className? />`** — the active-filter chip row with
+  a trailing "Clear filters". Renders nothing when no filter is set, so it can
+  be dropped in unconditionally.
+- **`<DataFilterChain table open? editColumnId? />`** — the narrow-branch
+  filter list and chain with no drawer around it, for a host sheet that wants
+  it as one section among others. Flipping `open` to true resets it to the
+  list step; `editColumnId` seeds it straight to that filter's operator step.
+
 ## API Reference
 
 | Prop    | Type           | Default | Description                                                                                                                                                                                              |

@@ -85,6 +85,8 @@
       "dependencies": ["@tanstack/react-table", "motion"],
       "registryDependencies": [
         "jayclydeTags/workspaceui/data-grid-types",
+        "jayclydeTags/workspaceui/data-filter",
+        "jayclydeTags/workspaceui/data-search",
         "table",
         "input",
         "checkbox",

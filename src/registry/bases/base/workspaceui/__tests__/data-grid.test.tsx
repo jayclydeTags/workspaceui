@@ -15,6 +15,7 @@ import {
   type RowSelectionState,
   type SortingState,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
@@ -29,6 +30,11 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { BulkToolbar } from "@/registry/bases/base/workspaceui/bulk-toolbar"
+import { dataGridFilterFn } from "@/registry/bases/base/workspaceui/data-filter"
+import {
+  dataGridGetColumnCanGlobalFilter,
+  dataGridGlobalFilterFn,
+} from "@/registry/bases/base/workspaceui/data-search"
 import { resizeTo } from "@/test/setup"
 
 import {
@@ -1559,6 +1565,76 @@ describe("DataGrid", () => {
     })
   })
 
+  describe("toolbar", () => {
+    const filterColumns: ColumnDef<Person>[] = [
+      {
+        accessorKey: "name",
+        header: "Name",
+        meta: { type: "text" },
+        filterFn: dataGridFilterFn,
+      },
+      {
+        accessorKey: "role",
+        header: "Role",
+        meta: { type: "text" },
+        filterFn: dataGridFilterFn,
+      },
+    ]
+
+    function FilterHarness() {
+      // eslint-disable-next-line react-hooks/incompatible-library
+      const table = useReactTable({
+        data: defaultData,
+        columns: filterColumns,
+        getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        globalFilterFn: dataGridGlobalFilterFn,
+        getColumnCanGlobalFilter: dataGridGetColumnCanGlobalFilter,
+        getRowId: (row) => row.id,
+      })
+      return <DataGrid table={table} onCellEdit={vi.fn()} />
+    }
+
+    it("omits search and filter when no filtered row model is wired", () => {
+      renderGrid()
+      expect(screen.queryByRole("searchbox", { name: "Search" })).toBeNull()
+      expect(screen.queryByRole("button", { name: "Filter" })).toBeNull()
+      expect(screen.getByRole("button", { name: "Columns" })).toBeVisible()
+    })
+
+    it("filters rows from the search box", async () => {
+      const user = userEvent.setup()
+      render(<FilterHarness />)
+
+      await user.type(screen.getByLabelText("Search"), "Grace")
+
+      const grid = () => within(screen.getByRole("grid"))
+      await waitFor(() => expect(grid().queryByDisplayValue("Ada")).toBeNull())
+      expect(grid().getByDisplayValue("Grace")).toBeInTheDocument()
+    })
+
+    it("shows a chip row with Clear filters once a filter is applied", async () => {
+      const user = userEvent.setup()
+      render(<FilterHarness />)
+
+      await user.click(screen.getByRole("button", { name: "Filter" }))
+      await user.click(await screen.findByRole("option", { name: "Role" }))
+      await user.click(await screen.findByRole("button", { name: "contains" }))
+      await user.type(await screen.findByPlaceholderText("Value"), "Admiral")
+      await user.click(screen.getByRole("button", { name: "Apply" }))
+
+      expect(
+        await screen.findByRole("group", { name: "Role contains Admiral" })
+      ).toBeInTheDocument()
+      expect(screen.queryByDisplayValue("Ada")).toBeNull()
+
+      await user.click(screen.getByRole("button", { name: "Clear filters" }))
+
+      expect(screen.queryByRole("group", { name: /^Role contains/ })).toBeNull()
+      expect(screen.getByDisplayValue("Ada")).toBeInTheDocument()
+    })
+  })
+
   describe("column reorder", () => {
     // Only the grip handle inside each row is draggable now, not the row itself.
     function dragHandle(li: Element) {
@@ -2083,6 +2159,64 @@ describe("DataGrid", () => {
 
       const header = screen.getAllByRole("columnheader")[1]!
       expect(header).toHaveStyle({ position: "sticky", left: "0px" })
+    })
+
+    it("offers field visibility in the Options sheet, reshaping the cards", async () => {
+      const user = userEvent.setup()
+      const { container } = renderNarrow()
+      goNarrowGrid(container)
+
+      // No filtered/sorted row model here, so only the fields section shows.
+      await user.click(screen.getByRole("button", { name: "Options" }))
+      expect(await screen.findByText("Visible fields")).toBeVisible()
+      expect(screen.queryByText("Sort")).toBeNull()
+      expect(screen.queryByText("Filters")).toBeNull()
+
+      // Name titles the cards; hiding it promotes the next visible field.
+      expect(screen.getByText("Ada Lovelace")).toBeVisible()
+      await user.click(screen.getByRole("button", { name: "Hide Name field" }))
+
+      expect(screen.queryByText("Ada Lovelace")).toBeNull()
+      expect(screen.getByText("ada@example.com")).toBeVisible()
+    })
+
+    it("adds Sort and Filters sections, and a count badge, when those row models are wired", async () => {
+      const user = userEvent.setup()
+
+      function SortFilterHarness() {
+        // eslint-disable-next-line react-hooks/incompatible-library
+        const table = useReactTable({
+          data: contactData,
+          columns: contactColumns.map((column) => ({
+            ...column,
+            filterFn: dataGridFilterFn,
+          })),
+          getCoreRowModel: getCoreRowModel(),
+          getSortedRowModel: getSortedRowModel(),
+          getFilteredRowModel: getFilteredRowModel(),
+          getRowId: (row) => row.id,
+        })
+        return <DataGrid table={table} onCellEdit={vi.fn()} />
+      }
+
+      const { container } = render(<SortFilterHarness />)
+      goNarrowGrid(container)
+
+      await user.click(screen.getByRole("button", { name: "Options" }))
+      expect(await screen.findByText("Sort")).toBeVisible()
+      expect(screen.getByText("Filters")).toBeVisible()
+
+      // Sorting through the sheet reorders the cards and counts on the badge.
+      // The open drawer is modal, so the page behind it reads as hidden.
+      await user.click(screen.getByRole("button", { name: "Seats" }))
+      const cards = screen.getAllByRole("listitem", { hidden: true })
+      expect(cards[0]).toHaveTextContent("Grace Hopper")
+
+      const options = screen.getByRole("button", {
+        name: "Options",
+        hidden: true,
+      })
+      expect(within(options).getByText("1")).toBeInTheDocument()
     })
 
     it("shares one aria-live region across both branches — resizing doesn't duplicate it", () => {

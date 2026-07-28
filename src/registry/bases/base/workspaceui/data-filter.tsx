@@ -600,15 +600,39 @@ function ValueEditor<TData>({
   )
 }
 
-// The "+ Filter" chain: column -> operator -> value, always starting fresh. Editing an existing
-// chip goes through OperatorPopover/ValuePopover instead, which write straight through with no draft state.
-function FilterEditorPopover<TData>({
+/** Typed, filterable columns the chain can target — the rest have no operator set. */
+function getFilterableColumns<TData>(
+  table: TanstackTable<TData>
+): Column<TData, unknown>[] {
+  return table
+    .getAllLeafColumns()
+    .filter(
+      (column) =>
+        column.columnDef.meta?.type != null &&
+        column.columnDef.meta.type in OPERATORS_BY_TYPE &&
+        column.getCanFilter()
+    )
+}
+
+function getActiveFilters<TData>(table: TanstackTable<TData>) {
+  const filterable = getFilterableColumns(table)
+  return table
+    .getState()
+    .columnFilters.filter((filter) =>
+      filterable.some((column) => column.id === filter.id)
+    )
+}
+
+/**
+ * The "+ Filter" chain: column -> operator -> value, always starting fresh. Editing an existing
+ * chip goes through OperatorPopover/ValuePopover instead, which write straight through with no draft state.
+ * Exported so a host toolbar can supply its own trigger.
+ */
+export function DataFilterPopover<TData>({
   table,
-  availableColumns,
   trigger,
 }: {
   table: TanstackTable<TData>
-  availableColumns: Column<TData, unknown>[]
   trigger: React.ReactElement
 }) {
   const [open, setOpen] = React.useState(false)
@@ -619,6 +643,10 @@ function FilterEditorPopover<TData>({
 
   const draftColumn = draftColumnId ? table.getColumn(draftColumnId) : undefined
   const draftType = draftColumn?.columnDef.meta?.type
+  const activeIds = new Set(getActiveFilters(table).map((f) => f.id))
+  const availableColumns = getFilterableColumns(table).filter(
+    (column) => !activeIds.has(column.id)
+  )
 
   function handleOpenChange(next: boolean) {
     setOpen(next)
@@ -903,34 +931,39 @@ function NarrowSortDrawer<TData>({
   )
 }
 
-// Narrow-branch replacement for the chip chain: active filters as full-width rows in a bottom
-// drawer, so toolbar height stays constant. Pushes the same column -> operator -> value chain
-// (skipping the column step when editing an existing row).
-function NarrowFilterDrawer<TData>({
+/**
+ * The narrow-branch filter UI without any surrounding drawer: active filters as
+ * full-width rows, pushing the same column -> operator -> value chain the wide
+ * popover uses (skipping the column step when editing an existing row).
+ * Exported so a host sheet can render it as one section among others.
+ */
+export function DataFilterChain<TData>({
   table,
-  activeFilters,
-  pickableColumns,
-  removeFilter,
-  open,
-  onOpenChange,
-  editColumnId,
+  open = true,
+  editColumnId = null,
 }: {
   table: TanstackTable<TData>
-  activeFilters: { id: string; value: unknown }[]
-  pickableColumns: Column<TData, unknown>[]
-  removeFilter: (columnId: string) => void
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  /** Set by the chip row's tap-to-edit outside the trigger button — seeds
-   *  the chain straight to this filter's operator step instead of the list
-   *  the trigger button itself opens to. */
-  editColumnId: string | null
+  /** Flipping this to true resets the chain back to the list step. */
+  open?: boolean
+  /** Seeds the chain straight to this filter's operator step instead of the list. */
+  editColumnId?: string | null
 }) {
-  const [step, setStep] = React.useState<"list" | Step>("list")
-  const [chainStart, setChainStart] = React.useState<"column" | "operator">(
-    "column"
+  const activeFilters = getActiveFilters(table)
+  const activeIds = new Set(activeFilters.map((f) => f.id))
+  const pickableColumns = getFilterableColumns(table).filter(
+    (column) => !activeIds.has(column.id)
   )
-  const [draftColumnId, setDraftColumnId] = React.useState<string | null>(null)
+  // Seeded from editColumnId, not only from the open transition below: a host
+  // drawer that mounts its content lazily mounts this already-open.
+  const [step, setStep] = React.useState<"list" | Step>(
+    editColumnId ? "operator" : "list"
+  )
+  const [chainStart, setChainStart] = React.useState<"column" | "operator">(
+    editColumnId ? "operator" : "column"
+  )
+  const [draftColumnId, setDraftColumnId] = React.useState<string | null>(
+    editColumnId
+  )
   const [draftOperator, setDraftOperator] = React.useState<string | null>(null)
   const [draftValue, setDraftValue] = React.useState<unknown>(undefined)
 
@@ -999,13 +1032,125 @@ function NarrowFilterDrawer<TData>({
   }
 
   return (
+    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+      {step === "list" && (
+        <div className="flex flex-col gap-2 px-4 pb-4">
+          {activeFilters.map((filter) => {
+            const column = table.getColumn(filter.id)
+            if (!column) return null
+            const filterValue = filter.value as DataGridFilterValue
+            return (
+              <div
+                key={filter.id}
+                className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm"
+              >
+                <button
+                  type="button"
+                  className="flex-1 text-left"
+                  onClick={() => startEdit(filter.id)}
+                >
+                  {formatFilterSummary(column, filterValue)}
+                </button>
+                <button
+                  type="button"
+                  aria-label={`Remove ${getColumnLabel(column)} filter`}
+                  onClick={() => column.setFilterValue(undefined)}
+                  className="shrink-0 rounded-sm p-1 hover:bg-accent"
+                >
+                  <XIcon className="size-3" />
+                </button>
+              </div>
+            )
+          })}
+          <Button variant="outline" onClick={startAdd}>
+            <PlusIcon className="size-4" />
+            Add filter
+          </Button>
+        </div>
+      )}
+
+      {step === "column" && (
+        <Command>
+          <CommandInput placeholder="Filter by column..." />
+          <CommandList>
+            <CommandEmpty>No columns.</CommandEmpty>
+            <CommandGroup>
+              {pickableColumns.map((column) => (
+                <CommandItem
+                  key={column.id}
+                  value={getColumnLabel(column)}
+                  onSelect={() => selectColumn(column.id)}
+                >
+                  {getColumnLabel(column)}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      )}
+
+      {step === "operator" && (
+        <div className="flex flex-col gap-0.5 px-4 pb-4">
+          <FilterBackButton
+            label={draftColumn ? getColumnLabel(draftColumn) : "Back"}
+            onClick={() => setStep(chainStart === "column" ? "column" : "list")}
+          />
+          <OperatorList
+            type={draftType}
+            selected={draftOperator}
+            onSelect={selectOperator}
+          />
+        </div>
+      )}
+
+      {step === "value" && draftColumn && draftOperator && (
+        <div className="flex flex-col px-4 pb-4">
+          <FilterBackButton
+            label={operatorLabel(draftType, draftOperator)}
+            onClick={() => setStep("operator")}
+          />
+          <ValueEditor
+            column={draftColumn}
+            operator={draftOperator}
+            value={draftValue}
+            onChange={setDraftValue}
+            onCommit={(value) =>
+              commitFilter(
+                draftOperator,
+                value !== undefined ? value : draftValue
+              )
+            }
+          />
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Narrow-branch replacement for the chip chain: the same chain in a bottom
+// drawer, so toolbar height stays constant.
+function NarrowFilterDrawer<TData>({
+  table,
+  activeFilterCount,
+  open,
+  onOpenChange,
+  editColumnId,
+}: {
+  table: TanstackTable<TData>
+  activeFilterCount: number
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  /** Set by the chip row's tap-to-edit outside the trigger button. */
+  editColumnId: string | null
+}) {
+  return (
     <Drawer open={open} onOpenChange={onOpenChange} showSwipeHandle>
       <DrawerTrigger
         render={
           <Button variant="outline" size="sm">
             Filter{" "}
-            {activeFilters.length > 0 && (
-              <Badge variant="secondary">{activeFilters.length}</Badge>
+            {activeFilterCount > 0 && (
+              <Badge variant="secondary">{activeFilterCount}</Badge>
             )}
           </Button>
         }
@@ -1014,101 +1159,11 @@ function NarrowFilterDrawer<TData>({
         <DrawerHeader>
           <DrawerTitle>Filters</DrawerTitle>
         </DrawerHeader>
-
-        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-          {step === "list" && (
-            <div className="flex flex-col gap-2 px-4 pb-4">
-              {activeFilters.map((filter) => {
-                const column = table.getColumn(filter.id)
-                if (!column) return null
-                const filterValue = filter.value as DataGridFilterValue
-                return (
-                  <div
-                    key={filter.id}
-                    className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm"
-                  >
-                    <button
-                      type="button"
-                      className="flex-1 text-left"
-                      onClick={() => startEdit(filter.id)}
-                    >
-                      {formatFilterSummary(column, filterValue)}
-                    </button>
-                    <button
-                      type="button"
-                      aria-label={`Remove ${getColumnLabel(column)} filter`}
-                      onClick={() => removeFilter(filter.id)}
-                      className="shrink-0 rounded-sm p-1 hover:bg-accent"
-                    >
-                      <XIcon className="size-3" />
-                    </button>
-                  </div>
-                )
-              })}
-              <Button variant="outline" onClick={startAdd}>
-                <PlusIcon className="size-4" />
-                Add filter
-              </Button>
-            </div>
-          )}
-
-          {step === "column" && (
-            <Command>
-              <CommandInput placeholder="Filter by column..." />
-              <CommandList>
-                <CommandEmpty>No columns.</CommandEmpty>
-                <CommandGroup>
-                  {pickableColumns.map((column) => (
-                    <CommandItem
-                      key={column.id}
-                      value={getColumnLabel(column)}
-                      onSelect={() => selectColumn(column.id)}
-                    >
-                      {getColumnLabel(column)}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          )}
-
-          {step === "operator" && (
-            <div className="flex flex-col gap-0.5 px-4 pb-4">
-              <FilterBackButton
-                label={draftColumn ? getColumnLabel(draftColumn) : "Back"}
-                onClick={() =>
-                  setStep(chainStart === "column" ? "column" : "list")
-                }
-              />
-              <OperatorList
-                type={draftType}
-                selected={draftOperator}
-                onSelect={selectOperator}
-              />
-            </div>
-          )}
-
-          {step === "value" && draftColumn && draftOperator && (
-            <div className="flex flex-col px-4 pb-4">
-              <FilterBackButton
-                label={operatorLabel(draftType, draftOperator)}
-                onClick={() => setStep("operator")}
-              />
-              <ValueEditor
-                column={draftColumn}
-                operator={draftOperator}
-                value={draftValue}
-                onChange={setDraftValue}
-                onCommit={(value) =>
-                  commitFilter(
-                    draftOperator,
-                    value !== undefined ? value : draftValue
-                  )
-                }
-              />
-            </div>
-          )}
-        </div>
+        <DataFilterChain
+          table={table}
+          open={open}
+          editColumnId={editColumnId}
+        />
       </DrawerContent>
     </Drawer>
   )
@@ -1119,27 +1174,11 @@ export function DataFilter<TData>({ table }: DataFilterProps<TData>) {
     useContainerWidth<HTMLDivElement>()
   const isNarrow = containerWidth != null && containerWidth < NARROW_BREAKPOINT
 
-  const filterableColumns = table
-    .getAllLeafColumns()
-    .filter(
-      (column) =>
-        column.columnDef.meta?.type != null &&
-        column.columnDef.meta.type in OPERATORS_BY_TYPE &&
-        column.getCanFilter()
-    )
   const sortableColumns = table
     .getAllLeafColumns()
     .filter((column) => column.getCanSort())
 
-  const activeFilters = table
-    .getState()
-    .columnFilters.filter((filter) =>
-      filterableColumns.some((column) => column.id === filter.id)
-    )
-  const activeFilterIds = new Set(activeFilters.map((f) => f.id))
-  const pickableColumns = filterableColumns.filter(
-    (column) => !activeFilterIds.has(column.id)
-  )
+  const activeFilters = getActiveFilters(table)
 
   function removeFilter(columnId: string) {
     table.getColumn(columnId)?.setFilterValue(undefined)
@@ -1173,9 +1212,7 @@ export function DataFilter<TData>({ table }: DataFilterProps<TData>) {
           <NarrowSortDrawer table={table} sortableColumns={sortableColumns} />
           <NarrowFilterDrawer
             table={table}
-            activeFilters={activeFilters}
-            pickableColumns={pickableColumns}
-            removeFilter={removeFilter}
+            activeFilterCount={activeFilters.length}
             open={narrowFilterOpen}
             onOpenChange={handleNarrowFilterOpenChange}
             editColumnId={narrowEditColumnId}
@@ -1223,9 +1260,8 @@ export function DataFilter<TData>({ table }: DataFilterProps<TData>) {
       aria-label="Sort and filter"
       className="flex flex-wrap items-center gap-1.5"
     >
-      <FilterEditorPopover
+      <DataFilterPopover
         table={table}
-        availableColumns={pickableColumns}
         trigger={
           <Button variant="outline" size="sm">
             <PlusIcon className="size-4" />
@@ -1233,6 +1269,27 @@ export function DataFilter<TData>({ table }: DataFilterProps<TData>) {
           </Button>
         }
       />
+      <DataFilterChips table={table} />
+    </div>
+  )
+}
+
+/**
+ * The active-filter chip row, with a trailing "Clear filters". Renders nothing
+ * when no filter is set, so a host toolbar can drop it in unconditionally.
+ */
+export function DataFilterChips<TData>({
+  table,
+  className,
+}: {
+  table: TanstackTable<TData>
+  className?: string
+}) {
+  const activeFilters = getActiveFilters(table)
+  if (activeFilters.length === 0) return null
+
+  return (
+    <div className={cn("flex flex-wrap items-center gap-1.5", className)}>
       {activeFilters.map((filter) => {
         const column = table.getColumn(filter.id)
         if (!column) return null
@@ -1273,7 +1330,7 @@ export function DataFilter<TData>({ table }: DataFilterProps<TData>) {
             <button
               type="button"
               aria-label={`Remove ${getColumnLabel(column)} filter`}
-              onClick={() => removeFilter(filter.id)}
+              onClick={() => column.setFilterValue(undefined)}
               className="shrink-0 rounded-e-full p-1.5 hover:bg-accent"
             >
               <XIcon className="size-3" />
@@ -1281,6 +1338,14 @@ export function DataFilter<TData>({ table }: DataFilterProps<TData>) {
           </span>
         )
       })}
+      <Button
+        variant="ghost"
+        size="xs"
+        className="ms-auto shrink-0 text-muted-foreground"
+        onClick={() => table.resetColumnFilters()}
+      >
+        Clear filters
+      </Button>
     </div>
   )
 }

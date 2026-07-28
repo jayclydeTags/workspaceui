@@ -22,12 +22,14 @@ import {
   Columns3Icon,
   EyeIcon,
   EyeOffIcon,
+  FilterIcon,
   GripVerticalIcon,
   MinusIcon,
   MoreHorizontalIcon,
   MoreVerticalIcon,
   PinIcon,
   PlusIcon,
+  SlidersHorizontalIcon,
   Trash2Icon,
 } from "lucide-react"
 
@@ -60,6 +62,7 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
+  DrawerTrigger,
 } from "@/components/ui/drawer"
 import {
   DropdownMenu,
@@ -89,6 +92,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  DataFilterChain,
+  DataFilterChips,
+  DataFilterPopover,
+} from "@/registry/bases/base/workspaceui/data-filter"
+import { DataSearch } from "@/registry/bases/base/workspaceui/data-search"
 // Side-effect import: pulls in the column.meta type augmentation this
 // component reads (cell.column.columnDef.meta?.type).
 import "@/registry/bases/base/workspaceui/data-grid-types"
@@ -495,6 +504,10 @@ export function DataGrid<TData>({
   const rows = table.getRowModel().rows
   const colCount = headerGroups[0]?.headers.length ?? 0
   const rowCount = rows.length
+  // Same rule as the header's sort affordance: only offer search/filter when the
+  // consumer actually wired a filtered row model, so neither can be a no-op.
+  const canFilter = table.options.getFilteredRowModel != null
+  const canSort = table.options.getSortedRowModel != null
   const hasDeleteColumn = onRowDelete != null
   const hasSelectionColumn = hasRowSelectionEnabled(table)
   const totalColCount =
@@ -845,6 +858,70 @@ export function DataGrid<TData>({
           </Button>
         )}
       </motion.li>
+    )
+  }
+
+  // Cards branch only: sort, filters, and field visibility share one sheet,
+  // since there's no header row to hang any of them off.
+  const [optionsOpen, setOptionsOpen] = React.useState(false)
+  const optionsCount =
+    table.getState().columnFilters.length + table.getState().sorting.length
+
+  // Single-column sort, cycling asc -> desc -> off, same as a header click.
+  function renderSortRow(column: Column<TData, unknown>) {
+    const primary = table.getState().sorting[0]
+    const isPrimary = primary?.id === column.id
+    return (
+      <button
+        key={column.id}
+        type="button"
+        onClick={() =>
+          table.setSorting(
+            !isPrimary
+              ? [{ id: column.id, desc: false }]
+              : primary.desc
+                ? []
+                : [{ id: column.id, desc: true }]
+          )
+        }
+        className={cn(
+          "flex items-center justify-between rounded-sm px-3 py-2 text-left text-sm hover:bg-muted",
+          isPrimary && "bg-muted"
+        )}
+      >
+        {getColumnLabel(column)}
+        {isPrimary &&
+          (primary.desc ? (
+            <ArrowDownIcon className="size-3.5" />
+          ) : (
+            <ArrowUpIcon className="size-3.5" />
+          ))}
+      </button>
+    )
+  }
+
+  function renderFieldRow(column: Column<TData, unknown>) {
+    const visible = column.getIsVisible()
+    return (
+      <button
+        key={column.id}
+        type="button"
+        disabled={!column.getCanHide()}
+        aria-pressed={visible}
+        aria-label={`${visible ? "Hide" : "Show"} ${getColumnLabel(column)} field`}
+        onClick={() => column.toggleVisibility()}
+        className={cn(
+          "flex items-center justify-between rounded-sm px-3 py-2 text-left text-sm hover:bg-muted disabled:opacity-50",
+          visible && "bg-muted"
+        )}
+      >
+        {getColumnLabel(column)}
+        {visible ? (
+          <EyeIcon className="size-3.5" />
+        ) : (
+          <EyeOffIcon className="size-3.5 text-muted-foreground" />
+        )}
+      </button>
     )
   }
 
@@ -1302,111 +1379,193 @@ export function DataGrid<TData>({
   return (
     <div ref={containerRef} className={cn("flex flex-col gap-2", className)}>
       {showCards ? (
-        <ul className="flex list-none flex-col divide-y rounded-md border ps-0">
-          {rowCount === 0 ? (
-            <li className="p-4 text-center text-sm text-muted-foreground">
-              {emptyState}
-            </li>
-          ) : (
-            rows.map((row) => {
-              const cells = row.getVisibleCells()
-              const titleCell = cells.find(
-                (c) => c.column.id === titleColumn?.id
-              )
-              const subtitleCells = subtitleColumns
-                .map((col) => cells.find((c) => c.column.id === col.id))
-                .filter((c): c is NonNullable<typeof c> => c != null)
-              const subtitleText = subtitleCells
-                .map((c) => formatCardValue(c))
-                .filter(Boolean)
-                .join(" · ")
-              return (
-                <li key={row.id}>
-                  <button
-                    type="button"
-                    onClick={() => openCardSheet(row.id)}
-                    className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left hover:bg-accent/30"
+        <>
+          {/* Cards have no headers to click and no room for a button per
+              concern, so search sits inline and everything else stacks in one
+              sheet. */}
+          <div className="flex items-center gap-2">
+            {canFilter && <DataSearch table={table} />}
+            <Drawer
+              open={optionsOpen}
+              onOpenChange={setOptionsOpen}
+              showSwipeHandle
+            >
+              <DrawerTrigger
+                render={
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    aria-label="Options"
+                    className="relative ms-auto shrink-0"
                   >
-                    <span className="flex min-w-0 flex-col">
-                      <span className="truncate font-medium">
-                        {titleCell ? formatCardValue(titleCell) || "—" : "—"}
+                    <SlidersHorizontalIcon className="size-4" />
+                    {optionsCount > 0 && (
+                      <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
+                        {optionsCount}
                       </span>
-                      {subtitleText && (
-                        <span className="truncate text-sm text-muted-foreground">
-                          {subtitleText}
+                    )}
+                  </Button>
+                }
+              />
+              <DrawerContent className="h-[80vh]">
+                <DrawerHeader>
+                  <DrawerTitle>Options</DrawerTitle>
+                </DrawerHeader>
+                <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pb-6">
+                  {canSort && (
+                    <section>
+                      <h3 className="px-4 py-1 text-xs font-medium text-muted-foreground">
+                        Sort
+                      </h3>
+                      <div className="flex flex-col gap-0.5 px-4">
+                        {table.getAllLeafColumns().map(renderSortRow)}
+                      </div>
+                    </section>
+                  )}
+                  {canFilter && (
+                    <section>
+                      <h3 className="px-4 py-1 text-xs font-medium text-muted-foreground">
+                        Filters
+                      </h3>
+                      <DataFilterChain table={table} open={optionsOpen} />
+                    </section>
+                  )}
+                  <section>
+                    <h3 className="px-4 py-1 text-xs font-medium text-muted-foreground">
+                      Visible fields
+                    </h3>
+                    <div className="flex flex-col gap-0.5 px-4">
+                      {table.getAllLeafColumns().map(renderFieldRow)}
+                    </div>
+                    <p className="px-4 py-2 text-xs text-muted-foreground">
+                      The first visible field titles each card; the next two are
+                      its subtitle.
+                    </p>
+                  </section>
+                </div>
+              </DrawerContent>
+            </Drawer>
+          </div>
+          <ul className="flex list-none flex-col divide-y rounded-md border ps-0">
+            {rowCount === 0 ? (
+              <li className="p-4 text-center text-sm text-muted-foreground">
+                {emptyState}
+              </li>
+            ) : (
+              rows.map((row) => {
+                const cells = row.getVisibleCells()
+                const titleCell = cells.find(
+                  (c) => c.column.id === titleColumn?.id
+                )
+                const subtitleCells = subtitleColumns
+                  .map((col) => cells.find((c) => c.column.id === col.id))
+                  .filter((c): c is NonNullable<typeof c> => c != null)
+                const subtitleText = subtitleCells
+                  .map((c) => formatCardValue(c))
+                  .filter(Boolean)
+                  .join(" · ")
+                return (
+                  <li key={row.id}>
+                    <button
+                      type="button"
+                      onClick={() => openCardSheet(row.id)}
+                      className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left hover:bg-accent/30"
+                    >
+                      <span className="flex min-w-0 flex-col">
+                        <span className="truncate font-medium">
+                          {titleCell ? formatCardValue(titleCell) || "—" : "—"}
                         </span>
-                      )}
-                    </span>
-                    <ChevronRightIcon
-                      aria-hidden="true"
-                      className="size-4 shrink-0 text-muted-foreground"
-                    />
-                  </button>
-                </li>
-              )
-            })
-          )}
-          {onRowAdd && (
-            <li>
-              <button
-                type="button"
-                onClick={() => handleRowAdd()}
-                className="flex w-full items-center gap-1.5 px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent/30 hover:text-foreground"
-              >
-                <PlusIcon className="size-3.5" />
-                New row
-              </button>
-            </li>
-          )}
-        </ul>
+                        {subtitleText && (
+                          <span className="truncate text-sm text-muted-foreground">
+                            {subtitleText}
+                          </span>
+                        )}
+                      </span>
+                      <ChevronRightIcon
+                        aria-hidden="true"
+                        className="size-4 shrink-0 text-muted-foreground"
+                      />
+                    </button>
+                  </li>
+                )
+              })
+            )}
+            {onRowAdd && (
+              <li>
+                <button
+                  type="button"
+                  onClick={() => handleRowAdd()}
+                  className="flex w-full items-center gap-1.5 px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent/30 hover:text-foreground"
+                >
+                  <PlusIcon className="size-3.5" />
+                  New row
+                </button>
+              </li>
+            )}
+          </ul>
+        </>
       ) : (
         <>
-          <div className="flex items-center justify-end">
-            <Popover>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger
-                    render={
-                      <PopoverTrigger
-                        render={
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            aria-label="Columns"
-                          >
-                            <Columns3Icon className="size-4" />
-                          </Button>
-                        }
-                      />
-                    }
-                  />
-                  <TooltipContent>Column</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <PopoverContent align="end" className="w-64 p-1">
-                <div className="px-1.5 py-1 text-xs font-medium text-muted-foreground">
-                  Shown in table
-                </div>
-                <ul className="flex list-none flex-col gap-0.5 ps-0">
-                  {table
-                    .getVisibleLeafColumns()
-                    .map((column) => renderColumnMenuRow(column, false))}
-                </ul>
-                {hiddenMenuColumns.length > 0 && (
-                  <>
-                    <div className="px-1.5 py-1 text-xs font-medium text-muted-foreground">
-                      Hidden in table
-                    </div>
-                    <ul className="flex list-none flex-col gap-0.5 ps-0">
-                      {hiddenMenuColumns.map((column) =>
-                        renderColumnMenuRow(column, true)
-                      )}
-                    </ul>
-                  </>
-                )}
-              </PopoverContent>
-            </Popover>
+          <div className="flex items-center gap-2">
+            {canFilter && <DataSearch table={table} />}
+            <div className="ms-auto flex shrink-0 items-center gap-1.5">
+              {canFilter && (
+                <DataFilterPopover
+                  table={table}
+                  trigger={
+                    <Button variant="outline" size="icon" aria-label="Filter">
+                      <FilterIcon className="size-4" />
+                    </Button>
+                  }
+                />
+              )}
+              <Popover>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <PopoverTrigger
+                          render={
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              aria-label="Columns"
+                            >
+                              <Columns3Icon className="size-4" />
+                            </Button>
+                          }
+                        />
+                      }
+                    />
+                    <TooltipContent>Column</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <PopoverContent align="end" className="w-64 p-1">
+                  <div className="px-1.5 py-1 text-xs font-medium text-muted-foreground">
+                    Shown in table
+                  </div>
+                  <ul className="flex list-none flex-col gap-0.5 ps-0">
+                    {table
+                      .getVisibleLeafColumns()
+                      .map((column) => renderColumnMenuRow(column, false))}
+                  </ul>
+                  {hiddenMenuColumns.length > 0 && (
+                    <>
+                      <div className="px-1.5 py-1 text-xs font-medium text-muted-foreground">
+                        Hidden in table
+                      </div>
+                      <ul className="flex list-none flex-col gap-0.5 ps-0">
+                        {hiddenMenuColumns.map((column) =>
+                          renderColumnMenuRow(column, true)
+                        )}
+                      </ul>
+                    </>
+                  )}
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
+          {canFilter && <DataFilterChips table={table} />}
           {/* aria-rowcount includes the header row, per the grid pattern's own convention. */}
           <Table
             role="grid"
@@ -2107,7 +2266,7 @@ export function DataGrid<TData>({
             if (!open) closeCardSheet()
           }}
         >
-          <DrawerContent className="h-[50vh]">
+          <DrawerContent className="h-[80vh]">
             <DrawerHeader>
               <DrawerTitle>
                 {titleColumn

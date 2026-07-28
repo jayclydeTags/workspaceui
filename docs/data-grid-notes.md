@@ -101,3 +101,27 @@ uses for its own narrow-mode threshold, so the common case (`DataGrid` and
 layouts together — even though each component measures its own container
 independently. If the two ever need to diverge, this coupling is implicit or
 only enforced by convention (each file just re-declares the literal `448`).
+
+## Toolbar shape, wide vs. narrow
+
+The two branches deliberately expose the same four concerns (search, filter,
+sort, column visibility) through different affordances, because the cards
+branch has no header row to hang sort/pin/hide off:
+
+- **Wide** — one row (search, then Filter and Columns buttons), plus a chip
+  row with "Clear filters". Sort stays on the headers.
+- **Narrow** — search inline with a single badge-counted **Options** button
+  opening one sheet that stacks Sort, Filters, and Visible fields.
+
+The narrow shape came out of a throwaway prototype (three option bars,
+`?variant=`, deleted after the call) that weighed it against two alternatives:
+three sibling drawer buttons (Sort / Filter / Fields), and a status-pill rail
+with search on demand. The single sheet won on **vertical chrome** — it costs
+one row instead of two on a 390px screen where the card list is the point —
+and on **genericness**: the pill rail needs a status-like select column to
+exist, which `DataGrid` can't assume. Its cost is that everything is two taps
+deep rather than one.
+
+Both branches only show search/filter when `getFilteredRowModel` is wired, and
+sort when `getSortedRowModel` is — the same "never render a no-op affordance"
+rule the column headers' sort button already followed.

@@ -24,10 +24,8 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { BulkToolbar } from "@/registry/bases/base/workspaceui/bulk-toolbar"
-import { DataFilter } from "@/registry/bases/base/workspaceui/data-filter"
 import { DataGrid } from "@/registry/bases/base/workspaceui/data-grid"
 import {
-  DataSearch,
   dataGridGetColumnCanGlobalFilter,
   dataGridGlobalFilterFn,
 } from "@/registry/bases/base/workspaceui/data-search"
@@ -73,11 +71,7 @@ export function DataTable({ data: initialData }: DataTableProps) {
 
   return (
     <div className="flex h-full flex-col gap-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <DataSearch table={table} />
-        <DataFilter table={table} />
-      </div>
-
+      {/* Search, filter, and columns all live in DataGrid's own toolbar. */}
       <div className="relative flex-1 overflow-auto">
         <DataGrid
           table={table}

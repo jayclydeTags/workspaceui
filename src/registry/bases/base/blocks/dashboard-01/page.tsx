@@ -9,11 +9,7 @@ import {
 } from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import {
   AppSidebar,
   NAV_ITEMS,
@@ -22,6 +18,7 @@ import {
   EmptyContent,
   PlaceholderContent,
 } from "@/registry/bases/base/blocks/dashboard-01/components/dashboard-content"
+import { DashboardHeader } from "@/registry/bases/base/blocks/dashboard-01/components/dashboard-header"
 
 // ponytail: CONTENT at module level avoids re-creating ReactNodes on each render
 const CONTENT: Record<string, React.ReactNode> = {
@@ -54,6 +51,8 @@ const CONTENT: Record<string, React.ReactNode> = {
 
 export function Dashboard01({ className }: { className?: string }) {
   const [activeId, setActiveId] = React.useState<string>(NAV_ITEMS[0].id)
+  const activeTitle =
+    NAV_ITEMS.find((item) => item.id === activeId)?.title ?? activeId
 
   return (
     <SidebarProvider className={cn("h-full min-h-0", className)}>
@@ -62,9 +61,7 @@ export function Dashboard01({ className }: { className?: string }) {
         onNavClick={(item) => setActiveId(item.id)}
       />
       <SidebarInset>
-        <header className="flex h-10 shrink-0 items-center gap-2 border-b border-border px-3">
-          <SidebarTrigger />
-        </header>
+        <DashboardHeader title={activeTitle} />
         <div className="min-h-0 flex-1">
           {CONTENT[activeId] ?? (
             <div className="flex h-full items-center justify-center text-sm text-muted-foreground">

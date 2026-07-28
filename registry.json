@@ -861,7 +861,16 @@
       "title": "Sidebar Shell (Collapsible)",
       "description": "Collapsible sidebar nav that swaps a single content area directly, no tabs.",
       "dependencies": ["lucide-react"],
-      "registryDependencies": ["sidebar", "utils"],
+      "registryDependencies": [
+        "sidebar",
+        "avatar",
+        "breadcrumb",
+        "button",
+        "dropdown-menu",
+        "input-group",
+        "separator",
+        "utils"
+      ],
       "files": [
         {
           "path": "src/registry/bases/base/blocks/dashboard-01/page.tsx",
@@ -874,6 +883,10 @@
         },
         {
           "path": "src/registry/bases/base/blocks/dashboard-01/components/dashboard-content.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/dashboard-01/components/dashboard-header.tsx",
           "type": "registry:block"
         }
       ]

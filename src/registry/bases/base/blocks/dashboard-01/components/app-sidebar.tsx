@@ -51,9 +51,18 @@ export function AppSidebar({
   onNavClick: (item: (typeof NAV_ITEMS)[number]) => void
 }) {
   return (
-    <Sidebar variant="inset">
+    <Sidebar variant="inset" collapsible="icon">
       <SidebarHeader>
-        <div className="px-2 py-1 text-sm font-semibold">My App</div>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" className="pointer-events-none">
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                <DashboardIcon className="size-4" />
+              </div>
+              <span className="truncate text-sm font-semibold">My App</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

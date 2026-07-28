@@ -189,7 +189,7 @@ export const blocks: BlockMeta[] = [
     slug: "employee",
     title: "CRUD Table (Employees)",
     description:
-      "Employee directory with create/edit dialog form, row-action menu, and a delete confirmation.",
+      "Employee directory with a slide-over create/edit sheet, row-action menu, and a delete confirmation.",
     category: "CRUD Tables",
     Component: Employee,
   },
@@ -205,7 +205,7 @@ export const blocks: BlockMeta[] = [
     slug: "department",
     title: "CRUD Table (Departments)",
     description:
-      "Departments table with create/edit dialog form, row-action menu, and a delete confirmation.",
+      "Departments table with inline row editing, a new-row form, and a delete confirmation — no dialog for create/edit.",
     category: "CRUD Tables",
     Component: Department,
   },
@@ -237,7 +237,7 @@ export const blocks: BlockMeta[] = [
     slug: "products",
     title: "CRUD Table (Products)",
     description:
-      "Product / SKU catalog list with create/edit dialog form, row-action menu, and a delete confirmation.",
+      "Product / SKU catalog with a master-detail split view — select a row to view and edit it in a side panel, no dialog.",
     category: "CRUD Tables",
     Component: Products,
   },

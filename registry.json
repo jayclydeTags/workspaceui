@@ -449,7 +449,7 @@
       "name": "department",
       "type": "registry:block",
       "title": "CRUD Table (Departments)",
-      "description": "Departments table with create/edit dialog form, row-action menu, and a delete confirmation.",
+      "description": "Departments table with inline row editing, a new-row form, and a delete confirmation — no dialog for create/edit.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
         "badge",
@@ -457,7 +457,6 @@
         "dialog",
         "dropdown-menu",
         "empty",
-        "field",
         "input",
         "select",
         "table",
@@ -476,10 +475,6 @@
         {
           "path": "src/registry/bases/base/blocks/department/components/data-table.tsx",
           "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/department/components/department-dialog.tsx",
-          "type": "registry:block"
         }
       ]
     },
@@ -487,18 +482,18 @@
       "name": "employee",
       "type": "registry:block",
       "title": "CRUD Table (Employees)",
-      "description": "Employee directory with create/edit dialog form, row-action menu, and a delete confirmation.",
+      "description": "Employee directory with a slide-over create/edit sheet, row-action menu, and a delete confirmation.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "badge",
         "button",
-        "dialog",
         "dropdown-menu",
         "empty",
         "field",
         "input",
         "select",
+        "sheet",
         "table",
         "jayclydeTags/workspaceui/page"
       ],
@@ -517,7 +512,7 @@
           "type": "registry:block"
         },
         {
-          "path": "src/registry/bases/base/blocks/employee/components/employee-dialog.tsx",
+          "path": "src/registry/bases/base/blocks/employee/components/employee-sheet.tsx",
           "type": "registry:block"
         }
       ]
@@ -1161,14 +1156,12 @@
       "name": "products",
       "type": "registry:block",
       "title": "CRUD Table (Products)",
-      "description": "Product / SKU catalog list with create/edit dialog form, row-action menu, and a delete confirmation.",
+      "description": "Product / SKU catalog with a master-detail split view — select a row to view and edit it in a side panel, no dialog.",
       "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
         "badge",
         "button",
-        "dialog",
-        "dropdown-menu",
         "empty",
         "field",
         "input",
@@ -1191,7 +1184,7 @@
           "type": "registry:block"
         },
         {
-          "path": "src/registry/bases/base/blocks/products/components/product-dialog.tsx",
+          "path": "src/registry/bases/base/blocks/products/components/detail-panel.tsx",
           "type": "registry:block"
         }
       ]

@@ -22,9 +22,9 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/data-table.tsx",
     },
     {
-      name: "employee-dialog.tsx",
-      path: "components/blocks/employee/components/employee-dialog.tsx",
-      src: "components/employee-dialog.tsx",
+      name: "employee-sheet.tsx",
+      path: "components/blocks/employee/components/employee-sheet.tsx",
+      src: "components/employee-sheet.tsx",
     },
   ],
   "deductions-benefits": [
@@ -84,9 +84,9 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/data-table.tsx",
     },
     {
-      name: "product-dialog.tsx",
-      path: "components/blocks/products/components/product-dialog.tsx",
-      src: "components/product-dialog.tsx",
+      name: "detail-panel.tsx",
+      path: "components/blocks/products/components/detail-panel.tsx",
+      src: "components/detail-panel.tsx",
     },
   ],
   warehouses: [
@@ -595,11 +595,6 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       name: "data-table.tsx",
       path: "components/blocks/department/components/data-table.tsx",
       src: "components/data-table.tsx",
-    },
-    {
-      name: "department-dialog.tsx",
-      path: "components/blocks/department/components/department-dialog.tsx",
-      src: "components/department-dialog.tsx",
     },
   ],
   "import-export": [

@@ -24,7 +24,7 @@ import {
 import { Page } from "@/registry/bases/base/workspaceui/page"
 import { EMPLOYEES, type Employee, type EmployeeDraft } from "./data"
 import { DataTable } from "./components/data-table"
-import { EmployeeDialog } from "./components/employee-dialog"
+import { EmployeeSheet } from "./components/employee-sheet"
 
 export function Employee() {
   const [employees, setEmployees] = React.useState<Employee[]>(EMPLOYEES)
@@ -93,7 +93,7 @@ export function Employee() {
         )}
       </div>
 
-      <EmployeeDialog
+      <EmployeeSheet
         open={formOpen}
         onOpenChange={setFormOpen}
         editing={editing}

@@ -16,15 +16,17 @@ describe("Department", () => {
     expect(screen.getByText("5 departments")).toBeInTheDocument()
   })
 
-  it("creates a new department", async () => {
+  it("creates a new department inline, with no dialog", async () => {
     const user = userEvent.setup()
     render(<Department />)
 
     await user.click(screen.getByRole("button", { name: /new department/i }))
-    await user.type(screen.getByLabelText("Name"), "Marketing")
-    await user.type(screen.getByLabelText("Code"), "mkt")
-    await user.type(screen.getByLabelText("Manager"), "Alex Kim")
-    await user.click(screen.getByRole("button", { name: "Create department" }))
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+
+    await user.type(screen.getAllByLabelText("Name")[0], "Marketing")
+    await user.type(screen.getAllByLabelText("Code")[0], "mkt")
+    await user.type(screen.getAllByLabelText("Manager")[0], "Alex Kim")
+    await user.click(screen.getAllByRole("button", { name: "Save" })[0])
 
     expect(screen.getAllByText("Marketing").length).toBeGreaterThan(0)
     // code is upper-cased on input
@@ -32,7 +34,19 @@ describe("Department", () => {
     expect(screen.getByText("6 departments")).toBeInTheDocument()
   })
 
-  it("edits an existing department", async () => {
+  it("discards a blank new-row draft on cancel", async () => {
+    const user = userEvent.setup()
+    render(<Department />)
+
+    await user.click(screen.getByRole("button", { name: /new department/i }))
+    await user.type(screen.getAllByLabelText("Name")[0], "Marketing")
+    await user.click(screen.getAllByRole("button", { name: "Cancel" })[0])
+
+    expect(screen.queryByText("Marketing")).not.toBeInTheDocument()
+    expect(screen.getByText("5 departments")).toBeInTheDocument()
+  })
+
+  it("edits an existing department inline, with no dialog", async () => {
     const user = userEvent.setup()
     render(<Department />)
 
@@ -40,11 +54,12 @@ describe("Department", () => {
       screen.getAllByRole("button", { name: "Actions for Sales" })[0]
     )
     await user.click(await screen.findByRole("menuitem", { name: "Edit" }))
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
 
-    const nameInput = screen.getByLabelText("Name")
+    const nameInput = screen.getAllByLabelText("Name")[0]
     await user.clear(nameInput)
     await user.type(nameInput, "Revenue")
-    await user.click(screen.getByRole("button", { name: "Save changes" }))
+    await user.click(screen.getAllByRole("button", { name: "Save" })[0])
 
     expect(screen.getAllByText("Revenue").length).toBeGreaterThan(0)
     expect(screen.queryByText("Sales")).not.toBeInTheDocument()

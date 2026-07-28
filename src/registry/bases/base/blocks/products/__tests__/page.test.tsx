@@ -16,11 +16,13 @@ describe("Products", () => {
     expect(screen.getByText("6 products")).toBeInTheDocument()
   })
 
-  it("creates a new product", async () => {
+  it("creates a new product in the detail panel, with no dialog", async () => {
     const user = userEvent.setup()
     render(<Products />)
 
     await user.click(screen.getByRole("button", { name: /new product/i }))
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+
     await user.type(screen.getByLabelText("Name"), "Enamel Camp Cup")
     await user.type(screen.getByLabelText("SKU"), "SKU-2001")
     await user.type(screen.getByLabelText("Price ($)"), "19")
@@ -30,14 +32,12 @@ describe("Products", () => {
     expect(screen.getByText("7 products")).toBeInTheDocument()
   })
 
-  it("edits an existing product", async () => {
+  it("selects a product to edit it in the detail panel, with no dialog", async () => {
     const user = userEvent.setup()
     render(<Products />)
 
-    await user.click(
-      screen.getAllByRole("button", { name: "Actions for SKU-1004" })[0]
-    )
-    await user.click(await screen.findByRole("menuitem", { name: "Edit" }))
+    await user.click(screen.getAllByText("Recycled Notebook A5")[0])
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
 
     const nameInput = screen.getByLabelText("Name")
     await user.clear(nameInput)
@@ -55,9 +55,8 @@ describe("Products", () => {
     render(<Products />)
 
     await user.click(
-      screen.getAllByRole("button", { name: "Actions for SKU-1005" })[0]
+      screen.getAllByRole("button", { name: "Delete SKU-1005" })[0]
     )
-    await user.click(await screen.findByRole("menuitem", { name: "Delete" }))
 
     const dialog = screen.getByRole("alertdialog")
     await user.click(within(dialog).getByRole("button", { name: "Delete" }))

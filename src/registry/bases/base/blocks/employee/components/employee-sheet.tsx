@@ -1,13 +1,6 @@
 import * as React from "react"
 
 import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {
@@ -18,6 +11,13 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import {
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
+import {
   emptyDraft,
   isValid,
   type Employee,
@@ -25,7 +25,7 @@ import {
   type EmployeeStatus,
 } from "../data"
 
-export function EmployeeDialog({
+export function EmployeeSheet({
   open,
   onOpenChange,
   editing,
@@ -73,14 +73,16 @@ export function EmployeeDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>
-            {editing ? "Edit employee" : "New employee"}
-          </DialogTitle>
-        </DialogHeader>
-        <form id="employee-form" onSubmit={submit}>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent className="flex flex-col gap-0 sm:max-w-md">
+        <SheetHeader>
+          <SheetTitle>{editing ? "Edit employee" : "New employee"}</SheetTitle>
+        </SheetHeader>
+        <form
+          id="employee-form"
+          onSubmit={submit}
+          className="flex-1 overflow-auto px-4"
+        >
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="employee-name">Name</FieldLabel>
@@ -152,7 +154,7 @@ export function EmployeeDialog({
             </Field>
           </FieldGroup>
         </form>
-        <DialogFooter>
+        <SheetFooter className="flex-row justify-end">
           <Button
             type="button"
             variant="outline"
@@ -163,8 +165,8 @@ export function EmployeeDialog({
           <Button type="submit" form="employee-form" disabled={!isValid(draft)}>
             {editing ? "Save changes" : "Create employee"}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   )
 }

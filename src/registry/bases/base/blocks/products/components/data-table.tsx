@@ -1,14 +1,8 @@
 import { HugeiconsIcon } from "@hugeicons/react"
-import { MoreHorizontalIcon } from "@hugeicons/core-free-icons"
+import { Delete02Icon } from "@hugeicons/core-free-icons"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import {
   Table,
   TableBody,
@@ -17,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { cn } from "@/lib/utils"
 import { formatCurrency, type Product } from "../data"
 
 const STATUS_VARIANT: Record<
@@ -28,43 +23,6 @@ const STATUS_VARIANT: Record<
   discontinued: "secondary",
 }
 
-function RowActions({
-  product,
-  onEdit,
-  onDelete,
-}: {
-  product: Product
-  onEdit: (product: Product) => void
-  onDelete: (product: Product) => void
-}) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        render={
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label={`Actions for ${product.sku}`}
-          >
-            <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
-          </Button>
-        }
-      />
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => onEdit(product)}>
-          Edit
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          variant="destructive"
-          onClick={() => onDelete(product)}
-        >
-          Delete
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
-}
-
 function StatusBadge({ status }: { status: Product["status"] }) {
   return (
     <Badge variant={STATUS_VARIANT[status]} className="capitalize">
@@ -73,13 +31,16 @@ function StatusBadge({ status }: { status: Product["status"] }) {
   )
 }
 
+/** Master list — selecting a row opens it in the detail panel; no dialog. */
 export function DataTable({
   products,
-  onEdit,
+  selectedId,
+  onSelect,
   onDelete,
 }: {
   products: Product[]
-  onEdit: (product: Product) => void
+  selectedId: string | null
+  onSelect: (product: Product) => void
   onDelete: (product: Product) => void
 }) {
   return (
@@ -99,7 +60,15 @@ export function DataTable({
           </TableHeader>
           <TableBody>
             {products.map((product) => (
-              <TableRow key={product.id}>
+              <TableRow
+                key={product.id}
+                aria-selected={product.id === selectedId}
+                onClick={() => onSelect(product)}
+                className={cn(
+                  "cursor-pointer",
+                  product.id === selectedId && "bg-muted"
+                )}
+              >
                 <TableCell className="px-6 font-medium">
                   {product.name}
                 </TableCell>
@@ -116,11 +85,17 @@ export function DataTable({
                   <StatusBadge status={product.status} />
                 </TableCell>
                 <TableCell className="pr-6">
-                  <RowActions
-                    product={product}
-                    onEdit={onEdit}
-                    onDelete={onDelete}
-                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label={`Delete ${product.sku}`}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onDelete(product)
+                    }}
+                  >
+                    <HugeiconsIcon icon={Delete02Icon} strokeWidth={2} />
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -131,8 +106,19 @@ export function DataTable({
       {/* Card list — narrow pane (< @sm) */}
       <ul className="flex-1 divide-y divide-border overflow-auto @sm:hidden">
         {products.map((product) => (
-          <li key={product.id} className="flex items-start gap-3 px-4 py-3">
-            <div className="min-w-0 flex-1">
+          <li
+            key={product.id}
+            className={cn(
+              "flex items-start gap-3 px-4 py-3",
+              product.id === selectedId && "bg-muted"
+            )}
+          >
+            <button
+              type="button"
+              aria-selected={product.id === selectedId}
+              onClick={() => onSelect(product)}
+              className="min-w-0 flex-1 text-start"
+            >
               <div className="flex items-center gap-2">
                 <span className="truncate text-sm font-medium">
                   {product.name}
@@ -147,8 +133,15 @@ export function DataTable({
               <div className="mt-1.5">
                 <StatusBadge status={product.status} />
               </div>
-            </div>
-            <RowActions product={product} onEdit={onEdit} onDelete={onDelete} />
+            </button>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={`Delete ${product.sku}`}
+              onClick={() => onDelete(product)}
+            >
+              <HugeiconsIcon icon={Delete02Icon} strokeWidth={2} />
+            </Button>
           </li>
         ))}
       </ul>

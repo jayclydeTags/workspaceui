@@ -22,36 +22,25 @@ import {
 import { Page } from "@/registry/bases/base/workspaceui/page"
 import { DEPARTMENTS, type Department, type DepartmentDraft } from "./data"
 import { DataTable } from "./components/data-table"
-import { DepartmentDialog } from "./components/department-dialog"
 
 export function Department() {
   const [departments, setDepartments] =
     React.useState<Department[]>(DEPARTMENTS)
-  const [formOpen, setFormOpen] = React.useState(false)
-  const [editing, setEditing] = React.useState<Department | null>(null)
+  const [isCreating, setIsCreating] = React.useState(false)
   const [deleting, setDeleting] = React.useState<Department | null>(null)
 
-  function openCreate() {
-    setEditing(null)
-    setFormOpen(true)
+  function createDepartment(draft: DepartmentDraft) {
+    setDepartments((prev) => [
+      { ...draft, id: crypto.randomUUID(), headcount: 0 },
+      ...prev,
+    ])
+    setIsCreating(false)
   }
 
-  function openEdit(dept: Department) {
-    setEditing(dept)
-    setFormOpen(true)
-  }
-
-  function save(draft: DepartmentDraft) {
-    if (editing) {
-      setDepartments((prev) =>
-        prev.map((d) => (d.id === editing.id ? { ...d, ...draft } : d))
-      )
-    } else {
-      setDepartments((prev) => [
-        ...prev,
-        { ...draft, id: crypto.randomUUID(), headcount: 0 },
-      ])
-    }
+  function updateDepartment(id: string, draft: DepartmentDraft) {
+    setDepartments((prev) =>
+      prev.map((d) => (d.id === id ? { ...d, ...draft } : d))
+    )
   }
 
   function confirmDelete() {
@@ -66,7 +55,11 @@ export function Department() {
       subtitle={`${departments.length} departments`}
       className="@container overflow-hidden"
       actions={
-        <Button size="sm" onClick={openCreate}>
+        <Button
+          size="sm"
+          onClick={() => setIsCreating(true)}
+          disabled={isCreating}
+        >
           <HugeiconsIcon
             icon={PlusSignIcon}
             strokeWidth={2}
@@ -77,7 +70,7 @@ export function Department() {
       }
     >
       <div className="flex h-full flex-col">
-        {departments.length === 0 ? (
+        {departments.length === 0 && !isCreating ? (
           <Empty>
             <EmptyHeader>
               <EmptyTitle>No departments</EmptyTitle>
@@ -89,18 +82,14 @@ export function Department() {
         ) : (
           <DataTable
             departments={departments}
-            onEdit={openEdit}
+            isCreating={isCreating}
+            onCreate={createDepartment}
+            onCancelCreate={() => setIsCreating(false)}
+            onUpdate={updateDepartment}
             onDelete={setDeleting}
           />
         )}
       </div>
-
-      <DepartmentDialog
-        open={formOpen}
-        onOpenChange={setFormOpen}
-        editing={editing}
-        onSubmit={save}
-      />
 
       <Dialog
         open={deleting !== null}

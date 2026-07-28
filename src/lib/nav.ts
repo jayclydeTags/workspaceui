@@ -98,19 +98,19 @@ export const blocksNav: NavSection[] = [
             title: "CRUD Table (Departments)",
             href: "/blocks/department",
             description:
-              "Departments table with create/edit dialog form, row-action menu, and a delete confirmation.",
+              "Departments table with inline row editing, a new-row form, and a delete confirmation — no dialog for create/edit.",
           },
           {
             title: "CRUD Table (Employees)",
             href: "/blocks/employee",
             description:
-              "Employee directory with create/edit dialog form, row-action menu, and a delete confirmation.",
+              "Employee directory with a slide-over create/edit sheet, row-action menu, and a delete confirmation.",
           },
           {
             title: "CRUD Table (Products)",
             href: "/blocks/products",
             description:
-              "Product / SKU catalog list with create/edit dialog form, row-action menu, and a delete confirmation.",
+              "Product / SKU catalog with a master-detail split view — select a row to view and edit it in a side panel, no dialog.",
           },
           {
             title: "CRUD Table with Utilization Bar",

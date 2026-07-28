@@ -2,24 +2,11 @@ import * as React from "react"
 
 import { Page } from "@/registry/bases/base/workspaceui/page"
 
-export function DashboardContent() {
-  const stats = [
-    { label: "Revenue", value: "$12,450" },
-    { label: "Users", value: "1,234" },
-    { label: "Orders", value: "567" },
-    { label: "Active", value: "89" },
-  ]
+export function EmptyContent() {
   return (
-    <Page title="Dashboard" subtitle="Overview of your workspace" hasPadding>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        {stats.map((stat) => (
-          <div key={stat.label} className="rounded-lg border border-border p-4">
-            <p className="text-xs text-muted-foreground">{stat.label}</p>
-            <p className="mt-1 text-xl font-bold">{stat.value}</p>
-          </div>
-        ))}
-      </div>
-    </Page>
+    <div className="h-full p-6">
+      <div className="h-full rounded-lg border border-dashed border-border bg-muted/50" />
+    </div>
   )
 }
 

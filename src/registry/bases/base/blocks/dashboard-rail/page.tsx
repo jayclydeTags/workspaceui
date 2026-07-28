@@ -20,7 +20,7 @@ import {
   type NavItem,
 } from "@/registry/bases/base/blocks/dashboard-rail/components/nav-sidebar"
 import {
-  DashboardContent,
+  EmptyContent,
   PlaceholderContent,
 } from "@/registry/bases/base/blocks/dashboard-rail/components/dashboard-content"
 
@@ -46,7 +46,7 @@ const TAB_CONTENT: Record<string, React.ReactNode> = Object.fromEntries(
   ALL_NAV_ITEMS.map((item) => [
     item.id,
     item.id === "dashboard" ? (
-      <DashboardContent />
+      <EmptyContent />
     ) : (
       <PlaceholderContent Icon={item.Icon} title={item.title} />
     ),

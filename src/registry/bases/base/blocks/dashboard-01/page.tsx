@@ -25,7 +25,7 @@ import {
   NAV_ITEMS,
 } from "@/registry/bases/base/blocks/dashboard-01/components/app-sidebar"
 import {
-  DashboardContent,
+  EmptyContent,
   PlaceholderContent,
 } from "@/registry/bases/base/blocks/dashboard-01/components/dashboard-content"
 
@@ -51,7 +51,7 @@ const INITIAL_PANES = [
 
 // ponytail: TAB_CONTENT at module level avoids re-creating ReactNodes on each render
 const TAB_CONTENT: Record<string, React.ReactNode> = {
-  dashboard: <DashboardContent />,
+  dashboard: <EmptyContent />,
   documents: (
     <PlaceholderContent
       Icon={(props) => (

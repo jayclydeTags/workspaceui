@@ -22,9 +22,7 @@ beforeAll(() => {
 describe("DashboardRail block", () => {
   it("renders the app rail and nav sidebar alongside the Dashboard tab", () => {
     render(<DashboardRail />)
-    expect(
-      screen.getByRole("heading", { level: 2, name: "Dashboard" })
-    ).toBeInTheDocument()
+    expect(screen.getByRole("tab", { name: "Dashboard" })).toBeInTheDocument()
     expect(
       screen.getByRole("button", { name: "Workspace" })
     ).toBeInTheDocument()

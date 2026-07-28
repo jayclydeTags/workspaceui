@@ -97,7 +97,7 @@ describe("DataPagination", () => {
     render(<Harness />)
 
     await user.click(screen.getByRole("combobox", { name: "Rows per page" }))
-    await user.click(screen.getByRole("option", { name: "20" }))
+    await user.click(await screen.findByRole("option", { name: "20" }))
 
     expect(rowNames()).toHaveLength(20)
     expect(screen.getByText("Page 1 of 3")).toBeInTheDocument()

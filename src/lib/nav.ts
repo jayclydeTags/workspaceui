@@ -626,18 +626,4 @@ export const nav: NavSection[] = [
       { title: "Installation", href: "/docs/getting-started/installation" },
     ],
   },
-  {
-    title: "Components",
-    items: [
-      { title: "Workspace", href: "/docs/components/workspace" },
-      { title: "Page", href: "/docs/components/page" },
-      { title: "Password Input", href: "/docs/components/password-input" },
-      { title: "Bulk Toolbar", href: "/docs/components/bulk-toolbar" },
-      { title: "Data Grid Types", href: "/docs/components/data-grid-types" },
-      { title: "Data Grid", href: "/docs/components/data-grid" },
-      { title: "Data Filter", href: "/docs/components/data-filter" },
-      { title: "Data Search", href: "/docs/components/data-search" },
-      { title: "Data Pagination", href: "/docs/components/data-pagination" },
-    ],
-  },
 ]

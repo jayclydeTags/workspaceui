@@ -4,8 +4,6 @@ import { resolve } from "path"
 import ts from "typescript"
 import { describe, expect, it } from "vitest"
 
-import { nav } from "@/lib/nav"
-
 interface RegistryItem {
   name: string
   type: string
@@ -70,26 +68,19 @@ function getDocumentedPropNames(mdxPath: string): Set<string> {
 
 describe("component docs coverage", () => {
   it.each(uiItems)(
-    "$name: has a docs page, sidebar entries, and prop table",
+    "$name: has a docs page, is in the sidebar nav tree, and has a prop table",
     (item) => {
       const docPath = `src/content/docs/components/${item.name}.mdx`
-      const url = `/docs/components/${item.name}`
 
       expect(
         existsSync(resolve(REPO_ROOT, docPath)),
         `missing doc page: ${docPath}`
       ).toBe(true)
 
-      const inNav = nav.some((section) =>
-        (section.items ?? []).some((navItem) => navItem.href === url)
-      )
-      expect(
-        inNav,
-        `${item.name}: no sidebar entry in src/lib/nav.ts for ${url}`
-      ).toBe(true)
-
-      // fumadocs builds the sidebar from content/docs/**/meta.json `pages`; a page
-      // not listed there is dropped from the tree. Assert the item is curated in.
+      // The sidebar's Components section is generated from source.getPages()
+      // (see src/lib/docs-nav.ts), which fumadocs builds from
+      // content/docs/**/meta.json `pages` — a page not listed there is
+      // dropped from the tree. Assert the item is curated in.
       const meta = JSON.parse(
         readFileSync(
           resolve(REPO_ROOT, "src/content/docs/components/meta.json"),

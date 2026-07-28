@@ -2,10 +2,10 @@ import Link from "next/link"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons"
 
-import { nav } from "@/lib/nav"
+import { getDocsNav } from "@/lib/docs-nav"
 import { Button } from "@/components/ui/button"
 
-const flatNav = nav.flatMap((section) => section.items ?? [])
+const flatNav = getDocsNav().flatMap((section) => section.items ?? [])
 
 export function getAdjacentDocs(slug?: string[]) {
   const href = `/docs/${(slug ?? []).join("/")}`

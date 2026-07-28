@@ -5,16 +5,35 @@ import { describe, it, expect } from "vitest"
 import { BulkActionsToolbar } from "../page"
 
 describe("BulkActionsToolbar", () => {
-  it("hides the toolbar until a row is selected", async () => {
+  it("opens with rows selected so the toolbar is visible", () => {
+    render(<BulkActionsToolbar />)
+
+    expect(screen.getByRole("toolbar")).toBeInTheDocument()
+    expect(screen.getByText("2 selected")).toBeInTheDocument()
+  })
+
+  it("narrows the rows from the search box", async () => {
     const user = userEvent.setup()
     render(<BulkActionsToolbar />)
 
-    expect(screen.queryByRole("toolbar")).not.toBeInTheDocument()
+    await user.type(screen.getByLabelText("Search"), "pdf")
 
-    await user.click(
-      screen.getByRole("checkbox", { name: "Select Logo Pack.zip" })
+    await waitFor(() =>
+      expect(screen.queryByText("Logo Pack.zip")).not.toBeInTheDocument()
     )
-    expect(screen.getByRole("toolbar")).toBeInTheDocument()
+    expect(screen.getByText("Brand Guidelines.pdf")).toBeInTheDocument()
+  })
+
+  it("hides the toolbar once the selection is emptied", async () => {
+    const user = userEvent.setup()
+    render(<BulkActionsToolbar />)
+
+    await user.click(screen.getByRole("button", { name: "Clear selection" }))
+    await waitFor(() =>
+      expect(screen.queryByRole("toolbar")).not.toBeInTheDocument()
+    )
+
+    await user.click(screen.getByRole("checkbox", { name: "Select row 6" }))
     expect(screen.getByText("1 selected")).toBeInTheDocument()
   })
 
@@ -22,7 +41,7 @@ describe("BulkActionsToolbar", () => {
     const user = userEvent.setup()
     render(<BulkActionsToolbar />)
 
-    await user.click(screen.getByRole("checkbox", { name: "Select all" }))
+    await user.click(screen.getByRole("checkbox", { name: "Select all rows" }))
     expect(screen.getByText("6 selected")).toBeInTheDocument()
   })
 
@@ -30,7 +49,7 @@ describe("BulkActionsToolbar", () => {
     const user = userEvent.setup()
     render(<BulkActionsToolbar />)
 
-    await user.click(screen.getByRole("checkbox", { name: "Select all" }))
+    await user.click(screen.getByRole("checkbox", { name: "Select all rows" }))
     await user.click(screen.getByRole("button", { name: /delete/i }))
 
     const dialog = screen.getByRole("alertdialog")
@@ -47,7 +66,7 @@ describe("BulkActionsToolbar", () => {
     const user = userEvent.setup()
     render(<BulkActionsToolbar />)
 
-    await user.click(screen.getByRole("checkbox", { name: "Select all" }))
+    await user.click(screen.getByRole("checkbox", { name: "Select all rows" }))
     await user.click(screen.getByRole("button", { name: "Clear selection" }))
 
     await waitFor(() =>

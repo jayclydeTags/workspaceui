@@ -33,7 +33,7 @@ export const blocksNav: NavSection[] = [
             title: "Table with Bulk Actions",
             href: "/blocks/bulk-actions-toolbar",
             description:
-              "Row selection with select-all and a contextual toolbar for bulk export/delete, with a confirm dialog for the destructive action.",
+              "Read-only DataGrid with row selection and select-all, plus a contextual toolbar for bulk export/delete and a confirm dialog for the destructive action.",
           },
           {
             title: "Search + Filter Bar",

@@ -133,7 +133,7 @@ export const blocks: BlockMeta[] = [
     slug: "bulk-actions-toolbar",
     title: "Table with Bulk Actions",
     description:
-      "Row selection with select-all and a contextual toolbar for bulk export/delete, with a confirm dialog for the destructive action.",
+      "Read-only DataGrid with row selection and select-all, plus a contextual toolbar for bulk export/delete and a confirm dialog for the destructive action.",
     category: "Tables",
     Component: BulkActionsToolbar,
   },

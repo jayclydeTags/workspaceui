@@ -278,15 +278,15 @@
       "name": "bulk-actions-toolbar",
       "type": "registry:block",
       "title": "Table with Bulk Actions",
-      "description": "Row selection with select-all and a contextual toolbar for bulk export/delete, with a confirm dialog for the destructive action.",
-      "dependencies": ["lucide-react"],
+      "description": "Read-only DataGrid with row selection and select-all, plus a contextual toolbar for bulk export/delete and a confirm dialog for the destructive action.",
+      "dependencies": ["lucide-react", "@tanstack/react-table"],
       "registryDependencies": [
         "alert-dialog",
         "button",
-        "checkbox",
         "empty",
         "jayclydeTags/workspaceui/page",
-        "jayclydeTags/workspaceui/bulk-toolbar"
+        "jayclydeTags/workspaceui/bulk-toolbar",
+        "jayclydeTags/workspaceui/data-grid"
       ],
       "files": [
         {

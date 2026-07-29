@@ -4,10 +4,31 @@ export type ActionType =
   "created" | "updated" | "deleted" | "viewed" | "shared" | "exported"
 export type StatusType = "success" | "failed" | "pending"
 
+export interface ActivityUser {
+  id: string
+  name: string
+}
+
+export const ACTIVITY_USERS: ActivityUser[] = [
+  { id: "u1", name: "Alice Chen" },
+  { id: "u2", name: "Bob Martinez" },
+  { id: "u3", name: "Diana Park" },
+  { id: "u4", name: "Eve Johnson" },
+  { id: "u5", name: "Charlie Kim" },
+]
+
+export const activityUser = (id: string) =>
+  ACTIVITY_USERS.find((u) => u.id === id)
+
+export const initials = (name: string) =>
+  name
+    .split(" ")
+    .map((part) => part[0]?.toUpperCase())
+    .join("")
+
 export interface ActivityEntry {
   id: string
-  user: string
-  initials: string
+  userId: string
   action: ActionType
   resource: string
   resourceType: string
@@ -23,8 +44,7 @@ const ago = (mins: number) => new Date(NOW.getTime() - mins * 60_000)
 export const ENTRIES: ActivityEntry[] = [
   {
     id: "1",
-    user: "Alice Chen",
-    initials: "AC",
+    userId: "u1",
     action: "created",
     resource: "Q4 Report",
     resourceType: "Document",
@@ -33,8 +53,7 @@ export const ENTRIES: ActivityEntry[] = [
   },
   {
     id: "2",
-    user: "Bob Martinez",
-    initials: "BM",
+    userId: "u2",
     action: "deleted",
     resource: "Old Backup",
     resourceType: "File",
@@ -43,8 +62,7 @@ export const ENTRIES: ActivityEntry[] = [
   },
   {
     id: "3",
-    user: "Diana Park",
-    initials: "DP",
+    userId: "u3",
     action: "updated",
     resource: "Website Redesign",
     resourceType: "Project",
@@ -53,8 +71,7 @@ export const ENTRIES: ActivityEntry[] = [
   },
   {
     id: "4",
-    user: "Eve Johnson",
-    initials: "EJ",
+    userId: "u4",
     action: "exported",
     resource: "Sales Summary",
     resourceType: "Report",
@@ -63,8 +80,7 @@ export const ENTRIES: ActivityEntry[] = [
   },
   {
     id: "5",
-    user: "Charlie Kim",
-    initials: "CK",
+    userId: "u5",
     action: "shared",
     resource: "Invoice #1042",
     resourceType: "Invoice",
@@ -73,8 +89,7 @@ export const ENTRIES: ActivityEntry[] = [
   },
   {
     id: "6",
-    user: "Alice Chen",
-    initials: "AC",
+    userId: "u1",
     action: "viewed",
     resource: "Fix navbar bug",
     resourceType: "Task",
@@ -83,8 +98,7 @@ export const ENTRIES: ActivityEntry[] = [
   },
   {
     id: "7",
-    user: "Bob Martinez",
-    initials: "BM",
+    userId: "u2",
     action: "updated",
     resource: "john@acme.com",
     resourceType: "User",
@@ -93,8 +107,7 @@ export const ENTRIES: ActivityEntry[] = [
   },
   {
     id: "8",
-    user: "Diana Park",
-    initials: "DP",
+    userId: "u3",
     action: "created",
     resource: "Sprint 12 Plan",
     resourceType: "Document",
@@ -103,8 +116,7 @@ export const ENTRIES: ActivityEntry[] = [
   },
   {
     id: "9",
-    user: "Eve Johnson",
-    initials: "EJ",
+    userId: "u4",
     action: "deleted",
     resource: "Draft Campaign",
     resourceType: "Document",
@@ -113,8 +125,7 @@ export const ENTRIES: ActivityEntry[] = [
   },
   {
     id: "10",
-    user: "Charlie Kim",
-    initials: "CK",
+    userId: "u5",
     action: "exported",
     resource: "Monthly KPIs",
     resourceType: "Report",
@@ -123,8 +134,7 @@ export const ENTRIES: ActivityEntry[] = [
   },
   {
     id: "11",
-    user: "Alice Chen",
-    initials: "AC",
+    userId: "u1",
     action: "shared",
     resource: "Onboarding Guide",
     resourceType: "Document",
@@ -133,8 +143,7 @@ export const ENTRIES: ActivityEntry[] = [
   },
   {
     id: "12",
-    user: "Bob Martinez",
-    initials: "BM",
+    userId: "u2",
     action: "created",
     resource: "API Token",
     resourceType: "Resource",
@@ -143,8 +152,7 @@ export const ENTRIES: ActivityEntry[] = [
   },
   {
     id: "13",
-    user: "Diana Park",
-    initials: "DP",
+    userId: "u3",
     action: "viewed",
     resource: "Admin Settings",
     resourceType: "Settings",
@@ -153,8 +161,7 @@ export const ENTRIES: ActivityEntry[] = [
   },
   {
     id: "14",
-    user: "Eve Johnson",
-    initials: "EJ",
+    userId: "u4",
     action: "updated",
     resource: "Q3 Report",
     resourceType: "Document",
@@ -163,8 +170,7 @@ export const ENTRIES: ActivityEntry[] = [
   },
   {
     id: "15",
-    user: "Charlie Kim",
-    initials: "CK",
+    userId: "u5",
     action: "deleted",
     resource: "Test Environment",
     resourceType: "Project",
@@ -173,8 +179,7 @@ export const ENTRIES: ActivityEntry[] = [
   },
   {
     id: "16",
-    user: "Alice Chen",
-    initials: "AC",
+    userId: "u1",
     action: "exported",
     resource: "User List",
     resourceType: "Report",
@@ -183,8 +188,7 @@ export const ENTRIES: ActivityEntry[] = [
   },
   {
     id: "17",
-    user: "Bob Martinez",
-    initials: "BM",
+    userId: "u2",
     action: "created",
     resource: "Bug Report #88",
     resourceType: "Task",
@@ -193,8 +197,7 @@ export const ENTRIES: ActivityEntry[] = [
   },
   {
     id: "18",
-    user: "Diana Park",
-    initials: "DP",
+    userId: "u3",
     action: "shared",
     resource: "Brand Assets",
     resourceType: "File",

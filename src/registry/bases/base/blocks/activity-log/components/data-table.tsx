@@ -1,3 +1,6 @@
+import { flexRender, type Table as TanstackTable } from "@tanstack/react-table"
+
+import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -14,45 +17,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import type { ActivityEntry, ActionType, StatusType } from "../data"
+import { activityUser, initials, type ActivityEntry } from "../data"
+import { ACTION_VARIANT, STATUS_VARIANT, formatTime } from "./columns"
 
-// ── Helpers ────────────────────────────────────────────────────────────────
+// Read-only: cells render through their column's `cell`, never an editor.
+export function DataTable({ table }: { table: TanstackTable<ActivityEntry> }) {
+  const rows = table.getRowModel().rows
 
-// Date.now() ticks between the server render and client hydration passes, so
-// its output legitimately differs — callers must suppressHydrationWarning.
-function formatTime(date: Date): string {
-  const mins = Math.floor((Date.now() - date.getTime()) / 60_000)
-  if (mins < 60) return `${mins}m ago`
-  const hrs = Math.floor(mins / 60)
-  if (hrs < 24) return `${hrs}h ago`
-  return date.toLocaleDateString()
-}
-
-const STATUS_VARIANT: Record<
-  StatusType,
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  success: "default",
-  failed: "destructive",
-  pending: "secondary",
-}
-
-const ACTION_VARIANT: Record<
-  ActionType,
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  created: "default",
-  updated: "secondary",
-  deleted: "destructive",
-  viewed: "outline",
-  shared: "secondary",
-  exported: "outline",
-}
-
-// ── DataTable ──────────────────────────────────────────────────────────────
-
-export function DataTable({ entries }: { entries: ActivityEntry[] }) {
-  if (entries.length === 0) {
+  if (rows.length === 0) {
     return (
       <Empty>
         <EmptyHeader>
@@ -67,103 +39,100 @@ export function DataTable({ entries }: { entries: ActivityEntry[] }) {
 
   return (
     <>
-      {/* Table — wide pane (≥ @sm) */}
-      <div className="hidden flex-1 overflow-auto @sm:block">
+      {/* Table — wide pane (≥ @sm). The scroll has to live on Table's own
+          container, or the sticky header sticks to a box that never scrolls. */}
+      <div className="hidden min-h-0 flex-1 overflow-hidden @sm:block [&>[data-slot=table-container]]:h-full">
         <Table>
           <TableHeader className="sticky top-0 z-10 bg-background">
-            <TableRow>
-              <TableHead className="px-6">User</TableHead>
-              <TableHead>Action</TableHead>
-              <TableHead className="hidden @md:table-cell">Resource</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="pr-6 text-right">Time</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {entries.map((e) => (
-              <TableRow key={e.id}>
-                <TableCell className="px-6">
-                  <div className="flex items-center gap-2.5">
-                    <Avatar className="size-7 text-[10px]">
-                      <AvatarFallback>{e.initials}</AvatarFallback>
-                    </Avatar>
-                    <span className="font-medium">{e.user}</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    variant={ACTION_VARIANT[e.action]}
-                    className="text-[11px] capitalize"
+            {table.getHeaderGroups().map((group) => (
+              <TableRow key={group.id}>
+                {group.headers.map((header, i) => (
+                  <TableHead
+                    key={header.id}
+                    className={cn(
+                      i === 0 && "px-6",
+                      i === group.headers.length - 1 && "pr-6 text-right"
+                    )}
                   >
-                    {e.action}
-                  </Badge>
-                </TableCell>
-                <TableCell className="hidden @md:table-cell">
-                  <p className="max-w-[200px] truncate">{e.resource}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {e.resourceType}
-                  </p>
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    variant={STATUS_VARIANT[e.status]}
-                    className="text-[11px] capitalize"
-                  >
-                    {e.status}
-                  </Badge>
-                </TableCell>
-                <TableCell
-                  className="pr-6 text-right text-xs text-muted-foreground"
-                  suppressHydrationWarning
-                >
-                  {formatTime(e.timestamp)}
-                </TableCell>
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
+          </TableHeader>
+          <TableBody>
+            {rows.map((row) => {
+              const cells = row.getVisibleCells()
+              return (
+                <TableRow key={row.id}>
+                  {cells.map((cell, i) => (
+                    <TableCell
+                      key={cell.id}
+                      className={cn(
+                        i === 0 && "px-6",
+                        i === cells.length - 1 &&
+                          "pr-6 text-right text-xs text-muted-foreground"
+                      )}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              )
+            })}
           </TableBody>
         </Table>
       </div>
 
       {/* Card list — narrow pane (< @sm) */}
       <ul className="flex-1 divide-y divide-border overflow-auto @sm:hidden">
-        {entries.map((e) => (
-          <li key={e.id} className="flex gap-3 px-4 py-3">
-            <Avatar className="mt-0.5 size-8 text-xs">
-              <AvatarFallback>{e.initials}</AvatarFallback>
-            </Avatar>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between gap-2">
-                <span className="truncate text-sm font-medium">{e.user}</span>
-                <span
-                  className="shrink-0 text-xs text-muted-foreground"
-                  suppressHydrationWarning
-                >
-                  {formatTime(e.timestamp)}
-                </span>
+        {rows.map(({ id, original: e }) => {
+          const name = activityUser(e.userId)?.name ?? "Unknown"
+          return (
+            <li key={id} className="flex gap-3 px-4 py-3">
+              <Avatar className="mt-0.5 size-8 text-xs">
+                <AvatarFallback>{initials(name)}</AvatarFallback>
+              </Avatar>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="truncate text-sm font-medium">{name}</span>
+                  <span
+                    className="shrink-0 text-xs text-muted-foreground"
+                    suppressHydrationWarning
+                  >
+                    {formatTime(e.timestamp)}
+                  </span>
+                </div>
+                <div className="mt-0.5 flex flex-wrap items-center gap-1 text-xs">
+                  <Badge
+                    variant={ACTION_VARIANT[e.action]}
+                    className="text-[10px] capitalize"
+                  >
+                    {e.action}
+                  </Badge>
+                  <span className="text-muted-foreground">·</span>
+                  <span className="truncate text-muted-foreground">
+                    {e.resource}
+                  </span>
+                </div>
+                <div className="mt-1.5">
+                  <Badge
+                    variant={STATUS_VARIANT[e.status]}
+                    className="text-[10px] capitalize"
+                  >
+                    {e.status}
+                  </Badge>
+                </div>
               </div>
-              <div className="mt-0.5 flex flex-wrap items-center gap-1 text-xs">
-                <Badge
-                  variant={ACTION_VARIANT[e.action]}
-                  className="text-[10px] capitalize"
-                >
-                  {e.action}
-                </Badge>
-                <span className="text-muted-foreground">·</span>
-                <span className="truncate text-muted-foreground">
-                  {e.resource}
-                </span>
-              </div>
-              <div className="mt-1.5">
-                <Badge
-                  variant={STATUS_VARIANT[e.status]}
-                  className="text-[10px] capitalize"
-                >
-                  {e.status}
-                </Badge>
-              </div>
-            </div>
-          </li>
-        ))}
+            </li>
+          )
+        })}
       </ul>
     </>
   )

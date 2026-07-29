@@ -710,6 +710,11 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
     { name: "page.tsx", path: "app/activity-log/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/activity-log/data.ts", src: "data.ts" },
     {
+      name: "columns.tsx",
+      path: "components/blocks/activity-log/components/columns.tsx",
+      src: "components/columns.tsx",
+    },
+    {
       name: "data-table.tsx",
       path: "components/blocks/activity-log/components/data-table.tsx",
       src: "components/data-table.tsx",

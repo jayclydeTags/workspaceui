@@ -918,19 +918,18 @@
       "name": "activity-log",
       "type": "registry:block",
       "title": "Responsive Table (Card Fallback)",
-      "description": "Filterable activity log with a responsive datatable \u2014 collapses to cards on narrow panes.",
-      "dependencies": ["lucide-react"],
+      "description": "Filterable activity log with a responsive datatable — collapses to cards on narrow panes.",
+      "dependencies": ["@tanstack/react-table", "lucide-react"],
       "registryDependencies": [
         "avatar",
         "badge",
         "button",
         "empty",
-        "input-group",
-        "dropdown-menu",
-        "pagination",
-        "select",
         "table",
-        "jayclydeTags/workspaceui/page"
+        "jayclydeTags/workspaceui/page",
+        "jayclydeTags/workspaceui/data-filter",
+        "jayclydeTags/workspaceui/data-search",
+        "jayclydeTags/workspaceui/data-pagination"
       ],
       "files": [
         {
@@ -940,6 +939,10 @@
         },
         {
           "path": "src/registry/bases/base/blocks/activity-log/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/activity-log/components/columns.tsx",
           "type": "registry:block"
         },
         {

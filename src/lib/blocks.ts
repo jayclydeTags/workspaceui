@@ -39,7 +39,6 @@ import { RecoveryCodes } from "@/registry/bases/base/blocks/recovery-codes/page"
 import { Register } from "@/registry/bases/base/blocks/register/page"
 import { PayrollRun } from "@/registry/bases/base/blocks/payroll-run/page"
 import { Employee } from "@/registry/bases/base/blocks/employee/page"
-import { DeductionsBenefits } from "@/registry/bases/base/blocks/deductions-benefits/page"
 import { TaxTables } from "@/registry/bases/base/blocks/tax-tables/page"
 import { PayrollTasks } from "@/registry/bases/base/blocks/payroll-tasks/page"
 import { PayslipDetail } from "@/registry/bases/base/blocks/payslip-detail/page"
@@ -48,9 +47,6 @@ import { CompensationTable } from "@/registry/bases/base/blocks/compensation-tab
 import { PayrollCalendar } from "@/registry/bases/base/blocks/payroll-calendar/page"
 import { OffcyclePaymentForm } from "@/registry/bases/base/blocks/offcycle-payment-form/page"
 import { PurchaseOrderForm } from "@/registry/bases/base/blocks/purchase-order-form/page"
-import { ChartOfAccounts } from "@/registry/bases/base/blocks/chart-of-accounts/page"
-import { Bills } from "@/registry/bases/base/blocks/bills/page"
-import { Payments } from "@/registry/bases/base/blocks/payments/page"
 import { Products } from "@/registry/bases/base/blocks/products/page"
 import { StockLevels } from "@/registry/bases/base/blocks/stock-levels/page"
 import { StockMovements } from "@/registry/bases/base/blocks/stock-movements/page"
@@ -187,55 +183,23 @@ export const blocks: BlockMeta[] = [
   },
   {
     slug: "employee",
-    title: "CRUD Table (Employees)",
+    title: "CRUD Table with Slide-over Sheet",
     description:
       "Employee directory with a slide-over create/edit sheet, row-action menu, and a delete confirmation.",
     category: "CRUD Tables",
     Component: Employee,
   },
   {
-    slug: "deductions-benefits",
-    title: "CRUD Table (Plans)",
-    description:
-      "Deduction and benefit plan list with create/edit dialog form, row-action menu, and a delete confirmation.",
-    category: "CRUD Tables",
-    Component: DeductionsBenefits,
-  },
-  {
     slug: "department",
-    title: "CRUD Table (Departments)",
+    title: "CRUD Table with Inline Row Editing",
     description:
       "Departments table with inline row editing, a new-row form, and a delete confirmation — no dialog for create/edit.",
     category: "CRUD Tables",
     Component: Department,
   },
   {
-    slug: "chart-of-accounts",
-    title: "CRUD Table (Tree-coded Records)",
-    description:
-      "Chart of accounts table with create/edit dialog form, row-action menu, and a delete confirmation.",
-    category: "CRUD Tables",
-    Component: ChartOfAccounts,
-  },
-  {
-    slug: "bills",
-    title: "CRUD Table (Bills)",
-    description:
-      "Accounts-payable bills list with create/edit dialog form, row-action menu, and a delete confirmation.",
-    category: "CRUD Tables",
-    Component: Bills,
-  },
-  {
-    slug: "payments",
-    title: "CRUD Table (Payments)",
-    description:
-      "Payments list with create/edit dialog form, row-action menu, and a delete confirmation.",
-    category: "CRUD Tables",
-    Component: Payments,
-  },
-  {
     slug: "products",
-    title: "CRUD Table (Products)",
+    title: "CRUD Table with Master–Detail Panel",
     description:
       "Product / SKU catalog with a master-detail split view — select a row to view and edit it in a side panel, no dialog.",
     category: "CRUD Tables",
@@ -275,7 +239,7 @@ export const blocks: BlockMeta[] = [
   },
   {
     slug: "contacts",
-    title: "CRUD Table with Search",
+    title: "CRUD Table with Search and Promote Action",
     description:
       "Contact book with search, one-primary-per-account enforced on promote, and a warning for accounts left without a primary.",
     category: "CRUD Tables",

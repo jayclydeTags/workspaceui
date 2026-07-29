@@ -95,19 +95,19 @@ export const blocksNav: NavSection[] = [
         title: "CRUD Tables",
         items: [
           {
-            title: "CRUD Table (Departments)",
+            title: "CRUD Table with Inline Row Editing",
             href: "/blocks/department",
             description:
               "Departments table with inline row editing, a new-row form, and a delete confirmation — no dialog for create/edit.",
           },
           {
-            title: "CRUD Table (Employees)",
+            title: "CRUD Table with Slide-over Sheet",
             href: "/blocks/employee",
             description:
               "Employee directory with a slide-over create/edit sheet, row-action menu, and a delete confirmation.",
           },
           {
-            title: "CRUD Table (Products)",
+            title: "CRUD Table with Master–Detail Panel",
             href: "/blocks/products",
             description:
               "Product / SKU catalog with a master-detail split view — select a row to view and edit it in a side panel, no dialog.",
@@ -117,30 +117,6 @@ export const blocksNav: NavSection[] = [
             href: "/blocks/warehouses",
             description:
               "Warehouse list with capacity utilization, create/edit dialog form, row-action menu, and a delete confirmation.",
-          },
-          {
-            title: "CRUD Table (Tree-coded Records)",
-            href: "/blocks/chart-of-accounts",
-            description:
-              "Chart of accounts table with create/edit dialog form, row-action menu, and a delete confirmation.",
-          },
-          {
-            title: "CRUD Table (Bills)",
-            href: "/blocks/bills",
-            description:
-              "Accounts-payable bills list with create/edit dialog form, row-action menu, and a delete confirmation.",
-          },
-          {
-            title: "CRUD Table (Payments)",
-            href: "/blocks/payments",
-            description:
-              "Payments list with create/edit dialog form, row-action menu, and a delete confirmation.",
-          },
-          {
-            title: "CRUD Table (Plans)",
-            href: "/blocks/deductions-benefits",
-            description:
-              "Deduction and benefit plan list with create/edit dialog form, row-action menu, and a delete confirmation.",
           },
           {
             title: "CRUD Table with Progress Bars",
@@ -161,7 +137,7 @@ export const blocksNav: NavSection[] = [
               "Leave request list with a status filter, approve/reject row actions, a submit-request dialog, and a delete confirmation.",
           },
           {
-            title: "CRUD Table with Search",
+            title: "CRUD Table with Search and Promote Action",
             href: "/blocks/contacts",
             description:
               "Contact book with search, one-primary-per-account enforced on promote, and a warning for accounts left without a primary.",

@@ -27,53 +27,9 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       src: "components/employee-sheet.tsx",
     },
   ],
-  "deductions-benefits": [
-    {
-      name: "page.tsx",
-      path: "app/deductions-benefits/page.tsx",
-      src: "page.tsx",
-    },
-    {
-      name: "data.ts",
-      path: "app/deductions-benefits/data.ts",
-      src: "data.ts",
-    },
-    {
-      name: "data-table.tsx",
-      path: "components/blocks/deductions-benefits/components/data-table.tsx",
-      src: "components/data-table.tsx",
-    },
-    {
-      name: "item-dialog.tsx",
-      path: "components/blocks/deductions-benefits/components/item-dialog.tsx",
-      src: "components/item-dialog.tsx",
-    },
-  ],
   "tax-tables": [
     { name: "page.tsx", path: "app/tax-tables/page.tsx", src: "page.tsx" },
     { name: "data.ts", path: "app/tax-tables/data.ts", src: "data.ts" },
-  ],
-  "chart-of-accounts": [
-    {
-      name: "page.tsx",
-      path: "app/chart-of-accounts/page.tsx",
-      src: "page.tsx",
-    },
-    {
-      name: "data.ts",
-      path: "app/chart-of-accounts/data.ts",
-      src: "data.ts",
-    },
-    {
-      name: "data-table.tsx",
-      path: "components/blocks/chart-of-accounts/components/data-table.tsx",
-      src: "components/data-table.tsx",
-    },
-    {
-      name: "account-dialog.tsx",
-      path: "components/blocks/chart-of-accounts/components/account-dialog.tsx",
-      src: "components/account-dialog.tsx",
-    },
   ],
   products: [
     { name: "page.tsx", path: "app/products/page.tsx", src: "page.tsx" },
@@ -488,34 +444,6 @@ export const blockFiles: Record<string, BlockFileRef[]> = {
       name: "request-dialog.tsx",
       path: "components/blocks/leave-requests/components/request-dialog.tsx",
       src: "components/request-dialog.tsx",
-    },
-  ],
-  bills: [
-    { name: "page.tsx", path: "app/bills/page.tsx", src: "page.tsx" },
-    { name: "data.ts", path: "app/bills/data.ts", src: "data.ts" },
-    {
-      name: "data-table.tsx",
-      path: "components/blocks/bills/components/data-table.tsx",
-      src: "components/data-table.tsx",
-    },
-    {
-      name: "bill-dialog.tsx",
-      path: "components/blocks/bills/components/bill-dialog.tsx",
-      src: "components/bill-dialog.tsx",
-    },
-  ],
-  payments: [
-    { name: "page.tsx", path: "app/payments/page.tsx", src: "page.tsx" },
-    { name: "data.ts", path: "app/payments/data.ts", src: "data.ts" },
-    {
-      name: "data-table.tsx",
-      path: "components/blocks/payments/components/data-table.tsx",
-      src: "components/data-table.tsx",
-    },
-    {
-      name: "payment-dialog.tsx",
-      path: "components/blocks/payments/components/payment-dialog.tsx",
-      src: "components/payment-dialog.tsx",
     },
   ],
   "journal-entries": [

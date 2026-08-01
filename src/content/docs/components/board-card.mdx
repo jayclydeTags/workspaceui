@@ -1,6 +1,6 @@
 ---
 title: Board Card
-description: Draggable card shell for kanban-style boards — wires up dnd-kit's useDraggable around your own card content.
+description: Draggable, sortable card shell for kanban-style boards — wires up dnd-kit's useSortable around your own card content.
 ---
 
 <ComponentPreview name="board-card" />
@@ -40,29 +40,35 @@ import { BoardCard } from "@/components/ui/board-card"
 ```
 
 ```tsx
-<DndContext onDragEnd={handleDragEnd}>
+<DndContext id="tasks" onDragEnd={handleDragEnd}>
   <BoardCard itemId={task.id}>
     <span className="font-medium">{task.title}</span>
   </BoardCard>
 </DndContext>
 ```
 
-`itemId` is passed to dnd-kit's `useDraggable({ id: itemId })` — the board's
+`itemId` is passed to dnd-kit's `useSortable({ id: itemId })` — the board's
 `DndContext.onDragEnd` reads it back off `event.active.id` (see
-[`BoardColumn`](/docs/components/board-column) for the full move-on-drop
-wiring). A `BoardCard` needs a `DndContext` ancestor to actually be
-draggable; render one per board, wrapping every column. Everything else is
-a plain `<div>`:
-pass any children, `className`, or other div props and they render inside
-the card shell. Because dragging comes from dnd-kit, cards are draggable by
-keyboard too — `Tab` to focus a card, `Space` to pick it up, arrow keys to
-move it between columns, `Space` again to drop.
+[`BoardColumn`](/docs/components/board-column) for the full move-and-reorder
+wiring). Using `useSortable` instead of the plain `useDraggable` is what lets
+a card be dropped onto another card, not just onto a column — that's the
+`event.over.id` a consumer's `onDragEnd` uses to reorder within a column, not
+just move between columns. A `BoardCard` needs a `DndContext` ancestor to
+actually be draggable, and a [`BoardColumn`](/docs/components/board-column)
+ancestor to be sortable (it supplies the `SortableContext`); render one
+`DndContext` per board, wrapping every column. Everything else is a plain
+`<div>`: pass any children, `className`, or other div props and they render
+inside the card shell. Because dragging comes from dnd-kit, cards are
+draggable by keyboard too — `Tab` to focus a card, `Space` to pick it up,
+arrow keys to move it between columns or reorder it within one, `Space`
+again to drop.
 
 ## API Reference
 
-| Prop     | Type     | Default | Description                                                            |
-| -------- | -------- | ------- | ---------------------------------------------------------------------- |
-| `itemId` | `string` | -       | Written to the drag payload on drag start; read back by `BoardColumn`. |
+| Prop      | Type      | Default | Description                                                                                                 |
+| --------- | --------- | ------- | ----------------------------------------------------------------------------------------------------------- |
+| `itemId`  | `string`  | -       | Written to the drag payload on drag start; read back by `BoardColumn`.                                      |
+| `overlay` | `boolean` | -       | Renders the static clone used inside a `DragOverlay`, so the dragged card stays on top instead of clipping. |
 
 Extends `React.ComponentProps<"div">` — every native div prop (`className`,
 `children`, `onClick`, …) is forwarded.

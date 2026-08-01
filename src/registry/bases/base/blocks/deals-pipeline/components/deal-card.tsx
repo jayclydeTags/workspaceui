@@ -18,13 +18,15 @@ export function DealCard({
   deal,
   onEdit,
   onDelete,
+  overlay,
 }: {
   deal: Deal
   onEdit: (deal: Deal) => void
   onDelete: (deal: Deal) => void
+  overlay?: boolean
 }) {
   return (
-    <BoardCard itemId={deal.id}>
+    <BoardCard itemId={deal.id} overlay={overlay}>
       <div className="flex items-start justify-between gap-2">
         <span className="font-medium">{deal.name}</span>
         <DropdownMenu>

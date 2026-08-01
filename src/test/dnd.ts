@@ -30,6 +30,8 @@ export function mockRect(el: Element, r: Partial<Omit<DOMRect, "toJSON">>) {
  * this waits it out — otherwise that listener (which stops click propagation
  * while a drag is live) can swallow an unrelated click in the next test.
  */
+const nativeGetBoundingClientRect = Element.prototype.getBoundingClientRect
+
 export async function dragCard(card: Element, target: Element) {
   const cardRect = card.getBoundingClientRect()
   const targetRect = target.getBoundingClientRect()
@@ -41,6 +43,21 @@ export async function dragCard(card: Element, target: Element) {
     x: (targetRect.left + targetRect.right) / 2,
     y: (targetRect.top + targetRect.bottom) / 2,
   }
+
+  // A board with a <DragOverlay> mounts a fresh clone node once the drag
+  // activates; dnd-kit measures *that* node's rect for collision math
+  // instead of the original card's, and jsdom never lays it out (always
+  // 0×0). Stand in with the card's own (already-stubbed) rect for the
+  // overlay clone — identified by BoardCard's `data-overlay` marker —
+  // everything else keeps jsdom's real (0×0) behavior.
+  const overlayRectStub = vi
+    .spyOn(Element.prototype, "getBoundingClientRect")
+    .mockImplementation(function (this: Element) {
+      if (this instanceof HTMLElement && this.dataset.overlay !== undefined) {
+        return card.getBoundingClientRect()
+      }
+      return nativeGetBoundingClientRect.call(this)
+    })
 
   fireEvent.pointerDown(card, {
     pointerId: 1,
@@ -63,4 +80,5 @@ export async function dragCard(card: Element, target: Element) {
   move()
   fireEvent.pointerUp(document, { pointerId: 1 })
   await new Promise((resolve) => setTimeout(resolve, 60))
+  overlayRectStub.mockRestore()
 }

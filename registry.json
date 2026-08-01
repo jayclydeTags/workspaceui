@@ -81,8 +81,12 @@
       "name": "board-card",
       "type": "registry:ui",
       "title": "Board Card",
-      "description": "Draggable card shell for kanban-style boards — wraps your own card content in @dnd-kit's useDraggable, with pointer and keyboard drag support.",
-      "dependencies": ["@dnd-kit/core", "@dnd-kit/utilities"],
+      "description": "Draggable, sortable card shell for kanban-style boards — wraps your own card content in @dnd-kit's useSortable, with pointer and keyboard drag support and in-column reordering.",
+      "dependencies": [
+        "@dnd-kit/core",
+        "@dnd-kit/sortable",
+        "@dnd-kit/utilities"
+      ],
       "registryDependencies": ["utils"],
       "files": [
         {
@@ -95,8 +99,12 @@
       "name": "board-column",
       "type": "registry:ui",
       "title": "Board Column",
-      "description": "Kanban board column — @dnd-kit droppable shell with a label/count header, item list, and empty state. Renders arbitrary items via renderItem (typically a BoardCard); drop handling lives in the DndContext.onDragEnd that wraps the board.",
-      "dependencies": ["@dnd-kit/core"],
+      "description": "Kanban board column — @dnd-kit droppable shell with a label/count header, item list, and empty state. Renders arbitrary items via renderItem (typically a BoardCard); drop handling lives in the DndContext.onDragEnd that wraps the board. Optionally sortable for column reordering via a header grip handle.",
+      "dependencies": [
+        "@dnd-kit/core",
+        "@dnd-kit/sortable",
+        "@dnd-kit/utilities"
+      ],
       "registryDependencies": ["badge", "utils"],
       "files": [
         {

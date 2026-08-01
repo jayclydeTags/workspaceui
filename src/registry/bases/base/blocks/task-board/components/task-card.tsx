@@ -28,13 +28,15 @@ export function TaskCard({
   task,
   onEdit,
   onDelete,
+  overlay,
 }: {
   task: Task
   onEdit: (task: Task) => void
   onDelete: (task: Task) => void
+  overlay?: boolean
 }) {
   return (
-    <BoardCard itemId={task.id}>
+    <BoardCard itemId={task.id} overlay={overlay}>
       <div className="flex items-start justify-between gap-2">
         <span className="font-medium">{task.title}</span>
         <DropdownMenu>

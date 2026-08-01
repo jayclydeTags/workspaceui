@@ -9,9 +9,15 @@ import {
   type ApprovalRequest,
 } from "@/registry/bases/base/blocks/approval-board/data"
 
-export function ApprovalCard({ request }: { request: ApprovalRequest }) {
+export function ApprovalCard({
+  request,
+  overlay,
+}: {
+  request: ApprovalRequest
+  overlay?: boolean
+}) {
   return (
-    <BoardCard itemId={request.id}>
+    <BoardCard itemId={request.id} overlay={overlay}>
       <div className="flex items-start justify-between gap-2">
         <span className="font-medium">{request.title}</span>
         <Badge variant="outline" className="shrink-0">

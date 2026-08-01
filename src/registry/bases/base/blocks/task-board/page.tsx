@@ -3,11 +3,14 @@
 import * as React from "react"
 import {
   DndContext,
+  DragOverlay,
   PointerSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
+  type DragStartEvent,
 } from "@dnd-kit/core"
+import { arrayMove } from "@dnd-kit/sortable"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { PlusSignIcon } from "@hugeicons/core-free-icons"
 
@@ -32,6 +35,7 @@ import {
   type TaskDraft,
   type TaskStatus,
 } from "./data"
+import { TaskCard } from "./components/task-card"
 import { TaskColumn } from "./components/task-column"
 import { TaskDialog } from "./components/task-dialog"
 
@@ -40,20 +44,49 @@ export function TaskBoard({ className }: { className?: string }) {
   const [formOpen, setFormOpen] = React.useState(false)
   const [editing, setEditing] = React.useState<Task | null>(null)
   const [deleting, setDeleting] = React.useState<Task | null>(null)
+  const [activeTask, setActiveTask] = React.useState<Task | null>(null)
   // Without a distance constraint, a pointerdown on a card's nested "Actions"
   // button also arms drag-start and swallows the click that opens the menu.
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   )
 
-  function move(id: string, status: TaskStatus) {
-    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, status } : t)))
+  function handleDragStart(event: DragStartEvent) {
+    setActiveTask(tasks.find((t) => t.id === event.active.id) ?? null)
   }
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
-    if (!over) return
-    move(String(active.id), over.id as TaskStatus)
+    setActiveTask(null)
+    if (!over || active.id === over.id) return
+    const activeId = String(active.id)
+    const overId = String(over.id)
+
+    setTasks((prev) => {
+      const activeIndex = prev.findIndex((t) => t.id === activeId)
+      if (activeIndex === -1) return prev
+
+      // Dropped on a column background (empty space) vs. on another task —
+      // the latter is where in-column reordering comes from.
+      const overIsColumn = STATUS_COLUMNS.includes(overId as TaskStatus)
+      const overStatus = overIsColumn
+        ? (overId as TaskStatus)
+        : prev.find((t) => t.id === overId)?.status
+      if (!overStatus) return prev
+
+      const withStatus =
+        prev[activeIndex].status === overStatus
+          ? prev
+          : prev.map((t) =>
+              t.id === activeId ? { ...t, status: overStatus } : t
+            )
+
+      const from = withStatus.findIndex((t) => t.id === activeId)
+      const to = overIsColumn
+        ? withStatus.length - 1
+        : withStatus.findIndex((t) => t.id === overId)
+      return arrayMove(withStatus, from, to)
+    })
   }
 
   function save(draft: TaskDraft) {
@@ -95,7 +128,12 @@ export function TaskBoard({ className }: { className?: string }) {
         </Button>
       }
     >
-      <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+      <DndContext
+        id="task-board"
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
         <div className="flex h-full gap-4">
           {STATUS_COLUMNS.map((status) => (
             <TaskColumn
@@ -110,6 +148,16 @@ export function TaskBoard({ className }: { className?: string }) {
             />
           ))}
         </div>
+        <DragOverlay>
+          {activeTask && (
+            <TaskCard
+              task={activeTask}
+              onEdit={() => {}}
+              onDelete={() => {}}
+              overlay
+            />
+          )}
+        </DragOverlay>
       </DndContext>
 
       <TaskDialog

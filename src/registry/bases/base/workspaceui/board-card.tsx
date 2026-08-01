@@ -1,36 +1,56 @@
 "use client"
 
 import * as React from "react"
-import { useDraggable } from "@dnd-kit/core"
+import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 
 import { cn } from "@/lib/utils"
 
 export interface BoardCardProps extends React.ComponentProps<"div"> {
   itemId: string
+  /** Renders the static clone used inside a DragOverlay — no listeners, and a distinct id so it doesn't collide with the real draggable. */
+  overlay?: boolean
 }
 
-// useDraggable's `attributes` (role="button", tabIndex, aria-roledescription) plus its
-// pointer/keyboard sensors are what raw HTML5 `draggable` doesn't give you for free:
-// keyboard-driven dragging and touch support.
+// useSortable (not useDraggable) makes a card a drop target at its own id
+// too, so dropping one card on another reorders instead of only moving
+// between columns. The in-column node stays at reduced opacity while
+// dragging; the moving visual is this same card re-rendered with `overlay`
+// inside the consumer's DragOverlay, since a scrolling column would clip it.
 export function BoardCard({
   itemId,
+  overlay,
   className,
   style,
   ...props
 }: BoardCardProps) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({ id: itemId })
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: overlay ? `${itemId}::overlay` : itemId,
+    disabled: overlay,
+  })
 
   return (
     <div
-      ref={setNodeRef}
-      {...listeners}
-      {...attributes}
-      style={{ ...style, transform: CSS.Translate.toString(transform) }}
+      ref={overlay ? undefined : setNodeRef}
+      data-overlay={overlay || undefined}
+      {...(overlay ? undefined : listeners)}
+      {...(overlay ? undefined : attributes)}
+      style={{
+        ...style,
+        transform: overlay ? undefined : CSS.Transform.toString(transform),
+        transition: overlay ? undefined : transition,
+      }}
       className={cn(
         "flex cursor-grab flex-col gap-2 rounded-lg border border-border bg-card p-3 text-sm shadow-xs active:cursor-grabbing",
-        isDragging && "opacity-50",
+        isDragging && !overlay && "z-10 opacity-50",
+        overlay && "cursor-grabbing shadow-lg",
         className
       )}
       {...props}

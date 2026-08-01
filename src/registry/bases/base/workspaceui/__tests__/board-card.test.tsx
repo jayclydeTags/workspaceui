@@ -5,7 +5,7 @@ import { describe, it, expect } from "vitest"
 import { BoardCard } from "../board-card"
 
 describe("BoardCard", () => {
-  it("wires up dnd-kit's draggable attributes", () => {
+  it("wires up dnd-kit's sortable/draggable attributes", () => {
     render(
       <DndContext>
         <BoardCard itemId="task-1">Task 1</BoardCard>
@@ -14,7 +14,7 @@ describe("BoardCard", () => {
     const card = screen.getByText("Task 1")
     expect(card).toHaveAttribute("role", "button")
     expect(card).toHaveAttribute("tabIndex", "0")
-    expect(card).toHaveAttribute("aria-roledescription", "draggable")
+    expect(card).toHaveAttribute("aria-roledescription", "sortable")
     expect(card).toHaveAttribute("aria-disabled", "false")
   })
 

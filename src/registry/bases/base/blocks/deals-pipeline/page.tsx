@@ -3,11 +3,14 @@
 import * as React from "react"
 import {
   DndContext,
+  DragOverlay,
   PointerSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
+  type DragStartEvent,
 } from "@dnd-kit/core"
+import { arrayMove } from "@dnd-kit/sortable"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { PlusSignIcon } from "@hugeicons/core-free-icons"
 
@@ -34,6 +37,7 @@ import {
   type DealDraft,
   type DealStage,
 } from "./data"
+import { DealCard } from "./components/deal-card"
 import { StageColumn } from "./components/stage-column"
 import { DealDialog } from "./components/deal-dialog"
 
@@ -42,20 +46,49 @@ export function DealsPipeline({ className }: { className?: string }) {
   const [formOpen, setFormOpen] = React.useState(false)
   const [editing, setEditing] = React.useState<Deal | null>(null)
   const [deleting, setDeleting] = React.useState<Deal | null>(null)
+  const [activeDeal, setActiveDeal] = React.useState<Deal | null>(null)
   // Without a distance constraint, a pointerdown on a card's nested "Actions"
   // button also arms drag-start and swallows the click that opens the menu.
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   )
 
-  function move(id: string, stage: DealStage) {
-    setDeals((prev) => prev.map((d) => (d.id === id ? { ...d, stage } : d)))
+  function handleDragStart(event: DragStartEvent) {
+    setActiveDeal(deals.find((d) => d.id === event.active.id) ?? null)
   }
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
-    if (!over) return
-    move(String(active.id), over.id as DealStage)
+    setActiveDeal(null)
+    if (!over || active.id === over.id) return
+    const activeId = String(active.id)
+    const overId = String(over.id)
+
+    setDeals((prev) => {
+      const activeIndex = prev.findIndex((d) => d.id === activeId)
+      if (activeIndex === -1) return prev
+
+      // Dropped on a column background (empty space) vs. on another deal —
+      // the latter is where in-column reordering comes from.
+      const overIsColumn = STAGE_COLUMNS.includes(overId as DealStage)
+      const overStage = overIsColumn
+        ? (overId as DealStage)
+        : prev.find((d) => d.id === overId)?.stage
+      if (!overStage) return prev
+
+      const withStage =
+        prev[activeIndex].stage === overStage
+          ? prev
+          : prev.map((d) =>
+              d.id === activeId ? { ...d, stage: overStage } : d
+            )
+
+      const from = withStage.findIndex((d) => d.id === activeId)
+      const to = overIsColumn
+        ? withStage.length - 1
+        : withStage.findIndex((d) => d.id === overId)
+      return arrayMove(withStage, from, to)
+    })
   }
 
   function save(draft: DealDraft) {
@@ -97,7 +130,12 @@ export function DealsPipeline({ className }: { className?: string }) {
         </Button>
       }
     >
-      <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+      <DndContext
+        id="deals-pipeline"
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
         <div className="flex h-full gap-4">
           {STAGE_COLUMNS.map((stage) => (
             <StageColumn
@@ -112,6 +150,16 @@ export function DealsPipeline({ className }: { className?: string }) {
             />
           ))}
         </div>
+        <DragOverlay>
+          {activeDeal && (
+            <DealCard
+              deal={activeDeal}
+              onEdit={() => {}}
+              onDelete={() => {}}
+              overlay
+            />
+          )}
+        </DragOverlay>
       </DndContext>
 
       <DealDialog

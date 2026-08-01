@@ -2,7 +2,6 @@ import { flexRender, type Table as TanstackTable } from "@tanstack/react-table"
 
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import {
   Empty,
   EmptyDescription,
@@ -17,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import { activityUser, initials, type ActivityEntry } from "../data"
 import { ACTION_VARIANT, STATUS_VARIANT, formatTime } from "./columns"
 
@@ -110,24 +110,22 @@ export function DataTable({ table }: { table: TanstackTable<ActivityEntry> }) {
                   </span>
                 </div>
                 <div className="mt-0.5 flex flex-wrap items-center gap-1 text-xs">
-                  <Badge
-                    variant={ACTION_VARIANT[e.action]}
+                  <StatusBadge
+                    status={e.action}
+                    variantMap={ACTION_VARIANT}
                     className="text-[10px] capitalize"
-                  >
-                    {e.action}
-                  </Badge>
+                  />
                   <span className="text-muted-foreground">·</span>
                   <span className="truncate text-muted-foreground">
                     {e.resource}
                   </span>
                 </div>
                 <div className="mt-1.5">
-                  <Badge
-                    variant={STATUS_VARIANT[e.status]}
+                  <StatusBadge
+                    status={e.status}
+                    variantMap={STATUS_VARIANT}
                     className="text-[10px] capitalize"
-                  >
-                    {e.status}
-                  </Badge>
+                  />
                 </div>
               </div>
             </li>

@@ -17,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import { dayCount, type LeaveRequest, type LeaveStatus } from "../data"
 
 const STATUS_VARIANT: Record<
@@ -70,14 +71,6 @@ function RowActions({ request, onDecide, onDelete }: RowProps) {
   )
 }
 
-function StatusBadge({ status }: { status: LeaveStatus }) {
-  return (
-    <Badge variant={STATUS_VARIANT[status]} className="capitalize">
-      {status}
-    </Badge>
-  )
-}
-
 /** "Jul 13 – Jul 17 · 5 days" */
 function Dates({ request }: { request: LeaveRequest }) {
   const days = dayCount(request.start, request.end)
@@ -128,7 +121,11 @@ export function DataTable({
                   {request.reason}
                 </TableCell>
                 <TableCell>
-                  <StatusBadge status={request.status} />
+                  <StatusBadge
+                    status={request.status}
+                    variantMap={STATUS_VARIANT}
+                    className="capitalize"
+                  />
                 </TableCell>
                 <TableCell className="pr-6">
                   <RowActions
@@ -160,7 +157,11 @@ export function DataTable({
                 <Dates request={request} />
               </p>
               <div className="mt-1.5">
-                <StatusBadge status={request.status} />
+                <StatusBadge
+                  status={request.status}
+                  variantMap={STATUS_VARIANT}
+                  className="capitalize"
+                />
               </div>
             </div>
             <RowActions

@@ -17,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import {
   MAX_DTI,
   dti,
@@ -168,9 +169,10 @@ export function DataTable({
                   <Dti application={application} />
                 </TableCell>
                 <TableCell>
-                  <Badge variant={STATUS_VARIANT[application.status]}>
-                    {application.status}
-                  </Badge>
+                  <StatusBadge
+                    status={application.status}
+                    variantMap={STATUS_VARIANT}
+                  />
                 </TableCell>
                 <TableCell className="pr-6">
                   <RowActions
@@ -204,12 +206,11 @@ export function DataTable({
                 <Payment application={application} />
               </p>
               <div className="mt-1.5 flex items-center gap-2 text-xs">
-                <Badge
-                  variant={STATUS_VARIANT[application.status]}
+                <StatusBadge
+                  status={application.status}
+                  variantMap={STATUS_VARIANT}
                   className="text-[10px]"
-                >
-                  {application.status}
-                </Badge>
+                />
                 <span className="tabular-nums">
                   DTI <Dti application={application} />
                 </span>

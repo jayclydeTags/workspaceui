@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Table,
@@ -8,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import {
   receiptStatus,
   variance,
@@ -92,9 +92,11 @@ export function DataTable({
                   <VarianceCell value={varTotal} />
                 </TableCell>
                 <TableCell>
-                  <Badge variant={STATUS_VARIANT[status]}>
-                    {STATUS_LABEL[status]}
-                  </Badge>
+                  <StatusBadge
+                    status={status}
+                    variantMap={STATUS_VARIANT}
+                    labelMap={STATUS_LABEL}
+                  />
                 </TableCell>
                 <TableCell className="pr-6 text-right">
                   <Button

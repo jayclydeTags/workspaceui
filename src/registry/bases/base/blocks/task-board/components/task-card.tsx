@@ -4,7 +4,6 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { MoreHorizontalIcon } from "@hugeicons/core-free-icons"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -12,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import { initials, type Task, type TaskPriority } from "../data"
 
 const PRIORITY_VARIANT: Record<
@@ -81,9 +81,11 @@ export function TaskCard({
         ) : (
           <span className="text-xs">Unassigned</span>
         )}
-        <Badge variant={PRIORITY_VARIANT[task.priority]} className="shrink-0">
-          {task.priority}
-        </Badge>
+        <StatusBadge
+          status={task.priority}
+          variantMap={PRIORITY_VARIANT}
+          className="shrink-0"
+        />
       </div>
 
       {task.due && (

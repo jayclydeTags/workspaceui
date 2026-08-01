@@ -17,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import {
   STATE_LABEL,
   progress,
@@ -81,8 +82,13 @@ function RowActions({
 }
 
 function StateBadge({ milestone }: { milestone: Milestone }) {
-  const s = state(milestone)
-  return <Badge variant={STATE_VARIANT[s]}>{STATE_LABEL[s]}</Badge>
+  return (
+    <StatusBadge
+      status={state(milestone)}
+      variantMap={STATE_VARIANT}
+      labelMap={STATE_LABEL}
+    />
+  )
 }
 
 /** ponytail: a bare div bar — the shadcn `progress` primitive isn't installed. */

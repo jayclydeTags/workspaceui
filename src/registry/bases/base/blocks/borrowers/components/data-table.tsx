@@ -2,7 +2,6 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { MoreHorizontalIcon } from "@hugeicons/core-free-icons"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -18,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import {
   formatCurrency,
   initials,
@@ -113,9 +113,11 @@ function Score({ borrower }: { borrower: Borrower }) {
   return (
     <span className="flex items-center justify-end gap-2 tabular-nums">
       {borrower.creditScore}
-      <Badge variant={GRADE_VARIANT[grade]} aria-label={`Risk grade ${grade}`}>
-        {grade}
-      </Badge>
+      <StatusBadge
+        status={grade}
+        variantMap={GRADE_VARIANT}
+        aria-label={`Risk grade ${grade}`}
+      />
     </span>
   )
 }
@@ -162,9 +164,7 @@ export function DataTable({
                   {formatCurrency(borrower.outstanding)}
                 </TableCell>
                 <TableCell>
-                  <Badge variant={KYC_VARIANT[borrower.kyc]}>
-                    {borrower.kyc}
-                  </Badge>
+                  <StatusBadge status={borrower.kyc} variantMap={KYC_VARIANT} />
                 </TableCell>
                 <TableCell className="pr-6">
                   <RowActions
@@ -187,12 +187,11 @@ export function DataTable({
             <div className="min-w-0 flex-1">
               <Person borrower={borrower} />
               <div className="mt-1.5 flex items-center gap-2 text-xs">
-                <Badge
-                  variant={KYC_VARIANT[borrower.kyc]}
+                <StatusBadge
+                  status={borrower.kyc}
+                  variantMap={KYC_VARIANT}
                   className="text-[10px]"
-                >
-                  {borrower.kyc}
-                </Badge>
+                />
                 <Score borrower={borrower} />
               </div>
             </div>

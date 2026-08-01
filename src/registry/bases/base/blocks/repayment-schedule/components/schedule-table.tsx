@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import {
   formatCurrency,
   status,
@@ -35,10 +36,9 @@ export function ScheduleTable({
   nextN: number | undefined
   onPay: (instalment: Instalment) => void
 }) {
-  const Status = ({ row }: { row: Instalment }) => {
-    const s = status(row)
-    return <Badge variant={STATUS_VARIANT[s]}>{s}</Badge>
-  }
+  const Status = ({ row }: { row: Instalment }) => (
+    <StatusBadge status={status(row)} variantMap={STATUS_VARIANT} />
+  )
 
   const PayButton = ({ row }: { row: Instalment }) =>
     row.n === nextN ? (

@@ -64,6 +64,20 @@
       ]
     },
     {
+      "name": "status-badge",
+      "type": "registry:ui",
+      "title": "Status Badge",
+      "description": "Generic status-to-Badge-variant mapper — pass a variantMap (and optional labelMap) for your status union instead of hand-rolling a `<Status>_VARIANT` map and Badge render per table/detail view.",
+      "dependencies": [],
+      "registryDependencies": ["badge"],
+      "files": [
+        {
+          "path": "src/registry/bases/base/workspaceui/status-badge.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "data-grid-types",
       "type": "registry:ui",
       "title": "Data Grid Types",

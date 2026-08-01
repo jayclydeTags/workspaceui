@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import {
   pickFor,
   isPartiallyPicked,
@@ -63,7 +64,7 @@ export function DataTable({
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-wrap items-center gap-1">
-                    <Badge variant={STATUS_VARIANT[status]}>{status}</Badge>
+                    <StatusBadge status={status} variantMap={STATUS_VARIANT} />
                     {partial && status === "ready-to-ship" && (
                       <Badge variant="outline">short pick</Badge>
                     )}

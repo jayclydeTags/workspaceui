@@ -1,6 +1,5 @@
 import * as React from "react"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Field,
@@ -24,6 +23,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import {
   SKUS,
   canAssign,
@@ -94,9 +94,10 @@ export function BinSheet({
 
         <div className="flex flex-col gap-4 px-4">
           <div className="flex items-center gap-2">
-            <Badge variant={STATUS_BADGE_VARIANT[bin.status]}>
-              {bin.status}
-            </Badge>
+            <StatusBadge
+              status={bin.status}
+              variantMap={STATUS_BADGE_VARIANT}
+            />
             <span className="text-sm text-muted-foreground">
               {bin.qty}/{bin.capacity} used
             </span>

@@ -7,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import { formatQuantity, type Movement } from "../data"
 
 const TYPE_VARIANT: Record<
@@ -21,9 +22,11 @@ const TYPE_VARIANT: Record<
 
 function TypeBadge({ type }: { type: Movement["type"] }) {
   return (
-    <Badge variant={TYPE_VARIANT[type]} className="capitalize">
-      {type}
-    </Badge>
+    <StatusBadge
+      status={type}
+      variantMap={TYPE_VARIANT}
+      className="capitalize"
+    />
   )
 }
 

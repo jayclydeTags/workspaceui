@@ -1,7 +1,6 @@
 import { HugeiconsIcon } from "@hugeicons/react"
 import { MoreHorizontalIcon } from "@hugeicons/core-free-icons"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -17,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import type { Employee } from "../data"
 
 const STATUS_VARIANT: Record<
@@ -65,14 +65,6 @@ function RowActions({
   )
 }
 
-function StatusBadge({ status }: { status: Employee["status"] }) {
-  return (
-    <Badge variant={STATUS_VARIANT[status]} className="capitalize">
-      {status}
-    </Badge>
-  )
-}
-
 export function DataTable({
   employees,
   onEdit,
@@ -118,7 +110,11 @@ export function DataTable({
                   {employee.hireDate}
                 </TableCell>
                 <TableCell>
-                  <StatusBadge status={employee.status} />
+                  <StatusBadge
+                    status={employee.status}
+                    variantMap={STATUS_VARIANT}
+                    className="capitalize"
+                  />
                 </TableCell>
                 <TableCell className="pr-6">
                   <RowActions
@@ -147,7 +143,11 @@ export function DataTable({
                 {employee.title} · {employee.department}
               </p>
               <div className="mt-1.5">
-                <StatusBadge status={employee.status} />
+                <StatusBadge
+                  status={employee.status}
+                  variantMap={STATUS_VARIANT}
+                  className="capitalize"
+                />
               </div>
             </div>
             <RowActions

@@ -17,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import { isOverdue, type Project, type ProjectStatus } from "../data"
 
 const STATUS_VARIANT: Record<
@@ -62,10 +63,6 @@ function RowActions({ project, onEdit, onDelete }: RowProps) {
       </DropdownMenuContent>
     </DropdownMenu>
   )
-}
-
-function StatusBadge({ status }: { status: ProjectStatus }) {
-  return <Badge variant={STATUS_VARIANT[status]}>{status}</Badge>
 }
 
 /** ponytail: a bare div bar — the shadcn `progress` primitive isn't installed. */
@@ -141,7 +138,10 @@ export function DataTable({
                   <Progress value={project.progress} />
                 </TableCell>
                 <TableCell>
-                  <StatusBadge status={project.status} />
+                  <StatusBadge
+                    status={project.status}
+                    variantMap={STATUS_VARIANT}
+                  />
                 </TableCell>
                 <TableCell className="pr-6">
                   <RowActions
@@ -174,7 +174,10 @@ export function DataTable({
                 <Due project={project} />
               </p>
               <div className="mt-1.5 flex items-center gap-2 text-xs">
-                <StatusBadge status={project.status} />
+                <StatusBadge
+                  status={project.status}
+                  variantMap={STATUS_VARIANT}
+                />
                 <Progress value={project.progress} />
               </div>
             </div>

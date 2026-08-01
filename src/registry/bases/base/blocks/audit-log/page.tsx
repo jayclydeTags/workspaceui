@@ -42,6 +42,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Page } from "@/registry/bases/base/workspaceui/page"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import { ALL_ACTIONS, ENTRIES, type AuditAction } from "./data"
 
 const ACTION_VARIANT: Record<
@@ -223,12 +224,11 @@ export function AuditLog() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge
-                      variant={ACTION_VARIANT[e.action]}
+                    <StatusBadge
+                      status={e.action}
+                      variantMap={ACTION_VARIANT}
                       className="capitalize"
-                    >
-                      {e.action}
-                    </Badge>
+                    />
                   </TableCell>
                 </TableRow>
               ))}

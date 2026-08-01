@@ -19,6 +19,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import { Page } from "@/registry/bases/base/workspaceui/page"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import { TASKS, type TaskStatus } from "./data"
 
 const STATUS_LABEL: Record<TaskStatus, string> = {
@@ -73,12 +74,12 @@ export function MasterDetail() {
                   </span>
                   <span className="flex items-center gap-2 text-xs text-muted-foreground">
                     {t.assignee}
-                    <Badge
-                      variant={STATUS_VARIANT[t.status]}
+                    <StatusBadge
+                      status={t.status}
+                      variantMap={STATUS_VARIANT}
+                      labelMap={STATUS_LABEL}
                       className="text-[10px]"
-                    >
-                      {STATUS_LABEL[t.status]}
-                    </Badge>
+                    />
                   </span>
                 </button>
               </li>
@@ -94,9 +95,11 @@ export function MasterDetail() {
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-lg font-semibold">{selected.title}</h2>
-                  <Badge variant={STATUS_VARIANT[selected.status]}>
-                    {STATUS_LABEL[selected.status]}
-                  </Badge>
+                  <StatusBadge
+                    status={selected.status}
+                    variantMap={STATUS_VARIANT}
+                    labelMap={STATUS_LABEL}
+                  />
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">
                   {selected.description}

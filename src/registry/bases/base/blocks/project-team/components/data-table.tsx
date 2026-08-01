@@ -2,7 +2,6 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { MoreHorizontalIcon } from "@hugeicons/core-free-icons"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -18,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import { initials, isLastLead, type Member, type TeamRole } from "../data"
 
 const ROLE_VARIANT: Record<TeamRole, "default" | "secondary" | "outline"> = {
@@ -107,9 +107,7 @@ export function DataTable({
                   <Person member={member} />
                 </TableCell>
                 <TableCell>
-                  <Badge variant={ROLE_VARIANT[member.role]}>
-                    {member.role}
-                  </Badge>
+                  <StatusBadge status={member.role} variantMap={ROLE_VARIANT} />
                 </TableCell>
                 <TableCell className="text-right tabular-nums">
                   {member.allocation}h / wk
@@ -135,12 +133,11 @@ export function DataTable({
             <div className="min-w-0 flex-1">
               <Person member={member} />
               <div className="mt-1.5 flex items-center gap-2 text-xs">
-                <Badge
-                  variant={ROLE_VARIANT[member.role]}
+                <StatusBadge
+                  status={member.role}
+                  variantMap={ROLE_VARIANT}
                   className="text-[10px]"
-                >
-                  {member.role}
-                </Badge>
+                />
                 <span className="text-muted-foreground tabular-nums">
                   {member.allocation}h / wk
                 </span>

@@ -1,7 +1,6 @@
 import * as React from "react"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -18,6 +17,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import {
   PO_STATUS,
   availableQty,
@@ -36,6 +36,12 @@ const QC_VARIANT: Record<QcVerdict, "default" | "secondary" | "outline"> = {
   passed: "default",
   pending: "secondary",
   failed: "outline",
+}
+
+const QC_LABEL: Record<QcVerdict, string> = {
+  passed: "QC passed",
+  pending: "QC pending",
+  failed: "QC failed",
 }
 
 /** Number input + Record button for checking a line in against an open PO. */
@@ -159,7 +165,11 @@ function LineCard({
             {availableQty(line)} available
           </p>
         </div>
-        <Badge variant={QC_VARIANT[line.qc]}>QC {line.qc}</Badge>
+        <StatusBadge
+          status={line.qc}
+          variantMap={QC_VARIANT}
+          labelMap={QC_LABEL}
+        />
       </div>
 
       {open && <ReceiveControl line={line} onReceive={onReceive} />}

@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import { stockStatus, type StockLevel } from "../data"
 
 const STATUS_LABEL: Record<ReturnType<typeof stockStatus>, string> = {
@@ -25,9 +26,14 @@ const STATUS_VARIANT: Record<
   "out-of-stock": "destructive",
 }
 
-function StatusBadge({ stock }: { stock: StockLevel }) {
-  const status = stockStatus(stock)
-  return <Badge variant={STATUS_VARIANT[status]}>{STATUS_LABEL[status]}</Badge>
+function StockStatusBadge({ stock }: { stock: StockLevel }) {
+  return (
+    <StatusBadge
+      status={stockStatus(stock)}
+      variantMap={STATUS_VARIANT}
+      labelMap={STATUS_LABEL}
+    />
+  )
 }
 
 function AdjustButton({
@@ -93,7 +99,7 @@ export function DataTable({
                   {stock.reorderPoint.toLocaleString()}
                 </TableCell>
                 <TableCell>
-                  <StatusBadge stock={stock} />
+                  <StockStatusBadge stock={stock} />
                 </TableCell>
                 <TableCell className="pr-6">
                   <AdjustButton stock={stock} onAdjust={onAdjust} />
@@ -121,7 +127,7 @@ export function DataTable({
                 {stock.warehouse} · {stock.onHand.toLocaleString()} on hand
               </p>
               <div className="mt-1.5">
-                <StatusBadge stock={stock} />
+                <StockStatusBadge stock={stock} />
               </div>
             </div>
             <AdjustButton stock={stock} onAdjust={onAdjust} />

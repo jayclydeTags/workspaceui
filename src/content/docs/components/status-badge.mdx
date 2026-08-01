@@ -1,0 +1,79 @@
+---
+title: Status Badge
+description: A generic status-to-Badge-variant mapper — pass a variantMap for your status union instead of hand-rolling a `<Status>_VARIANT` map next to every Badge render.
+---
+
+<ComponentPreview name="status-badge" />
+
+## Installation
+
+<CodeTabs>
+<TabsList>
+<TabsTrigger value="cli">CLI</TabsTrigger>
+<TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+<TabsContent value="cli">
+
+<CodeBlockCommand
+  __npm__="npx shadcn@latest add jayclydeTags/workspaceui/status-badge"
+  __pnpm__="pnpm dlx shadcn@latest add jayclydeTags/workspaceui/status-badge"
+  __yarn__="yarn dlx shadcn@latest add jayclydeTags/workspaceui/status-badge"
+  __bun__="bun x shadcn@latest add jayclydeTags/workspaceui/status-badge"
+/>
+
+</TabsContent>
+<TabsContent value="manual">
+
+### Copy the component into your project
+
+<ComponentSource name="status-badge" />
+
+</TabsContent>
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { StatusBadge } from "@/components/ui/status-badge"
+```
+
+```tsx
+type InvoiceStatus = "paid" | "pending" | "overdue"
+
+const variantMap: Record<InvoiceStatus, "default" | "secondary" | "destructive"> = {
+  paid: "default",
+  pending: "secondary",
+  overdue: "destructive",
+}
+
+<StatusBadge status={invoice.status} variantMap={variantMap} />
+```
+
+This is the same shape as every `<Status>_VARIANT` map + `<Badge variant={...}>`
+pair scattered across table and detail-view blocks (attendance, timesheets,
+leads, invoices, task boards, …) — one generic component instead of
+re-declaring the map per file. It's a common pattern outside this registry
+too (GitHub PR state pills, Linear issue status, Stripe Dashboard invoice
+status) — this is a typed, reusable version of it.
+
+Add `labelMap` when the display text should differ from the raw status value
+(e.g. `overdue` → `"Past Due"`); omit it to render the status as-is.
+
+```tsx
+<StatusBadge
+  status={invoice.status}
+  variantMap={variantMap}
+  labelMap={{ paid: "Paid", pending: "Pending", overdue: "Past Due" }}
+/>
+```
+
+Every other `Badge` prop (`className`, `render`, …) is forwarded to the
+underlying `Badge`.
+
+## API Reference
+
+| Prop         | Type                       | Default | Description                                                                                                 |
+| ------------ | -------------------------- | ------- | ----------------------------------------------------------------------------------------------------------- |
+| `status`     | `TStatus`                  | -       | The status value to render. `TStatus` is inferred from `variantMap`.                                        |
+| `variantMap` | `Record<TStatus, variant>` | -       | Maps each status value to a `Badge` variant (`default`/`secondary`/`outline`/`destructive`/`ghost`/`link`). |
+| `labelMap`   | `Record<TStatus, string>`  | -       | Optional display-text override per status. Falls back to the raw status value.                              |

@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Table,
@@ -8,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import {
   isLineClosed,
   pickStatus,
@@ -67,7 +67,7 @@ export function DataTable({
                   {progress(list)}
                 </TableCell>
                 <TableCell>
-                  <Badge variant={STATUS_VARIANT[status]}>{status}</Badge>
+                  <StatusBadge status={status} variantMap={STATUS_VARIANT} />
                 </TableCell>
                 <TableCell className="pr-6 text-right">
                   <Button

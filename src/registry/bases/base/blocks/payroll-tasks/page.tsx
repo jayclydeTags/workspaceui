@@ -4,7 +4,6 @@ import * as React from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Search01Icon } from "@hugeicons/core-free-icons"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -44,6 +43,7 @@ import {
 } from "@/components/ui/table"
 import { Textarea } from "@/components/ui/textarea"
 import { Page } from "@/registry/bases/base/workspaceui/page"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import {
   countByStatus,
   STATUS_LABEL,
@@ -176,9 +176,11 @@ export function PayrollTasks() {
                     {t.dueDate}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={STATUS_VARIANT[t.status]}>
-                      {STATUS_LABEL[t.status]}
-                    </Badge>
+                    <StatusBadge
+                      status={t.status}
+                      variantMap={STATUS_VARIANT}
+                      labelMap={STATUS_LABEL}
+                    />
                   </TableCell>
                   <TableCell className="text-right">
                     {/* Conditional button: only incomplete tasks can be completed. */}

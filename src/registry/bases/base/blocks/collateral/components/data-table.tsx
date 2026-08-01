@@ -17,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import {
   canPerfect,
   formatCurrency,
@@ -142,7 +143,7 @@ export function DataTable({
                   <Appraisal item={item} />
                 </TableCell>
                 <TableCell>
-                  <Badge variant={LIEN_VARIANT[item.lien]}>{item.lien}</Badge>
+                  <StatusBadge status={item.lien} variantMap={LIEN_VARIANT} />
                 </TableCell>
                 <TableCell className="pr-6">
                   <RowActions
@@ -176,12 +177,11 @@ export function DataTable({
                 {formatCurrency(lendableValue(item))}
               </p>
               <div className="mt-1.5 flex items-center gap-2 text-xs">
-                <Badge
-                  variant={LIEN_VARIANT[item.lien]}
+                <StatusBadge
+                  status={item.lien}
+                  variantMap={LIEN_VARIANT}
                   className="text-[10px]"
-                >
-                  {item.lien}
-                </Badge>
+                />
                 <Appraisal item={item} />
               </div>
             </div>

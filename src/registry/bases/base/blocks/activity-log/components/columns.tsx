@@ -1,8 +1,8 @@
 import type { ColumnDef } from "@tanstack/react-table"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { dataGridFilterFn } from "@/registry/bases/base/workspaceui/data-filter"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import {
   ACTIVITY_USERS,
   activityUser,
@@ -81,12 +81,11 @@ export const columns: ColumnDef<ActivityEntry>[] = [
     cell: ({ getValue }) => {
       const action = getValue<ActionType>()
       return (
-        <Badge
-          variant={ACTION_VARIANT[action]}
+        <StatusBadge
+          status={action}
+          variantMap={ACTION_VARIANT}
           className="text-[11px] capitalize"
-        >
-          {action}
-        </Badge>
+        />
       )
     },
   },
@@ -120,12 +119,11 @@ export const columns: ColumnDef<ActivityEntry>[] = [
     cell: ({ getValue }) => {
       const status = getValue<StatusType>()
       return (
-        <Badge
-          variant={STATUS_VARIANT[status]}
+        <StatusBadge
+          status={status}
+          variantMap={STATUS_VARIANT}
           className="text-[11px] capitalize"
-        >
-          {status}
-        </Badge>
+        />
       )
     },
   },

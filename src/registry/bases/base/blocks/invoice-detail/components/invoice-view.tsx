@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge"
 import {
   Table,
   TableBody,
@@ -9,6 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Page } from "@/registry/bases/base/workspaceui/page"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import {
   STATUS_LABEL,
   formatCurrency,
@@ -33,9 +33,11 @@ export function InvoiceView({ invoice }: { invoice: Invoice }) {
       title={invoice.customer}
       subtitle={`${invoice.number} · issued ${invoice.issuedDate} · due ${invoice.dueDate}`}
       badge={
-        <Badge variant={STATUS_VARIANT[invoice.status]}>
-          {STATUS_LABEL[invoice.status]}
-        </Badge>
+        <StatusBadge
+          status={invoice.status}
+          variantMap={STATUS_VARIANT}
+          labelMap={STATUS_LABEL}
+        />
       }
       hasPadding
     >

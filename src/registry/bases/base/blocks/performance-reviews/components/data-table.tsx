@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import {
   RATING_LABELS,
   type Rating,
@@ -65,10 +66,6 @@ function RowActions({ review, onEdit, onDelete }: RowProps) {
       </DropdownMenuContent>
     </DropdownMenu>
   )
-}
-
-function StatusBadge({ status }: { status: ReviewStatus }) {
-  return <Badge variant={STATUS_VARIANT[status]}>{status}</Badge>
 }
 
 export function Stars({ rating }: { rating: Rating }) {
@@ -134,7 +131,10 @@ export function DataTable({
                   <Stars rating={review.rating} />
                 </TableCell>
                 <TableCell>
-                  <StatusBadge status={review.status} />
+                  <StatusBadge
+                    status={review.status}
+                    variantMap={STATUS_VARIANT}
+                  />
                 </TableCell>
                 <TableCell className="pr-6">
                   <RowActions
@@ -166,7 +166,10 @@ export function DataTable({
                 Reviewed by {review.reviewer}
               </p>
               <div className="mt-1.5 flex items-center gap-2">
-                <StatusBadge status={review.status} />
+                <StatusBadge
+                  status={review.status}
+                  variantMap={STATUS_VARIANT}
+                />
                 <Stars rating={review.rating} />
               </div>
             </div>

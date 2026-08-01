@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import {
   adjustmentStatus,
   binLock,
@@ -87,7 +88,7 @@ export function DataTable({
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-wrap items-center gap-1">
-                    <Badge variant={STATUS_VARIANT[status]}>{status}</Badge>
+                    <StatusBadge status={status} variantMap={STATUS_VARIANT} />
                     {stale && <Badge variant="destructive">stale</Badge>}
                     {status === "pending" && lock && (
                       <Badge variant="outline">{lock}</Badge>

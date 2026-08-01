@@ -1,6 +1,5 @@
 "use client"
 
-import { Badge } from "@/components/ui/badge"
 import {
   Card,
   CardDescription,
@@ -17,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Page } from "@/registry/bases/base/workspaceui/page"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import {
   PAYROLL_RUN,
   PAYSLIPS,
@@ -45,9 +45,11 @@ export function PayrollRun() {
       title={`Payroll · ${PAYROLL_RUN.period}`}
       subtitle={`${PAYSLIPS.length} employees · pay date ${PAYROLL_RUN.payDate}`}
       badge={
-        <Badge variant={STATUS_VARIANT[PAYROLL_RUN.status]}>
-          {STATUS_LABEL[PAYROLL_RUN.status]}
-        </Badge>
+        <StatusBadge
+          status={PAYROLL_RUN.status}
+          variantMap={STATUS_VARIANT}
+          labelMap={STATUS_LABEL}
+        />
       }
       hasPadding
     >

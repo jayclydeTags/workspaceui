@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import { formatCurrency, type Product } from "../data"
 
 const STATUS_VARIANT: Record<
@@ -21,14 +22,6 @@ const STATUS_VARIANT: Record<
   draft: "outline",
   active: "default",
   discontinued: "secondary",
-}
-
-function StatusBadge({ status }: { status: Product["status"] }) {
-  return (
-    <Badge variant={STATUS_VARIANT[status]} className="capitalize">
-      {status}
-    </Badge>
-  )
 }
 
 /** Master list — selecting a row opens it in the detail panel; no dialog. */
@@ -82,7 +75,11 @@ export function DataTable({
                   {formatCurrency(product.price)}
                 </TableCell>
                 <TableCell>
-                  <StatusBadge status={product.status} />
+                  <StatusBadge
+                    status={product.status}
+                    variantMap={STATUS_VARIANT}
+                    className="capitalize"
+                  />
                 </TableCell>
                 <TableCell className="pr-6">
                   <Button
@@ -131,7 +128,11 @@ export function DataTable({
                 {product.category} · {formatCurrency(product.price)}
               </p>
               <div className="mt-1.5">
-                <StatusBadge status={product.status} />
+                <StatusBadge
+                  status={product.status}
+                  variantMap={STATUS_VARIANT}
+                  className="capitalize"
+                />
               </div>
             </button>
             <Button

@@ -17,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import {
   formatCurrency,
   health,
@@ -72,8 +73,7 @@ function RowActions({ account, onEdit, onDelete }: RowProps) {
 }
 
 function HealthBadge({ account }: { account: Account }) {
-  const h = health(account)
-  return <Badge variant={HEALTH_VARIANT[h]}>{h}</Badge>
+  return <StatusBadge status={health(account)} variantMap={HEALTH_VARIANT} />
 }
 
 export function DataTable({

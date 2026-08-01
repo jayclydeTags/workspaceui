@@ -5,12 +5,12 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { Search01Icon } from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import {
   INVOICES,
   STATUS_LABEL,
@@ -78,9 +78,11 @@ export function InvoiceList({ activeInvoiceId, onSelect }: InvoiceListProps) {
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-medium">{inv.customer}</span>
-                  <Badge variant={STATUS_VARIANT[inv.status]}>
-                    {STATUS_LABEL[inv.status]}
-                  </Badge>
+                  <StatusBadge
+                    status={inv.status}
+                    variantMap={STATUS_VARIANT}
+                    labelMap={STATUS_LABEL}
+                  />
                 </div>
                 <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
                   <span>{inv.number}</span>

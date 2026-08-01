@@ -17,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import { isHot, type Lead, type LeadStage } from "../data"
 
 const STAGE_VARIANT: Record<
@@ -126,9 +127,7 @@ export function DataTable({
                   <Score lead={lead} />
                 </TableCell>
                 <TableCell>
-                  <Badge variant={STAGE_VARIANT[lead.stage]}>
-                    {lead.stage}
-                  </Badge>
+                  <StatusBadge status={lead.stage} variantMap={STAGE_VARIANT} />
                 </TableCell>
                 <TableCell className="pr-6">
                   <RowActions
@@ -161,12 +160,11 @@ export function DataTable({
                 {lead.email} · {lead.source}
               </p>
               <div className="mt-1.5 flex items-center gap-2 text-xs">
-                <Badge
-                  variant={STAGE_VARIANT[lead.stage]}
+                <StatusBadge
+                  status={lead.stage}
+                  variantMap={STAGE_VARIANT}
                   className="text-[10px]"
-                >
-                  {lead.stage}
-                </Badge>
+                />
                 <Score lead={lead} />
               </div>
             </div>

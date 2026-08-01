@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Page } from "@/registry/bases/base/workspaceui/page"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import {
   PAY_PERIODS,
   STATUS_LABEL,
@@ -80,9 +81,11 @@ export function PayrollCalendar() {
                 </TableCell>
                 <TableCell>{p.payDate}</TableCell>
                 <TableCell>
-                  <Badge variant={STATUS_VARIANT[p.status]}>
-                    {STATUS_LABEL[p.status]}
-                  </Badge>
+                  <StatusBadge
+                    status={p.status}
+                    variantMap={STATUS_VARIANT}
+                    labelMap={STATUS_LABEL}
+                  />
                 </TableCell>
               </TableRow>
             ))}

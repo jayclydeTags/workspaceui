@@ -1,7 +1,6 @@
 import { HugeiconsIcon } from "@hugeicons/react"
 import { MoreHorizontalIcon } from "@hugeicons/core-free-icons"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -17,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import { isLocked, type EntryStatus, type TimeEntry } from "../data"
 
 const STATUS_VARIANT: Record<EntryStatus, "default" | "secondary" | "outline"> =
@@ -132,9 +132,10 @@ export function DataTable({
                   <Hours entry={entry} />
                 </TableCell>
                 <TableCell>
-                  <Badge variant={STATUS_VARIANT[entry.status]}>
-                    {entry.status}
-                  </Badge>
+                  <StatusBadge
+                    status={entry.status}
+                    variantMap={STATUS_VARIANT}
+                  />
                 </TableCell>
                 <TableCell className="pr-6">
                   <RowActions
@@ -159,12 +160,11 @@ export function DataTable({
                 <span className="truncate text-sm font-medium">
                   {entry.member}
                 </span>
-                <Badge
-                  variant={STATUS_VARIANT[entry.status]}
+                <StatusBadge
+                  status={entry.status}
+                  variantMap={STATUS_VARIANT}
                   className="text-[10px]"
-                >
-                  {entry.status}
-                </Badge>
+                />
               </div>
               <p className="mt-0.5 truncate text-xs text-muted-foreground">
                 {entry.task} · {entry.date} · <Hours entry={entry} />

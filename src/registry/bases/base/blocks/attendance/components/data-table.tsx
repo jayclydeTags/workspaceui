@@ -3,6 +3,7 @@ import { MoreHorizontalIcon } from "@hugeicons/core-free-icons"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -63,14 +64,6 @@ function RowActions({ entry, onEdit, onDelete }: RowProps) {
   )
 }
 
-function StatusBadge({ status }: { status: AttendanceStatus }) {
-  return (
-    <Badge variant={STATUS_VARIANT[status]} className="capitalize">
-      {status}
-    </Badge>
-  )
-}
-
 const Punches = ({ entry }: { entry: AttendanceEntry }) =>
   entry.clockIn ? (
     <>
@@ -125,7 +118,11 @@ export function DataTable({
                   <Hours entry={entry} />
                 </TableCell>
                 <TableCell>
-                  <StatusBadge status={entry.status} />
+                  <StatusBadge
+                    status={entry.status}
+                    variantMap={STATUS_VARIANT}
+                    className="capitalize"
+                  />
                 </TableCell>
                 <TableCell className="pr-6">
                   <RowActions
@@ -157,7 +154,11 @@ export function DataTable({
                 <Punches entry={entry} /> · <Hours entry={entry} />
               </p>
               <div className="mt-1.5">
-                <StatusBadge status={entry.status} />
+                <StatusBadge
+                  status={entry.status}
+                  variantMap={STATUS_VARIANT}
+                  className="capitalize"
+                />
               </div>
             </div>
             <RowActions entry={entry} onEdit={onEdit} onDelete={onDelete} />

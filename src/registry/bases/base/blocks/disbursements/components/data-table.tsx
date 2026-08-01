@@ -17,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import {
   formatCurrency,
   isPending,
@@ -130,9 +131,10 @@ export function DataTable({
                   {disbursement.date}
                 </TableCell>
                 <TableCell>
-                  <Badge variant={STATUS_VARIANT[disbursement.status]}>
-                    {disbursement.status}
-                  </Badge>
+                  <StatusBadge
+                    status={disbursement.status}
+                    variantMap={STATUS_VARIANT}
+                  />
                 </TableCell>
                 <TableCell className="pr-6">
                   <RowActions
@@ -168,9 +170,10 @@ export function DataTable({
                 {disbursement.borrower} · {disbursement.date}
               </p>
               <div className="mt-1.5">
-                <Badge variant={STATUS_VARIANT[disbursement.status]}>
-                  {disbursement.status}
-                </Badge>
+                <StatusBadge
+                  status={disbursement.status}
+                  variantMap={STATUS_VARIANT}
+                />
               </div>
             </div>
             <RowActions

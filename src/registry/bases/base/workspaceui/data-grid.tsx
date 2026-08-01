@@ -12,7 +12,26 @@ import {
   type Table as TanstackTable,
 } from "@tanstack/react-table"
 import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox"
-import { motion } from "motion/react"
+import {
+  DndContext,
+  KeyboardSensor,
+  MeasuringStrategy,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragOverEvent,
+  type DragStartEvent,
+} from "@dnd-kit/core"
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   ArrowDown01Icon,
@@ -144,6 +163,15 @@ export interface DataGridProps<TData> {
 // Matches data-filter.tsx's own NARROW_BREAKPOINT so both flip together in a shared narrow pane.
 const NARROW_BREAKPOINT = 448
 
+// Re-measure every droppable row on every render (not just once per drag),
+// so the keyboard sensor's up/down math sees each row's real position right
+// after a cross-group move re-renders the popover with a column moved
+// between lists. Module-scope so the object identity is stable across
+// DataGrid renders.
+const columnDragMeasuring = {
+  droppable: { strategy: MeasuringStrategy.Always },
+}
+
 // Own ResizeObserver (not shared with data-filter.tsx): container width, not viewport, drives responsiveness here.
 function useContainerWidth<T extends HTMLElement>() {
   const ref = React.useRef<T>(null)
@@ -249,20 +277,6 @@ function SelectAllCheckbox({
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
   )
-}
-
-// Uses the midpoint-derived before/after position: a naive insert-before-target no-ops on an adjacent swap.
-function reorderColumnIds(
-  order: string[],
-  draggedId: string,
-  overId: string,
-  position: "before" | "after"
-): string[] {
-  if (draggedId === overId) return order
-  const without = order.filter((id) => id !== draggedId)
-  const overIndex = without.indexOf(overId)
-  const insertAt = position === "after" ? overIndex + 1 : overIndex
-  return [...without.slice(0, insertAt), draggedId, ...without.slice(insertAt)]
 }
 
 // forceStickyLeft is the narrowFallback="none" escape hatch; a real left pin still wins its own getStart() offset over the forced 0.
@@ -513,6 +527,93 @@ export function getDataGridRowDefaults<TData>(
   return defaults
 }
 
+// One row inside the Columns popover's two dnd-kit SortableContexts. Only
+// the grip handle carries useSortable's listeners/attributes — the row
+// itself isn't a drag source, matching the old HTML5-DnD row where only the
+// grip icon was `draggable`.
+function ColumnMenuRow<TData>({
+  column,
+  hidden,
+  label,
+}: {
+  column: Column<TData, unknown>
+  hidden: boolean
+  label: string
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: column.id })
+  const pinned = column.getIsPinned()
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition: transition ?? undefined,
+  }
+  return (
+    <li
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "relative flex items-center gap-1.5 rounded-md bg-popover px-2 py-1.5 text-sm select-none",
+        hidden && "opacity-50",
+        isDragging && "z-10 opacity-90 shadow-md"
+      )}
+    >
+      <span
+        ref={setActivatorNodeRef}
+        {...attributes}
+        {...listeners}
+        data-drag-handle
+        aria-label={`Reorder ${label} column`}
+        className="flex size-5 shrink-0 touch-none items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground active:cursor-grabbing"
+      >
+        <HugeiconsIcon
+          icon={GripVerticalIcon}
+          strokeWidth={2}
+          className="size-4"
+        />
+      </span>
+      <span className="flex-1 truncate">{label}</span>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon-xs"
+        disabled={hidden}
+        aria-label={pinActionLabel(pinned)}
+        onClick={() => column.pin(nextPinPosition(pinned))}
+        className="shrink-0"
+      >
+        <HugeiconsIcon
+          icon={PinIcon}
+          strokeWidth={2}
+          className={cn(pinned && "fill-current")}
+        />
+      </Button>
+      {column.getCanHide() && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-xs"
+          aria-label={`${hidden ? "Show" : "Hide"} ${label} column`}
+          onClick={() => column.toggleVisibility(hidden)}
+          className="shrink-0"
+        >
+          {hidden ? (
+            <HugeiconsIcon icon={EyeOffIcon} strokeWidth={2} />
+          ) : (
+            <HugeiconsIcon icon={EyeIcon} strokeWidth={2} />
+          )}
+        </Button>
+      )}
+    </li>
+  )
+}
+
 export function DataGrid<TData>({
   table,
   onCellEdit,
@@ -579,12 +680,15 @@ export function DataGrid<TData>({
     null
   )
 
-  // Drag state lives in refs (read only from drag handlers, no re-renders needed).
-  const draggingColumnRef = React.useRef<string | null>(null)
-  const dragOriginalOrderRef = React.useRef<string[] | null>(null)
-  const dragOriginalHiddenOrderRef = React.useRef<string[] | null>(null)
-  const dragOriginalVisibleRef = React.useRef<boolean | null>(null)
-  const droppedRef = React.useRef(false)
+  // Snapshot of order/hidden-order/visibility taken at drag start, read only
+  // by onDragCancel to revert a drag that never committed — no re-renders
+  // needed, so a ref rather than state.
+  const dragSnapshotRef = React.useRef<{
+    order: string[]
+    hiddenOrder: string[]
+    columnId: string
+    wasHidden: boolean
+  } | null>(null)
   // tanstack's columnOrder only tracks visible ids, so hidden columns get their own.
   const [hiddenOrder, setHiddenOrder] = React.useState<string[]>([])
 
@@ -666,58 +770,9 @@ export function DataGrid<TData>({
     })
   }, [columnOrderState, columnSizingState, columnPinningState])
 
-  // Each gap between two rows is one drop zone, not two — collapse "after" into the next row's "before".
-  function columnDropTarget(
-    e: React.DragEvent<HTMLLIElement>,
-    overId: string,
-    ids: string[]
-  ): { id: string; position: "before" | "after" } {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const midpointY = rect.top + rect.height / 2
-    const rawPosition: "before" | "after" =
-      e.clientY < midpointY ? "before" : "after"
-    const target = { id: overId, position: rawPosition }
-    if (rawPosition === "after") {
-      const idx = ids.indexOf(overId)
-      const nextId = idx >= 0 ? ids[idx + 1] : undefined
-      if (nextId) {
-        target.id = nextId
-        target.position = "before"
-      }
-    }
-    return target
-  }
-
-  function handleColumnDragStart(
-    e: React.DragEvent<HTMLSpanElement>,
-    columnId: string
-  ) {
-    e.dataTransfer.effectAllowed = "move"
-    e.dataTransfer.setData("text/plain", columnId)
-    // Drag ghost is the whole row, not just the (only draggable) icon.
-    const row = e.currentTarget.closest("li")
-    if (row) {
-      const rect = row.getBoundingClientRect()
-      e.dataTransfer.setDragImage(
-        row,
-        e.clientX - rect.left,
-        e.clientY - rect.top
-      )
-    }
-    // addEventListener, not onDragEnd: motion.li intercepts that prop name.
-    e.currentTarget.addEventListener("dragend", handleColumnDragEnd, {
-      once: true,
-    })
-    draggingColumnRef.current = columnId
-    dragOriginalOrderRef.current = table
-      .getVisibleLeafColumns()
-      .map((c) => c.id)
-    dragOriginalHiddenOrderRef.current = hiddenMenuColumns.map((c) => c.id)
-    dragOriginalVisibleRef.current =
-      table.getColumn(columnId)?.getIsVisible() ?? null
-    droppedRef.current = false
-  }
-
+  // Which group (visible/hidden) currently owns overId, plus that group's
+  // live order array and its setter — mirrors table.setColumnOrder's
+  // visible-ids contract for the visible group, and hiddenOrder for the rest.
   function columnGroupOrder(overId: string) {
     const overColumn = table.getColumn(overId)
     const hidden = overColumn ? !overColumn.getIsVisible() : false
@@ -734,13 +789,16 @@ export function DataGrid<TData>({
         }
   }
 
-  // Shared by dragover (live preview) and drop (commit) — reveals/hides the
-  // dragged column to match whichever group it's over, then reorders it in.
-  function applyColumnDrag(
-    e: React.DragEvent<HTMLLIElement>,
-    draggedId: string,
-    overId: string
-  ) {
+  // Shared by onDragOver (live preview) and onDragEnd (final commit) —
+  // reveals/hides the dragged column to match whichever group it's over,
+  // then moves it to the over column's slot in that group's order.
+  // Same-group: arrayMove(oldIndex, overIndex) — a swap, not an insert, so
+  // an adjacent pair (already next to each other) still reorders instead of
+  // no-opping. Cross-group: draggedId isn't in the target's order yet
+  // (toggleVisibility above hasn't landed as state), so indexOf is -1 and it
+  // falls through to a plain insert at overId's slot.
+  function applyColumnDrag(draggedId: string, overId: string) {
+    if (draggedId === overId) return
     const draggedColumn = table.getColumn(draggedId)
     const draggedHidden = draggedColumn ? !draggedColumn.getIsVisible() : false
     const {
@@ -752,61 +810,70 @@ export function DataGrid<TData>({
       if (overHidden && !draggedColumn?.getCanHide()) return
       draggedColumn?.toggleVisibility(!overHidden)
     }
-    const target = columnDropTarget(e, overId, currentOrder)
-    const nextOrder = reorderColumnIds(
-      currentOrder,
-      draggedId,
-      target.id,
-      target.position
-    )
+    const oldIndex = currentOrder.indexOf(draggedId)
+    const overIndex = currentOrder.indexOf(overId)
+    if (overIndex === -1) return
+    const nextOrder =
+      oldIndex === -1
+        ? [
+            ...currentOrder.slice(0, overIndex),
+            draggedId,
+            ...currentOrder.slice(overIndex),
+          ]
+        : arrayMove(currentOrder, oldIndex, overIndex)
     if (nextOrder.join() !== currentOrder.join()) {
       setOrder(nextOrder)
     }
   }
 
-  function handleColumnDragOver(
-    e: React.DragEvent<HTMLLIElement>,
-    overId: string
-  ) {
-    e.preventDefault()
-    e.dataTransfer.dropEffect = "move"
-    const draggedId = draggingColumnRef.current
-    if (!draggedId || draggedId === overId) return
-    applyColumnDrag(e, draggedId, overId)
+  function handleColumnDragStart(e: DragStartEvent) {
+    const columnId = String(e.active.id)
+    dragSnapshotRef.current = {
+      order: table.getVisibleLeafColumns().map((c) => c.id),
+      hiddenOrder: hiddenMenuColumns.map((c) => c.id),
+      columnId,
+      wasHidden: !(table.getColumn(columnId)?.getIsVisible() ?? true),
+    }
   }
 
-  function handleColumnDrop(e: React.DragEvent<HTMLLIElement>, overId: string) {
-    e.preventDefault()
-    const draggedId = e.dataTransfer.getData("text/plain")
-    droppedRef.current = true
-    if (!draggedId) return
-    applyColumnDrag(e, draggedId, overId)
+  function handleColumnDragOver(e: DragOverEvent) {
+    if (!e.over) return
+    applyColumnDrag(String(e.active.id), String(e.over.id))
   }
 
-  function handleColumnDragEnd() {
-    // No drop landed — undo the live preview.
-    if (!droppedRef.current) {
-      if (dragOriginalHiddenOrderRef.current) {
-        setHiddenOrder(dragOriginalHiddenOrderRef.current)
-      }
-      if (dragOriginalOrderRef.current) {
-        table.setColumnOrder(dragOriginalOrderRef.current)
-      }
-      if (
-        draggingColumnRef.current &&
-        dragOriginalVisibleRef.current !== null
-      ) {
-        table
-          .getColumn(draggingColumnRef.current)
-          ?.toggleVisibility(dragOriginalVisibleRef.current)
+  function handleColumnDragEnd(e: DragEndEvent) {
+    // The live preview already applied every move as the pointer crossed
+    // rows; re-apply once more against the final `over` in case the drop
+    // lands without a preceding dragover (e.g. a keyboard-driven drop).
+    if (e.over) {
+      applyColumnDrag(String(e.active.id), String(e.over.id))
+    }
+    dragSnapshotRef.current = null
+  }
+
+  // Escape (or any cancelled drag) reverts order, hidden-order, and
+  // visibility to what they were before the drag started — the live preview
+  // in onDragOver must not stick without a real drop.
+  function handleColumnDragCancel() {
+    const snapshot = dragSnapshotRef.current
+    if (snapshot) {
+      setHiddenOrder(snapshot.hiddenOrder)
+      table.setColumnOrder(snapshot.order)
+      const draggedColumn = table.getColumn(snapshot.columnId)
+      const wasVisible = !snapshot.wasHidden
+      if (draggedColumn && draggedColumn.getIsVisible() !== wasVisible) {
+        draggedColumn.toggleVisibility(wasVisible)
       }
     }
-    draggingColumnRef.current = null
-    dragOriginalOrderRef.current = null
-    dragOriginalHiddenOrderRef.current = null
-    dragOriginalVisibleRef.current = null
-    droppedRef.current = false
+    dragSnapshotRef.current = null
   }
+
+  const columnDragSensors = useSensors(
+    // distance: 1 (not the library default) keeps pointer-driven drags
+    // reachable in tests, where a real drag gesture has no natural travel.
+    useSensor(PointerSensor, { activationConstraint: { distance: 1 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  )
 
   // Swaps a column with its visible neighbor; same setColumnOrder(visible ids)
   // contract the drop handler uses, so keyboard/menu and drag can't drift.
@@ -843,67 +910,13 @@ export function DataGrid<TData>({
     column: Column<TData, unknown>,
     hidden: boolean
   ) {
-    const pinned = column.getIsPinned()
-    const label = getColumnLabel(column)
     return (
-      <motion.li
+      <ColumnMenuRow
         key={column.id}
-        layout="position"
-        transition={{ duration: 0.15 }}
-        onDragOver={(e) => handleColumnDragOver(e, column.id)}
-        onDrop={(e) => handleColumnDrop(e, column.id)}
-        className={cn(
-          "relative flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm select-none",
-          hidden && "opacity-50"
-        )}
-      >
-        {/* Only the handle is draggable — dragover/drop still target the
-            whole row, since native drag events aren't gated by `draggable`. */}
-        <span
-          draggable
-          onDragStart={(e) => handleColumnDragStart(e, column.id)}
-          aria-hidden="true"
-          className="flex size-5 shrink-0 cursor-grab items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground active:cursor-grabbing"
-        >
-          <HugeiconsIcon
-            icon={GripVerticalIcon}
-            strokeWidth={2}
-            className="size-4"
-          />
-        </span>
-        <span className="flex-1 truncate">{label}</span>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-xs"
-          disabled={hidden}
-          aria-label={pinActionLabel(pinned)}
-          onClick={() => column.pin(nextPinPosition(pinned))}
-          className="shrink-0"
-        >
-          <HugeiconsIcon
-            icon={PinIcon}
-            strokeWidth={2}
-            className={cn(pinned && "fill-current")}
-          />
-        </Button>
-        {column.getCanHide() && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-xs"
-            aria-label={`${hidden ? "Show" : "Hide"} ${label} column`}
-            onClick={() => column.toggleVisibility(hidden)}
-            className="shrink-0"
-          >
-            {hidden ? (
-              <HugeiconsIcon icon={EyeOffIcon} strokeWidth={2} />
-            ) : (
-              <HugeiconsIcon icon={EyeIcon} strokeWidth={2} />
-            )}
-          </Button>
-        )}
-      </motion.li>
+        column={column}
+        hidden={hidden}
+        label={getColumnLabel(column)}
+      />
     )
   }
 
@@ -1617,26 +1630,46 @@ export function DataGrid<TData>({
                   </Tooltip>
                 </TooltipProvider>
                 <PopoverContent align="end" className="w-64 p-1">
-                  <div className="px-1.5 py-1 text-xs font-medium text-muted-foreground">
-                    Shown in table
-                  </div>
-                  <ul className="flex list-none flex-col gap-0.5 ps-0">
-                    {table
-                      .getVisibleLeafColumns()
-                      .map((column) => renderColumnMenuRow(column, false))}
-                  </ul>
-                  {hiddenMenuColumns.length > 0 && (
-                    <>
-                      <div className="px-1.5 py-1 text-xs font-medium text-muted-foreground">
-                        Hidden in table
-                      </div>
+                  <DndContext
+                    sensors={columnDragSensors}
+                    collisionDetection={closestCenter}
+                    measuring={columnDragMeasuring}
+                    onDragStart={handleColumnDragStart}
+                    onDragOver={handleColumnDragOver}
+                    onDragEnd={handleColumnDragEnd}
+                    onDragCancel={handleColumnDragCancel}
+                  >
+                    <div className="px-1.5 py-1 text-xs font-medium text-muted-foreground">
+                      Shown in table
+                    </div>
+                    <SortableContext
+                      items={table.getVisibleLeafColumns().map((c) => c.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
                       <ul className="flex list-none flex-col gap-0.5 ps-0">
-                        {hiddenMenuColumns.map((column) =>
-                          renderColumnMenuRow(column, true)
-                        )}
+                        {table
+                          .getVisibleLeafColumns()
+                          .map((column) => renderColumnMenuRow(column, false))}
                       </ul>
-                    </>
-                  )}
+                    </SortableContext>
+                    {hiddenMenuColumns.length > 0 && (
+                      <>
+                        <div className="px-1.5 py-1 text-xs font-medium text-muted-foreground">
+                          Hidden in table
+                        </div>
+                        <SortableContext
+                          items={hiddenMenuColumns.map((c) => c.id)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          <ul className="flex list-none flex-col gap-0.5 ps-0">
+                            {hiddenMenuColumns.map((column) =>
+                              renderColumnMenuRow(column, true)
+                            )}
+                          </ul>
+                        </SortableContext>
+                      </>
+                    )}
+                  </DndContext>
                 </PopoverContent>
               </Popover>
             </div>

@@ -1,15 +1,8 @@
-import { render, screen, fireEvent } from "@testing-library/react"
-import { describe, it, expect, vi } from "vitest"
+import { render, screen } from "@testing-library/react"
+import { describe, it, expect } from "vitest"
 
 import { ApprovalBoard } from "../page"
-
-function makeDataTransfer(id: string) {
-  return {
-    setData: vi.fn(),
-    getData: vi.fn(() => id),
-    effectAllowed: "",
-  }
-}
+import { dragCard, mockRect } from "@/test/dnd"
 
 describe("ApprovalBoard", () => {
   it("groups requests into their status columns", () => {
@@ -26,19 +19,34 @@ describe("ApprovalBoard", () => {
     expect(screen.getByText("3 pending review")).toBeInTheDocument()
   })
 
-  it("moves a request to a new column on drop", () => {
+  it("moves a request to a new column on drop", async () => {
     render(<ApprovalBoard />)
 
     const card = screen
       .getByText("Client dinner — Q2 kickoff")
-      .closest("[draggable]")!
+      .closest('[role="button"]')!
     const approvedColumn = screen
       .getByText("Approved")
       .closest("div")!.parentElement!
 
-    const dataTransfer = makeDataTransfer("req-1")
-    fireEvent.dragStart(card, { dataTransfer })
-    fireEvent.drop(approvedColumn, { dataTransfer })
+    mockRect(card, {
+      left: 0,
+      top: 0,
+      right: 100,
+      bottom: 50,
+      width: 100,
+      height: 50,
+    })
+    mockRect(approvedColumn, {
+      left: 500,
+      top: 0,
+      right: 700,
+      bottom: 400,
+      width: 200,
+      height: 400,
+    })
+
+    await dragCard(card, approvedColumn)
 
     expect(screen.getByText("2 pending review")).toBeInTheDocument()
   })

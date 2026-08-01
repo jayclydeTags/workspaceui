@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { DndContext, type DragEndEvent } from "@dnd-kit/core"
 
 import { BoardCard } from "@/registry/bases/base/workspaceui/board-card"
 import { BoardColumn } from "@/registry/bases/base/workspaceui/board-column"
@@ -27,23 +28,30 @@ export function BoardColumnDemo() {
     )
   }
 
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event
+    if (!over) return
+    move(String(active.id), String(over.id))
+  }
+
   return (
-    <div className="flex h-64 gap-4">
-      {(["todo", "done"] as const).map((column) => (
-        <BoardColumn
-          key={column}
-          columnId={column}
-          label={column === "todo" ? "Todo" : "Done"}
-          items={tasks.filter((t) => t.column === column)}
-          getItemId={(task) => task.id}
-          onDropItem={move}
-          renderItem={(task) => (
-            <BoardCard itemId={task.id}>
-              <span className="font-medium">{task.title}</span>
-            </BoardCard>
-          )}
-        />
-      ))}
-    </div>
+    <DndContext onDragEnd={handleDragEnd}>
+      <div className="flex h-64 gap-4">
+        {(["todo", "done"] as const).map((column) => (
+          <BoardColumn
+            key={column}
+            columnId={column}
+            label={column === "todo" ? "Todo" : "Done"}
+            items={tasks.filter((t) => t.column === column)}
+            getItemId={(task) => task.id}
+            renderItem={(task) => (
+              <BoardCard itemId={task.id}>
+                <span className="font-medium">{task.title}</span>
+              </BoardCard>
+            )}
+          />
+        ))}
+      </div>
+    </DndContext>
   )
 }

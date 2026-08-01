@@ -1,5 +1,6 @@
-import { render, screen, fireEvent } from "@testing-library/react"
-import { describe, it, expect, vi } from "vitest"
+import { DndContext } from "@dnd-kit/core"
+import { render, screen } from "@testing-library/react"
+import { describe, it, expect } from "vitest"
 
 import { BoardColumn } from "../board-column"
 
@@ -16,14 +17,15 @@ const items: Item[] = [
 describe("BoardColumn", () => {
   it("renders the label, item count, and each item via renderItem", () => {
     render(
-      <BoardColumn
-        columnId="todo"
-        label="Todo"
-        items={items}
-        getItemId={(item) => item.id}
-        renderItem={(item) => <div>{item.title}</div>}
-        onDropItem={vi.fn()}
-      />
+      <DndContext>
+        <BoardColumn
+          columnId="todo"
+          label="Todo"
+          items={items}
+          getItemId={(item) => item.id}
+          renderItem={(item) => <div>{item.title}</div>}
+        />
+      </DndContext>
     )
     expect(screen.getByText("Todo")).toBeInTheDocument()
     expect(screen.getByText("2")).toBeInTheDocument()
@@ -33,33 +35,33 @@ describe("BoardColumn", () => {
 
   it("shows the empty label when there are no items", () => {
     render(
-      <BoardColumn
-        columnId="todo"
-        label="Todo"
-        items={[]}
-        getItemId={(item: Item) => item.id}
-        renderItem={(item: Item) => <div>{item.title}</div>}
-        onDropItem={vi.fn()}
-        emptyLabel="Nothing here"
-      />
+      <DndContext>
+        <BoardColumn
+          columnId="todo"
+          label="Todo"
+          items={[]}
+          getItemId={(item: Item) => item.id}
+          renderItem={(item: Item) => <div>{item.title}</div>}
+          emptyLabel="Nothing here"
+        />
+      </DndContext>
     )
     expect(screen.getByText("Nothing here")).toBeInTheDocument()
   })
 
-  it("calls onDropItem with the dragged id and this column's id on drop", () => {
-    const onDropItem = vi.fn()
+  it("renders headerExtra after the count badge", () => {
     render(
-      <BoardColumn
-        columnId="done"
-        label="Done"
-        items={items}
-        getItemId={(item) => item.id}
-        renderItem={(item) => <div>{item.title}</div>}
-        onDropItem={onDropItem}
-      />
+      <DndContext>
+        <BoardColumn
+          columnId="todo"
+          label="Todo"
+          items={items}
+          getItemId={(item) => item.id}
+          renderItem={(item) => <div>{item.title}</div>}
+          headerExtra={<span>$1,200</span>}
+        />
+      </DndContext>
     )
-    const column = screen.getByText("Done").closest("div[class*='flex-1']")!
-    fireEvent.drop(column, { dataTransfer: { getData: () => "1" } })
-    expect(onDropItem).toHaveBeenCalledWith("1", "done")
+    expect(screen.getByText("$1,200")).toBeInTheDocument()
   })
 })

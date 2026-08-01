@@ -1,7 +1,6 @@
 import * as React from "react"
 import {
   act,
-  createEvent,
   fireEvent,
   render,
   screen,
@@ -420,45 +419,93 @@ function renderTaskGrid(initialData?: Task[]) {
   return { onCellEdit }
 }
 
-// A minimal DataTransfer stand-in — jsdom doesn't implement the real one,
-// and getData() is only readable at drop time on the genuine API anyway.
-function fakeDataTransfer() {
-  let stored = ""
-  return {
-    effectAllowed: "",
-    dropEffect: "",
-    setData: (_type: string, value: string) => {
-      stored = value
-    },
-    getData: () => stored,
-    setDragImage: () => {},
+// dnd-kit measures every draggable/droppable row via getBoundingClientRect
+// to run its collision detection (closestCorners for the keyboard sensor).
+// jsdom reports every element as a 0×0 box at (0,0), so every row would
+// collide with every other row. Hand out a stable, distinct, non-overlapping
+// box per element instead — same technique as workspace.test.tsx's
+// stubLayout(), which solves the identical jsdom gap for that file's own
+// (unrelated) drag system. Scoped to the "column reorder" tests below via a
+// restore callback, not global, so it can't leak into unrelated assertions.
+function stubLayout() {
+  const original = Element.prototype.getBoundingClientRect
+  Element.prototype.getBoundingClientRect = function () {
+    // Scoped to the column-panel rows (<li>) only — leaving every other
+    // element's rect at jsdom's real (0×0) default avoids perturbing
+    // unrelated positioning logic (Popover, Tooltip, ...) elsewhere on the
+    // page. Computed fresh off the *current* DOM order on every call, not
+    // cached per-element: dnd-kit measures the actively-dragged row's own
+    // rect before the others (it's already mid-activation), so a
+    // first-call-wins cache — the workspace.test.tsx stubLayout's
+    // technique, fine for that file's drag system — assigns the active row
+    // whatever position it happened to be measured at rather than its real
+    // list position, then never updates it as the list reorders under it.
+    if (this.tagName !== "LI") return original.call(this)
+    const index = Array.from(document.querySelectorAll<Element>("li")).indexOf(
+      this
+    )
+    const top = index * 20
+    return {
+      x: 0,
+      y: top,
+      left: 0,
+      top,
+      right: 200,
+      bottom: top + 20,
+      width: 200,
+      height: 20,
+      toJSON: () => ({}),
+    } as DOMRect
+  }
+  return () => {
+    Element.prototype.getBoundingClientRect = original
   }
 }
 
-// jsdom's DragEvent constructor drops MouseEvent-only init fields like
-// clientY (https://github.com/jsdom/jsdom/issues/1568 territory), so
-// fireEvent.dragOver(el, { clientY }) silently no-ops it. Build the event via
-// testing-library's own createEvent, then force clientY on afterward.
-function fireDragOver(el: Element, dataTransfer: unknown, clientY: number) {
-  const event = createEvent.dragOver(el, { dataTransfer })
-  Object.defineProperty(event, "clientY", {
-    value: clientY,
-    configurable: true,
+// Keyboard-sensor-driven drag, dnd-kit's own recommended a11y-testable path:
+// pointer/mouse simulation needs synthetic PointerEvents with real
+// coordinates dnd-kit resolves against measured rects, which is fragile in
+// jsdom even with stubLayout(); the keyboard sensor instead drives off
+// discrete keydown codes on the grip handle itself, so it's deterministic
+// here. Space picks up, Arrow{Up,Down} moves to the next/previous measured
+// row (across both the shown and hidden groups — dnd-kit's own
+// sortableKeyboardCoordinates isn't scoped to one SortableContext), and a
+// final Space commits or Escape cancels.
+//
+// dnd-kit's KeyboardSensor registers its own Arrow/Space/Escape document
+// listener inside a `setTimeout(..., 0)` in its constructor — deliberately
+// deferred so the very keydown that activates it doesn't also retrigger it.
+// Firing every step synchronously in the same tick (as a plain fireEvent
+// chain would) races that timeout: the activation keydown fires, but the
+// listener that would handle the *next* keydown isn't attached yet, so
+// moves/drops silently no-op and — worse — the half-started drag's listener
+// attaches later and swallows an unrelated Space keystroke in a later test.
+// pickUpColumn awaits a real tick so the listener is live before anything
+// else touches the keyboard.
+async function tick() {
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0))
   })
-  fireEvent(el, event)
 }
 
-// The drop handler recomputes the drop position from the event's own
-// clientY (a real drop event's clientY matches the pointer's release
-// position, same as the preceding dragover) rather than reusing dragover's
-// last-seen target — see the same jsdom clientY gap as fireDragOver above.
-function fireDrop(el: Element, dataTransfer: unknown, clientY: number) {
-  const event = createEvent.drop(el, { dataTransfer })
-  Object.defineProperty(event, "clientY", {
-    value: clientY,
-    configurable: true,
-  })
-  fireEvent(el, event)
+async function pickUpColumn(handle: Element) {
+  fireEvent.keyDown(handle, { code: "Space" })
+  await tick()
+}
+
+async function moveColumn(handle: Element, direction: "ArrowDown" | "ArrowUp") {
+  fireEvent.keyDown(handle, { code: direction })
+  await tick()
+}
+
+async function dropColumn(handle: Element) {
+  fireEvent.keyDown(handle, { code: "Space" })
+  await tick()
+}
+
+async function cancelColumnDrag(handle: Element) {
+  fireEvent.keyDown(handle, { code: "Escape" })
+  await tick()
 }
 
 function renderGrid(overrides: Partial<{ data: Person[] }> = {}) {
@@ -1682,9 +1729,27 @@ describe("DataGrid", () => {
   })
 
   describe("column reorder", () => {
-    // Only the grip handle inside each row is draggable now, not the row itself.
+    // Only the grip handle inside each row carries dnd-kit's drag listeners now.
     function dragHandle(li: Element) {
-      return li.querySelector("[draggable]")!
+      return li.querySelector("[data-drag-handle]")!
+    }
+
+    // Re-queries by column label rather than reusing a captured element
+    // reference: crossing from the hidden group into the visible one (or
+    // back) moves the column's <li> into a *different* parent <ul>, which
+    // React can't reconcile as "the same node that moved" — it unmounts the
+    // old one and mounts a fresh one. A stale handle reference from before
+    // the cross-group move is a detached node; dispatching a keydown on it
+    // doesn't bubble to `document`, where dnd-kit's own keyboard listener
+    // lives, so the drag would silently stop responding. A real user's key
+    // events always come from whatever the browser currently has focused,
+    // which is never this problem — this is purely an artifact of holding a
+    // JS reference to a DOM node across a re-render in a test.
+    function handleFor(label: string) {
+      const li = screen
+        .getAllByRole("listitem")
+        .find((item) => item.textContent === label)!
+      return dragHandle(li)
     }
 
     it("opens a Columns panel from the toolbar listing columns with drag handles", async () => {
@@ -1699,53 +1764,56 @@ describe("DataGrid", () => {
         "Email",
         "Team",
       ])
-      expect(dragHandle(items[0]!)).toHaveAttribute("draggable", "true")
+      expect(dragHandle(items[0]!)).toHaveAttribute("role", "button")
+      expect(dragHandle(items[0]!)).toHaveAttribute("tabindex", "0")
     })
 
-    it("reorders columns on drop using insert-before-target semantics", async () => {
-      const user = userEvent.setup()
-      render(<LayoutHarness />)
-      await user.click(screen.getByRole("button", { name: "Columns" }))
-      const items = () => screen.getAllByRole("listitem")
+    it("reorders columns via the keyboard sensor, moving the picked-up column two slots", async () => {
+      const restoreLayout = stubLayout()
+      try {
+        const user = userEvent.setup()
+        render(<LayoutHarness />)
+        await user.click(screen.getByRole("button", { name: "Columns" }))
+        const items = () => screen.getAllByRole("listitem")
 
-      const dataTransfer = fakeDataTransfer()
-      const nameItem = items()[0]! // captured before the live-preview reorder moves it
-      fireEvent.dragStart(dragHandle(items()[2]!), { dataTransfer }) // Team
-      fireDragOver(nameItem, dataTransfer, -1) // before Name
-      fireDrop(nameItem, dataTransfer, -1)
-      fireEvent.dragEnd(dragHandle(items()[0]!), { dataTransfer })
+        await pickUpColumn(handleFor("Team"))
+        await moveColumn(handleFor("Team"), "ArrowUp")
+        await moveColumn(handleFor("Team"), "ArrowUp")
+        await dropColumn(handleFor("Team"))
 
-      await waitFor(() => {
         expect(items().map((li) => li.textContent)).toEqual([
           "Team",
           "Name",
           "Email",
         ])
-      })
+      } finally {
+        restoreLayout()
+      }
     })
 
-    it("registers an adjacent swap via the midpoint check, unlike naive insert-before math", async () => {
-      const user = userEvent.setup()
-      render(<LayoutHarness />)
-      await user.click(screen.getByRole("button", { name: "Columns" }))
-      const items = () => screen.getAllByRole("listitem")
+    it("swaps two adjacent columns, not a no-op insert-before-self", async () => {
+      const restoreLayout = stubLayout()
+      try {
+        const user = userEvent.setup()
+        render(<LayoutHarness />)
+        await user.click(screen.getByRole("button", { name: "Columns" }))
+        const items = () => screen.getAllByRole("listitem")
 
-      // Naive insert-before-target math would no-op here: removing "Name"
-      // shifts "Email" back into the very slot the drop targeted.
-      const dataTransfer = fakeDataTransfer()
-      const emailItem = items()[1]! // captured before the live-preview reorder moves it
-      fireEvent.dragStart(dragHandle(items()[0]!), { dataTransfer }) // Name
-      fireDragOver(emailItem, dataTransfer, 1) // after Email
-      fireDrop(emailItem, dataTransfer, 1)
-      fireEvent.dragEnd(dragHandle(items()[0]!), { dataTransfer })
+        // A naive "insert dragged before over" no-ops here — Name is already
+        // immediately before Email — so the move must resolve as a genuine
+        // index swap (arrayMove), not an insert.
+        await pickUpColumn(handleFor("Name"))
+        await moveColumn(handleFor("Name"), "ArrowDown")
+        await dropColumn(handleFor("Name"))
 
-      await waitFor(() => {
         expect(items().map((li) => li.textContent)).toEqual([
           "Email",
           "Name",
           "Team",
         ])
-      })
+      } finally {
+        restoreLayout()
+      }
     })
 
     it("hides a column via the panel, moving it to a separate group with a Show control", async () => {
@@ -1772,139 +1840,158 @@ describe("DataGrid", () => {
     })
 
     it("reveals a hidden column when dragged into the visible group", async () => {
-      const user = userEvent.setup()
-      render(<LayoutHarness />)
-      await user.click(screen.getByRole("button", { name: "Columns" }))
-      await user.click(screen.getByRole("button", { name: "Hide Team column" }))
-      const items = () => screen.getAllByRole("listitem")
+      const restoreLayout = stubLayout()
+      try {
+        const user = userEvent.setup()
+        render(<LayoutHarness />)
+        await user.click(screen.getByRole("button", { name: "Columns" }))
+        await user.click(
+          screen.getByRole("button", { name: "Hide Team column" })
+        )
+        const items = () => screen.getAllByRole("listitem")
 
-      const dataTransfer = fakeDataTransfer()
-      const teamItem = items().find((li) => li.textContent === "Team")!
-      const nameItem = items()[0]! // dragging a hidden column doesn't live-reorder, so this stays put
-      fireEvent.dragStart(dragHandle(teamItem), { dataTransfer })
-      fireDragOver(nameItem, dataTransfer, -1) // before Name
-      fireDrop(nameItem, dataTransfer, -1)
-      fireEvent.dragEnd(dragHandle(teamItem), { dataTransfer })
+        await pickUpColumn(handleFor("Team"))
+        // The first ArrowUp crosses from the hidden group into the visible
+        // one — React unmounts/remounts the <li> into the other <ul>, so
+        // handleFor() re-queries fresh before the next step (see the note
+        // on handleFor above).
+        await moveColumn(handleFor("Team"), "ArrowUp")
+        await moveColumn(handleFor("Team"), "ArrowUp")
+        await dropColumn(handleFor("Team"))
 
-      await waitFor(() => {
         expect(items().map((li) => li.textContent)).toEqual([
           "Team",
           "Name",
           "Email",
         ])
-      })
-      // Back in the visible group — no hidden group, so no Show control left.
-      expect(
-        screen.queryByRole("button", { name: "Show Team column" })
-      ).toBeNull()
+        // Back in the visible group — no hidden group, so no Show control left.
+        expect(
+          screen.queryByRole("button", { name: "Show Team column" })
+        ).toBeNull()
+      } finally {
+        restoreLayout()
+      }
     })
 
     it("hides a visible column when dragged into an existing hidden group", async () => {
-      const user = userEvent.setup()
-      render(<LayoutHarness />)
-      await user.click(screen.getByRole("button", { name: "Columns" }))
-      // A hidden group only exists to drop onto once something is hidden.
-      await user.click(screen.getByRole("button", { name: "Hide Team column" }))
-      const items = () => screen.getAllByRole("listitem")
+      const restoreLayout = stubLayout()
+      try {
+        const user = userEvent.setup()
+        render(<LayoutHarness />)
+        await user.click(screen.getByRole("button", { name: "Columns" }))
+        // A hidden group only exists to drop onto once something is hidden.
+        await user.click(
+          screen.getByRole("button", { name: "Hide Team column" })
+        )
 
-      const dataTransfer = fakeDataTransfer()
-      const emailItem = items().find((li) => li.textContent === "Email")!
-      const teamItem = items().find((li) => li.textContent === "Team")!
-      fireEvent.dragStart(dragHandle(emailItem), { dataTransfer })
-      fireDragOver(teamItem, dataTransfer, -1)
-      fireDrop(teamItem, dataTransfer, -1)
-      fireEvent.dragEnd(dragHandle(emailItem), { dataTransfer })
+        await pickUpColumn(handleFor("Email"))
+        await moveColumn(handleFor("Email"), "ArrowDown")
+        // That move already crossed Email into the hidden group's <ul>, so
+        // re-query before the drop too (see handleFor's note above).
+        await dropColumn(handleFor("Email"))
 
-      await waitFor(() => {
         expect(
           screen.getByRole("button", { name: "Show Email column" })
         ).toBeInTheDocument()
-      })
-      // Visible group lost Email (Team was already hidden going in).
-      expect(
-        screen
-          .getAllByRole("columnheader")
-          .map((h) => h.textContent)
-          .filter(Boolean)
-      ).toEqual(["Name"])
+        // Visible group lost Email (Team was already hidden going in).
+        expect(
+          screen
+            .getAllByRole("columnheader")
+            .map((h) => h.textContent)
+            .filter(Boolean)
+        ).toEqual(["Name"])
+      } finally {
+        restoreLayout()
+      }
     })
 
     it("reorders within the hidden group the same way as the visible group", async () => {
-      const user = userEvent.setup()
-      render(<LayoutHarness />)
-      await user.click(screen.getByRole("button", { name: "Columns" }))
-      await user.click(
-        screen.getByRole("button", { name: "Hide Email column" })
-      )
-      await user.click(screen.getByRole("button", { name: "Hide Team column" }))
-      const items = () => screen.getAllByRole("listitem")
-      expect(
-        items()
-          .slice(-2)
-          .map((li) => li.textContent)
-      ).toEqual(["Email", "Team"])
+      const restoreLayout = stubLayout()
+      try {
+        const user = userEvent.setup()
+        render(<LayoutHarness />)
+        await user.click(screen.getByRole("button", { name: "Columns" }))
+        await user.click(
+          screen.getByRole("button", { name: "Hide Email column" })
+        )
+        await user.click(
+          screen.getByRole("button", { name: "Hide Team column" })
+        )
+        const items = () => screen.getAllByRole("listitem")
+        expect(
+          items()
+            .slice(-2)
+            .map((li) => li.textContent)
+        ).toEqual(["Email", "Team"])
 
-      const dataTransfer = fakeDataTransfer()
-      const teamItem = items().find((li) => li.textContent === "Team")!
-      const emailItem = items().find((li) => li.textContent === "Email")!
-      fireEvent.dragStart(dragHandle(teamItem), { dataTransfer })
-      fireDragOver(emailItem, dataTransfer, -1) // before Email
-      fireDrop(emailItem, dataTransfer, -1)
-      fireEvent.dragEnd(dragHandle(teamItem), { dataTransfer })
+        const teamHandle = dragHandle(
+          items().find((li) => li.textContent === "Team")!
+        )
+        await pickUpColumn(teamHandle)
+        await moveColumn(teamHandle, "ArrowUp")
+        await dropColumn(teamHandle)
 
-      await waitFor(() => {
         expect(
           items()
             .slice(-2)
             .map((li) => li.textContent)
         ).toEqual(["Team", "Email"])
-      })
+      } finally {
+        restoreLayout()
+      }
     })
 
-    it("reverts order and visibility when a drag ends without a drop", async () => {
-      const user = userEvent.setup()
-      render(<LayoutHarness />)
-      await user.click(screen.getByRole("button", { name: "Columns" }))
-      await user.click(screen.getByRole("button", { name: "Hide Team column" }))
-      const items = () => screen.getAllByRole("listitem")
+    it("reverts order and visibility when a drag is cancelled (Escape)", async () => {
+      const restoreLayout = stubLayout()
+      try {
+        const user = userEvent.setup()
+        render(<LayoutHarness />)
+        await user.click(screen.getByRole("button", { name: "Columns" }))
+        await user.click(
+          screen.getByRole("button", { name: "Hide Team column" })
+        )
+        const items = () => screen.getAllByRole("listitem")
 
-      // Reorder within the visible group, then cancel (no drop) — order
-      // should snap back instead of keeping the live preview.
-      const dataTransfer = fakeDataTransfer()
-      const nameItem = items().find((li) => li.textContent === "Name")!
-      const emailItem = items().find((li) => li.textContent === "Email")!
-      fireEvent.dragStart(dragHandle(nameItem), { dataTransfer })
-      fireDragOver(emailItem, dataTransfer, 1) // after Email
-      fireEvent.dragEnd(dragHandle(nameItem), { dataTransfer })
-      expect(
-        items()
-          .slice(0, 2)
-          .map((li) => li.textContent)
-      ).toEqual(["Name", "Email"])
+        // Reorder within the visible group, then cancel — order should snap
+        // back instead of keeping the live preview.
+        const nameHandle = dragHandle(
+          items().find((li) => li.textContent === "Name")!
+        )
+        await pickUpColumn(nameHandle)
+        await moveColumn(nameHandle, "ArrowDown")
+        expect(
+          items()
+            .slice(0, 2)
+            .map((li) => li.textContent)
+        ).toEqual(["Email", "Name"]) // live preview swapped them
+        await cancelColumnDrag(nameHandle)
+        expect(
+          items()
+            .slice(0, 2)
+            .map((li) => li.textContent)
+        ).toEqual(["Name", "Email"])
 
-      // Crossing into the hidden group live-hides the dragged column — cancel
-      // should un-hide it too, not just restore the order.
-      const dataTransfer2 = fakeDataTransfer()
-      const emailItem2 = items().find((li) => li.textContent === "Email")!
-      const teamItem = items().find((li) => li.textContent === "Team")!
-      fireEvent.dragStart(dragHandle(emailItem2), {
-        dataTransfer: dataTransfer2,
-      })
-      fireDragOver(teamItem, dataTransfer2, -1)
-      expect(
-        screen
-          .getAllByRole("columnheader")
-          .map((h) => h.textContent)
-          .filter(Boolean)
-      ).toEqual(["Name"]) // Email live-hidden, Team already was
-      fireEvent.dragEnd(dragHandle(emailItem2), { dataTransfer: dataTransfer2 })
+        // Crossing into the hidden group live-hides the dragged column —
+        // cancel should un-hide it too, not just restore the order.
+        await pickUpColumn(handleFor("Email"))
+        await moveColumn(handleFor("Email"), "ArrowDown")
+        expect(
+          screen
+            .getAllByRole("columnheader")
+            .map((h) => h.textContent)
+            .filter(Boolean)
+        ).toEqual(["Name"]) // Email live-hidden, Team already was
+        await cancelColumnDrag(handleFor("Email"))
 
-      expect(
-        screen
-          .getAllByRole("columnheader")
-          .map((h) => h.textContent)
-          .filter(Boolean)
-      ).toEqual(["Name", "Email"])
+        expect(
+          screen
+            .getAllByRole("columnheader")
+            .map((h) => h.textContent)
+            .filter(Boolean)
+        ).toEqual(["Name", "Email"])
+      } finally {
+        restoreLayout()
+      }
     })
 
     it("moves a column left/right via the header options menu", async () => {

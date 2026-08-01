@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { BoardCard } from "@/registry/bases/base/workspaceui/board-card"
 import { formatCurrency, type Deal } from "../data"
 
 export function DealCard({
@@ -23,14 +24,7 @@ export function DealCard({
   onDelete: (deal: Deal) => void
 }) {
   return (
-    <div
-      draggable
-      onDragStart={(e) => {
-        e.dataTransfer.setData("text/plain", deal.id)
-        e.dataTransfer.effectAllowed = "move"
-      }}
-      className="flex cursor-grab flex-col gap-2 rounded-lg border border-border bg-card p-3 text-sm shadow-xs active:cursor-grabbing"
-    >
+    <BoardCard itemId={deal.id}>
       <div className="flex items-start justify-between gap-2">
         <span className="font-medium">{deal.name}</span>
         <DropdownMenu>
@@ -68,6 +62,6 @@ export function DealCard({
       <span className="text-xs text-muted-foreground tabular-nums">
         {deal.owner} · closes {deal.closeDate}
       </span>
-    </div>
+    </BoardCard>
   )
 }

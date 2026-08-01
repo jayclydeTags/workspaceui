@@ -11,11 +11,9 @@ import { ApprovalCard } from "@/registry/bases/base/blocks/approval-board/compon
 export function ApprovalColumn({
   status,
   requests,
-  onDropRequest,
 }: {
   status: ApprovalStatus
   requests: ApprovalRequest[]
-  onDropRequest: (id: string, status: ApprovalStatus) => void
 }) {
   return (
     <BoardColumn
@@ -23,7 +21,6 @@ export function ApprovalColumn({
       label={STATUS_LABEL[status]}
       items={requests}
       getItemId={(request) => request.id}
-      onDropItem={(id, status) => onDropRequest(id, status as ApprovalStatus)}
       emptyLabel="Drop a request here"
       renderItem={(request) => <ApprovalCard request={request} />}
     />

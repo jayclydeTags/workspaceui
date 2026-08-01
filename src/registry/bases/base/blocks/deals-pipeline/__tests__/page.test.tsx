@@ -1,6 +1,6 @@
-import { render, screen, within, fireEvent } from "@testing-library/react"
+import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { describe, it, expect, vi } from "vitest"
+import { describe, it, expect } from "vitest"
 
 import { DealsPipeline } from "../page"
 import {
@@ -10,10 +10,7 @@ import {
   winRate,
   type Deal,
 } from "../data"
-
-function makeDataTransfer(id: string) {
-  return { setData: vi.fn(), getData: vi.fn(() => id), effectAllowed: "" }
-}
+import { dragCard, mockRect } from "@/test/dnd"
 
 describe("weightedForecast", () => {
   it("weights open deals by stage probability", () => {
@@ -77,15 +74,32 @@ describe("DealsPipeline", () => {
     ).toBeInTheDocument()
   })
 
-  it("winning a deal drops it out of the forecast", () => {
+  it("winning a deal drops it out of the forecast", async () => {
     render(<DealsPipeline />)
 
-    const card = screen.getByText("Platform renewal").closest("[draggable]")!
+    const card = screen
+      .getByText("Platform renewal")
+      .closest('[role="button"]')!
     const wonColumn = screen.getByText("Won").closest("div")!.parentElement!
 
-    const dataTransfer = makeDataTransfer("1")
-    fireEvent.dragStart(card, { dataTransfer })
-    fireEvent.drop(wonColumn, { dataTransfer })
+    mockRect(card, {
+      left: 0,
+      top: 0,
+      right: 100,
+      bottom: 50,
+      width: 100,
+      height: 50,
+    })
+    mockRect(wonColumn, {
+      left: 500,
+      top: 0,
+      right: 700,
+      bottom: 400,
+      width: 200,
+      height: 400,
+    })
+
+    await dragCard(card, wonColumn)
 
     expect(
       screen.getByText("$50,500 weighted · 67% win rate")

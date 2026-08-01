@@ -1,13 +1,10 @@
-import { render, screen, within, fireEvent } from "@testing-library/react"
+import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { describe, it, expect, vi } from "vitest"
+import { describe, it, expect } from "vitest"
 
 import { TaskBoard } from "../page"
 import { completion, type Task } from "../data"
-
-function makeDataTransfer(id: string) {
-  return { setData: vi.fn(), getData: vi.fn(() => id), effectAllowed: "" }
-}
+import { dragCard, mockRect } from "@/test/dnd"
 
 describe("completion", () => {
   it("is the share of done tasks", () => {
@@ -28,17 +25,32 @@ describe("TaskBoard", () => {
     expect(screen.getByText("6 tasks · 33% done")).toBeInTheDocument()
   })
 
-  it("moves a task to another column on drop", () => {
+  it("moves a task to another column on drop", async () => {
     render(<TaskBoard />)
 
     const card = screen
       .getByText("Map legacy billing tables")
-      .closest("[draggable]")!
+      .closest('[role="button"]')!
     const doneColumn = screen.getByText("Done").closest("div")!.parentElement!
 
-    const dataTransfer = makeDataTransfer("1")
-    fireEvent.dragStart(card, { dataTransfer })
-    fireEvent.drop(doneColumn, { dataTransfer })
+    mockRect(card, {
+      left: 0,
+      top: 0,
+      right: 100,
+      bottom: 50,
+      width: 100,
+      height: 50,
+    })
+    mockRect(doneColumn, {
+      left: 500,
+      top: 0,
+      right: 700,
+      bottom: 400,
+      width: 200,
+      height: 400,
+    })
+
+    await dragCard(card, doneColumn)
 
     expect(screen.getByText("6 tasks · 50% done")).toBeInTheDocument()
   })

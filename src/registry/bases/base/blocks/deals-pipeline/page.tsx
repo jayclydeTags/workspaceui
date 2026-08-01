@@ -1,6 +1,13 @@
 "use client"
 
 import * as React from "react"
+import {
+  DndContext,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { PlusSignIcon } from "@hugeicons/core-free-icons"
 
@@ -35,9 +42,20 @@ export function DealsPipeline({ className }: { className?: string }) {
   const [formOpen, setFormOpen] = React.useState(false)
   const [editing, setEditing] = React.useState<Deal | null>(null)
   const [deleting, setDeleting] = React.useState<Deal | null>(null)
+  // Without a distance constraint, a pointerdown on a card's nested "Actions"
+  // button also arms drag-start and swallows the click that opens the menu.
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  )
 
   function move(id: string, stage: DealStage) {
     setDeals((prev) => prev.map((d) => (d.id === id ? { ...d, stage } : d)))
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event
+    if (!over) return
+    move(String(active.id), over.id as DealStage)
   }
 
   function save(draft: DealDraft) {
@@ -79,21 +97,22 @@ export function DealsPipeline({ className }: { className?: string }) {
         </Button>
       }
     >
-      <div className="flex h-full gap-4">
-        {STAGE_COLUMNS.map((stage) => (
-          <StageColumn
-            key={stage}
-            stage={stage}
-            deals={deals.filter((d) => d.stage === stage)}
-            onDropDeal={move}
-            onEdit={(deal) => {
-              setEditing(deal)
-              setFormOpen(true)
-            }}
-            onDelete={setDeleting}
-          />
-        ))}
-      </div>
+      <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+        <div className="flex h-full gap-4">
+          {STAGE_COLUMNS.map((stage) => (
+            <StageColumn
+              key={stage}
+              stage={stage}
+              deals={deals.filter((d) => d.stage === stage)}
+              onEdit={(deal) => {
+                setEditing(deal)
+                setFormOpen(true)
+              }}
+              onDelete={setDeleting}
+            />
+          ))}
+        </div>
+      </DndContext>
 
       <DealDialog
         open={formOpen}

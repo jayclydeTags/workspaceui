@@ -1,6 +1,6 @@
 ---
 title: Board Card
-description: Draggable card shell for kanban-style boards — wires up HTML5 drag-and-drop around your own card content.
+description: Draggable card shell for kanban-style boards — wires up dnd-kit's useDraggable around your own card content.
 ---
 
 <ComponentPreview name="board-card" />
@@ -34,19 +34,29 @@ description: Draggable card shell for kanban-style boards — wires up HTML5 dra
 ## Usage
 
 ```tsx
+import { DndContext } from "@dnd-kit/core"
+
 import { BoardCard } from "@/components/ui/board-card"
 ```
 
 ```tsx
-<BoardCard itemId={task.id}>
-  <span className="font-medium">{task.title}</span>
-</BoardCard>
+<DndContext onDragEnd={handleDragEnd}>
+  <BoardCard itemId={task.id}>
+    <span className="font-medium">{task.title}</span>
+  </BoardCard>
+</DndContext>
 ```
 
-`itemId` is written to the HTML5 drag payload (`dataTransfer.setData("text/plain", itemId)`)
-on drag start — a [`BoardColumn`](/docs/components/board-column) reads it back
-in its drop handler. Everything else is a plain `<div>`: pass any children,
-`className`, or other div props and they render inside the card shell.
+`itemId` is passed to dnd-kit's `useDraggable({ id: itemId })` — the board's
+`DndContext.onDragEnd` reads it back off `event.active.id` (see
+[`BoardColumn`](/docs/components/board-column) for the full move-on-drop
+wiring). A `BoardCard` needs a `DndContext` ancestor to actually be
+draggable; render one per board, wrapping every column. Everything else is
+a plain `<div>`:
+pass any children, `className`, or other div props and they render inside
+the card shell. Because dragging comes from dnd-kit, cards are draggable by
+keyboard too — `Tab` to focus a card, `Space` to pick it up, arrow keys to
+move it between columns, `Space` again to drop.
 
 ## API Reference
 

@@ -7,13 +7,11 @@ import { TaskCard } from "./task-card"
 export function TaskColumn({
   status,
   tasks,
-  onDropTask,
   onEdit,
   onDelete,
 }: {
   status: TaskStatus
   tasks: Task[]
-  onDropTask: (id: string, status: TaskStatus) => void
   onEdit: (task: Task) => void
   onDelete: (task: Task) => void
 }) {
@@ -23,7 +21,6 @@ export function TaskColumn({
       label={STATUS_LABEL[status]}
       items={tasks}
       getItemId={(task) => task.id}
-      onDropItem={(id, status) => onDropTask(id, status as TaskStatus)}
       emptyLabel="Drop a task here"
       renderItem={(task) => (
         <TaskCard task={task} onEdit={onEdit} onDelete={onDelete} />

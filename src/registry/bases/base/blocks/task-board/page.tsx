@@ -1,6 +1,13 @@
 "use client"
 
 import * as React from "react"
+import {
+  DndContext,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { PlusSignIcon } from "@hugeicons/core-free-icons"
 
@@ -33,9 +40,20 @@ export function TaskBoard({ className }: { className?: string }) {
   const [formOpen, setFormOpen] = React.useState(false)
   const [editing, setEditing] = React.useState<Task | null>(null)
   const [deleting, setDeleting] = React.useState<Task | null>(null)
+  // Without a distance constraint, a pointerdown on a card's nested "Actions"
+  // button also arms drag-start and swallows the click that opens the menu.
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  )
 
   function move(id: string, status: TaskStatus) {
     setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, status } : t)))
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event
+    if (!over) return
+    move(String(active.id), over.id as TaskStatus)
   }
 
   function save(draft: TaskDraft) {
@@ -77,21 +95,22 @@ export function TaskBoard({ className }: { className?: string }) {
         </Button>
       }
     >
-      <div className="flex h-full gap-4">
-        {STATUS_COLUMNS.map((status) => (
-          <TaskColumn
-            key={status}
-            status={status}
-            tasks={tasks.filter((t) => t.status === status)}
-            onDropTask={move}
-            onEdit={(task) => {
-              setEditing(task)
-              setFormOpen(true)
-            }}
-            onDelete={setDeleting}
-          />
-        ))}
-      </div>
+      <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+        <div className="flex h-full gap-4">
+          {STATUS_COLUMNS.map((status) => (
+            <TaskColumn
+              key={status}
+              status={status}
+              tasks={tasks.filter((t) => t.status === status)}
+              onEdit={(task) => {
+                setEditing(task)
+                setFormOpen(true)
+              }}
+              onDelete={setDeleting}
+            />
+          ))}
+        </div>
+      </DndContext>
 
       <TaskDialog
         open={formOpen}

@@ -7,6 +7,8 @@
     "page",
     "password-input",
     "status-badge",
+    "board-card",
+    "board-column",
     "bulk-toolbar",
     "data-grid-types",
     "data-grid",

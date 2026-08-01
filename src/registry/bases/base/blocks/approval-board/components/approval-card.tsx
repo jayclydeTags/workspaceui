@@ -2,6 +2,7 @@
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { BoardCard } from "@/registry/bases/base/workspaceui/board-card"
 import {
   formatCurrency,
   initials,
@@ -10,14 +11,7 @@ import {
 
 export function ApprovalCard({ request }: { request: ApprovalRequest }) {
   return (
-    <div
-      draggable
-      onDragStart={(e) => {
-        e.dataTransfer.setData("text/plain", request.id)
-        e.dataTransfer.effectAllowed = "move"
-      }}
-      className="flex cursor-grab flex-col gap-2 rounded-lg border border-border bg-card p-3 text-sm shadow-xs active:cursor-grabbing"
-    >
+    <BoardCard itemId={request.id}>
       <div className="flex items-start justify-between gap-2">
         <span className="font-medium">{request.title}</span>
         <Badge variant="outline" className="shrink-0">
@@ -40,6 +34,6 @@ export function ApprovalCard({ request }: { request: ApprovalRequest }) {
       <span className="text-xs text-muted-foreground">
         {request.submittedDate}
       </span>
-    </div>
+    </BoardCard>
   )
 }

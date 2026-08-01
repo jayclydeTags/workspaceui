@@ -78,6 +78,34 @@
       ]
     },
     {
+      "name": "board-card",
+      "type": "registry:ui",
+      "title": "Board Card",
+      "description": "Draggable card shell for kanban-style boards — wires up HTML5 drag-and-drop (draggable, dataTransfer payload) around your own card content.",
+      "dependencies": [],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "src/registry/bases/base/workspaceui/board-card.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "board-column",
+      "type": "registry:ui",
+      "title": "Board Column",
+      "description": "Kanban board column — drop-zone shell with a label/count header, item list, and empty state. Renders arbitrary items via renderItem (typically a BoardCard).",
+      "dependencies": [],
+      "registryDependencies": ["badge", "utils"],
+      "files": [
+        {
+          "path": "src/registry/bases/base/workspaceui/board-column.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "data-grid-types",
       "type": "registry:ui",
       "title": "Data Grid Types",

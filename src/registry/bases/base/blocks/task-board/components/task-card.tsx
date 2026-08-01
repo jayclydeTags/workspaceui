@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { BoardCard } from "@/registry/bases/base/workspaceui/board-card"
 import { StatusBadge } from "@/registry/bases/base/workspaceui/status-badge"
 import { initials, type Task, type TaskPriority } from "../data"
 
@@ -33,14 +34,7 @@ export function TaskCard({
   onDelete: (task: Task) => void
 }) {
   return (
-    <div
-      draggable
-      onDragStart={(e) => {
-        e.dataTransfer.setData("text/plain", task.id)
-        e.dataTransfer.effectAllowed = "move"
-      }}
-      className="flex cursor-grab flex-col gap-2 rounded-lg border border-border bg-card p-3 text-sm shadow-xs active:cursor-grabbing"
-    >
+    <BoardCard itemId={task.id}>
       <div className="flex items-start justify-between gap-2">
         <span className="font-medium">{task.title}</span>
         <DropdownMenu>
@@ -93,6 +87,6 @@ export function TaskCard({
           Due {task.due}
         </span>
       )}
-    </div>
+    </BoardCard>
   )
 }

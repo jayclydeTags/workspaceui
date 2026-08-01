@@ -1,0 +1,80 @@
+---
+title: Board Column
+description: Kanban board column — drop-zone shell with a label/count header, item list, and empty state.
+---
+
+<ComponentPreview name="board-column" />
+
+## Installation
+
+<CodeTabs>
+<TabsList>
+<TabsTrigger value="cli">CLI</TabsTrigger>
+<TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+<TabsContent value="cli">
+
+<CodeBlockCommand
+  __npm__="npx shadcn@latest add jayclydeTags/workspaceui/board-column"
+  __pnpm__="pnpm dlx shadcn@latest add jayclydeTags/workspaceui/board-column"
+  __yarn__="yarn dlx shadcn@latest add jayclydeTags/workspaceui/board-column"
+  __bun__="bun x shadcn@latest add jayclydeTags/workspaceui/board-column"
+/>
+
+</TabsContent>
+<TabsContent value="manual">
+
+### Copy the component into your project
+
+<ComponentSource name="board-column" />
+
+</TabsContent>
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { BoardCard } from "@/components/ui/board-card"
+import { BoardColumn } from "@/components/ui/board-column"
+```
+
+```tsx
+{
+  STATUS_COLUMNS.map((status) => (
+    <BoardColumn
+      key={status}
+      columnId={status}
+      label={STATUS_LABEL[status]}
+      items={tasks.filter((t) => t.status === status)}
+      getItemId={(task) => task.id}
+      onDropItem={(id, status) => moveTask(id, status)}
+      renderItem={(task) => (
+        <BoardCard itemId={task.id}>
+          <span className="font-medium">{task.title}</span>
+        </BoardCard>
+      )}
+    />
+  ))
+}
+```
+
+Render one `BoardColumn` per status/stage in a flex row (`<div className="flex h-full gap-4">`).
+Each column owns its own drop target — the header shows `label` plus an
+item-count badge, the body lists `items` via `renderItem`, and drops fall back
+to `emptyLabel` when the column is empty. `onDropItem` fires with the dragged
+item's id (written by [`BoardCard`](/docs/components/board-card)) and this
+column's `columnId` — move the item in your own state from there, the column
+doesn't hold data itself.
+
+## API Reference
+
+| Prop         | Type                                         | Default               | Description                                                                    |
+| ------------ | -------------------------------------------- | --------------------- | ------------------------------------------------------------------------------ |
+| `columnId`   | `string`                                     | -                     | Identifier passed back to `onDropItem` when an item is dropped on this column. |
+| `label`      | `string`                                     | -                     | Column header text.                                                            |
+| `items`      | `TItem[]`                                    | -                     | Items to render in this column.                                                |
+| `getItemId`  | `(item: TItem) => string`                    | -                     | Extracts a stable key from each item.                                          |
+| `renderItem` | `(item: TItem) => React.ReactNode`           | -                     | Renders each item — typically a `BoardCard`.                                   |
+| `onDropItem` | `(itemId: string, columnId: string) => void` | -                     | Called on drop with the dragged item's id and this column's id.                |
+| `emptyLabel` | `string`                                     | `"Drop an item here"` | Text shown when `items` is empty.                                              |
+| `className`  | `string`                                     | -                     | Additional CSS classes on the column's outer element.                          |

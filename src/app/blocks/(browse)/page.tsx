@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useLayoutEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 
 import { blocks } from "@/lib/blocks"
@@ -14,10 +14,18 @@ function BlockThumb({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(0)
 
-  useEffect(() => {
+  // Measured synchronously pre-paint so the card never commits a frame at
+  // scale(0) — a ResizeObserver-only version can miss its first callback
+  // before the grid row's height (and therefore this card's width) settles,
+  // leaving that card invisible forever.
+  useLayoutEffect(() => {
     const el = ref.current
     if (!el) return
-    const ro = new ResizeObserver(() => setScale(el.clientWidth / 1280))
+    setScale(el.getBoundingClientRect().width / 1280)
+
+    const ro = new ResizeObserver(
+      ([entry]) => entry && setScale(entry.contentRect.width / 1280)
+    )
     ro.observe(el)
     return () => ro.disconnect()
   }, [])

@@ -13,24 +13,33 @@ import {
 export interface PageBreadcrumb {
   label: string
   href?: string
+  /** Overrides the rendered element (e.g. a router `Link`) — forwarded to the underlying `BreadcrumbLink`. */
+  render?: React.ComponentProps<typeof BreadcrumbLink>["render"]
 }
 
-export interface PageProps {
+export interface PageProps extends Omit<
+  React.ComponentProps<"div">,
+  "title" | "children"
+> {
   /** Page title. Ignored when `breadcrumbs` is set — the last breadcrumb becomes the title. */
   title?: React.ReactNode
   subtitle?: React.ReactNode
-  /** Renders a breadcrumb trail in place of the plain title; the last item is the current page. */
+  /**
+   * Renders a breadcrumb trail in place of the plain title; the last item is the current page.
+   */
   breadcrumbs?: PageBreadcrumb[]
   /** Decorative visual (icon, image, illustration) shown left of the title/breadcrumbs. */
   visual?: React.ReactNode
   /** Shown next to the title, or next to the last breadcrumb when `breadcrumbs` is set. */
   badge?: React.ReactNode
   actions?: React.ReactNode
-  /** Set to `false` to omit the header entirely. Default `true`. */
+  /**
+   * Set to `false` to omit the header entirely. Default `true`. The page then has no
+   * `<h1>` — render your own heading in `children` if the page still needs one.
+   */
   hasHeader?: boolean
   /** Adds padding to the content area. Default `false`. */
   hasPadding?: boolean
-  className?: string
   children?: React.ReactNode
 }
 
@@ -45,9 +54,10 @@ export function Page({
   hasPadding = false,
   className,
   children,
+  ...props
 }: PageProps) {
   return (
-    <div className={cn("flex h-full flex-col", className)}>
+    <div className={cn("flex h-full flex-col", className)} {...props}>
       {hasHeader && (
         <header className="flex flex-col gap-1 border-b px-6 py-4">
           <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
@@ -71,12 +81,17 @@ export function Page({
                             {i > 0 && <BreadcrumbSeparator />}
                             <BreadcrumbItem className="min-w-0">
                               {isLast ? (
-                                <BreadcrumbPage className="truncate">
+                                <BreadcrumbPage
+                                  title={crumb.label}
+                                  className="truncate"
+                                >
                                   {crumb.label}
                                 </BreadcrumbPage>
                               ) : (
                                 <BreadcrumbLink
                                   href={crumb.href}
+                                  render={crumb.render}
+                                  title={crumb.label}
                                   className="truncate"
                                 >
                                   {crumb.label}
@@ -90,7 +105,10 @@ export function Page({
                   </Breadcrumb>
                 </>
               ) : (
-                <h1 className="not-prose not-typeset truncate text-lg font-semibold">
+                <h1
+                  title={typeof title === "string" ? title : undefined}
+                  className="not-prose not-typeset truncate text-lg font-semibold"
+                >
                   {title}
                 </h1>
               )}
@@ -101,7 +119,10 @@ export function Page({
             )}
           </div>
           {subtitle && (
-            <p className="not-prose not-typeset truncate text-sm text-muted-foreground">
+            <p
+              title={typeof subtitle === "string" ? subtitle : undefined}
+              className="not-prose not-typeset truncate text-sm text-muted-foreground"
+            >
               {subtitle}
             </p>
           )}

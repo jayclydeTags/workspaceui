@@ -101,15 +101,30 @@ Every prop combined — `visual`, `breadcrumbs`, `subtitle`, `badge`, `actions`,
 
 ## API Reference
 
-| Prop          | Type                                 | Default | Description                                                                                |
-| ------------- | ------------------------------------ | ------- | ------------------------------------------------------------------------------------------ |
-| `title`       | `React.ReactNode`                    | -       | Page title. Ignored when `breadcrumbs` is set.                                             |
-| `subtitle`    | `React.ReactNode`                    | -       | Secondary line shown under the title or breadcrumbs.                                       |
-| `breadcrumbs` | `{ label: string; href?: string }[]` | -       | Renders a breadcrumb trail in place of the plain title; the last item is the current page. |
-| `visual`      | `React.ReactNode`                    | -       | Decorative visual shown left of the title/breadcrumbs.                                     |
-| `badge`       | `React.ReactNode`                    | -       | Shown next to the title, or next to the last breadcrumb when `breadcrumbs` is set.         |
-| `actions`     | `React.ReactNode`                    | -       | Right-aligned actions in the header.                                                       |
-| `hasHeader`   | `boolean`                            | `true`  | Set to `false` to omit the header entirely.                                                |
-| `hasPadding`  | `boolean`                            | `false` | Adds padding to the content area.                                                          |
-| `className`   | `string`                             | -       | Additional CSS classes applied to the root element.                                        |
-| `children`    | `React.ReactNode`                    | -       | Content area.                                                                              |
+| Prop          | Type               | Default | Description                                                                                                                                                                                                                                               |
+| ------------- | ------------------ | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `title`       | `React.ReactNode`  | -       | Page title. Ignored when `breadcrumbs` is set.                                                                                                                                                                                                            |
+| `subtitle`    | `React.ReactNode`  | -       | Secondary line shown under the title or breadcrumbs.                                                                                                                                                                                                      |
+| `breadcrumbs` | `PageBreadcrumb[]` | -       | Renders a breadcrumb trail in place of the plain title; the last item is the current page. `PageBreadcrumb` is `{ label: string; href?: string; render?: BreadcrumbLinkProps["render"] }` — `render` swaps in a router `Link` for client-side navigation. |
+| `visual`      | `React.ReactNode`  | -       | Decorative visual shown left of the title/breadcrumbs.                                                                                                                                                                                                    |
+| `badge`       | `React.ReactNode`  | -       | Shown next to the title, or next to the last breadcrumb when `breadcrumbs` is set.                                                                                                                                                                        |
+| `actions`     | `React.ReactNode`  | -       | Right-aligned actions in the header.                                                                                                                                                                                                                      |
+| `hasHeader`   | `boolean`          | `true`  | Set to `false` to omit the header entirely — the page then has no `<h1>`; render your own heading in `children` if it still needs one.                                                                                                                    |
+| `hasPadding`  | `boolean`          | `false` | Adds padding to the content area.                                                                                                                                                                                                                         |
+| `className`   | `string`           | -       | Additional CSS classes applied to the root element.                                                                                                                                                                                                       |
+| `children`    | `React.ReactNode`  | -       | Content area.                                                                                                                                                                                                                                             |
+
+Any other `div` prop (`id`, `data-*`, `aria-*`, `style`, `onClick`, ...) is forwarded to the root element.
+
+### Router-aware breadcrumbs
+
+Pass `render` on a `PageBreadcrumb` to swap the rendered anchor for a router `Link` (e.g. Next.js's), so breadcrumb navigation is client-side instead of a full page load:
+
+```tsx
+<Page
+  breadcrumbs={[
+    { label: "Settings", href: "/settings", render: <Link href="/settings" /> },
+    { label: "Billing" },
+  ]}
+/>
+```

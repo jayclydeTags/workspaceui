@@ -1,6 +1,9 @@
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { DynamicCodeBlock } from "@/components/dynamic-codeblock"
+"use client"
 
+import { useState } from "react"
+
+import { Button } from "@/components/ui/button"
+import { DynamicCodeBlock } from "@/components/dynamic-codeblock"
 import { cn } from "@/lib/utils"
 
 interface ComponentPreviewShellProps {
@@ -14,29 +17,45 @@ export function ComponentPreviewShell({
   code,
   className,
 }: ComponentPreviewShellProps) {
+  const [expanded, setExpanded] = useState(false)
+
   return (
-    <Tabs defaultValue="preview" className={cn("mt-6", className)}>
-      <TabsList>
-        <TabsTrigger value="preview" className="flex-none">
-          Preview
-        </TabsTrigger>
-        <TabsTrigger value="code" className="flex-none">
-          Code
-        </TabsTrigger>
-      </TabsList>
-      <TabsContent
-        value="preview"
-        className="flex min-h-[400px] items-center justify-center rounded-xl border bg-fd-background p-4 outline-none"
-      >
+    <div
+      className={cn(
+        "mt-6 mb-12 flex flex-col overflow-clip rounded-[18px] border bg-fd-background",
+        className
+      )}
+    >
+      <div className="flex h-[300px] items-center justify-center overflow-hidden p-4 [&>*]:max-h-full!">
         {children}
-      </TabsContent>
-      <TabsContent value="code">
-        <DynamicCodeBlock
-          lang="tsx"
-          code={code}
-          codeblock={{ allowCopy: true, className: "my-0" }}
-        />
-      </TabsContent>
-    </Tabs>
+      </div>
+      <div className="relative border-t">
+        <div className={cn(!expanded && "max-h-[210px] overflow-clip")}>
+          <DynamicCodeBlock
+            lang="tsx"
+            code={code}
+            codeblock={{
+              allowCopy: expanded,
+              className: "my-0 rounded-none border-0 bg-muted/40",
+              viewportProps: {
+                className: cn(expanded ? "max-h-[289px]" : "max-h-[210px]"),
+              },
+            }}
+          />
+        </div>
+        {!expanded && (
+          <div className="absolute inset-0 flex items-center justify-center pb-4">
+            <div className="absolute inset-0 bg-gradient-to-t from-fd-background via-fd-background/60 to-transparent" />
+            <Button
+              variant="outline"
+              onClick={() => setExpanded(true)}
+              className="relative"
+            >
+              View Code
+            </Button>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }

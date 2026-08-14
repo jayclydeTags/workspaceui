@@ -29,6 +29,7 @@ coverage
 # Claude
 .claude/settings.local.json
 .claude/worktrees/
+.claude/launch.json
 
 .playwright-mcp
 .playwright-cli

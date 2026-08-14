@@ -50,7 +50,7 @@ export function Page({
     <div className={cn("flex h-full flex-col", className)}>
       {hasHeader && (
         <header className="flex flex-col gap-1 border-b px-6 py-4">
-          <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
             <div className="flex min-w-0 items-center gap-3">
               {visual && (
                 <span aria-hidden="true" className="shrink-0">

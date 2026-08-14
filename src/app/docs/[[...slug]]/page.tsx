@@ -52,7 +52,7 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <DocsPageLayout toc={page.data.toc}>
-      <div className="typeset typeset-docs max-w-[42em]">
+      <div className="typeset typeset-docs w-full max-w-[42em] min-w-0">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h1 className="mt-0">{page.data.title}</h1>

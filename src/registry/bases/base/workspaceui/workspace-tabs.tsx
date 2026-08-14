@@ -265,11 +265,7 @@ function WorkspaceTabs({
                     </span>
                   )}
 
-                  {/* Label with right-edge fade on overflow */}
-                  <span
-                    className="min-w-0 flex-1 overflow-hidden text-left"
-                    style={{ whiteSpace: "nowrap" }}
-                  >
+                  <span className="min-w-0 flex-1 truncate text-left">
                     {tab.title}
                   </span>
 

@@ -4,6 +4,8 @@ import Script from "next/script"
 import { ThemeProvider } from "@/components/theme-provider"
 
 import { SiteHeader } from "@/components/site-header"
+import { getDocsNav } from "@/lib/docs-nav"
+import { getBlocksNav } from "@/lib/block-taxonomy"
 
 import "./globals.css"
 import { Geist } from "next/font/google"
@@ -32,7 +34,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             Source lives in public/theme-init.js. */}
         <Script src="/theme-init.js" strategy="beforeInteractive" />
         <ThemeProvider>
-          <SiteHeader />
+          <SiteHeader docsNav={getDocsNav()} blocksNav={getBlocksNav()} />
           {children}
         </ThemeProvider>
       </body>

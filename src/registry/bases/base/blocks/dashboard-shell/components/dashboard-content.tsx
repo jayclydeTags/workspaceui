@@ -1,0 +1,35 @@
+import * as React from "react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Home01Icon } from "@hugeicons/core-free-icons"
+
+import { Page } from "@/registry/bases/base/workspaceui/page"
+
+export function HomeContent() {
+  return (
+    <div className="flex h-full flex-col items-center justify-center gap-2 p-6">
+      <HugeiconsIcon
+        icon={Home01Icon}
+        className="size-8 text-muted-foreground/40"
+        strokeWidth={2}
+      />
+      <p className="text-sm text-muted-foreground">Home</p>
+    </div>
+  )
+}
+
+export function PlaceholderContent({
+  Icon,
+  title,
+}: {
+  Icon: React.ComponentType<{ className?: string }>
+  title: string
+}) {
+  return (
+    <Page title={title}>
+      <div className="flex h-full flex-col items-center justify-center gap-2">
+        <Icon className="size-8 text-muted-foreground/40" />
+        <p className="text-sm text-muted-foreground">{title}</p>
+      </div>
+    </Page>
+  )
+}

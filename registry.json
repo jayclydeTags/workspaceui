@@ -218,24 +218,40 @@
       ]
     },
     {
-      "name": "payroll-run",
+      "name": "bulk-toolbar",
+      "type": "registry:ui",
+      "title": "Bulk Toolbar",
+      "description": "Contextual toolbar shown while rows are selected — a count, a clear control, and consumer-supplied action buttons as children. Renders nothing when count is 0.",
+      "dependencies": ["lucide-react", "motion"],
+      "registryDependencies": ["button", "separator"],
+      "files": [
+        {
+          "path": "src/registry/bases/base/workspaceui/bulk-toolbar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "tax-tables",
       "type": "registry:block",
-      "title": "Summary + Line Items View",
-      "description": "Payroll run summary with per-employee payslips — gross, deductions, and net pay.",
+      "title": "Reference Table with Facet Filter",
+      "description": "Searchable tax bracket reference table filterable by jurisdiction, with income range and rate per filing status.",
+      "categories": ["Tables"],
+      "dependencies": [],
       "registryDependencies": [
         "badge",
+        "select",
         "table",
-        "card",
         "jayclydeTags/workspaceui/page"
       ],
       "files": [
         {
-          "path": "src/registry/bases/base/blocks/payroll-run/page.tsx",
+          "path": "src/registry/bases/base/blocks/tax-tables/page.tsx",
           "type": "registry:page",
-          "target": "app/payroll-run/page.tsx"
+          "target": "app/tax-tables/page.tsx"
         },
         {
-          "path": "src/registry/bases/base/blocks/payroll-run/data.ts",
+          "path": "src/registry/bases/base/blocks/tax-tables/data.ts",
           "type": "registry:block"
         }
       ]
@@ -245,6 +261,7 @@
       "type": "registry:block",
       "title": "Work Queue with Stat Cards",
       "description": "Employee payroll task dashboard — pending/overdue/completed overview cards, a searchable task list, and a complete-with-summary dialog.",
+      "categories": ["Tables"],
       "registryDependencies": [
         "badge",
         "button",
@@ -271,24 +288,26 @@
       ]
     },
     {
-      "name": "payslip-detail",
+      "name": "compensation-table",
       "type": "registry:block",
-      "title": "Statement / Breakdown View",
-      "description": "Single-employee payslip breakdown — earnings, deductions, and employer contributions with YTD totals.",
+      "title": "Table with Computed Columns",
+      "description": "Searchable org-wide salary overview with pay band, last adjustment, and change percentage.",
+      "categories": ["Tables"],
       "registryDependencies": [
         "badge",
+        "input",
         "table",
         "card",
         "jayclydeTags/workspaceui/page"
       ],
       "files": [
         {
-          "path": "src/registry/bases/base/blocks/payslip-detail/page.tsx",
+          "path": "src/registry/bases/base/blocks/compensation-table/page.tsx",
           "type": "registry:page",
-          "target": "app/payslip-detail/page.tsx"
+          "target": "app/compensation-table/page.tsx"
         },
         {
-          "path": "src/registry/bases/base/blocks/payslip-detail/data.ts",
+          "path": "src/registry/bases/base/blocks/compensation-table/data.ts",
           "type": "registry:block"
         }
       ]
@@ -298,6 +317,7 @@
       "type": "registry:block",
       "title": "Editable Table",
       "description": "Editable data table built on DataGrid, DataFilter, DataSearch, and BulkToolbar — global search, column filter chips, sorting, inline cell editing, row selection with a contextual bulk-delete toolbar, and a confirm dialog for the destructive action.",
+      "categories": ["Tables"],
       "dependencies": ["@tanstack/react-table", "lucide-react"],
       "registryDependencies": [
         "alert-dialog",
@@ -334,6 +354,7 @@
       "type": "registry:block",
       "title": "Table with Bulk Actions",
       "description": "Read-only DataGrid with row selection and select-all, plus a contextual toolbar for bulk export/delete and a confirm dialog for the destructive action.",
+      "categories": ["Tables"],
       "dependencies": ["lucide-react", "@tanstack/react-table"],
       "registryDependencies": [
         "alert-dialog",
@@ -356,76 +377,142 @@
       ]
     },
     {
-      "name": "bulk-toolbar",
-      "type": "registry:ui",
-      "title": "Bulk Toolbar",
-      "description": "Contextual toolbar shown while rows are selected — a count, a clear control, and consumer-supplied action buttons as children. Renders nothing when count is 0.",
-      "dependencies": ["lucide-react", "motion"],
-      "registryDependencies": ["button", "separator"],
-      "files": [
-        {
-          "path": "src/registry/bases/base/workspaceui/bulk-toolbar.tsx",
-          "type": "registry:ui"
-        }
-      ]
-    },
-    {
-      "name": "confirm-dialog",
+      "name": "activity-log",
       "type": "registry:block",
-      "title": "Confirm Dialog",
-      "description": "Reusable confirm-before-you-act dialog for destructive actions — controlled open state, custom title/description/labels, destructive styling.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "alert-dialog",
-        "button",
-        "empty",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/confirm-dialog/page.tsx",
-          "type": "registry:page",
-          "target": "app/confirm-dialog/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/confirm-dialog/components/confirm-dialog.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "detail-tabs",
-      "type": "registry:block",
-      "title": "Detail View with Tabs",
-      "description": "Single-record detail view with a header and Overview / Activity / Orders tabs.",
+      "title": "Responsive Table (Card Fallback)",
+      "description": "Filterable activity log with a responsive datatable — collapses to cards on narrow panes.",
+      "categories": ["Tables"],
+      "dependencies": ["@tanstack/react-table", "lucide-react"],
       "registryDependencies": [
         "avatar",
         "badge",
-        "separator",
+        "button",
+        "empty",
         "table",
-        "tabs",
-        "jayclydeTags/workspaceui/page"
+        "jayclydeTags/workspaceui/page",
+        "jayclydeTags/workspaceui/data-filter",
+        "jayclydeTags/workspaceui/data-search",
+        "jayclydeTags/workspaceui/data-pagination"
       ],
       "files": [
         {
-          "path": "src/registry/bases/base/blocks/detail-tabs/page.tsx",
+          "path": "src/registry/bases/base/blocks/activity-log/page.tsx",
           "type": "registry:page",
-          "target": "app/detail-tabs/page.tsx"
+          "target": "app/activity-log/page.tsx"
         },
         {
-          "path": "src/registry/bases/base/blocks/detail-tabs/data.ts",
+          "path": "src/registry/bases/base/blocks/activity-log/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/activity-log/components/columns.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/activity-log/components/data-table.tsx",
           "type": "registry:block"
         }
       ]
     },
     {
-      "name": "record-form-dialog",
+      "name": "audit-log",
       "type": "registry:block",
-      "title": "Create / Edit Dialog",
-      "description": "Standalone create/edit dialog — one form handles both add and update, seeded from the record being edited.",
+      "title": "Before / After Diff Table",
+      "description": "Field-level audit trail — who changed what field, with before → after values, actor avatars, and search/action filters.",
+      "categories": ["Tables"],
       "dependencies": ["lucide-react"],
       "registryDependencies": [
         "avatar",
+        "badge",
+        "button",
+        "dropdown-menu",
+        "empty",
+        "input-group",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/audit-log/page.tsx",
+          "type": "registry:page",
+          "target": "app/audit-log/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/audit-log/data.ts",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "bank-reconciliation",
+      "type": "registry:block",
+      "title": "Checklist Table with Running Totals",
+      "description": "Bank reconciliation checklist — mark transactions cleared against a statement balance, with live statement/cleared/difference summary cards.",
+      "categories": ["Tables"],
+      "dependencies": [],
+      "registryDependencies": [
+        "badge",
+        "card",
+        "checkbox",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/bank-reconciliation/page.tsx",
+          "type": "registry:page",
+          "target": "app/bank-reconciliation/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/bank-reconciliation/data.ts",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "stock-levels",
+      "type": "registry:block",
+      "title": "Table with Derived Status + Inline Adjust",
+      "description": "On-hand stock per SKU and warehouse — searchable, with derived low/out-of-stock badges and a stock-take adjustment dialog.",
+      "categories": ["Tables"],
+      "registryDependencies": [
+        "badge",
+        "button",
+        "dialog",
+        "empty",
+        "field",
+        "input",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/stock-levels/page.tsx",
+          "type": "registry:page",
+          "target": "app/stock-levels/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/stock-levels/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/stock-levels/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/stock-levels/components/adjust-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "stock-movements",
+      "type": "registry:block",
+      "title": "Append-only Ledger Table",
+      "description": "Append-only stock ledger — receipts, shipments, adjustments, and transfers with a type filter, running net change, and a record-movement dialog.",
+      "categories": ["Tables"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
         "badge",
         "button",
         "dialog",
@@ -433,102 +520,55 @@
         "field",
         "input",
         "select",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/record-form-dialog/page.tsx",
-          "type": "registry:page",
-          "target": "app/record-form-dialog/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/record-form-dialog/data.ts",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/record-form-dialog/components/contact-dialog.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "record-detail",
-      "type": "registry:block",
-      "title": "Read-only Record View",
-      "description": "Read-only single-record view — header with avatar/status badge and grouped label/value field sections, no tabs.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "avatar",
-        "badge",
-        "button",
-        "separator",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/record-detail/page.tsx",
-          "type": "registry:page",
-          "target": "app/record-detail/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/record-detail/data.ts",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "master-detail",
-      "type": "registry:block",
-      "title": "Resizable Master–Detail Split",
-      "description": "Resizable list + detail split pane — select a row on the left to view its fields on the right, with an empty state when nothing's selected.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "badge",
-        "empty",
-        "resizable",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/master-detail/page.tsx",
-          "type": "registry:page",
-          "target": "app/master-detail/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/master-detail/data.ts",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "department",
-      "type": "registry:block",
-      "title": "CRUD Table with Inline Row Editing",
-      "description": "Departments table with inline row editing, a new-row form, and a delete confirmation — no dialog for create/edit.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "badge",
-        "button",
-        "dialog",
-        "dropdown-menu",
-        "empty",
-        "input",
-        "select",
         "table",
         "jayclydeTags/workspaceui/page"
       ],
       "files": [
         {
-          "path": "src/registry/bases/base/blocks/department/page.tsx",
+          "path": "src/registry/bases/base/blocks/stock-movements/page.tsx",
           "type": "registry:page",
-          "target": "app/department/page.tsx"
+          "target": "app/stock-movements/page.tsx"
         },
         {
-          "path": "src/registry/bases/base/blocks/department/data.ts",
+          "path": "src/registry/bases/base/blocks/stock-movements/data.ts",
           "type": "registry:block"
         },
         {
-          "path": "src/registry/bases/base/blocks/department/components/data-table.tsx",
+          "path": "src/registry/bases/base/blocks/stock-movements/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/stock-movements/components/movement-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "repayment-schedule",
+      "type": "registry:block",
+      "title": "Computed Schedule Table",
+      "description": "Amortisation table derived from the loan terms — per-instalment interest/principal split, derived paid/due/overdue status, and in-order payment recording.",
+      "categories": ["Tables"],
+      "registryDependencies": [
+        "alert-dialog",
+        "badge",
+        "button",
+        "empty",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/repayment-schedule/page.tsx",
+          "type": "registry:page",
+          "target": "app/repayment-schedule/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/repayment-schedule/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/repayment-schedule/components/schedule-table.tsx",
           "type": "registry:block"
         }
       ]
@@ -538,6 +578,7 @@
       "type": "registry:block",
       "title": "CRUD Table with Slide-over Sheet",
       "description": "Employee directory with a slide-over create/edit sheet, row-action menu, and a delete confirmation.",
+      "categories": ["CRUD Tables"],
       "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
@@ -573,560 +614,35 @@
       ]
     },
     {
-      "name": "tax-tables",
+      "name": "department",
       "type": "registry:block",
-      "title": "Reference Table with Facet Filter",
-      "description": "Searchable tax bracket reference table filterable by jurisdiction, with income range and rate per filing status.",
-      "dependencies": [],
-      "registryDependencies": [
-        "badge",
-        "select",
-        "table",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/tax-tables/page.tsx",
-          "type": "registry:page",
-          "target": "app/tax-tables/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/tax-tables/data.ts",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "import-export",
-      "type": "registry:block",
-      "title": "CSV Import Wizard + Export",
-      "description": "CSV import wizard — paste or load data, map columns to entity fields with a live preview, then import. Includes a CSV export action.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "button",
-        "empty",
-        "field",
-        "select",
-        "table",
-        "textarea",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/import-export/page.tsx",
-          "type": "registry:page",
-          "target": "app/import-export/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/import-export/data.ts",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "file-upload",
-      "type": "registry:block",
-      "title": "Dropzone Upload with Per-File State",
-      "description": "Attachments panel — click-or-drag dropzone, per-file upload/error states, type icons, retry, and remove.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "attachment",
-        "button",
-        "empty",
-        "spinner",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/file-upload/page.tsx",
-          "type": "registry:page",
-          "target": "app/file-upload/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/file-upload/data.ts",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "notifications-inbox",
-      "type": "registry:block",
-      "title": "Inbox with Read / Unread Tabs",
-      "description": "Notification inbox with All/Unread tabs, per-type icons, unread indicators, mark-one-read on click, and mark-all-read.",
+      "title": "CRUD Table with Inline Row Editing",
+      "description": "Departments table with inline row editing, a new-row form, and a delete confirmation — no dialog for create/edit.",
+      "categories": ["CRUD Tables"],
       "dependencies": ["lucide-react"],
       "registryDependencies": [
         "badge",
         "button",
-        "empty",
-        "tabs",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/notifications-inbox/page.tsx",
-          "type": "registry:page",
-          "target": "app/notifications-inbox/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/notifications-inbox/data.ts",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "notification-center",
-      "type": "registry:block",
-      "title": "Notification Center (Bell + Full Page)",
-      "description": "Notification center with a header bell dropdown (unread badge capped at 9+, 5 most recent, mark-all-read) and a full page filtered by read state, severity, and date range with 20-per-page pagination.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "badge",
-        "button",
-        "dropdown-menu",
-        "empty",
-        "input",
-        "label",
-        "utils",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/notification-center/page.tsx",
-          "type": "registry:page",
-          "target": "app/notification-center/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/notification-center/components/notification-bell.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/notification-center/components/notification-item.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/notification-center/data.ts",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "comments-thread",
-      "type": "registry:block",
-      "title": "Threaded Comments",
-      "description": "Threaded comments with avatars, inline reply composers, and a top-level composer, with a running comment count.",
-      "dependencies": [],
-      "registryDependencies": [
-        "avatar",
-        "button",
-        "textarea",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/comments-thread/page.tsx",
-          "type": "registry:page",
-          "target": "app/comments-thread/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/comments-thread/data.ts",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "audit-log",
-      "type": "registry:block",
-      "title": "Before / After Diff Table",
-      "description": "Field-level audit trail — who changed what field, with before → after values, actor avatars, and search/action filters.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "avatar",
-        "badge",
-        "button",
-        "dropdown-menu",
-        "empty",
-        "input-group",
-        "table",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/audit-log/page.tsx",
-          "type": "registry:page",
-          "target": "app/audit-log/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/audit-log/data.ts",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "compensation-table",
-      "type": "registry:block",
-      "title": "Table with Computed Columns",
-      "description": "Searchable org-wide salary overview with pay band, last adjustment, and change percentage.",
-      "registryDependencies": [
-        "badge",
-        "input",
-        "table",
-        "card",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/compensation-table/page.tsx",
-          "type": "registry:page",
-          "target": "app/compensation-table/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/compensation-table/data.ts",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "payroll-calendar",
-      "type": "registry:block",
-      "title": "Schedule Calendar with Next-Up Highlight",
-      "description": "Monthly pay schedule with timesheet cutoffs, pay dates, and the next upcoming run highlighted.",
-      "registryDependencies": [
-        "badge",
-        "table",
-        "card",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/payroll-calendar/page.tsx",
-          "type": "registry:page",
-          "target": "app/payroll-calendar/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/payroll-calendar/data.ts",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "offcycle-payment-form",
-      "type": "registry:block",
-      "title": "Single-Purpose Form",
-      "description": "Form for issuing a one-off bonus, correction, or reimbursement outside the regular payroll run.",
-      "registryDependencies": [
-        "badge",
-        "button",
-        "field",
-        "input",
-        "select",
-        "textarea",
-        "card",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/offcycle-payment-form/page.tsx",
-          "type": "registry:page",
-          "target": "app/offcycle-payment-form/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/offcycle-payment-form/data.ts",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "dashboard-01",
-      "type": "registry:block",
-      "title": "Sidebar Shell (Collapsible)",
-      "description": "Collapsible sidebar nav that swaps a single content area directly, no tabs.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "sidebar",
-        "avatar",
-        "breadcrumb",
-        "button",
-        "dropdown-menu",
-        "input-group",
-        "separator",
-        "utils"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/dashboard-01/page.tsx",
-          "type": "registry:page",
-          "target": "app/dashboard/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/dashboard-01/components/app-sidebar.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/dashboard-01/components/dashboard-content.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/dashboard-01/components/dashboard-header.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "dashboard-02",
-      "type": "registry:block",
-      "title": "Icon Rail Shell (Top Bar)",
-      "description": "App icon + org switcher and search in a full-width top bar, paired with a fixed icon-only nav rail (settings and profile pinned to the bottom).",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "avatar",
-        "button",
-        "dropdown-menu",
-        "input-group",
-        "tooltip",
-        "utils"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/dashboard-02/page.tsx",
-          "type": "registry:page",
-          "target": "app/dashboard-02/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/dashboard-02/components/top-bar.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/dashboard-02/components/icon-rail.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/dashboard-02/components/dashboard-content.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "dashboard-rail",
-      "type": "registry:block",
-      "title": "Rail + Sidebar Shell",
-      "description": "Dual-sidebar shell: a fixed icon-only app rail (logo, app switcher, settings, profile) beside a collapsible nav sidebar, paired with the Workspace component.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "jayclydeTags/workspaceui/workspace",
-        "sidebar",
-        "sheet",
-        "utils"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/dashboard-rail/page.tsx",
-          "type": "registry:page",
-          "target": "app/dashboard-rail/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/dashboard-rail/components/dashboard-sidebar.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/dashboard-rail/components/app-rail.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/dashboard-rail/components/nav-sidebar.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/dashboard-rail/components/dashboard-content.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "dashboard",
-      "type": "registry:block",
-      "title": "Sidebar Shell (Icon-collapsible)",
-      "description": "Icon-collapsible sidebar (trigger lives in the sidebar) paired with the Workspace component; each tab renders inside the Page component.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "jayclydeTags/workspaceui/workspace",
-        "jayclydeTags/workspaceui/page",
-        "sidebar",
-        "utils"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/dashboard/page.tsx",
-          "type": "registry:page",
-          "target": "app/dashboard/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/dashboard/components/app-sidebar.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/dashboard/components/dashboard-content.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "activity-log",
-      "type": "registry:block",
-      "title": "Responsive Table (Card Fallback)",
-      "description": "Filterable activity log with a responsive datatable — collapses to cards on narrow panes.",
-      "dependencies": ["@tanstack/react-table", "lucide-react"],
-      "registryDependencies": [
-        "avatar",
-        "badge",
-        "button",
-        "empty",
-        "table",
-        "jayclydeTags/workspaceui/page",
-        "jayclydeTags/workspaceui/data-filter",
-        "jayclydeTags/workspaceui/data-search",
-        "jayclydeTags/workspaceui/data-pagination"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/activity-log/page.tsx",
-          "type": "registry:page",
-          "target": "app/activity-log/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/activity-log/data.ts",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/activity-log/components/columns.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/activity-log/components/data-table.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "activity-feed",
-      "type": "registry:block",
-      "title": "Grouped Activity Timeline",
-      "description": "Grouped activity timeline with type/user filters and running stats.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "avatar",
-        "button",
-        "dropdown-menu",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/activity-feed/page.tsx",
-          "type": "registry:page",
-          "target": "app/activity-feed/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/activity-feed/data.ts",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "access-control",
-      "type": "registry:block",
-      "title": "Permission Matrix",
-      "description": "Manage role permissions across resources with a per-role permission matrix.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "badge",
-        "button",
-        "checkbox",
         "dialog",
-        "field",
-        "input",
-        "table",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/access-control/page.tsx",
-          "type": "registry:page",
-          "target": "app/access-control/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/access-control/data.ts",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/access-control/components/permission-table.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "invoice-detail",
-      "type": "registry:block",
-      "title": "Master–Detail that Opens a Tab",
-      "description": "Master-detail invoice workspace — select a row to open its line items in a new tab.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "badge",
-        "input-group",
-        "table",
-        "jayclydeTags/workspaceui/workspace",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/invoice-detail/page.tsx",
-          "type": "registry:page",
-          "target": "app/invoice-detail/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/invoice-detail/data.ts",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/invoice-detail/components/invoice-list.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/invoice-detail/components/invoice-view.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "purchase-order-form",
-      "type": "registry:block",
-      "title": "Multi-step Form Wizard",
-      "description": "Three-step wizard for creating a purchase order — vendor details, line items, and review.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "button",
+        "dropdown-menu",
         "empty",
-        "field",
         "input",
         "select",
         "table",
-        "textarea",
         "jayclydeTags/workspaceui/page"
       ],
       "files": [
         {
-          "path": "src/registry/bases/base/blocks/purchase-order-form/page.tsx",
+          "path": "src/registry/bases/base/blocks/department/page.tsx",
           "type": "registry:page",
-          "target": "app/purchase-order-form/page.tsx"
+          "target": "app/department/page.tsx"
         },
         {
-          "path": "src/registry/bases/base/blocks/purchase-order-form/data.ts",
+          "path": "src/registry/bases/base/blocks/department/data.ts",
           "type": "registry:block"
         },
         {
-          "path": "src/registry/bases/base/blocks/purchase-order-form/components/step-indicator.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/purchase-order-form/components/wizard-steps.tsx",
+          "path": "src/registry/bases/base/blocks/department/components/data-table.tsx",
           "type": "registry:block"
         }
       ]
@@ -1136,6 +652,7 @@
       "type": "registry:block",
       "title": "CRUD Table with Master–Detail Panel",
       "description": "Product / SKU catalog with a master-detail split view — select a row to view and edit it in a side panel, no dialog.",
+      "categories": ["CRUD Tables"],
       "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
@@ -1173,6 +690,7 @@
       "type": "registry:block",
       "title": "CRUD Table with Utilization Bar",
       "description": "Warehouse list with capacity utilization, create/edit dialog form, row-action menu, and a delete confirmation.",
+      "categories": ["CRUD Tables"],
       "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert-dialog",
@@ -1208,50 +726,59 @@
       ]
     },
     {
-      "name": "stock-levels",
+      "name": "leave-requests",
       "type": "registry:block",
-      "title": "Table with Derived Status + Inline Adjust",
-      "description": "On-hand stock per SKU and warehouse — searchable, with derived low/out-of-stock badges and a stock-take adjustment dialog.",
+      "title": "CRUD Table with Approve / Reject Actions",
+      "description": "Leave request list with a status filter, approve/reject row actions, a submit-request dialog, and a delete confirmation.",
+      "categories": ["CRUD Tables"],
+      "dependencies": ["lucide-react"],
       "registryDependencies": [
+        "alert-dialog",
         "badge",
         "button",
         "dialog",
+        "dropdown-menu",
         "empty",
         "field",
         "input",
+        "select",
         "table",
+        "textarea",
         "jayclydeTags/workspaceui/page"
       ],
       "files": [
         {
-          "path": "src/registry/bases/base/blocks/stock-levels/page.tsx",
+          "path": "src/registry/bases/base/blocks/leave-requests/page.tsx",
           "type": "registry:page",
-          "target": "app/stock-levels/page.tsx"
+          "target": "app/leave-requests/page.tsx"
         },
         {
-          "path": "src/registry/bases/base/blocks/stock-levels/data.ts",
+          "path": "src/registry/bases/base/blocks/leave-requests/data.ts",
           "type": "registry:block"
         },
         {
-          "path": "src/registry/bases/base/blocks/stock-levels/components/data-table.tsx",
+          "path": "src/registry/bases/base/blocks/leave-requests/components/data-table.tsx",
           "type": "registry:block"
         },
         {
-          "path": "src/registry/bases/base/blocks/stock-levels/components/adjust-dialog.tsx",
+          "path": "src/registry/bases/base/blocks/leave-requests/components/request-dialog.tsx",
           "type": "registry:block"
         }
       ]
     },
     {
-      "name": "stock-movements",
+      "name": "attendance",
       "type": "registry:block",
-      "title": "Append-only Ledger Table",
-      "description": "Append-only stock ledger — receipts, shipments, adjustments, and transfers with a type filter, running net change, and a record-movement dialog.",
+      "title": "CRUD Table with Date Filter",
+      "description": "Daily attendance log with a date filter, punch-derived present/late/absent status, total hours, and create/edit/delete.",
+      "categories": ["CRUD Tables"],
       "dependencies": ["lucide-react"],
       "registryDependencies": [
+        "alert-dialog",
         "badge",
         "button",
         "dialog",
+        "dropdown-menu",
         "empty",
         "field",
         "input",
@@ -1261,20 +788,469 @@
       ],
       "files": [
         {
-          "path": "src/registry/bases/base/blocks/stock-movements/page.tsx",
+          "path": "src/registry/bases/base/blocks/attendance/page.tsx",
           "type": "registry:page",
-          "target": "app/stock-movements/page.tsx"
+          "target": "app/attendance/page.tsx"
         },
         {
-          "path": "src/registry/bases/base/blocks/stock-movements/data.ts",
+          "path": "src/registry/bases/base/blocks/attendance/data.ts",
           "type": "registry:block"
         },
         {
-          "path": "src/registry/bases/base/blocks/stock-movements/components/data-table.tsx",
+          "path": "src/registry/bases/base/blocks/attendance/components/data-table.tsx",
           "type": "registry:block"
         },
         {
-          "path": "src/registry/bases/base/blocks/stock-movements/components/movement-dialog.tsx",
+          "path": "src/registry/bases/base/blocks/attendance/components/entry-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "projects",
+      "type": "registry:block",
+      "title": "CRUD Table with Progress Bars",
+      "description": "Project portfolio list with a status filter, progress bars, overdue due-date highlighting, and create/edit/delete.",
+      "categories": ["CRUD Tables"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "alert-dialog",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/projects/page.tsx",
+          "type": "registry:page",
+          "target": "app/projects/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/projects/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/projects/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/projects/components/project-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "contacts",
+      "type": "registry:block",
+      "title": "CRUD Table with Search and Promote Action",
+      "description": "Contact book with search, one-primary-per-account enforced on promote, and a warning for accounts left without a primary.",
+      "categories": ["CRUD Tables"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "alert",
+        "alert-dialog",
+        "avatar",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "input-group",
+        "select",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/contacts/page.tsx",
+          "type": "registry:page",
+          "target": "app/contacts/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/contacts/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/contacts/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/contacts/components/contact-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "journal-entries",
+      "type": "registry:block",
+      "title": "Line-Item Form that Must Balance",
+      "description": "Journal entry list with a dynamic debit/credit line-item dialog that validates the entry balances before it can be saved.",
+      "categories": ["Guarded CRUD"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "alert-dialog",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/journal-entries/page.tsx",
+          "type": "registry:page",
+          "target": "app/journal-entries/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/journal-entries/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/journal-entries/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/journal-entries/components/entry-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "performance-reviews",
+      "type": "registry:block",
+      "title": "CRUD with Completion Precondition",
+      "description": "Performance review list with star ratings, a status filter, average-rating summary, and a create/edit dialog that blocks completing an unrated review.",
+      "categories": ["Guarded CRUD"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "alert-dialog",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "table",
+        "textarea",
+        "utils",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/performance-reviews/page.tsx",
+          "type": "registry:page",
+          "target": "app/performance-reviews/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/performance-reviews/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/performance-reviews/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/performance-reviews/components/review-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "timesheets",
+      "type": "registry:block",
+      "title": "CRUD with Locking Lifecycle",
+      "description": "Time entries per project with billable-utilization summary and a draft → submitted → approved lifecycle that locks an entry once submitted.",
+      "categories": ["Guarded CRUD"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "alert-dialog",
+        "badge",
+        "button",
+        "checkbox",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/timesheets/page.tsx",
+          "type": "registry:page",
+          "target": "app/timesheets/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/timesheets/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/timesheets/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/timesheets/components/entry-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "project-team",
+      "type": "registry:block",
+      "title": "CRUD with Capacity + Uniqueness Guards",
+      "description": "Project roster with roles, weekly allocation, and guards that keep one lead on the project and nobody booked past a full week.",
+      "categories": ["Guarded CRUD"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "alert-dialog",
+        "avatar",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/project-team/page.tsx",
+          "type": "registry:page",
+          "target": "app/project-team/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/project-team/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/project-team/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/project-team/components/member-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "leads",
+      "type": "registry:block",
+      "title": "CRUD with Gated State Transition",
+      "description": "Lead pipeline with a stage filter, hot-lead scoring, qualification rate, and a convert action gated on the lead being qualified.",
+      "categories": ["Guarded CRUD"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "alert-dialog",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/leads/page.tsx",
+          "type": "registry:page",
+          "target": "app/leads/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/leads/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/leads/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/leads/components/lead-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "accounts",
+      "type": "registry:block",
+      "title": "CRUD with Delete Blocked by Dependents",
+      "description": "Account book with tier filter, ARR roll-up, health derived from contact recency, and delete blocked while deals are open.",
+      "categories": ["Guarded CRUD"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "alert-dialog",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/accounts/page.tsx",
+          "type": "registry:page",
+          "target": "app/accounts/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/accounts/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/accounts/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/accounts/components/account-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "loan-applications",
+      "type": "registry:block",
+      "title": "CRUD with Threshold-Gated Approval",
+      "description": "Loan application queue with amortised monthly payment, debt-to-income assessment, and approval blocked above the DTI ceiling.",
+      "categories": ["Guarded CRUD"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "alert-dialog",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/loan-applications/page.tsx",
+          "type": "registry:page",
+          "target": "app/loan-applications/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/loan-applications/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/loan-applications/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/loan-applications/components/application-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "borrowers",
+      "type": "registry:block",
+      "title": "CRUD with Eligibility Gate",
+      "description": "Borrower register with search, risk grade derived from credit score, KYC gating on eligibility, and delete blocked while loans are active.",
+      "categories": ["Guarded CRUD"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "alert-dialog",
+        "avatar",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "input-group",
+        "select",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/borrowers/page.tsx",
+          "type": "registry:page",
+          "target": "app/borrowers/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/borrowers/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/borrowers/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/borrowers/components/borrower-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "disbursements",
+      "type": "registry:block",
+      "title": "CRUD Capped by a Parent Total",
+      "description": "Loan disbursement tranches with a loan filter, release/fail settlement, and scheduling blocked from overdrawing the approved principal.",
+      "categories": ["Guarded CRUD"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "alert-dialog",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/disbursements/page.tsx",
+          "type": "registry:page",
+          "target": "app/disbursements/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/disbursements/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/disbursements/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/disbursements/components/disbursement-dialog.tsx",
           "type": "registry:block"
         }
       ]
@@ -1284,6 +1260,7 @@
       "type": "registry:block",
       "title": "CRUD with Staleness Guard",
       "description": "Pledged-asset register with per-type advance rates, lien perfection blocked on a stale appraisal, and an under-secured loan warning.",
+      "categories": ["Guarded CRUD"],
       "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert",
@@ -1320,10 +1297,498 @@
       ]
     },
     {
+      "name": "offcycle-payment-form",
+      "type": "registry:block",
+      "title": "Single-Purpose Form",
+      "description": "Form for issuing a one-off bonus, correction, or reimbursement outside the regular payroll run.",
+      "categories": ["Forms & Wizards"],
+      "registryDependencies": [
+        "badge",
+        "button",
+        "field",
+        "input",
+        "select",
+        "textarea",
+        "card",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/offcycle-payment-form/page.tsx",
+          "type": "registry:page",
+          "target": "app/offcycle-payment-form/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/offcycle-payment-form/data.ts",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "import-export",
+      "type": "registry:block",
+      "title": "CSV Import Wizard + Export",
+      "description": "CSV import wizard — paste or load data, map columns to entity fields with a live preview, then import. Includes a CSV export action.",
+      "categories": ["Forms & Wizards"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "button",
+        "empty",
+        "field",
+        "select",
+        "table",
+        "textarea",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/import-export/page.tsx",
+          "type": "registry:page",
+          "target": "app/import-export/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/import-export/data.ts",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "file-upload",
+      "type": "registry:block",
+      "title": "Dropzone Upload with Per-File State",
+      "description": "Attachments panel — click-or-drag dropzone, per-file upload/error states, type icons, retry, and remove.",
+      "categories": ["Forms & Wizards"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "attachment",
+        "button",
+        "empty",
+        "spinner",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/file-upload/page.tsx",
+          "type": "registry:page",
+          "target": "app/file-upload/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/file-upload/data.ts",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "purchase-order-form",
+      "type": "registry:block",
+      "title": "Multi-step Form Wizard",
+      "description": "Three-step wizard for creating a purchase order — vendor details, line items, and review.",
+      "categories": ["Forms & Wizards"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "button",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "table",
+        "textarea",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/purchase-order-form/page.tsx",
+          "type": "registry:page",
+          "target": "app/purchase-order-form/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/purchase-order-form/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/purchase-order-form/components/step-indicator.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/purchase-order-form/components/wizard-steps.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "confirm-dialog",
+      "type": "registry:block",
+      "title": "Confirm Dialog",
+      "description": "Reusable confirm-before-you-act dialog for destructive actions — controlled open state, custom title/description/labels, destructive styling.",
+      "categories": ["Dialogs"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "alert-dialog",
+        "button",
+        "empty",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/confirm-dialog/page.tsx",
+          "type": "registry:page",
+          "target": "app/confirm-dialog/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/confirm-dialog/components/confirm-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "record-form-dialog",
+      "type": "registry:block",
+      "title": "Create / Edit Dialog",
+      "description": "Standalone create/edit dialog — one form handles both add and update, seeded from the record being edited.",
+      "categories": ["Dialogs"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "avatar",
+        "badge",
+        "button",
+        "dialog",
+        "empty",
+        "field",
+        "input",
+        "select",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/record-form-dialog/page.tsx",
+          "type": "registry:page",
+          "target": "app/record-form-dialog/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/record-form-dialog/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/record-form-dialog/components/contact-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "payroll-run",
+      "type": "registry:block",
+      "title": "Summary + Line Items View",
+      "description": "Payroll run summary with per-employee payslips — gross, deductions, and net pay.",
+      "categories": ["Detail Views"],
+      "registryDependencies": [
+        "badge",
+        "table",
+        "card",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/payroll-run/page.tsx",
+          "type": "registry:page",
+          "target": "app/payroll-run/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/payroll-run/data.ts",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "payslip-detail",
+      "type": "registry:block",
+      "title": "Statement / Breakdown View",
+      "description": "Single-employee payslip breakdown — earnings, deductions, and employer contributions with YTD totals.",
+      "categories": ["Detail Views"],
+      "registryDependencies": [
+        "badge",
+        "table",
+        "card",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/payslip-detail/page.tsx",
+          "type": "registry:page",
+          "target": "app/payslip-detail/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/payslip-detail/data.ts",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "detail-tabs",
+      "type": "registry:block",
+      "title": "Detail View with Tabs",
+      "description": "Single-record detail view with a header and Overview / Activity / Orders tabs.",
+      "categories": ["Detail Views"],
+      "registryDependencies": [
+        "avatar",
+        "badge",
+        "separator",
+        "table",
+        "tabs",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/detail-tabs/page.tsx",
+          "type": "registry:page",
+          "target": "app/detail-tabs/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/detail-tabs/data.ts",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "record-detail",
+      "type": "registry:block",
+      "title": "Read-only Record View",
+      "description": "Read-only single-record view — header with avatar/status badge and grouped label/value field sections, no tabs.",
+      "categories": ["Detail Views"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "avatar",
+        "badge",
+        "button",
+        "separator",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/record-detail/page.tsx",
+          "type": "registry:page",
+          "target": "app/record-detail/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/record-detail/data.ts",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "master-detail",
+      "type": "registry:block",
+      "title": "Resizable Master–Detail Split",
+      "description": "Resizable list + detail split pane — select a row on the left to view its fields on the right, with an empty state when nothing's selected.",
+      "categories": ["Detail Views"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "badge",
+        "empty",
+        "resizable",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/master-detail/page.tsx",
+          "type": "registry:page",
+          "target": "app/master-detail/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/master-detail/data.ts",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "invoice-detail",
+      "type": "registry:block",
+      "title": "Master–Detail that Opens a Tab",
+      "description": "Master-detail invoice workspace — select a row to open its line items in a new tab.",
+      "categories": ["Detail Views"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "badge",
+        "input-group",
+        "table",
+        "jayclydeTags/workspaceui/workspace",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/invoice-detail/page.tsx",
+          "type": "registry:page",
+          "target": "app/invoice-detail/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/invoice-detail/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/invoice-detail/components/invoice-list.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/invoice-detail/components/invoice-view.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "payroll-calendar",
+      "type": "registry:block",
+      "title": "Schedule Calendar with Next-Up Highlight",
+      "description": "Monthly pay schedule with timesheet cutoffs, pay dates, and the next upcoming run highlighted.",
+      "categories": ["Boards, Grids & Timelines"],
+      "registryDependencies": [
+        "badge",
+        "table",
+        "card",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/payroll-calendar/page.tsx",
+          "type": "registry:page",
+          "target": "app/payroll-calendar/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/payroll-calendar/data.ts",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "task-board",
+      "type": "registry:block",
+      "title": "Kanban Board (Drag & Drop)",
+      "description": "Drag-and-drop Kanban board for project tasks — to do / in progress / review / done, with priority, assignee, and a create/edit dialog.",
+      "categories": ["Boards, Grids & Timelines"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "alert-dialog",
+        "avatar",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "field",
+        "input",
+        "select",
+        "utils",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/task-board/page.tsx",
+          "type": "registry:page",
+          "target": "app/task-board/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/task-board/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/task-board/components/task-column.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/task-board/components/task-card.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/task-board/components/task-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "milestones",
+      "type": "registry:block",
+      "title": "Timeline with Derived State",
+      "description": "Milestone tracker with task-scope progress and a state derived from the due date — completed, overdue, at risk, or on track.",
+      "categories": ["Boards, Grids & Timelines"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "alert-dialog",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "empty",
+        "field",
+        "input",
+        "table",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/milestones/page.tsx",
+          "type": "registry:page",
+          "target": "app/milestones/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/milestones/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/milestones/components/data-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/milestones/components/milestone-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "deals-pipeline",
+      "type": "registry:block",
+      "title": "Pipeline Board with Stage Roll-ups",
+      "description": "Drag-and-drop deal pipeline with per-stage value, a probability-weighted forecast, and win rate over closed deals.",
+      "categories": ["Boards, Grids & Timelines"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "alert-dialog",
+        "badge",
+        "button",
+        "dialog",
+        "dropdown-menu",
+        "field",
+        "input",
+        "select",
+        "utils",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/deals-pipeline/page.tsx",
+          "type": "registry:page",
+          "target": "app/deals-pipeline/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/deals-pipeline/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/deals-pipeline/components/stage-column.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/deals-pipeline/components/deal-card.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/deals-pipeline/components/deal-dialog.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "bin-location-map",
       "type": "registry:block",
       "title": "Slot / Floor-plan Grid",
       "description": "Warehouse floor-plan grid of storage bins — assign or clear stock per bin, gated on capacity, single-SKU occupancy, and blocked/quarantine status.",
+      "categories": ["Boards, Grids & Timelines"],
       "dependencies": ["lucide-react"],
       "registryDependencies": [
         "alert",
@@ -1365,10 +1830,155 @@
       ]
     },
     {
+      "name": "approval-board",
+      "type": "registry:block",
+      "title": "Triage Board",
+      "description": "Drag-and-drop Kanban board for triaging expense, purchase order, and time-off approval requests.",
+      "categories": ["Boards, Grids & Timelines"],
+      "registryDependencies": [
+        "avatar",
+        "badge",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/approval-board/page.tsx",
+          "type": "registry:page",
+          "target": "app/approval-board/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/approval-board/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/approval-board/components/approval-card.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/approval-board/components/approval-column.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "notifications-inbox",
+      "type": "registry:block",
+      "title": "Inbox with Read / Unread Tabs",
+      "description": "Notification inbox with All/Unread tabs, per-type icons, unread indicators, mark-one-read on click, and mark-all-read.",
+      "categories": ["Feeds & Notifications"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "badge",
+        "button",
+        "empty",
+        "tabs",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/notifications-inbox/page.tsx",
+          "type": "registry:page",
+          "target": "app/notifications-inbox/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/notifications-inbox/data.ts",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "notification-center",
+      "type": "registry:block",
+      "title": "Notification Center (Bell + Full Page)",
+      "description": "Notification center with a header bell dropdown (unread badge capped at 9+, 5 most recent, mark-all-read) and a full page filtered by read state, severity, and date range with 20-per-page pagination.",
+      "categories": ["Feeds & Notifications"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "badge",
+        "button",
+        "dropdown-menu",
+        "empty",
+        "input",
+        "label",
+        "utils",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/notification-center/page.tsx",
+          "type": "registry:page",
+          "target": "app/notification-center/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/notification-center/components/notification-bell.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/notification-center/components/notification-item.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/notification-center/data.ts",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "comments-thread",
+      "type": "registry:block",
+      "title": "Threaded Comments",
+      "description": "Threaded comments with avatars, inline reply composers, and a top-level composer, with a running comment count.",
+      "categories": ["Feeds & Notifications"],
+      "dependencies": [],
+      "registryDependencies": [
+        "avatar",
+        "button",
+        "textarea",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/comments-thread/page.tsx",
+          "type": "registry:page",
+          "target": "app/comments-thread/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/comments-thread/data.ts",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "activity-feed",
+      "type": "registry:block",
+      "title": "Grouped Activity Timeline",
+      "description": "Grouped activity timeline with type/user filters and running stats.",
+      "categories": ["Feeds & Notifications"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "avatar",
+        "button",
+        "dropdown-menu",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/activity-feed/page.tsx",
+          "type": "registry:page",
+          "target": "app/activity-feed/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/activity-feed/data.ts",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "inbound-receiving",
       "type": "registry:block",
       "title": "Receive → QC → Put-away Flow",
       "description": "Record stock arriving against a purchase order and put it away into bins — blocked receiving on a closed/cancelled PO, a QC gate before stock counts as available, and capacity-checked put-away reusing the bin/location-map contract.",
+      "categories": ["Multi-step Workflows"],
       "dependencies": [],
       "registryDependencies": [
         "alert",
@@ -1406,6 +2016,7 @@
       "type": "registry:block",
       "title": "Claim → Pick → Complete Flow",
       "description": "Claim and fulfil pick lists that draw stock out of bins for an outbound order — blocked picking on a closed/cancelled order, per-line allocations across bins capped at on-hand, short-pick handling, and a picker-claim gate. Emits a pickId + picked-quantity completion record for Shipments.",
+      "categories": ["Multi-step Workflows"],
       "dependencies": [],
       "registryDependencies": [
         "alert",
@@ -1443,6 +2054,7 @@
       "type": "registry:block",
       "title": "Variance Approval Flow",
       "description": "Bin-level count-correction workflow — an absolute physical count raised against a bin with a reason code, where damage/shrinkage may only reduce a count, variance over 10% needs approval before it posts, and a bin held by a pick or receipt is locked. Approval posts to the bin in one step and emits a SKU/warehouse/delta record for stock levels.",
+      "categories": ["Multi-step Workflows"],
       "dependencies": [],
       "registryDependencies": [
         "alert",
@@ -1488,6 +2100,7 @@
       "type": "registry:block",
       "title": "Fulfilment Flow with Derived Status",
       "description": "Outbound fulfilment records that ship a completed pick — a partially-picked order can never ship, a carrier and tracking number are required before a shipment moves to shipped, and a shipment already in transit can no longer be cancelled. Status is derived from the record, never stored: cancelled outranks exception outranks delivered outranks shipped.",
+      "categories": ["Multi-step Workflows"],
       "dependencies": [],
       "registryDependencies": [
         "alert",
@@ -1522,1109 +2135,205 @@
       ]
     },
     {
-      "name": "disbursements",
+      "name": "dashboard",
       "type": "registry:block",
-      "title": "CRUD Capped by a Parent Total",
-      "description": "Loan disbursement tranches with a loan filter, release/fail settlement, and scheduling blocked from overdrawing the approved principal.",
+      "title": "Sidebar Shell (Icon-collapsible)",
+      "description": "Icon-collapsible sidebar (trigger lives in the sidebar) paired with the Workspace component; each tab renders inside the Page component.",
+      "categories": ["App Shells"],
       "dependencies": ["lucide-react"],
       "registryDependencies": [
-        "alert-dialog",
-        "badge",
-        "button",
-        "dialog",
-        "dropdown-menu",
-        "empty",
-        "field",
-        "input",
-        "select",
-        "table",
-        "jayclydeTags/workspaceui/page"
+        "jayclydeTags/workspaceui/workspace",
+        "jayclydeTags/workspaceui/page",
+        "sidebar",
+        "utils"
       ],
       "files": [
         {
-          "path": "src/registry/bases/base/blocks/disbursements/page.tsx",
+          "path": "src/registry/bases/base/blocks/dashboard/page.tsx",
           "type": "registry:page",
-          "target": "app/disbursements/page.tsx"
+          "target": "app/dashboard/page.tsx"
         },
         {
-          "path": "src/registry/bases/base/blocks/disbursements/data.ts",
+          "path": "src/registry/bases/base/blocks/dashboard/components/app-sidebar.tsx",
           "type": "registry:block"
         },
         {
-          "path": "src/registry/bases/base/blocks/disbursements/components/data-table.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/disbursements/components/disbursement-dialog.tsx",
+          "path": "src/registry/bases/base/blocks/dashboard/components/dashboard-content.tsx",
           "type": "registry:block"
         }
       ]
     },
     {
-      "name": "repayment-schedule",
+      "name": "dashboard-01",
       "type": "registry:block",
-      "title": "Computed Schedule Table",
-      "description": "Amortisation table derived from the loan terms — per-instalment interest/principal split, derived paid/due/overdue status, and in-order payment recording.",
-      "registryDependencies": [
-        "alert-dialog",
-        "badge",
-        "button",
-        "empty",
-        "table",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/repayment-schedule/page.tsx",
-          "type": "registry:page",
-          "target": "app/repayment-schedule/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/repayment-schedule/data.ts",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/repayment-schedule/components/schedule-table.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "borrowers",
-      "type": "registry:block",
-      "title": "CRUD with Eligibility Gate",
-      "description": "Borrower register with search, risk grade derived from credit score, KYC gating on eligibility, and delete blocked while loans are active.",
+      "title": "Sidebar Shell (Collapsible)",
+      "description": "Collapsible sidebar nav that swaps a single content area directly, no tabs.",
+      "categories": ["App Shells"],
       "dependencies": ["lucide-react"],
       "registryDependencies": [
-        "alert-dialog",
+        "sidebar",
         "avatar",
-        "badge",
+        "breadcrumb",
         "button",
-        "dialog",
         "dropdown-menu",
-        "empty",
-        "field",
-        "input",
         "input-group",
-        "select",
-        "table",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/borrowers/page.tsx",
-          "type": "registry:page",
-          "target": "app/borrowers/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/borrowers/data.ts",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/borrowers/components/data-table.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/borrowers/components/borrower-dialog.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "loan-applications",
-      "type": "registry:block",
-      "title": "CRUD with Threshold-Gated Approval",
-      "description": "Loan application queue with amortised monthly payment, debt-to-income assessment, and approval blocked above the DTI ceiling.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "alert-dialog",
-        "badge",
-        "button",
-        "dialog",
-        "dropdown-menu",
-        "empty",
-        "field",
-        "input",
-        "select",
-        "table",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/loan-applications/page.tsx",
-          "type": "registry:page",
-          "target": "app/loan-applications/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/loan-applications/data.ts",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/loan-applications/components/data-table.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/loan-applications/components/application-dialog.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "deals-pipeline",
-      "type": "registry:block",
-      "title": "Pipeline Board with Stage Roll-ups",
-      "description": "Drag-and-drop deal pipeline with per-stage value, a probability-weighted forecast, and win rate over closed deals.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "alert-dialog",
-        "badge",
-        "button",
-        "dialog",
-        "dropdown-menu",
-        "field",
-        "input",
-        "select",
-        "utils",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/deals-pipeline/page.tsx",
-          "type": "registry:page",
-          "target": "app/deals-pipeline/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/deals-pipeline/data.ts",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/deals-pipeline/components/stage-column.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/deals-pipeline/components/deal-card.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/deals-pipeline/components/deal-dialog.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "accounts",
-      "type": "registry:block",
-      "title": "CRUD with Delete Blocked by Dependents",
-      "description": "Account book with tier filter, ARR roll-up, health derived from contact recency, and delete blocked while deals are open.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "alert-dialog",
-        "badge",
-        "button",
-        "dialog",
-        "dropdown-menu",
-        "empty",
-        "field",
-        "input",
-        "select",
-        "table",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/accounts/page.tsx",
-          "type": "registry:page",
-          "target": "app/accounts/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/accounts/data.ts",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/accounts/components/data-table.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/accounts/components/account-dialog.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "contacts",
-      "type": "registry:block",
-      "title": "CRUD Table with Search and Promote Action",
-      "description": "Contact book with search, one-primary-per-account enforced on promote, and a warning for accounts left without a primary.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "alert",
-        "alert-dialog",
-        "avatar",
-        "badge",
-        "button",
-        "dialog",
-        "dropdown-menu",
-        "empty",
-        "field",
-        "input",
-        "input-group",
-        "select",
-        "table",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/contacts/page.tsx",
-          "type": "registry:page",
-          "target": "app/contacts/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/contacts/data.ts",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/contacts/components/data-table.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/contacts/components/contact-dialog.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "leads",
-      "type": "registry:block",
-      "title": "CRUD with Gated State Transition",
-      "description": "Lead pipeline with a stage filter, hot-lead scoring, qualification rate, and a convert action gated on the lead being qualified.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "alert-dialog",
-        "badge",
-        "button",
-        "dialog",
-        "dropdown-menu",
-        "empty",
-        "field",
-        "input",
-        "select",
-        "table",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/leads/page.tsx",
-          "type": "registry:page",
-          "target": "app/leads/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/leads/data.ts",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/leads/components/data-table.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/leads/components/lead-dialog.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "project-team",
-      "type": "registry:block",
-      "title": "CRUD with Capacity + Uniqueness Guards",
-      "description": "Project roster with roles, weekly allocation, and guards that keep one lead on the project and nobody booked past a full week.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "alert-dialog",
-        "avatar",
-        "badge",
-        "button",
-        "dialog",
-        "dropdown-menu",
-        "empty",
-        "field",
-        "input",
-        "select",
-        "table",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/project-team/page.tsx",
-          "type": "registry:page",
-          "target": "app/project-team/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/project-team/data.ts",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/project-team/components/data-table.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/project-team/components/member-dialog.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "milestones",
-      "type": "registry:block",
-      "title": "Timeline with Derived State",
-      "description": "Milestone tracker with task-scope progress and a state derived from the due date — completed, overdue, at risk, or on track.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "alert-dialog",
-        "badge",
-        "button",
-        "dialog",
-        "dropdown-menu",
-        "empty",
-        "field",
-        "input",
-        "table",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/milestones/page.tsx",
-          "type": "registry:page",
-          "target": "app/milestones/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/milestones/data.ts",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/milestones/components/data-table.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/milestones/components/milestone-dialog.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "timesheets",
-      "type": "registry:block",
-      "title": "CRUD with Locking Lifecycle",
-      "description": "Time entries per project with billable-utilization summary and a draft → submitted → approved lifecycle that locks an entry once submitted.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "alert-dialog",
-        "badge",
-        "button",
-        "checkbox",
-        "dialog",
-        "dropdown-menu",
-        "empty",
-        "field",
-        "input",
-        "select",
-        "table",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/timesheets/page.tsx",
-          "type": "registry:page",
-          "target": "app/timesheets/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/timesheets/data.ts",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/timesheets/components/data-table.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/timesheets/components/entry-dialog.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "task-board",
-      "type": "registry:block",
-      "title": "Kanban Board (Drag & Drop)",
-      "description": "Drag-and-drop Kanban board for project tasks — to do / in progress / review / done, with priority, assignee, and a create/edit dialog.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "alert-dialog",
-        "avatar",
-        "badge",
-        "button",
-        "dialog",
-        "dropdown-menu",
-        "field",
-        "input",
-        "select",
-        "utils",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/task-board/page.tsx",
-          "type": "registry:page",
-          "target": "app/task-board/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/task-board/data.ts",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/task-board/components/task-column.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/task-board/components/task-card.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/task-board/components/task-dialog.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "projects",
-      "type": "registry:block",
-      "title": "CRUD Table with Progress Bars",
-      "description": "Project portfolio list with a status filter, progress bars, overdue due-date highlighting, and create/edit/delete.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "alert-dialog",
-        "badge",
-        "button",
-        "dialog",
-        "dropdown-menu",
-        "empty",
-        "field",
-        "input",
-        "select",
-        "table",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/projects/page.tsx",
-          "type": "registry:page",
-          "target": "app/projects/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/projects/data.ts",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/projects/components/data-table.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/projects/components/project-dialog.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "performance-reviews",
-      "type": "registry:block",
-      "title": "CRUD with Completion Precondition",
-      "description": "Performance review list with star ratings, a status filter, average-rating summary, and a create/edit dialog that blocks completing an unrated review.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "alert-dialog",
-        "badge",
-        "button",
-        "dialog",
-        "dropdown-menu",
-        "empty",
-        "field",
-        "input",
-        "select",
-        "table",
-        "textarea",
-        "utils",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/performance-reviews/page.tsx",
-          "type": "registry:page",
-          "target": "app/performance-reviews/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/performance-reviews/data.ts",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/performance-reviews/components/data-table.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/performance-reviews/components/review-dialog.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "attendance",
-      "type": "registry:block",
-      "title": "CRUD Table with Date Filter",
-      "description": "Daily attendance log with a date filter, punch-derived present/late/absent status, total hours, and create/edit/delete.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "alert-dialog",
-        "badge",
-        "button",
-        "dialog",
-        "dropdown-menu",
-        "empty",
-        "field",
-        "input",
-        "select",
-        "table",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/attendance/page.tsx",
-          "type": "registry:page",
-          "target": "app/attendance/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/attendance/data.ts",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/attendance/components/data-table.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/attendance/components/entry-dialog.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "leave-requests",
-      "type": "registry:block",
-      "title": "CRUD Table with Approve / Reject Actions",
-      "description": "Leave request list with a status filter, approve/reject row actions, a submit-request dialog, and a delete confirmation.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "alert-dialog",
-        "badge",
-        "button",
-        "dialog",
-        "dropdown-menu",
-        "empty",
-        "field",
-        "input",
-        "select",
-        "table",
-        "textarea",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/leave-requests/page.tsx",
-          "type": "registry:page",
-          "target": "app/leave-requests/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/leave-requests/data.ts",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/leave-requests/components/data-table.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/leave-requests/components/request-dialog.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "journal-entries",
-      "type": "registry:block",
-      "title": "Line-Item Form that Must Balance",
-      "description": "Journal entry list with a dynamic debit/credit line-item dialog that validates the entry balances before it can be saved.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "alert-dialog",
-        "badge",
-        "button",
-        "dialog",
-        "dropdown-menu",
-        "empty",
-        "field",
-        "input",
-        "select",
-        "table",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/journal-entries/page.tsx",
-          "type": "registry:page",
-          "target": "app/journal-entries/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/journal-entries/data.ts",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/journal-entries/components/data-table.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/journal-entries/components/entry-dialog.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "bank-reconciliation",
-      "type": "registry:block",
-      "title": "Checklist Table with Running Totals",
-      "description": "Bank reconciliation checklist — mark transactions cleared against a statement balance, with live statement/cleared/difference summary cards.",
-      "dependencies": [],
-      "registryDependencies": [
-        "badge",
-        "card",
-        "checkbox",
-        "table",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/bank-reconciliation/page.tsx",
-          "type": "registry:page",
-          "target": "app/bank-reconciliation/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/bank-reconciliation/data.ts",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "approval-board",
-      "type": "registry:block",
-      "title": "Triage Board",
-      "description": "Drag-and-drop Kanban board for triaging expense, purchase order, and time-off approval requests.",
-      "registryDependencies": [
-        "avatar",
-        "badge",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/approval-board/page.tsx",
-          "type": "registry:page",
-          "target": "app/approval-board/page.tsx"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/approval-board/data.ts",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/approval-board/components/approval-card.tsx",
-          "type": "registry:block"
-        },
-        {
-          "path": "src/registry/bases/base/blocks/approval-board/components/approval-column.tsx",
-          "type": "registry:block"
-        }
-      ]
-    },
-    {
-      "name": "account-locked",
-      "type": "registry:block",
-      "title": "Account Locked",
-      "description": "Account-locked screen after too many failed sign-in attempts — shows the locked email, a lockout countdown, and reset/support actions.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "button",
-        "card",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/account-locked/page.tsx",
-          "type": "registry:page",
-          "target": "app/account-locked/page.tsx"
-        }
-      ]
-    },
-    {
-      "name": "session-expired",
-      "type": "registry:block",
-      "title": "Session Expired",
-      "description": "Re-authentication prompt after an idle timeout — quick password re-entry for the current user, incorrect-password error, and a switch-user action.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "button",
-        "card",
-        "field",
-        "jayclydeTags/workspaceui/password-input",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/session-expired/page.tsx",
-          "type": "registry:page",
-          "target": "app/session-expired/page.tsx"
-        }
-      ]
-    },
-    {
-      "name": "login",
-      "type": "registry:block",
-      "title": "Login",
-      "description": "Email and password sign-in form — inline field validation, invalid-credentials banner, pending state, remember-me, and forgot-password/sign-up links.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "alert",
-        "button",
-        "card",
-        "checkbox",
-        "field",
-        "input",
-        "jayclydeTags/workspaceui/password-input",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/login/page.tsx",
-          "type": "registry:page",
-          "target": "app/login/page.tsx"
-        }
-      ]
-    },
-    {
-      "name": "login-social",
-      "type": "registry:block",
-      "title": "Login (Social)",
-      "description": "Sign-in with Google/GitHub SSO buttons over an email-and-password form — provider divider, inline validation, invalid-credentials banner, and pending state.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "button",
-        "card",
-        "field",
-        "input",
         "separator",
-        "jayclydeTags/workspaceui/password-input",
-        "jayclydeTags/workspaceui/page"
+        "utils"
       ],
       "files": [
         {
-          "path": "src/registry/bases/base/blocks/login-social/page.tsx",
+          "path": "src/registry/bases/base/blocks/dashboard-01/page.tsx",
           "type": "registry:page",
-          "target": "app/login-social/page.tsx"
-        }
-      ]
-    },
-    {
-      "name": "magic-link-sent",
-      "type": "registry:block",
-      "title": "Magic Link Sent",
-      "description": "Passwordless check-your-email confirmation after requesting a magic sign-in link — expiry note, cooldown-gated resend, and change-email action.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": ["button", "jayclydeTags/workspaceui/page"],
-      "files": [
+          "target": "app/dashboard/page.tsx"
+        },
         {
-          "path": "src/registry/bases/base/blocks/magic-link-sent/page.tsx",
-          "type": "registry:page",
-          "target": "app/magic-link-sent/page.tsx"
-        }
-      ]
-    },
-    {
-      "name": "register",
-      "type": "registry:block",
-      "title": "Register",
-      "description": "Account sign-up form with a live password-strength meter, field validation, terms agreement, and a verify-your-email confirmation state.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "button",
-        "card",
-        "checkbox",
-        "field",
-        "input",
-        "jayclydeTags/workspaceui/password-input",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
+          "path": "src/registry/bases/base/blocks/dashboard-01/components/app-sidebar.tsx",
+          "type": "registry:block"
+        },
         {
-          "path": "src/registry/bases/base/blocks/register/page.tsx",
-          "type": "registry:page",
-          "target": "app/register/page.tsx"
-        }
-      ]
-    },
-    {
-      "name": "verify-email",
-      "type": "registry:block",
-      "title": "Verify Email",
-      "description": "Post-registration confirm-your-email pending screen — cooldown-gated resend and a transition to the email-confirmed success state.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": ["button", "jayclydeTags/workspaceui/page"],
-      "files": [
+          "path": "src/registry/bases/base/blocks/dashboard-01/components/dashboard-content.tsx",
+          "type": "registry:block"
+        },
         {
-          "path": "src/registry/bases/base/blocks/verify-email/page.tsx",
-          "type": "registry:page",
-          "target": "app/verify-email/page.tsx"
+          "path": "src/registry/bases/base/blocks/dashboard-01/components/dashboard-header.tsx",
+          "type": "registry:block"
         }
       ]
     },
     {
-      "name": "otp-verify",
+      "name": "dashboard-02",
       "type": "registry:block",
-      "title": "OTP Verify",
-      "description": "One-time passcode entry with a 6-digit segmented input, auto-verify on complete, incorrect-code error, and a countdown-gated resend.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "button",
-        "card",
-        "input-otp",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/otp-verify/page.tsx",
-          "type": "registry:page",
-          "target": "app/otp-verify/page.tsx"
-        }
-      ]
-    },
-    {
-      "name": "two-factor-challenge",
-      "type": "registry:block",
-      "title": "Two-Factor Challenge",
-      "description": "Post-password 2FA step — authenticator-app code entry with auto-verify, a recovery-code fallback, trust-this-device option, and error states.",
-      "dependencies": ["lucide-react", "motion"],
-      "registryDependencies": [
-        "button",
-        "card",
-        "checkbox",
-        "field",
-        "input",
-        "input-otp",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/two-factor-challenge/page.tsx",
-          "type": "registry:page",
-          "target": "app/two-factor-challenge/page.tsx"
-        }
-      ]
-    },
-    {
-      "name": "two-factor-setup",
-      "type": "registry:block",
-      "title": "Two-Factor Setup",
-      "description": "Authenticator enrollment — QR code, copyable manual setup key, and a 6-digit verify step with error and enabled states.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "button",
-        "card",
-        "input-otp",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/two-factor-setup/page.tsx",
-          "type": "registry:page",
-          "target": "app/two-factor-setup/page.tsx"
-        }
-      ]
-    },
-    {
-      "name": "recovery-codes",
-      "type": "registry:block",
-      "title": "Recovery Codes",
-      "description": "Backup-code display with copy, download, and regenerate actions, gated behind an \"I've saved them\" acknowledgement before continuing.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "button",
-        "card",
-        "checkbox",
-        "field",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/recovery-codes/page.tsx",
-          "type": "registry:page",
-          "target": "app/recovery-codes/page.tsx"
-        }
-      ]
-    },
-    {
-      "name": "forgot-password",
-      "type": "registry:block",
-      "title": "Forgot Password",
-      "description": "Request a password-reset link by email — field validation, pending state, and a neutral check-your-email confirmation that doesn't leak account existence.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "button",
-        "card",
-        "field",
-        "input",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/forgot-password/page.tsx",
-          "type": "registry:page",
-          "target": "app/forgot-password/page.tsx"
-        }
-      ]
-    },
-    {
-      "name": "reset-password",
-      "type": "registry:block",
-      "title": "Reset Password",
-      "description": "Set-a-new-password form with a live strength meter, confirm-match validation, an expired-link state, and a password-updated confirmation.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "button",
-        "card",
-        "field",
-        "jayclydeTags/workspaceui/password-input",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/reset-password/page.tsx",
-          "type": "registry:page",
-          "target": "app/reset-password/page.tsx"
-        }
-      ]
-    },
-    {
-      "name": "change-password",
-      "type": "registry:block",
-      "title": "Change Password",
-      "description": "Authenticated in-app password change — current-password re-auth check, new-password strength meter, confirm-match validation, and a changed confirmation.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "button",
-        "card",
-        "field",
-        "jayclydeTags/workspaceui/password-input",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/change-password/page.tsx",
-          "type": "registry:page",
-          "target": "app/change-password/page.tsx"
-        }
-      ]
-    },
-    {
-      "name": "unauthorized-403",
-      "type": "registry:block",
-      "title": "Unauthorized 403",
-      "description": "Signed-in-but-forbidden screen — explains the missing permission, offers a request-access action with a sent confirmation, and a back link.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "button",
-        "card",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/unauthorized-403/page.tsx",
-          "type": "registry:page",
-          "target": "app/unauthorized-403/page.tsx"
-        }
-      ]
-    },
-    {
-      "name": "upgrade-required",
-      "type": "registry:block",
-      "title": "Upgrade Required",
-      "description": "Plan-gated feature screen — a signed-in user hits a Pro-only feature, with the perks it unlocks, an upgrade action, and an ask-an-admin fallback that confirms once sent.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": [
-        "button",
-        "card",
-        "jayclydeTags/workspaceui/page"
-      ],
-      "files": [
-        {
-          "path": "src/registry/bases/base/blocks/upgrade-required/page.tsx",
-          "type": "registry:page",
-          "target": "app/upgrade-required/page.tsx"
-        }
-      ]
-    },
-    {
-      "name": "forbidden-workspace",
-      "type": "registry:block",
-      "title": "Forbidden Workspace",
-      "description": "Wrong-tenant screen — signed in but not a member of this workspace, with a switcher to workspaces you belong to and a switch-account action.",
+      "title": "Icon Rail Shell (Top Bar)",
+      "description": "App icon + org switcher and search in a full-width top bar, paired with a fixed icon-only nav rail (settings and profile pinned to the bottom).",
+      "categories": ["App Shells"],
       "dependencies": ["lucide-react"],
       "registryDependencies": [
         "avatar",
         "button",
-        "card",
-        "jayclydeTags/workspaceui/page"
+        "dropdown-menu",
+        "input-group",
+        "tooltip",
+        "utils"
       ],
       "files": [
         {
-          "path": "src/registry/bases/base/blocks/forbidden-workspace/page.tsx",
+          "path": "src/registry/bases/base/blocks/dashboard-02/page.tsx",
           "type": "registry:page",
-          "target": "app/forbidden-workspace/page.tsx"
+          "target": "app/dashboard-02/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/dashboard-02/components/top-bar.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/dashboard-02/components/icon-rail.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/dashboard-02/components/dashboard-content.tsx",
+          "type": "registry:block"
         }
       ]
     },
     {
-      "name": "pending-approval",
+      "name": "dashboard-rail",
       "type": "registry:block",
-      "title": "Pending Approval",
-      "description": "Account-under-review status screen — explains the pending admin approval, the notification email, and check-status/sign-out actions.",
+      "title": "Rail + Sidebar Shell",
+      "description": "Dual-sidebar shell: a fixed icon-only app rail (logo, app switcher, settings, profile) beside a collapsible nav sidebar, paired with the Workspace component.",
+      "categories": ["App Shells"],
       "dependencies": ["lucide-react"],
       "registryDependencies": [
-        "button",
-        "card",
-        "jayclydeTags/workspaceui/page"
+        "jayclydeTags/workspaceui/workspace",
+        "sidebar",
+        "sheet",
+        "utils"
       ],
       "files": [
         {
-          "path": "src/registry/bases/base/blocks/pending-approval/page.tsx",
+          "path": "src/registry/bases/base/blocks/dashboard-rail/page.tsx",
           "type": "registry:page",
-          "target": "app/pending-approval/page.tsx"
+          "target": "app/dashboard-rail/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/dashboard-rail/components/dashboard-sidebar.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/dashboard-rail/components/app-rail.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/dashboard-rail/components/nav-sidebar.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/dashboard-rail/components/dashboard-content.tsx",
+          "type": "registry:block"
         }
       ]
     },
     {
-      "name": "account-suspended",
+      "name": "dashboard-shell",
       "type": "registry:block",
-      "title": "Account Suspended",
-      "description": "Suspended-account screen — shows the suspension reason and offers an appeal action with a submitted confirmation plus a contact-support link.",
+      "title": "Full Sidebar Shell (Multi-tab)",
+      "description": "Rich collapsible sidebar (quick-create action, grouped Documents section, secondary nav, and a user menu) paired with a multi-tab Workspace whose first tab is an empty Home landing state.",
+      "categories": ["App Shells"],
       "dependencies": ["lucide-react"],
       "registryDependencies": [
+        "jayclydeTags/workspaceui/workspace",
+        "jayclydeTags/workspaceui/page",
+        "sidebar",
+        "avatar",
         "button",
-        "card",
+        "dropdown-menu",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/dashboard-shell/page.tsx",
+          "type": "registry:page",
+          "target": "app/dashboard-shell/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/dashboard-shell/components/app-sidebar.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/dashboard-shell/components/dashboard-content.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "access-control",
+      "type": "registry:block",
+      "title": "Permission Matrix",
+      "description": "Manage role permissions across resources with a per-role permission matrix.",
+      "categories": ["Settings & Permissions"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "badge",
+        "button",
+        "checkbox",
+        "dialog",
+        "field",
+        "input",
+        "table",
         "jayclydeTags/workspaceui/page"
       ],
       "files": [
         {
-          "path": "src/registry/bases/base/blocks/account-suspended/page.tsx",
+          "path": "src/registry/bases/base/blocks/access-control/page.tsx",
           "type": "registry:page",
-          "target": "app/account-suspended/page.tsx"
+          "target": "app/access-control/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/access-control/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/access-control/components/permission-table.tsx",
+          "type": "registry:block"
         }
       ]
     },
@@ -2633,6 +2342,7 @@
       "type": "registry:block",
       "title": "Sectioned Settings Page",
       "description": "Sectioned workspace settings — company profile, notifications, billing, and security.",
+      "categories": ["Settings & Permissions"],
       "registryDependencies": [
         "badge",
         "button",
@@ -2659,6 +2369,408 @@
         {
           "path": "src/registry/bases/base/blocks/settings/components/sections.tsx",
           "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "login",
+      "type": "registry:block",
+      "title": "Login",
+      "description": "Email and password sign-in form — inline field validation, invalid-credentials banner, pending state, remember-me, and forgot-password/sign-up links.",
+      "categories": ["Login"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "alert",
+        "button",
+        "card",
+        "checkbox",
+        "field",
+        "input",
+        "jayclydeTags/workspaceui/password-input",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/login/page.tsx",
+          "type": "registry:page",
+          "target": "app/login/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "register",
+      "type": "registry:block",
+      "title": "Register",
+      "description": "Account sign-up form with a live password-strength meter, field validation, terms agreement, and a verify-your-email confirmation state.",
+      "categories": ["Registration"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "button",
+        "card",
+        "checkbox",
+        "field",
+        "input",
+        "jayclydeTags/workspaceui/password-input",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/register/page.tsx",
+          "type": "registry:page",
+          "target": "app/register/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "otp-verify",
+      "type": "registry:block",
+      "title": "OTP Verify",
+      "description": "One-time passcode entry with a 6-digit segmented input, auto-verify on complete, incorrect-code error, and a countdown-gated resend.",
+      "categories": ["Two-Factor & OTP"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "button",
+        "card",
+        "input-otp",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/otp-verify/page.tsx",
+          "type": "registry:page",
+          "target": "app/otp-verify/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "forgot-password",
+      "type": "registry:block",
+      "title": "Forgot Password",
+      "description": "Request a password-reset link by email — field validation, pending state, and a neutral check-your-email confirmation that doesn't leak account existence.",
+      "categories": ["Password"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "button",
+        "card",
+        "field",
+        "input",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/forgot-password/page.tsx",
+          "type": "registry:page",
+          "target": "app/forgot-password/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "reset-password",
+      "type": "registry:block",
+      "title": "Reset Password",
+      "description": "Set-a-new-password form with a live strength meter, confirm-match validation, an expired-link state, and a password-updated confirmation.",
+      "categories": ["Password"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "button",
+        "card",
+        "field",
+        "jayclydeTags/workspaceui/password-input",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/reset-password/page.tsx",
+          "type": "registry:page",
+          "target": "app/reset-password/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "change-password",
+      "type": "registry:block",
+      "title": "Change Password",
+      "description": "Authenticated in-app password change — current-password re-auth check, new-password strength meter, confirm-match validation, and a changed confirmation.",
+      "categories": ["Password"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "button",
+        "card",
+        "field",
+        "jayclydeTags/workspaceui/password-input",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/change-password/page.tsx",
+          "type": "registry:page",
+          "target": "app/change-password/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "two-factor-challenge",
+      "type": "registry:block",
+      "title": "Two-Factor Challenge",
+      "description": "Post-password 2FA step — authenticator-app code entry with auto-verify, a recovery-code fallback, trust-this-device option, and error states.",
+      "categories": ["Two-Factor & OTP"],
+      "dependencies": ["lucide-react", "motion"],
+      "registryDependencies": [
+        "button",
+        "card",
+        "checkbox",
+        "field",
+        "input",
+        "input-otp",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/two-factor-challenge/page.tsx",
+          "type": "registry:page",
+          "target": "app/two-factor-challenge/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "two-factor-setup",
+      "type": "registry:block",
+      "title": "Two-Factor Setup",
+      "description": "Authenticator enrollment — QR code, copyable manual setup key, and a 6-digit verify step with error and enabled states.",
+      "categories": ["Two-Factor & OTP"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "button",
+        "card",
+        "input-otp",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/two-factor-setup/page.tsx",
+          "type": "registry:page",
+          "target": "app/two-factor-setup/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "recovery-codes",
+      "type": "registry:block",
+      "title": "Recovery Codes",
+      "description": "Backup-code display with copy, download, and regenerate actions, gated behind an \"I've saved them\" acknowledgement before continuing.",
+      "categories": ["Two-Factor & OTP"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "button",
+        "card",
+        "checkbox",
+        "field",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/recovery-codes/page.tsx",
+          "type": "registry:page",
+          "target": "app/recovery-codes/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "magic-link-sent",
+      "type": "registry:block",
+      "title": "Magic Link Sent",
+      "description": "Passwordless check-your-email confirmation after requesting a magic sign-in link — expiry note, cooldown-gated resend, and change-email action.",
+      "categories": ["Login"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["button", "jayclydeTags/workspaceui/page"],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/magic-link-sent/page.tsx",
+          "type": "registry:page",
+          "target": "app/magic-link-sent/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "verify-email",
+      "type": "registry:block",
+      "title": "Verify Email",
+      "description": "Post-registration confirm-your-email pending screen — cooldown-gated resend and a transition to the email-confirmed success state.",
+      "categories": ["Registration"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["button", "jayclydeTags/workspaceui/page"],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/verify-email/page.tsx",
+          "type": "registry:page",
+          "target": "app/verify-email/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "login-social",
+      "type": "registry:block",
+      "title": "Login (Social)",
+      "description": "Sign-in with Google/GitHub SSO buttons over an email-and-password form — provider divider, inline validation, invalid-credentials banner, and pending state.",
+      "categories": ["Login"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "button",
+        "card",
+        "field",
+        "input",
+        "separator",
+        "jayclydeTags/workspaceui/password-input",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/login-social/page.tsx",
+          "type": "registry:page",
+          "target": "app/login-social/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "session-expired",
+      "type": "registry:block",
+      "title": "Session Expired",
+      "description": "Re-authentication prompt after an idle timeout — quick password re-entry for the current user, incorrect-password error, and a switch-user action.",
+      "categories": ["Login"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "button",
+        "card",
+        "field",
+        "jayclydeTags/workspaceui/password-input",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/session-expired/page.tsx",
+          "type": "registry:page",
+          "target": "app/session-expired/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "account-locked",
+      "type": "registry:block",
+      "title": "Account Locked",
+      "description": "Account-locked screen after too many failed sign-in attempts — shows the locked email, a lockout countdown, and reset/support actions.",
+      "categories": ["Login"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "button",
+        "card",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/account-locked/page.tsx",
+          "type": "registry:page",
+          "target": "app/account-locked/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "pending-approval",
+      "type": "registry:block",
+      "title": "Pending Approval",
+      "description": "Account-under-review status screen — explains the pending admin approval, the notification email, and check-status/sign-out actions.",
+      "categories": ["Access"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "button",
+        "card",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/pending-approval/page.tsx",
+          "type": "registry:page",
+          "target": "app/pending-approval/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "forbidden-workspace",
+      "type": "registry:block",
+      "title": "Forbidden Workspace",
+      "description": "Wrong-tenant screen — signed in but not a member of this workspace, with a switcher to workspaces you belong to and a switch-account action.",
+      "categories": ["Access"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "avatar",
+        "button",
+        "card",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/forbidden-workspace/page.tsx",
+          "type": "registry:page",
+          "target": "app/forbidden-workspace/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "account-suspended",
+      "type": "registry:block",
+      "title": "Account Suspended",
+      "description": "Suspended-account screen — shows the suspension reason and offers an appeal action with a submitted confirmation plus a contact-support link.",
+      "categories": ["Access"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "button",
+        "card",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/account-suspended/page.tsx",
+          "type": "registry:page",
+          "target": "app/account-suspended/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "unauthorized-403",
+      "type": "registry:block",
+      "title": "Unauthorized 403",
+      "description": "Signed-in-but-forbidden screen — explains the missing permission, offers a request-access action with a sent confirmation, and a back link.",
+      "categories": ["Access"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "button",
+        "card",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/unauthorized-403/page.tsx",
+          "type": "registry:page",
+          "target": "app/unauthorized-403/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "upgrade-required",
+      "type": "registry:block",
+      "title": "Upgrade Required",
+      "description": "Plan-gated feature screen — a signed-in user hits a Pro-only feature, with the perks it unlocks, an upgrade action, and an ask-an-admin fallback that confirms once sent.",
+      "categories": ["Access"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "button",
+        "card",
+        "jayclydeTags/workspaceui/page"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/upgrade-required/page.tsx",
+          "type": "registry:page",
+          "target": "app/upgrade-required/page.tsx"
         }
       ]
     }

@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation"
 
-import { blocks } from "@/lib/blocks"
+import { blockComponents } from "@/lib/blocks"
 
 type PageProps = { params: Promise<{ slug: string }> }
 
 export function generateStaticParams() {
-  return blocks.map((b) => ({ slug: b.slug }))
+  return Object.keys(blockComponents).map((slug) => ({ slug }))
 }
 
 // Standalone block render for the BlockPreview iframe. Lives outside the
@@ -14,9 +14,8 @@ export function generateStaticParams() {
 // useIsMobile react to the iframe width, not the browser's.
 export default async function BlockPreviewFrame({ params }: PageProps) {
   const { slug } = await params
-  const block = blocks.find((b) => b.slug === slug)
-  if (!block) notFound()
-  const { Component } = block
+  const Component = blockComponents[slug]
+  if (!Component) notFound()
   return (
     <div className="h-dvh">
       <Component />

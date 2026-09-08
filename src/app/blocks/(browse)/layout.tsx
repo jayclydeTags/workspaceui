@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 
-import { SidebarNav } from "@/components/sidebar-nav"
-import { blocksNav } from "@/lib/nav"
+import { BlocksSidebarNav } from "@/components/blocks-sidebar-nav"
+import { getBlocksNav } from "@/lib/block-taxonomy"
 
 // Default title for the gallery (a client page that can't export metadata);
 // block detail pages override it via their own generateMetadata.
@@ -18,9 +18,7 @@ export default function BlocksLayout({
   return (
     <div className="flex h-[calc(100svh-3.5rem)] overflow-hidden">
       <aside className="hidden w-56 shrink-0 px-4 py-6 md:flex">
-        <div className="w-full">
-          <SidebarNav sections={blocksNav} />
-        </div>
+        <BlocksSidebarNav sections={getBlocksNav()} />
       </aside>
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         {children}

@@ -1,114 +1,54 @@
-"use client"
+import Link from "next/link"
 
-import { useLayoutEffect, useRef, useState } from "react"
-import { useRouter } from "next/navigation"
+import { getBlockGroups } from "@/lib/block-taxonomy"
 
-import { blocks } from "@/lib/blocks"
-import { cn } from "@/lib/utils"
-
-const categories = ["All", ...new Set(blocks.map((b) => b.category))]
-
-// Renders a live block scaled to fit the card. Child is laid out at 1280×800
-// (16:10) and scaled by width, so it fills the 16:10 card exactly.
-function BlockThumb({ children }: { children: React.ReactNode }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [scale, setScale] = useState(0)
-
-  // Measured synchronously pre-paint so the card never commits a frame at
-  // scale(0) — a ResizeObserver-only version can miss its first callback
-  // before the grid row's height (and therefore this card's width) settles,
-  // leaving that card invisible forever.
-  useLayoutEffect(() => {
-    const el = ref.current
-    if (!el) return
-    setScale(el.getBoundingClientRect().width / 1280)
-
-    const ro = new ResizeObserver(
-      ([entry]) => entry && setScale(entry.contentRect.width / 1280)
-    )
-    ro.observe(el)
-    return () => ro.disconnect()
-  }, [])
-
-  return (
-    <div
-      ref={ref}
-      className="pointer-events-none absolute inset-0 overflow-hidden"
-    >
-      <div
-        className="origin-top-left"
-        style={{ width: 1280, height: 800, transform: `scale(${scale})` }}
-      >
-        {children}
-      </div>
-    </div>
-  )
-}
+// Grouping, order, and titles all come from the block taxonomy (registry.json
+// + the family declaration), so the gallery and the sidebar can't disagree.
+const groups = getBlockGroups()
 
 export default function BlocksIndex() {
-  const router = useRouter()
-  const [active, setActive] = useState("All")
-
-  const visible =
-    active === "All" ? blocks : blocks.filter((b) => b.category === active)
-
   return (
     <div className="overflow-y-auto px-6 py-8">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-3xl">
         <h1 className="text-2xl font-semibold tracking-tight">Blocks</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Ready-made layouts built on the Workspace primitives. Click any block
           to preview, copy, or install it.
         </p>
 
-        <div className="mt-6 flex flex-wrap gap-2">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setActive(category)}
-              className={cn(
-                "rounded-full border px-3 py-1 text-sm transition-colors",
-                active === category
-                  ? "border-transparent bg-primary text-primary-foreground"
-                  : "border-border text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-          {visible.map(({ slug, title, description, category, Component }) => (
-            <div
-              key={slug}
-              role="link"
-              tabIndex={0}
-              onClick={() => router.push(`/blocks/${slug}`)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") router.push(`/blocks/${slug}`)
-              }}
-              className="group block cursor-pointer"
-            >
-              <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-border bg-muted/30 transition group-hover:border-primary/40">
-                <BlockThumb>
-                  <Component />
-                </BlockThumb>
-              </div>
-              <div className="mt-3">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-medium">{title}</h3>
-                  <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-                    {category}
+        {groups.length === 0 ? (
+          <p className="mt-8 rounded-xl border border-border px-4 py-8 text-center text-sm text-muted-foreground">
+            No blocks yet.
+          </p>
+        ) : (
+          <div className="mt-8 space-y-8">
+            {groups.map(({ category, items }) => (
+              <section key={category} aria-labelledby={`group-${category}`}>
+                <h2
+                  id={`group-${category}`}
+                  className="px-1 font-mono text-xs text-muted-foreground"
+                >
+                  {category}{" "}
+                  <span className="text-muted-foreground/60">
+                    ({items.length})
                   </span>
-                </div>
-                <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
-                  {description}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
+                </h2>
+                <ul className="mt-2 divide-y divide-border overflow-hidden rounded-xl border border-border">
+                  {items.map(({ slug, title }) => (
+                    <li key={slug}>
+                      <Link
+                        href={`/blocks/${slug}`}
+                        className="block truncate px-4 py-3 text-sm font-medium text-foreground transition-colors outline-none hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset"
+                      >
+                        {title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

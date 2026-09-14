@@ -26,6 +26,7 @@ const links = [
   { text: "Docs", href: "/docs/getting-started/introduction" },
   { text: "Components", href: "/docs/components" },
   { text: "Blocks", href: "/blocks" },
+  { text: "Create", href: "/create" },
 ]
 
 function isActive(pathname: string, href: string) {
@@ -47,8 +48,12 @@ export function SiteHeader({
   const pathname = usePathname() ?? ""
   const [mobileOpen, setMobileOpen] = useState(false)
 
-  // Bare iframe target for BlockPreview — no site chrome inside the frame.
-  if (pathname.startsWith("/blocks/preview")) return null
+  // Bare iframe targets (BlockPreview, the /create canvas) — no site chrome.
+  if (
+    pathname.startsWith("/blocks/preview") ||
+    pathname.startsWith("/create/preview")
+  )
+    return null
 
   return (
     <header className="sticky top-0 z-40 h-14 border-b bg-background/80 backdrop-blur-lg">

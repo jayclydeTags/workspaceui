@@ -1,3 +1,4 @@
+import { STYLE_KEYS, toStyleCss, type StyleKey } from "@/lib/create-styles"
 import { accentScales, baseColors } from "@/lib/create-theme-data"
 
 export type BaseColor = keyof typeof baseColors
@@ -30,6 +31,8 @@ export type FontKey = keyof typeof FONTS
 export const FONT_KEYS = Object.keys(FONTS) as FontKey[]
 
 export interface ThemeConfig {
+  /** Component style; preview-only here, exported via components.json. */
+  style: StyleKey
   base: BaseColor
   accent: ThemeAccent
   chart: ThemeAccent
@@ -40,6 +43,7 @@ export interface ThemeConfig {
 
 /** Matches the site's own globals.css, so an untouched creator exports today's theme. */
 export const DEFAULT_THEME: ThemeConfig = {
+  style: "nova",
   base: "neutral",
   accent: "base",
   chart: "base",
@@ -163,7 +167,10 @@ export function toPreviewCss(config: ThemeConfig) {
     }),
     block("html:root.dark", vars.dark),
     `.font-heading {\n  font-family: ${vars.theme["font-heading"]};\n}`,
-  ].join("\n\n")
+    toStyleCss(config.style),
+  ]
+    .filter(Boolean)
+    .join("\n\n")
 }
 
 export function toRegistryItem(config: ThemeConfig) {
@@ -214,6 +221,7 @@ export function parseThemeParams(params: URLSearchParams): ThemeConfig {
   const radius = Number(params.get("radius"))
 
   return {
+    style: pick("style", STYLE_KEYS),
     base: pick("base", BASE_COLORS),
     accent: pick("accent", ACCENT_OPTIONS),
     chart: pick("chart", ACCENT_OPTIONS),

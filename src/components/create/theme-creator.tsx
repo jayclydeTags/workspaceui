@@ -54,6 +54,7 @@ import {
   type ThemeAccent,
   type ThemeConfig,
 } from "@/lib/create-theme"
+import { STYLES, STYLE_KEYS, type StyleKey } from "@/lib/create-styles"
 import { accentScales, baseColors } from "@/lib/create-theme-data"
 
 const THEME_FILE = "workspaceui-theme.json"
@@ -112,6 +113,11 @@ const accentOptions: Option<ThemeAccent>[] = [
 const fontOptions: Option<FontKey>[] = FONT_KEYS.map((value) => ({
   value,
   label: FONTS[value].label,
+}))
+
+const styleOptions: Option<StyleKey>[] = STYLE_KEYS.map((value) => ({
+  value,
+  label: STYLES[value].label,
 }))
 
 const previewOptions: Option<CreatePreviewSlug>[] = CREATE_PREVIEWS.map(
@@ -250,6 +256,30 @@ function GetCodeDialog({ config }: { config: ThemeConfig }) {
         </Tabs>
 
         <div className="grid min-w-0 gap-3">
+          <h3 className="font-medium">
+            Component style: {STYLES[config.style].label}
+          </h3>
+          <p className="text-muted-foreground">
+            Styles change the components&apos; own classes, not the theme. Set
+            the style in <code>components.json</code>:
+          </p>
+          <CodePanel
+            lang="json"
+            code={`"style": "base-${config.style}"`}
+            title="components.json"
+          />
+          <p className="text-muted-foreground">
+            Then re-add your components so the CLI fetches that style. This
+            overwrites local edits to them — add only the components you use
+            instead of <code>--all</code> to limit it.
+          </p>
+          <CodePanel
+            lang="bash"
+            code="npx shadcn@latest add --all --overwrite"
+          />
+        </div>
+
+        <div className="grid min-w-0 gap-3">
           <p className="text-muted-foreground">
             Either way, load the fonts in your root layout so the theme&apos;s
             font variables resolve.
@@ -320,6 +350,7 @@ export function ThemeCreator() {
 
   function shuffle() {
     setConfig({
+      style: pick(STYLE_KEYS),
       base: pick(BASE_COLORS),
       accent: pick(ACCENT_COLORS),
       chart: pick(ACCENT_COLORS),
@@ -356,6 +387,17 @@ export function ThemeCreator() {
         </div>
 
         <div className="grid gap-4">
+          <div className="grid gap-1.5">
+            <ControlSelect
+              label="Style"
+              value={config.style}
+              options={styleOptions}
+              onValueChange={update("style")}
+            />
+            <p className="text-xs text-muted-foreground">
+              {STYLES[config.style].description}
+            </p>
+          </div>
           <ControlSelect
             label="Base color"
             value={config.base}

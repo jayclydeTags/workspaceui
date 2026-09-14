@@ -102,6 +102,27 @@ describe("toPreviewCss", () => {
   })
 })
 
+describe("style in the preview", () => {
+  it("adds the style overlay after the token CSS", () => {
+    const css = toPreviewCss(theme({ style: "lyra" }))
+
+    expect(css.indexOf("html:root {")).toBeLessThan(
+      css.indexOf('[data-slot="button"]')
+    )
+  })
+
+  it("adds nothing for Nova, and never leaks into exported CSS", () => {
+    expect(toPreviewCss(DEFAULT_THEME)).not.toContain("data-slot")
+    expect(toCss(theme({ style: "maia" }))).not.toContain("data-slot")
+  })
+
+  it("falls back to Nova for an unknown style param", () => {
+    expect(parseThemeParams(new URLSearchParams("style=luna")).style).toBe(
+      "nova"
+    )
+  })
+})
+
 describe("toRegistryItem", () => {
   it("is a registry:theme item carrying the css vars", () => {
     const config = theme({ accent: "rose" })
@@ -139,6 +160,7 @@ describe("fontSnippet", () => {
 describe("theme URL params", () => {
   it("round-trips a config", () => {
     const config = theme({
+      style: "lyra",
       base: "zinc",
       accent: "teal",
       chart: "orange",

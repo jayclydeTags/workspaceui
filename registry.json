@@ -1312,18 +1312,23 @@
     {
       "name": "access-control",
       "type": "registry:block",
-      "title": "Permission Matrix",
-      "description": "Manage role permissions across resources with a per-role permission matrix.",
+      "title": "Access Control",
+      "description": "Roles and permissions: new roles start from an existing role, a view-dependent permission matrix with row and column bulk toggles, staged Save/Discard, and a locked Owner role that can be duplicated.",
       "categories": ["Settings & Permissions"],
-      "dependencies": ["lucide-react"],
+      "dependencies": ["@hugeicons/react", "@hugeicons/core-free-icons"],
       "registryDependencies": [
+        "alert",
+        "alert-dialog",
         "badge",
         "button",
         "checkbox",
         "dialog",
+        "dropdown-menu",
         "field",
         "input",
+        "select",
         "table",
+        "utils",
         "jayclydeTags/workspaceui/page"
       ],
       "files": [
@@ -1338,6 +1343,10 @@
         },
         {
           "path": "src/registry/bases/base/blocks/access-control/components/permission-table.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/access-control/components/add-role-dialog.tsx",
           "type": "registry:block"
         }
       ]

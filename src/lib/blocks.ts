@@ -18,6 +18,7 @@ import { ForbiddenWorkspace } from "@/registry/bases/base/blocks/forbidden-works
 import { ForgotPassword } from "@/registry/bases/base/blocks/forgot-password/page"
 import { ImportExport } from "@/registry/bases/base/blocks/import-export/page"
 import { InvoiceDetail } from "@/registry/bases/base/blocks/invoice-detail/page"
+import { CreditUsage } from "@/registry/bases/base/blocks/credit-usage/page"
 import { Login } from "@/registry/bases/base/blocks/login/page"
 import { LoginSocial } from "@/registry/bases/base/blocks/login-social/page"
 import { MagicLinkSent } from "@/registry/bases/base/blocks/magic-link-sent/page"
@@ -103,6 +104,7 @@ export const blockComponents: Record<string, ComponentType> = {
   "dashboard-shell": DashboardShell,
   "access-control": AccessControl,
   settings: Settings,
+  "credit-usage": CreditUsage,
   login: Login,
   register: Register,
   "otp-verify": OtpVerify,

@@ -1378,6 +1378,48 @@
       ]
     },
     {
+      "name": "credit-usage",
+      "type": "registry:block",
+      "title": "Credit Usage",
+      "description": "Credit usage page for API and AI products: plan allowance as a stacked by-category bar with tooltips and legend, headline stats, a Day/Week/Month period switch, and searchable, filterable Agents and Power users tables with CSV export.",
+      "categories": ["Billing & Usage"],
+      "dependencies": ["@hugeicons/react", "@hugeicons/core-free-icons"],
+      "registryDependencies": [
+        "avatar",
+        "badge",
+        "button",
+        "card",
+        "dropdown-menu",
+        "empty",
+        "input-group",
+        "separator",
+        "table",
+        "tabs",
+        "toggle-group",
+        "tooltip",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "src/registry/bases/base/blocks/credit-usage/page.tsx",
+          "type": "registry:page",
+          "target": "app/credit-usage/page.tsx"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/credit-usage/data.ts",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/credit-usage/components/credit-breakdown.tsx",
+          "type": "registry:block"
+        },
+        {
+          "path": "src/registry/bases/base/blocks/credit-usage/components/usage-tables.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "login",
       "type": "registry:block",
       "title": "Login",

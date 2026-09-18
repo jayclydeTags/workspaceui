@@ -32,6 +32,7 @@ const FAMILIES: BlockFamily[] = [
       "Multi-step Workflows",
       "App Shells",
       "Settings & Permissions",
+      "Billing & Usage",
       "Login",
       "Registration",
       "Password",

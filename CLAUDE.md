@@ -45,6 +45,7 @@ workspaceui/
 │   │   │   └── preview/[slug]/page.tsx   # bare iframe target — escapes (browse) chrome
 │   │   └── api/search/route.ts           # createSearchAPI advanced → staticGET (out/api/search)
 │   ├── content/docs/         # fumadocs mdx content
+│   ├── blocks/               # Copy-only blocks (e.g. navbars): in the gallery with Preview + Code, not in registry.json — manifest in lib/copy-blocks.ts
 │   ├── registry/bases/base/
 │   │   ├── workspaceui/      # Distributable components (source of truth) + __tests__/
 │   │   ├── blocks/           # Distributable blocks — each its own folder: page.tsx, components/, data.ts

@@ -40,7 +40,8 @@ export interface BlockFile {
 
 interface BlockPreviewProps {
   title: string
-  installCmd: string
+  /** Omitted for copy-only blocks, which have no CLI install. */
+  installCmd?: string
   files: BlockFile[]
   /** Block slug from lib/blocks.ts — drives the /blocks/preview/:slug iframe. */
   slug: string
@@ -233,6 +234,7 @@ export function BlockPreview({
   const panelRef = useRef<PanelImperativeHandle>(null)
 
   async function copyInstall() {
+    if (!installCmd) return
     await navigator.clipboard.writeText(installCmd)
     setCopied(true)
     setTimeout(() => setCopied(false), 1500)
@@ -315,27 +317,29 @@ export function BlockPreview({
           )}
 
           {/* Install command — click to copy */}
-          <button
-            type="button"
-            onClick={copyInstall}
-            title="Copy install command"
-            className="flex h-8 items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 text-sm font-medium transition-colors hover:bg-muted [&_svg]:size-4 [&_svg]:shrink-0"
-          >
-            {copied ? (
-              <HugeiconsIcon
-                icon={Tick02Icon}
-                strokeWidth={2}
-                className="text-emerald-600"
-              />
-            ) : (
-              <HugeiconsIcon
-                icon={TerminalIcon}
-                strokeWidth={2}
-                className="text-muted-foreground"
-              />
-            )}
-            <span className="truncate">{installCmd}</span>
-          </button>
+          {installCmd && (
+            <button
+              type="button"
+              onClick={copyInstall}
+              title="Copy install command"
+              className="flex h-8 items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 text-sm font-medium transition-colors hover:bg-muted [&_svg]:size-4 [&_svg]:shrink-0"
+            >
+              {copied ? (
+                <HugeiconsIcon
+                  icon={Tick02Icon}
+                  strokeWidth={2}
+                  className="text-emerald-600"
+                />
+              ) : (
+                <HugeiconsIcon
+                  icon={TerminalIcon}
+                  strokeWidth={2}
+                  className="text-muted-foreground"
+                />
+              )}
+              <span className="truncate">{installCmd}</span>
+            </button>
+          )}
         </div>
 
         {/* ── Content card ─────────────────────────────────────────────────── */}

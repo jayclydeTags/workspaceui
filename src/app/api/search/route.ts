@@ -2,17 +2,22 @@ import { createSearchAPI } from "fumadocs-core/search/server"
 
 import { source } from "@/lib/source"
 import { getBlocksNav } from "@/lib/block-taxonomy"
+import { copyBlocks } from "@/lib/copy-blocks"
 import registry from "../../../../registry.json"
 
 // registry.json is the one place a block's description has to live (the shadcn
 // CLI ships it), so the gallery data files don't keep their own copy. Read here
 // rather than in nav.ts: this route is build-time only, and the manifest is
-// ~90KB that nav.ts would otherwise pull into every route's bundle.
-const blockDescriptions = new Map(
-  registry.items
+// ~90KB that nav.ts would otherwise pull into every route's bundle. Copy-only
+// blocks keep theirs in lib/copy-blocks.
+const blockDescriptions = new Map<string, string>([
+  ...registry.items
     .filter((item) => item.type === "registry:block")
-    .map((item) => [`/blocks/${item.name}`, item.description])
-)
+    .map((item) => [`/blocks/${item.name}`, item.description] as const),
+  ...copyBlocks.map(
+    (block) => [`/blocks/${block.slug}`, block.description] as const
+  ),
+])
 
 // Static export: staticGET builds the index at `next build` and the client
 // (RootProvider search type "static") fetches it. Replaces the custom

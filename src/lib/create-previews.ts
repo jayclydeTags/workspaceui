@@ -4,7 +4,7 @@ export const CREATE_PREVIEWS = [
   { slug: "dashboard-01", label: "Dashboard" },
   { slug: "dashboard-shell", label: "App shell" },
   { slug: "task-board", label: "Task board" },
-  { slug: "data-table", label: "Data table" },
+  { slug: "inbound-receiving", label: "Receiving" },
   { slug: "settings", label: "Settings" },
   { slug: "login", label: "Login" },
 ] as const

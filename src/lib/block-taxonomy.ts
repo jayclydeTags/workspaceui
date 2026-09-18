@@ -21,9 +21,6 @@ const FAMILIES: BlockFamily[] = [
   {
     title: "Application UI",
     categories: [
-      "Tables",
-      "CRUD Tables",
-      "Guarded CRUD",
       "Forms & Wizards",
       "Dialogs",
       "Detail Views",

@@ -14,6 +14,11 @@
     "data-grid",
     "data-filter",
     "data-search",
-    "data-pagination"
+    "data-pagination",
+    "usage-meter",
+    "metric-card",
+    "onboarding-checklist",
+    "secret-field",
+    "avatar-stack"
   ]
 }

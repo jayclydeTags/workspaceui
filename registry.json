@@ -232,6 +232,76 @@
       ]
     },
     {
+      "name": "usage-meter",
+      "type": "registry:ui",
+      "title": "Usage Meter",
+      "description": "Plan-quota meter: used vs. limit with ok, warning, exceeded, and unlimited states spelled out in text as well as color. Exports getUsageStatus for gating features on the same thresholds.",
+      "dependencies": ["@hugeicons/react", "@hugeicons/core-free-icons"],
+      "registryDependencies": ["progress", "utils"],
+      "files": [
+        {
+          "path": "src/registry/bases/base/workspaceui/usage-meter.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "metric-card",
+      "type": "registry:ui",
+      "title": "Metric Card",
+      "description": "Dashboard KPI tile: headline figure, period-over-period delta (with invertDelta for down-is-good metrics), optional sparkline, and a layout-matched loading skeleton.",
+      "dependencies": ["@hugeicons/react", "@hugeicons/core-free-icons"],
+      "registryDependencies": ["card", "skeleton", "utils"],
+      "files": [
+        {
+          "path": "src/registry/bases/base/workspaceui/metric-card.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "onboarding-checklist",
+      "type": "registry:ui",
+      "title": "Onboarding Checklist",
+      "description": "Get-started card: progress bar, app-owned step completion, the next incomplete step expanded with its call to action, a completion message, and an optional dismiss.",
+      "dependencies": ["@hugeicons/react", "@hugeicons/core-free-icons"],
+      "registryDependencies": ["button", "card", "progress", "utils"],
+      "files": [
+        {
+          "path": "src/registry/bases/base/workspaceui/onboarding-checklist.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "secret-field",
+      "type": "registry:ui",
+      "title": "Secret Field",
+      "description": "Read-only field for API keys and tokens: masks the value (keeping its sk_live_-style prefix and last characters), with a reveal toggle and a copy button that always copies the full secret. Exports maskSecret.",
+      "dependencies": ["@hugeicons/react", "@hugeicons/core-free-icons"],
+      "registryDependencies": ["input-group", "utils"],
+      "files": [
+        {
+          "path": "src/registry/bases/base/workspaceui/secret-field.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "avatar-stack",
+      "type": "registry:ui",
+      "title": "Avatar Stack",
+      "description": "Overlapping member avatars with a +N overflow count, initials fallback, and name tooltips on hover and keyboard focus. The group is labelled with a name summary for screen readers.",
+      "dependencies": [],
+      "registryDependencies": ["avatar", "tooltip", "utils"],
+      "files": [
+        {
+          "path": "src/registry/bases/base/workspaceui/avatar-stack.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "offcycle-payment-form",
       "type": "registry:block",
       "title": "Single-Purpose Form",

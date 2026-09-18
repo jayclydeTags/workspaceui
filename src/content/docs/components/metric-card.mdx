@@ -1,0 +1,86 @@
+---
+title: Metric Card
+description: A KPI tile for dashboards with a headline figure, a period-over-period delta, and an optional sparkline. Handles "down is good" metrics and has a layout-matched loading skeleton.
+---
+
+<ComponentPreview name="metric-card" />
+
+## Installation
+
+<CodeTabs>
+<TabsList>
+<TabsTrigger value="cli">CLI</TabsTrigger>
+<TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+<TabsContent value="cli">
+
+<CodeBlockCommand
+  __npm__="npx shadcn@latest add jayclydeTags/workspaceui/metric-card"
+  __pnpm__="pnpm dlx shadcn@latest add jayclydeTags/workspaceui/metric-card"
+  __yarn__="yarn dlx shadcn@latest add jayclydeTags/workspaceui/metric-card"
+  __bun__="bun x shadcn@latest add jayclydeTags/workspaceui/metric-card"
+/>
+
+</TabsContent>
+<TabsContent value="manual">
+
+### Copy the component into your project
+
+<ComponentSource name="metric-card" />
+
+</TabsContent>
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { MetricCard } from "@/components/ui/metric-card"
+```
+
+```tsx
+<MetricCard
+  label="MRR"
+  value="$48,210"
+  delta={12.5}
+  deltaLabel="vs last month"
+  trend={[31, 34, 33, 38, 41, 40, 45, 48]}
+/>
+```
+
+`value` is rendered as-is, so format it yourself (currency, compact notation,
+units). `delta` is a percentage: a positive number reads as an increase and is
+shown in the success color, a negative one as a decrease in the destructive
+color. The direction is also spelled out for screen readers ("Up +12.5%").
+
+For metrics where lower is better, like churn, latency, or cost, set
+`invertDelta` so a decrease is shown as positive:
+
+```tsx
+<MetricCard label="Churn rate" value="2.1%" delta={-0.4} invertDelta />
+```
+
+## Examples
+
+### Loading
+
+`loading` keeps the label and swaps the figure, delta, and sparkline for
+skeletons of the same size, so the layout doesn't shift when data arrives.
+
+<ComponentPreview name="metric-card-loading" />
+
+## API Reference
+
+Extends `React.ComponentProps<typeof Card>` (minus `children`), including its
+`size` prop.
+
+| Prop          | Type              | Default | Description                                                               |
+| ------------- | ----------------- | ------- | ------------------------------------------------------------------------- |
+| `label`       | `React.ReactNode` | -       | What the number measures.                                                 |
+| `value`       | `React.ReactNode` | -       | The headline figure, already formatted.                                   |
+| `delta`       | `number`          | -       | Percent change against the comparison period, e.g. `12.5` or `-3.2`.      |
+| `deltaLabel`  | `React.ReactNode` | -       | Comparison period shown after the delta, e.g. `"vs last month"`.          |
+| `invertDelta` | `boolean`         | `false` | Treat a decrease as good, for churn, latency, or cost.                    |
+| `trend`       | `number[]`        | -       | Series for the inline sparkline, oldest first. Needs at least two points. |
+| `icon`        | `React.ReactNode` | -       | Leading icon beside the label.                                            |
+| `loading`     | `boolean`         | `false` | Render skeletons in place of the figure, delta, and sparkline.            |
+| `className`   | `string`          | -       | Additional CSS classes applied to the card.                               |

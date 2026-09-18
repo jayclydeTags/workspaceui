@@ -1,0 +1,85 @@
+---
+title: Avatar Stack
+description: Overlapping member avatars with a "+N" overflow count. Names show in tooltips on hover and keyboard focus, and the whole group gets a summary for screen readers.
+---
+
+<ComponentPreview name="avatar-stack" />
+
+## Installation
+
+<CodeTabs>
+<TabsList>
+<TabsTrigger value="cli">CLI</TabsTrigger>
+<TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+<TabsContent value="cli">
+
+<CodeBlockCommand
+  __npm__="npx shadcn@latest add jayclydeTags/workspaceui/avatar-stack"
+  __pnpm__="pnpm dlx shadcn@latest add jayclydeTags/workspaceui/avatar-stack"
+  __yarn__="yarn dlx shadcn@latest add jayclydeTags/workspaceui/avatar-stack"
+  __bun__="bun x shadcn@latest add jayclydeTags/workspaceui/avatar-stack"
+/>
+
+</TabsContent>
+<TabsContent value="manual">
+
+### Copy the component into your project
+
+<ComponentSource name="avatar-stack" />
+
+</TabsContent>
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { AvatarStack } from "@/components/ui/avatar-stack"
+```
+
+```tsx
+<AvatarStack
+  users={[
+    { id: "1", name: "Ada Lovelace", image: "/avatars/ada.png" },
+    { id: "2", name: "Grace Hopper" },
+    { id: "3", name: "Alan Turing" },
+  ]}
+  max={4}
+/>
+```
+
+Users without an `image`, or whose image fails to load, show their initials.
+When exactly one user would overflow, that avatar is shown instead of a `+1`
+count, since the count would take up the same space.
+
+Each avatar is focusable so keyboard users can read names from the tooltips.
+The group itself is labelled with a summary such as "Ada Lovelace, Grace
+Hopper and 5 more".
+
+## API Reference
+
+Extends `React.ComponentProps<"div">` (minus `children`).
+
+| Prop        | Type                        | Default     | Description                                               |
+| ----------- | --------------------------- | ----------- | --------------------------------------------------------- |
+| `users`     | `AvatarStackUser[]`         | -           | People to show, in display order.                         |
+| `max`       | `number`                    | `4`         | Avatars shown before the rest collapse into a `+N` count. |
+| `size`      | `"sm" \| "default" \| "lg"` | `"default"` | Avatar size, forwarded to every avatar and the count.     |
+| `className` | `string`                    | -           | Additional CSS classes applied to the group.              |
+
+### `AvatarStackUser`
+
+| Field   | Type     | Description                                              |
+| ------- | -------- | -------------------------------------------------------- |
+| `id`    | `string` | Stable, unique key.                                      |
+| `name`  | `string` | Display name. Used for the tooltip, label, and initials. |
+| `image` | `string` | Optional avatar URL.                                     |
+
+## `getInitials`
+
+```tsx
+import { getInitials } from "@/components/ui/avatar-stack"
+
+getInitials("Ada Lovelace") // "AL"
+getInitials("Mary Jane Watson") // "MW"
+```

@@ -1,0 +1,102 @@
+---
+title: Usage Meter
+description: A plan-quota meter for billing and settings pages. Shows used against limit, turns to a warning near the cap, and reports overage, with every state spelled out in text as well as color.
+---
+
+<ComponentPreview name="usage-meter" />
+
+## Installation
+
+<CodeTabs>
+<TabsList>
+<TabsTrigger value="cli">CLI</TabsTrigger>
+<TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+<TabsContent value="cli">
+
+<CodeBlockCommand
+  __npm__="npx shadcn@latest add jayclydeTags/workspaceui/usage-meter"
+  __pnpm__="pnpm dlx shadcn@latest add jayclydeTags/workspaceui/usage-meter"
+  __yarn__="yarn dlx shadcn@latest add jayclydeTags/workspaceui/usage-meter"
+  __bun__="bun x shadcn@latest add jayclydeTags/workspaceui/usage-meter"
+/>
+
+</TabsContent>
+<TabsContent value="manual">
+
+### Copy the component into your project
+
+<ComponentSource name="usage-meter" />
+
+</TabsContent>
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { UsageMeter } from "@/components/ui/usage-meter"
+```
+
+```tsx
+<UsageMeter
+  label="API requests"
+  used={42_180}
+  limit={100_000}
+  description="Resets Oct 1"
+/>
+```
+
+The meter has four states, derived from `used`, `limit`, and `warningAt`:
+
+| State       | When                           | Status text                         |
+| ----------- | ------------------------------ | ----------------------------------- |
+| `ok`        | below `warningAt` of the limit | `42% used`                          |
+| `warning`   | at or above `warningAt`        | `87% used`, with a warning icon     |
+| `exceeded`  | at or over the limit           | `Limit reached` / `Over limit by 2` |
+| `unlimited` | `limit={null}`                 | `Unlimited`, no bar                 |
+
+The current state is also exposed as `data-status` on the root, so you can
+style around it, e.g. `data-[status=exceeded]:…`.
+
+Pass `formatValue` for non-integer units (bytes, currency), and `action` for an
+upgrade or add-on button that sits beside the status line:
+
+```tsx
+<UsageMeter
+  label="Storage"
+  used={8.7}
+  limit={10}
+  unit="GB"
+  formatValue={(n) => n.toFixed(1)}
+  action={<Button size="xs">Add storage</Button>}
+/>
+```
+
+## API Reference
+
+Extends `React.ComponentProps<"div">` (minus `children`).
+
+| Prop          | Type                        | Default             | Description                                                           |
+| ------------- | --------------------------- | ------------------- | --------------------------------------------------------------------- |
+| `label`       | `React.ReactNode`           | -                   | What is being metered. Becomes the progress bar's accessible name.    |
+| `used`        | `number`                    | -                   | Amount consumed in the current period.                                |
+| `limit`       | `number \| null`            | -                   | Plan allowance. `null` means unlimited — the bar is omitted.          |
+| `unit`        | `string`                    | -                   | Unit appended to the figures, e.g. `"GB"` or `"seats"`.               |
+| `formatValue` | `(value: number) => string` | `Intl.NumberFormat` | Formats `used`, `limit`, and the overage amount.                      |
+| `warningAt`   | `number`                    | `0.8`               | Fraction of the limit (0–1) at which the meter switches to a warning. |
+| `description` | `React.ReactNode`           | -                   | Secondary text under the bar, e.g. a reset date.                      |
+| `action`      | `React.ReactNode`           | -                   | Trailing control under the bar, e.g. an upgrade button.               |
+| `className`   | `string`                    | -                   | Additional CSS classes applied to the root.                           |
+
+## `getUsageStatus`
+
+The classifier behind the meter is exported so the same thresholds can gate
+features elsewhere:
+
+```tsx
+import { getUsageStatus } from "@/components/ui/usage-meter"
+
+if (getUsageStatus(seatsUsed, seatLimit) === "exceeded") {
+  showUpgradeDialog()
+}
+```

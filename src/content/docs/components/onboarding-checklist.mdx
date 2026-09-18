@@ -1,0 +1,90 @@
+---
+title: Onboarding Checklist
+description: A "get started" card that walks new users through setup. Tracks progress, expands the next incomplete step with its call to action, and can be dismissed.
+---
+
+<ComponentPreview name="onboarding-checklist" />
+
+## Installation
+
+<CodeTabs>
+<TabsList>
+<TabsTrigger value="cli">CLI</TabsTrigger>
+<TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+<TabsContent value="cli">
+
+<CodeBlockCommand
+  __npm__="npx shadcn@latest add jayclydeTags/workspaceui/onboarding-checklist"
+  __pnpm__="pnpm dlx shadcn@latest add jayclydeTags/workspaceui/onboarding-checklist"
+  __yarn__="yarn dlx shadcn@latest add jayclydeTags/workspaceui/onboarding-checklist"
+  __bun__="bun x shadcn@latest add jayclydeTags/workspaceui/onboarding-checklist"
+/>
+
+</TabsContent>
+<TabsContent value="manual">
+
+### Copy the component into your project
+
+<ComponentSource name="onboarding-checklist" />
+
+</TabsContent>
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  OnboardingChecklist,
+  type OnboardingStep,
+} from "@/components/ui/onboarding-checklist"
+```
+
+```tsx
+const steps: OnboardingStep[] = [
+  { id: "workspace", title: "Create your workspace", completed: true },
+  {
+    id: "invite",
+    title: "Invite your team",
+    description: "Workspaces are better together.",
+    completed: teamSize > 1,
+    action: <Button size="sm" onClick={openInviteDialog}>Send invites</Button>,
+  },
+]
+
+<OnboardingChecklist steps={steps} onDismiss={hideChecklist} />
+```
+
+`completed` belongs to your app: derive it from real state (the team has more
+than one member, a data source exists) rather than from clicks on the checklist.
+The component opens the first incomplete step by default and moves on to the
+next one as steps complete. Users can still open or collapse any step.
+
+Once every step is complete, the list is replaced by `completeMessage`. Pair it
+with `onDismiss` so users can clear the card away.
+
+## API Reference
+
+Extends `React.ComponentProps<typeof Card>`, minus `title` and `children`.
+
+| Prop              | Type               | Default                        | Description                                                  |
+| ----------------- | ------------------ | ------------------------------ | ------------------------------------------------------------ |
+| `steps`           | `OnboardingStep[]` | -                              | The setup steps, in order.                                   |
+| `title`           | `React.ReactNode`  | `"Get started"`                | Card heading. Also the region's accessible name.             |
+| `description`     | `React.ReactNode`  | -                              | Supporting text under the heading.                           |
+| `onDismiss`       | `() => void`       | -                              | Renders a dismiss button in the header when provided.        |
+| `completeMessage` | `React.ReactNode`  | `"You're all set. Nice work!"` | Shown in place of the step list once every step is complete. |
+| `className`       | `string`           | -                              | Additional CSS classes applied to the card.                  |
+
+### `OnboardingStep`
+
+| Field         | Type              | Description                                                |
+| ------------- | ----------------- | ---------------------------------------------------------- |
+| `id`          | `string`          | Stable, unique key. Also used to build the panel's DOM id. |
+| `title`       | `string`          | The step's label.                                          |
+| `description` | `React.ReactNode` | Shown when the step is expanded.                           |
+| `completed`   | `boolean`         | Whether the step is done. Owned by your app.               |
+| `action`      | `React.ReactNode` | Call to action shown when expanded, e.g. a button or link. |
+
+A step with no `description` and no `action` is shown as a plain row with no
+expand toggle.

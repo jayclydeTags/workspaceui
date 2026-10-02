@@ -35,7 +35,27 @@ export default defineConfig([
     rules: {
       // Adopted at warn; `pnpm lint` caps the warning count so it can only
       // go down. Promote a rule to "error" once its findings are fixed.
-      "shadcn/no-restyle": ["warn", { allow: ["layout"] }],
+      "shadcn/no-restyle": [
+        "warn",
+        {
+          allow: ["layout"],
+          contracts: [
+            // Headless primitives: they ship no appearance, so callers style them.
+            {
+              pattern: "^Collapsible(Trigger|Content)?$",
+              allow: [
+                "layout",
+                "spacing",
+                "color",
+                "typography",
+                "shape",
+                "effects",
+                "motion",
+              ],
+            },
+          ],
+        },
+      ],
       "shadcn/no-raw-colors": "error",
       "shadcn/no-arbitrary-values": [
         "error",
@@ -63,7 +83,7 @@ export default defineConfig([
         "warn",
         { allow: ["not-prose", "steps", "cn-input-otp"] },
       ],
-      "shadcn/require-static-classes": "warn",
+      "shadcn/require-static-classes": "error",
     },
   },
   // shadcn primitives own their appearance: they restyle themselves and use
@@ -74,6 +94,42 @@ export default defineConfig([
       "shadcn/no-restyle": "off",
       "shadcn/no-arbitrary-values": "off",
       "shadcn/require-static-classes": "off",
+    },
+  },
+  // The stock shadcn Checkbox and Progress shipped to consumers have no
+  // indeterminate dash or indicator-color API, so these files style them.
+  {
+    files: [
+      "src/registry/bases/base/blocks/access-control/components/permission-table.tsx",
+    ],
+    rules: {
+      "shadcn/no-restyle": [
+        "warn",
+        {
+          allow: ["layout"],
+          contracts: [
+            {
+              pattern: "^Checkbox$",
+              allow: ["layout", "color", "shape", "effects"],
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: [
+      "src/registry/bases/base/workspaceui/password-input.tsx",
+      "src/registry/bases/base/workspaceui/usage-meter.tsx",
+    ],
+    rules: {
+      "shadcn/no-restyle": [
+        "warn",
+        {
+          allow: ["layout"],
+          contracts: [{ pattern: "^Progress$", allow: ["layout", "color"] }],
+        },
+      ],
     },
   },
   // Brand artwork must keep its fixed colors (Google's G, the WorkspaceUI

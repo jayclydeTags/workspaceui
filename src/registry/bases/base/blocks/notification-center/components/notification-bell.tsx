@@ -9,7 +9,7 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,10 +53,7 @@ export function NotificationBell({
         aria-label={
           unread > 0 ? `Notifications, ${unread} unread` : "Notifications"
         }
-        className={cn(
-          buttonVariants({ variant: "ghost", size: "icon" }),
-          "relative"
-        )}
+        render={<Button variant="ghost" size="icon" className="relative" />}
       >
         {unread > 0 ? (
           <HugeiconsIcon icon={BellRingIcon} strokeWidth={2} />

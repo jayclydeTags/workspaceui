@@ -199,6 +199,13 @@ Reach for, in order: (1) built-in `variant` / `size`, (2) semantic tokens,
   hidden if the design has none).
 - Callouts → `Alert`. Empty states → `Empty`. Loading → `Skeleton` that
   mirrors the final layout. Dividers → `Separator`. Status chips → `Badge`.
+- A trigger that should look like a button renders one:
+  `<DropdownMenuTrigger render={<Button variant="outline" size="sm" />}>`.
+  Don't call `buttonVariants()` into a `className`; the linter can't read it
+  and it hides overrides. Pick a built-in `size` before reaching for `h-*`.
+- Class names are complete literals (`cn("a", cond && "b")`), never
+  `` `bg-${tone}` ``, string concatenation, or `MAP[key]` lookups on a
+  component's `className`, so `@shadcn/lint` can check them.
 - `TabsTrigger` is always inside `TabsList`; `Avatar` always has an
   `AvatarFallback`.
 - Buttons have no `isLoading` prop: compose `Spinner` and set `disabled`.

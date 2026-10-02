@@ -10,7 +10,7 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -154,10 +154,7 @@ export function NotificationCenter() {
         <div className="flex flex-wrap items-end gap-2 border-b px-4 py-2">
           <DropdownMenu>
             <DropdownMenuTrigger
-              className={cn(
-                buttonVariants({ variant: "outline", size: "sm" }),
-                "gap-1.5 text-xs"
-              )}
+              render={<Button variant="outline" size="sm" />}
             >
               {READ_STATES.find((r) => r.value === readState)?.label}
               <HugeiconsIcon
@@ -189,10 +186,7 @@ export function NotificationCenter() {
 
           <DropdownMenu>
             <DropdownMenuTrigger
-              className={cn(
-                buttonVariants({ variant: "outline", size: "sm" }),
-                "gap-1.5 text-xs"
-              )}
+              render={<Button variant="outline" size="sm" />}
             >
               Severity
               {severities.size > 0 && (

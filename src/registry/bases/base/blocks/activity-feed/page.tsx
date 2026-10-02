@@ -11,9 +11,8 @@ import {
   UserAdd01Icon,
 } from "@hugeicons/core-free-icons"
 
-import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -111,10 +110,13 @@ export function ActivityFeed() {
         <>
           <DropdownMenu>
             <DropdownMenuTrigger
-              className={cn(
-                buttonVariants({ variant: "outline", size: "sm" }),
-                "h-9 w-28 justify-between gap-2 shadow-xs"
-              )}
+              render={
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-28 justify-between"
+                />
+              }
             >
               <span className="capitalize">
                 {typeFilter === "all" ? "All Types" : typeFilter}
@@ -154,10 +156,13 @@ export function ActivityFeed() {
 
           <DropdownMenu>
             <DropdownMenuTrigger
-              className={cn(
-                buttonVariants({ variant: "outline", size: "sm" }),
-                "h-9 w-28 justify-between gap-2 shadow-xs"
-              )}
+              render={
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-28 justify-between"
+                />
+              }
             >
               <span className="truncate">
                 {userFilter === "all" ? "All users" : userFilter}

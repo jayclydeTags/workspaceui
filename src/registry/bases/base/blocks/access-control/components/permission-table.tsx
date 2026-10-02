@@ -23,8 +23,7 @@ const LOCKED = "data-disabled:cursor-not-allowed data-disabled:opacity-50"
 
 // The shared Checkbox only draws a tick, so a partial state swaps it for a dash.
 const PARTIAL =
-  LOCKED +
-  " data-indeterminate:border-primary data-indeterminate:bg-primary data-indeterminate:before:h-0.5 data-indeterminate:before:w-2 data-indeterminate:before:rounded-full data-indeterminate:before:bg-primary-foreground data-indeterminate:before:content-[''] data-indeterminate:[&_svg]:hidden"
+  "data-disabled:cursor-not-allowed data-disabled:opacity-50 data-indeterminate:border-primary data-indeterminate:bg-primary data-indeterminate:before:h-0.5 data-indeterminate:before:w-2 data-indeterminate:before:rounded-full data-indeterminate:before:bg-primary-foreground data-indeterminate:before:content-[''] data-indeterminate:[&_svg]:hidden"
 
 type Grants = Record<string, PermissionAction[]>
 

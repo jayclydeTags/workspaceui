@@ -98,8 +98,8 @@ function Progress({ milestone }: { milestone: Milestone }) {
     <span className="flex items-center gap-2">
       <span className="h-1.5 w-16 overflow-hidden rounded-full bg-muted">
         <span
-          className="block h-full rounded-full bg-primary"
-          style={{ width: `${pct}%` }}
+          className="block h-full w-(--progress) rounded-full bg-primary"
+          style={{ "--progress": `${pct}%` } as React.CSSProperties}
         />
       </span>
       <span className="tabular-nums">

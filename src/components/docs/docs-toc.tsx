@@ -42,7 +42,12 @@ function TocList({ toc }: { toc: TOCItemType[] }) {
       {toc.map((item) => (
         <li
           key={item.url}
-          style={{ paddingLeft: `${(item.depth - 2) * 0.75}rem` }}
+          className="pl-(--toc-indent)"
+          style={
+            {
+              "--toc-indent": `${(item.depth - 2) * 0.75}rem`,
+            } as React.CSSProperties
+          }
         >
           <TOCItem
             href={item.url}

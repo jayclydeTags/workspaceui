@@ -40,7 +40,7 @@ export interface CodeBlockProps extends ComponentProps<"figure"> {
    */
   keepBackground?: boolean
 
-  viewportProps?: HTMLAttributes<HTMLElement>
+  viewportProps?: Omit<HTMLAttributes<HTMLElement>, "style">
 
   /**
    * show line numbers
@@ -134,16 +134,16 @@ export function CodeBlock({
         tabIndex={0}
         className={cn(
           "fd-scroll-container max-h-150 overflow-auto py-3.5 text-sm focus-visible:ring-2 focus-visible:ring-fd-ring focus-visible:outline-none focus-visible:ring-inset",
+          props["data-line-numbers"] && "[counter-set:line_var(--line-offset)]",
           viewportProps.className
         )}
         style={
           {
             // space for toolbar
             "--padding-right": !title ? "calc(var(--spacing) * 8)" : undefined,
-            counterSet: props["data-line-numbers"]
-              ? `line ${Number(props["data-line-numbers-start"] ?? 1) - 1}`
+            "--line-offset": props["data-line-numbers"]
+              ? Number(props["data-line-numbers-start"] ?? 1) - 1
               : undefined,
-            ...viewportProps.style,
           } as React.CSSProperties
         }
       >

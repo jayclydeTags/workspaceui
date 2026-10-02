@@ -1590,7 +1590,7 @@ describe("DataGrid", () => {
       // Non-pinned columns render a size-proportional % (200 of 500 total) so
       // they fill the table while the fixed-px selection cell stays put.
       const header = screen.getAllByRole("columnheader")[1]!
-      expect(header).toHaveStyle({ width: "40%" })
+      expect(header).toHaveStyle("--col-width: 40%")
     })
 
     it("double-clicking the resize handle resets the column to its default width", () => {
@@ -1603,10 +1603,10 @@ describe("DataGrid", () => {
       fireEvent.mouseMove(document, { clientX: 50 })
       fireEvent.mouseUp(document, { clientX: 50 })
       const header = screen.getAllByRole("columnheader")[1]!
-      expect(header).toHaveStyle({ width: "40%" }) // 200 of 500 total
+      expect(header).toHaveStyle("--col-width: 40%") // 200 of 500 total
 
       fireEvent.doubleClick(handle)
-      expect(header).toHaveStyle({ width: "33.3333%" }) // reset to 150 of 450
+      expect(header).toHaveStyle("--col-width: 33.3333%") // reset to 150 of 450
     })
   })
 
@@ -1623,16 +1623,18 @@ describe("DataGrid", () => {
         await user.click(await screen.findByRole("menuitem", { name }))
       }
 
-      expect(header).not.toHaveStyle({ position: "sticky" })
+      expect(header).not.toHaveClass("sticky")
 
       await pin("Pin column left")
-      expect(header).toHaveStyle({ position: "sticky", left: "0px" })
+      expect(header).toHaveClass("sticky", "left-(--pin-left)")
+      expect(header).toHaveStyle("--pin-left: 0px")
 
       await pin("Pin column right")
-      expect(header).toHaveStyle({ position: "sticky", right: "0px" })
+      expect(header).toHaveClass("sticky", "right-(--pin-right)")
+      expect(header).toHaveStyle("--pin-right: 0px")
 
       await pin("Unpin column")
-      expect(header).not.toHaveStyle({ position: "sticky" })
+      expect(header).not.toHaveClass("sticky")
     })
   })
 
@@ -2125,7 +2127,8 @@ describe("DataGrid", () => {
         await screen.findByRole("menuitem", { name: "Pin column left" })
       )
 
-      expect(header).toHaveStyle({ position: "sticky", left: "0px" })
+      expect(header).toHaveClass("sticky", "left-(--pin-left)")
+      expect(header).toHaveStyle("--pin-left: 0px")
     })
   })
 
@@ -2291,7 +2294,8 @@ describe("DataGrid", () => {
       expect(screen.queryByRole("list")).toBeNull()
 
       const header = screen.getAllByRole("columnheader")[1]!
-      expect(header).toHaveStyle({ position: "sticky", left: "0px" })
+      expect(header).toHaveClass("sticky", "left-(--pin-left)")
+      expect(header).toHaveStyle("--pin-left: 0px")
     })
 
     it("offers field visibility in the Options sheet, reshaping the cards", async () => {

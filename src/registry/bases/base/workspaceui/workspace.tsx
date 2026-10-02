@@ -1351,8 +1351,13 @@ function DragGhost({ title, x, y }: { title: string; x: number; y: number }) {
   return createPortal(
     <div
       aria-hidden
-      className="pointer-events-none fixed z-50 select-none"
-      style={{ left: x + 14, top: y - 10, rotate: "-2deg" }}
+      className="pointer-events-none fixed top-(--ghost-y) left-(--ghost-x) z-50 -rotate-2 select-none"
+      style={
+        {
+          "--ghost-x": `${x + 14}px`,
+          "--ghost-y": `${y - 10}px`,
+        } as React.CSSProperties
+      }
     >
       <div className="flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1.5 shadow-md">
         <span className="text-xs font-medium text-foreground">{title}</span>

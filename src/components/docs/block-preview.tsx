@@ -122,8 +122,7 @@ function Divider({ className }: { className?: string }) {
 // Full-bleed row: left padding indents by depth so the active highlight still
 // spans the full panel width (matches the Paper design's file tree).
 const rowClass =
-  "flex h-8 w-full items-center gap-2 pr-2 text-left text-sm transition-colors [&_svg]:size-4 [&_svg]:shrink-0"
-const indent = (depth: number) => ({ paddingLeft: 16 + depth * 22 })
+  "flex h-8 w-full items-center gap-2 pr-2 text-left text-sm transition-colors pl-(--indent) [&_svg]:size-4 [&_svg]:shrink-0"
 
 function TreeFolder({
   node,
@@ -140,7 +139,7 @@ function TreeFolder({
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger
-        style={indent(depth)}
+        style={{ "--indent": `${16 + depth * 22}px` } as React.CSSProperties}
         className={cn(rowClass, "text-foreground hover:bg-muted")}
       >
         <HugeiconsIcon
@@ -194,7 +193,7 @@ function FileTree({
       <button
         key={node.fileKey}
         type="button"
-        style={indent(depth)}
+        style={{ "--indent": `${16 + depth * 22}px` } as React.CSSProperties}
         onClick={() => onSelect(node.fileKey!)}
         className={cn(
           rowClass,

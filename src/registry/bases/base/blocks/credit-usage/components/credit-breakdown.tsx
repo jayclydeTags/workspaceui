@@ -87,9 +87,9 @@ export function CreditBreakdown({
                       tabIndex={0}
                       role="img"
                       aria-label={`${category.label}: ${formatNumber(credits)} credits, ${formatShare(credits, summary.used)} of used`}
-                      style={{ flexGrow: credits }}
+                      style={{ "--share": credits } as React.CSSProperties}
                       className={cn(
-                        "min-w-1 basis-0 rounded-full transition-opacity outline-none hover:opacity-80 focus-visible:ring-3 focus-visible:ring-ring/50 motion-reduce:transition-none",
+                        "min-w-1 grow-(--share) basis-0 rounded-full transition-opacity outline-none hover:opacity-80 focus-visible:ring-3 focus-visible:ring-ring/50 motion-reduce:transition-none",
                         category.swatch
                       )}
                     />
@@ -108,8 +108,8 @@ export function CreditBreakdown({
           {isBillingPeriod && remaining > 0 && (
             <span
               aria-hidden="true"
-              style={{ flexGrow: remaining }}
-              className="basis-0 rounded-full bg-muted"
+              style={{ "--share": remaining } as React.CSSProperties}
+              className="grow-(--share) basis-0 rounded-full bg-muted"
             />
           )}
         </div>

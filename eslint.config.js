@@ -53,7 +53,11 @@ export default defineConfig([
           ],
         },
       ],
-      "shadcn/no-inline-styles": "warn",
+      // transform/transition are runtime output of dnd-kit and drag offsets.
+      "shadcn/no-inline-styles": [
+        "error",
+        { allow: ["transform", "transition"] },
+      ],
       // Marker classes: selector hooks in CSS/JS, not Tailwind utilities.
       "shadcn/no-unknown-classes": [
         "warn",

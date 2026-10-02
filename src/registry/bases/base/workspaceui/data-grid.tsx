@@ -284,27 +284,28 @@ function SelectAllCheckbox({
 // the table (no trailing gap) while the fixed-px selection/action cells stay
 // put — px would let table-fixed distribute slack across every column, growing
 // the checkbox. Pinned columns keep px so their sticky getStart() offsets align.
-function columnPinStyle<TData>(
+// Pinned columns are sized and offset at runtime, so they reach CSS as custom
+// properties (`--col-width`, `--pin-left`, `--pin-right`) that the call sites'
+// `w-(--col-width)`, `left-(--pin-left)` and `right-(--pin-right)` classes read.
+function columnPin<TData>(
   column: Column<TData, unknown>,
   forceStickyLeft = false,
   totalSize = 0
-): React.CSSProperties {
+) {
   const pinned = column.getIsPinned()
+  const stickyLeft = pinned === "left" || forceStickyLeft
+  const width =
+    pinned || !totalSize
+      ? `${column.getSize()}px`
+      : `${+((column.getSize() / totalSize) * 100).toFixed(4)}%`
   return {
-    width:
-      pinned || !totalSize
-        ? column.getSize()
-        : `${+((column.getSize() / totalSize) * 100).toFixed(4)}%`,
-    ...((pinned === "left" || forceStickyLeft) && {
-      position: "sticky",
-      left: pinned === "left" ? column.getStart("left") : 0,
-      zIndex: 1,
-    }),
-    ...(pinned === "right" && {
-      position: "sticky",
-      right: column.getAfter("right"),
-      zIndex: 1,
-    }),
+    width,
+    left: stickyLeft
+      ? `${pinned === "left" ? column.getStart("left") : 0}px`
+      : undefined,
+    right: pinned === "right" ? `${column.getAfter("right")}px` : undefined,
+    stickyLeft,
+    stickyRight: pinned === "right",
   }
 }
 
@@ -1707,6 +1708,12 @@ export function DataGrid<TData>({
                     )}
                     {headerGroup.headers.map((header, headerIndex) => {
                       const pinned = header.column.getIsPinned()
+                      const pin = columnPin(
+                        header.column,
+                        forceStickyFirstColumn &&
+                          header.column.id === firstVisibleColumnId,
+                        table.getTotalSize()
+                      )
                       // getCanSort() is true for any accessor column; only expose
                       // the affordance when the consumer actually wired a sorted
                       // row model, so a click can't be a no-op.
@@ -1728,15 +1735,19 @@ export function DataGrid<TData>({
                         <TableHead
                           key={header.id}
                           className={cn(
-                            "group relative",
+                            "group relative w-(--col-width)",
+                            (pin.stickyLeft || pin.stickyRight) && "sticky z-1",
+                            pin.stickyLeft && "left-(--pin-left)",
+                            pin.stickyRight && "right-(--pin-right)",
                             stickyHeader && "bg-background"
                           )}
-                          style={columnPinStyle(
-                            header.column,
-                            forceStickyFirstColumn &&
-                              header.column.id === firstVisibleColumnId,
-                            table.getTotalSize()
-                          )}
+                          style={
+                            {
+                              "--col-width": pin.width,
+                              "--pin-left": pin.left,
+                              "--pin-right": pin.right,
+                            } as React.CSSProperties
+                          }
                         >
                           {!header.isPlaceholder && (
                             <div className="flex items-center justify-between gap-1 pe-2">
@@ -1934,6 +1945,11 @@ export function DataGrid<TData>({
                             cell.column.id === firstVisibleColumnId
                           const isPinned =
                             cell.column.getIsPinned() || forceSticky
+                          const pin = columnPin(
+                            cell.column,
+                            forceSticky,
+                            table.getTotalSize()
+                          )
 
                           return (
                             <TableCell
@@ -1944,13 +1960,19 @@ export function DataGrid<TData>({
                               onFocus={() => setFocusCoord({ r, c })}
                               onClick={() => onCellClick(r, c)}
                               onKeyDown={(e) => onGridCellKeyDown(e, r, c)}
-                              style={columnPinStyle(
-                                cell.column,
-                                forceSticky,
-                                table.getTotalSize()
-                              )}
+                              style={
+                                {
+                                  "--col-width": pin.width,
+                                  "--pin-left": pin.left,
+                                  "--pin-right": pin.right,
+                                } as React.CSSProperties
+                              }
                               className={cn(
-                                "p-0 align-top whitespace-normal outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
+                                "w-(--col-width) p-0 align-top whitespace-normal outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
+                                (pin.stickyLeft || pin.stickyRight) &&
+                                  "sticky z-1",
+                                pin.stickyLeft && "left-(--pin-left)",
+                                pin.stickyRight && "right-(--pin-right)",
                                 isPinned && "bg-background"
                               )}
                             >

@@ -53,8 +53,7 @@ function SpinnerRing() {
         strokeWidth="3"
         strokeLinecap="round"
         strokeDasharray="30 120"
-        className="stroke-primary"
-        style={{ transformOrigin: "center" }}
+        className="origin-center stroke-primary"
         animate={{ rotate: 360 }}
         transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
       />
@@ -64,7 +63,6 @@ function SpinnerRing() {
 
 // Completed ring sweeps closed, then the check draws inside it.
 function SuccessRing({ reduceMotion }: { reduceMotion: boolean }) {
-  const green = "stroke-success"
   return (
     <svg viewBox="0 0 44 44" className="size-11" fill="none">
       <circle cx="22" cy="22" r="19" className="fill-success/10" />
@@ -74,8 +72,7 @@ function SuccessRing({ reduceMotion }: { reduceMotion: boolean }) {
         r="19"
         strokeWidth="3"
         strokeLinecap="round"
-        className={green}
-        style={{ rotate: -90, transformOrigin: "center" }}
+        className="origin-center -rotate-90 stroke-success"
         initial={reduceMotion ? false : { pathLength: 0 }}
         animate={{ pathLength: 1 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
@@ -85,7 +82,7 @@ function SuccessRing({ reduceMotion }: { reduceMotion: boolean }) {
         strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className={green}
+        className="stroke-success"
         initial={reduceMotion ? false : { pathLength: 0 }}
         animate={{ pathLength: 1 }}
         transition={{

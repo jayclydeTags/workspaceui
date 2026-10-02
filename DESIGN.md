@@ -142,6 +142,11 @@ Rules:
   `FieldSet` + `FieldLegend`.
 - Workspace panes are resizable columns with minimums (`20%` column, `30%`
   row) so no pane can be dragged to nothing.
+- No inline `style` for design values. A runtime value (a computed width, a
+  drag offset) goes through a CSS custom property that a utility reads:
+  `<div className="w-(--progress)" style={{ "--progress": `${pct}%` }} />`.
+  Only `transform` and `transition` stay inline, since dnd-kit and drag
+  offsets produce them every frame.
 - Truncate with the `truncate` utility, and give truncated text a way to be
   read in full (tooltip or title).
 

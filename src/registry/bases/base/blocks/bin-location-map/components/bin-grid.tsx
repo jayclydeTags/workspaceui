@@ -66,43 +66,63 @@ function heat(bin: Bin): {
 }
 
 // Hatched "do not store" floor markings, shared by the slot overlay and legend.
+// The gradient carries the theme color; opacity on the element sets the tint.
 const STATUS_STRIPE: Record<"blocked" | "quarantine", string> = {
   blocked:
-    "repeating-linear-gradient(45deg,transparent,transparent 4px,rgb(100 116 139 / 0.35) 4px,rgb(100 116 139 / 0.35) 6px)",
+    "repeating-linear-gradient(45deg,transparent,transparent 4px,var(--color-muted-foreground) 4px,var(--color-muted-foreground) 6px)",
   quarantine:
-    "repeating-linear-gradient(45deg,transparent,transparent 4px,rgb(245 158 11 / 0.35) 4px,rgb(245 158 11 / 0.35) 6px)",
+    "repeating-linear-gradient(45deg,transparent,transparent 4px,var(--color-warning) 4px,var(--color-warning) 6px)",
+}
+
+function Stripe({
+  status,
+  className,
+}: {
+  status: "blocked" | "quarantine"
+  className?: string
+}) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        "absolute inset-0 bg-(image:--stripe) opacity-35",
+        className
+      )}
+      style={{ "--stripe": STATUS_STRIPE[status] } as React.CSSProperties}
+    />
+  )
 }
 
 function statusOverlay(bin: Bin): React.ReactNode {
   if (bin.status === "active") return null
   return (
-    <span
-      aria-hidden
-      className="pointer-events-none absolute inset-0 z-10 rounded-[inherit]"
-      style={{ backgroundImage: STATUS_STRIPE[bin.status] }}
+    <Stripe
+      status={bin.status}
+      className="pointer-events-none z-10 rounded-[inherit]"
     />
   )
 }
 
 function Swatch({
   className,
-  style,
   label,
+  children,
 }: {
   className?: string
-  style?: React.CSSProperties
   label: string
+  children?: React.ReactNode
 }) {
   return (
     <span className="flex items-center gap-1.5">
       <span
         aria-hidden
         className={cn(
-          "size-3 rounded-xs ring-1 ring-border ring-inset",
+          "relative size-3 rounded-xs ring-1 ring-border ring-inset",
           className
         )}
-        style={style}
-      />
+      >
+        {children}
+      </span>
       {label}
     </span>
   )
@@ -117,14 +137,12 @@ export function FloorLegend() {
       <Swatch className="bg-warning/60" label="60–89%" />
       <Swatch className="bg-destructive/60" label="≥90%" />
       <Separator orientation="vertical" className="h-3" />
-      <Swatch
-        style={{ backgroundImage: STATUS_STRIPE.blocked }}
-        label="Blocked"
-      />
-      <Swatch
-        style={{ backgroundImage: STATUS_STRIPE.quarantine }}
-        label="Quarantine"
-      />
+      <Swatch label="Blocked">
+        <Stripe status="blocked" className="rounded-[inherit]" />
+      </Swatch>
+      <Swatch label="Quarantine">
+        <Stripe status="quarantine" className="rounded-[inherit]" />
+      </Swatch>
     </div>
   )
 }
@@ -168,8 +186,8 @@ function RackSlot({
         {/* Load rising from the floor edge — the pallet stack. */}
         <span
           aria-hidden
-          className={cn("absolute inset-x-0 bottom-0 z-0", h.fill)}
-          style={{ height: `${pct}%` }}
+          className={cn("absolute inset-x-0 bottom-0 z-0 h-(--fill)", h.fill)}
+          style={{ "--fill": `${pct}%` } as React.CSSProperties}
         />
         <span
           aria-hidden
@@ -253,9 +271,9 @@ export function BinGrid({
   // floor; without it, render only the occupied footprint.
   const gridRows = onAdd ? rows + 1 : rows
   const gridCols = onAdd ? cols + 1 : cols
-  const track: React.CSSProperties = {
-    gridTemplateColumns: `repeat(${gridCols}, minmax(4rem, 7rem))`,
-  }
+  const track = {
+    "--bin-cols": `repeat(${gridCols}, minmax(4rem, 7rem))`,
+  } as React.CSSProperties
 
   return (
     <TooltipProvider>
@@ -277,7 +295,10 @@ export function BinGrid({
                     >
                       R{r + 1}
                     </span>
-                    <div className="grid flex-1 gap-1" style={track}>
+                    <div
+                      className="grid flex-1 grid-cols-(--bin-cols) gap-1"
+                      style={track}
+                    >
                       {Array.from({ length: gridCols }, (_, c) => {
                         const bin = at(r, c)
                         if (bin)

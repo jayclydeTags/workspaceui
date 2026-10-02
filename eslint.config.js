@@ -36,7 +36,7 @@ export default defineConfig([
       // Adopted at warn; `pnpm lint` caps the warning count so it can only
       // go down. Promote a rule to "error" once its findings are fixed.
       "shadcn/no-restyle": ["warn", { allow: ["layout"] }],
-      "shadcn/no-raw-colors": "warn",
+      "shadcn/no-raw-colors": "error",
       "shadcn/no-arbitrary-values": ["warn", { allow: ["layout"] }],
       "shadcn/no-inline-styles": "warn",
       // Marker classes: selector hooks in CSS/JS, not Tailwind utilities.
@@ -56,6 +56,16 @@ export default defineConfig([
       "shadcn/no-arbitrary-values": "off",
       "shadcn/require-static-classes": "off",
     },
+  },
+  // Brand artwork must keep its fixed colors (Google's G, the WorkspaceUI
+  // logo gradient). Configured here, not with inline disables, so the shipped
+  // login-social block stays free of lint directives.
+  {
+    files: [
+      "src/registry/bases/base/blocks/login-social/page.tsx",
+      "src/components/site/workspaceui-logo.tsx",
+    ],
+    rules: { "shadcn/no-raw-colors": "off" },
   },
   // Tests use throwaway class names as fixtures.
   {

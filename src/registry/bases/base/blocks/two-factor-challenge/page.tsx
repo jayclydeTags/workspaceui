@@ -64,17 +64,10 @@ function SpinnerRing() {
 
 // Completed ring sweeps closed, then the check draws inside it.
 function SuccessRing({ reduceMotion }: { reduceMotion: boolean }) {
-  // ponytail: literal green — shadcn's theme has no success token. Swap for a
-  // --success var if the design system grows one.
-  const green = "stroke-green-600 dark:stroke-green-500"
+  const green = "stroke-success"
   return (
     <svg viewBox="0 0 44 44" className="size-11" fill="none">
-      <circle
-        cx="22"
-        cy="22"
-        r="19"
-        className="fill-green-600/10 dark:fill-green-500/10"
-      />
+      <circle cx="22" cy="22" r="19" className="fill-success/10" />
       <motion.circle
         cx="22"
         cy="22"
@@ -207,11 +200,7 @@ export function TwoFactorChallenge() {
               </AnimatePresence>
             </div>
 
-            <CardTitle
-              className={
-                success ? "mt-2 text-green-600 dark:text-green-500" : "mt-2"
-              }
-            >
+            <CardTitle className={success ? "mt-2 text-success" : "mt-2"}>
               {success ? "Verified" : "Two-factor authentication"}
             </CardTitle>
             <CardDescription>

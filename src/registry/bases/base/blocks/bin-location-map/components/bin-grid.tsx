@@ -45,23 +45,23 @@ function heat(bin: Bin): {
   const pct = fillPct(bin)
   if (pct >= 90)
     return {
-      bg: "bg-red-500/10",
-      fill: "bg-red-500/70",
-      ring: "ring-red-500/50",
-      text: "text-red-700 dark:text-red-300",
+      bg: "bg-destructive/10",
+      fill: "bg-destructive/70",
+      ring: "ring-destructive/50",
+      text: "text-foreground",
     }
   if (pct >= 60)
     return {
-      bg: "bg-amber-500/10",
-      fill: "bg-amber-500/70",
-      ring: "ring-amber-500/50",
-      text: "text-amber-700 dark:text-amber-300",
+      bg: "bg-warning/10",
+      fill: "bg-warning/70",
+      ring: "ring-warning/50",
+      text: "text-foreground",
     }
   return {
-    bg: "bg-emerald-500/10",
-    fill: "bg-emerald-500/70",
-    ring: "ring-emerald-500/50",
-    text: "text-emerald-700 dark:text-emerald-300",
+    bg: "bg-success/10",
+    fill: "bg-success/70",
+    ring: "ring-success/50",
+    text: "text-foreground",
   }
 }
 
@@ -113,9 +113,9 @@ export function FloorLegend() {
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[10px] text-muted-foreground">
       <span className="font-semibold tracking-widest uppercase">Occupancy</span>
       <Swatch className="bg-muted" label="Empty" />
-      <Swatch className="bg-emerald-500/60" label="<60%" />
-      <Swatch className="bg-amber-500/60" label="60–89%" />
-      <Swatch className="bg-red-500/60" label="≥90%" />
+      <Swatch className="bg-success/60" label="<60%" />
+      <Swatch className="bg-warning/60" label="60–89%" />
+      <Swatch className="bg-destructive/60" label="≥90%" />
       <Separator orientation="vertical" className="h-3" />
       <Swatch
         style={{ backgroundImage: STATUS_STRIPE.blocked }}

@@ -16,11 +16,11 @@ export function PendingApproval() {
     <Page hasHeader={false}>
       <div className="flex min-h-full items-center justify-center p-6">
         <div className="flex w-full max-w-sm flex-col items-center text-center">
-          <div className="flex size-11 items-center justify-center rounded-full bg-amber-500/10">
+          <div className="flex size-11 items-center justify-center rounded-full bg-warning/10">
             <HugeiconsIcon
               icon={Clock01Icon}
               strokeWidth={2}
-              className="size-5 text-amber-600 dark:text-amber-500"
+              className="size-5 text-warning"
             />
           </div>
 

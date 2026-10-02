@@ -328,7 +328,7 @@ export function BlockPreview({
                 <HugeiconsIcon
                   icon={Tick02Icon}
                   strokeWidth={2}
-                  className="text-emerald-600"
+                  className="text-success"
                 />
               ) : (
                 <HugeiconsIcon

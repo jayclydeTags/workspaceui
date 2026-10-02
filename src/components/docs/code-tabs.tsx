@@ -19,7 +19,7 @@ export function CodeTabs({
       onValueChange={(value) =>
         setConfig({ ...config, installationType: value as "cli" | "manual" })
       }
-      className="*:data-[slot=tabs-list] relative mt-6 w-full"
+      className="relative mt-6 w-full"
       {...props}
     >
       {children}

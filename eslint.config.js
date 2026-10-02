@@ -80,7 +80,7 @@ export default defineConfig([
       ],
       // Marker classes: selector hooks in CSS/JS, not Tailwind utilities.
       "shadcn/no-unknown-classes": [
-        "warn",
+        "error",
         { allow: ["not-prose", "steps", "cn-input-otp"] },
       ],
       "shadcn/require-static-classes": "error",

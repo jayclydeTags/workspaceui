@@ -74,7 +74,7 @@ export function CodeBlockCommand({
           <TabsContent key={key} value={key} className="mt-0">
             <pre
               ref={preRef}
-              className="mt-0 overflow-auto px-4 py-3.5 text-[0.8125rem]"
+              className="mt-0 overflow-auto px-4 py-3.5 text-sm"
             >
               <code>{command}</code>
             </pre>

@@ -46,7 +46,7 @@ export function BlocksSidebarNav({
             <SelectItem key={section.title} value={section.title}>
               {section.title}
               {section.comingSoon && (
-                <span className="font-mono text-[10px] text-muted-foreground">
+                <span className="font-mono text-xs text-muted-foreground">
                   Soon
                 </span>
               )}

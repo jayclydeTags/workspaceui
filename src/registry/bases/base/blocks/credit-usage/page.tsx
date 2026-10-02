@@ -159,7 +159,7 @@ export function CreditUsage({ className }: { className?: string }) {
               if (value[0]) setPeriod(value[0] as Period)
             }}
             spacing={0}
-            className="rounded-lg bg-muted p-[3px]"
+            className="rounded-lg bg-muted p-0.75"
           >
             {PERIODS.map((p) => (
               <ToggleGroupItem

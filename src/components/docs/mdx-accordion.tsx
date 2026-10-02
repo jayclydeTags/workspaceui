@@ -94,7 +94,7 @@ export function Accordion({
         hiddenUntilFound
         className="h-(--accordion-panel-height) overflow-hidden transition-[height] ease-out data-[ending-style]:h-0 data-[starting-style]:h-0"
       >
-        <div className="prose-no-margin px-4 pb-2 text-[0.9375rem] [&[hidden]:not([hidden='until-found'])]:hidden">
+        <div className="prose-no-margin px-4 pb-2 text-sm [&[hidden]:not([hidden='until-found'])]:hidden">
           {children}
         </div>
       </Primitive.Panel>

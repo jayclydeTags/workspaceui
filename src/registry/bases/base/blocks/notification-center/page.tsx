@@ -196,7 +196,7 @@ export function NotificationCenter() {
             >
               Severity
               {severities.size > 0 && (
-                <Badge className="h-4 min-w-4 rounded-full px-1 text-[10px]">
+                <Badge className="h-4 min-w-4 rounded-full px-1 text-xs">
                   {severities.size}
                 </Badge>
               )}

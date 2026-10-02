@@ -98,7 +98,7 @@ function Swatch({
       <span
         aria-hidden
         className={cn(
-          "size-3 rounded-[3px] ring-1 ring-border ring-inset",
+          "size-3 rounded-xs ring-1 ring-border ring-inset",
           className
         )}
         style={style}
@@ -110,7 +110,7 @@ function Swatch({
 
 export function FloorLegend() {
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[10px] text-muted-foreground">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
       <span className="font-semibold tracking-widest uppercase">Occupancy</span>
       <Swatch className="bg-muted" label="Empty" />
       <Swatch className="bg-success/60" label="<60%" />
@@ -175,18 +175,16 @@ function RackSlot({
           aria-hidden
           className="relative z-[5] flex items-center justify-between"
         >
-          <span
-            className={cn("text-[10px] leading-none font-semibold", h.text)}
-          >
+          <span className={cn("text-xs leading-none font-semibold", h.text)}>
             {bin.code}
           </span>
-          <span className="text-[9px] leading-none text-muted-foreground">
+          <span className="text-xs leading-none text-muted-foreground">
             {isOccupied(bin) ? `${pct}%` : "—"}
           </span>
         </span>
         <span
           aria-hidden
-          className="relative z-[5] truncate text-[9px] leading-none text-muted-foreground"
+          className="relative z-[5] truncate text-xs leading-none text-muted-foreground"
         >
           {bin.sku ?? "empty"}
         </span>
@@ -271,7 +269,7 @@ export function BinGrid({
                   <div className="flex items-stretch gap-2">
                     <span
                       className={cn(
-                        "flex w-6 shrink-0 items-center justify-center rounded-sm text-[9px] font-bold",
+                        "flex w-6 shrink-0 items-center justify-center rounded-sm text-xs font-bold",
                         isMarginRow
                           ? "border-2 border-dashed border-muted-foreground/30 text-muted-foreground/50"
                           : "bg-foreground/80 text-background"
@@ -306,7 +304,7 @@ export function BinGrid({
                   {r < rows - 1 && (
                     <div className="relative my-1 ml-8 flex h-5 items-center">
                       <span className="absolute inset-x-0 top-1/2 border-t border-dashed border-muted-foreground/40" />
-                      <span className="relative mx-auto rounded-full bg-background px-2 text-[9px] font-medium tracking-widest text-muted-foreground uppercase">
+                      <span className="relative mx-auto rounded-full bg-background px-2 text-xs font-medium tracking-widest text-muted-foreground uppercase">
                         Aisle {AISLE_LETTERS[r]}
                       </span>
                     </div>

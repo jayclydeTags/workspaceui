@@ -129,7 +129,7 @@ function WorkspaceTabs({
                   aria-label="Tab menu"
                   // self-center (not the strip's items-end) so it sits on the
                   // tabs' centreline; hover matches the inactive tabs'.
-                  className="ml-1 shrink-0 self-center rounded-[8px] text-foreground/50 hover:bg-foreground/5"
+                  className="ml-1 shrink-0 self-center rounded-md text-foreground/50 hover:bg-foreground/5"
                 />
               }
             >
@@ -147,7 +147,7 @@ function WorkspaceTabs({
                   </span>
                   <span className="min-w-0 flex-1 truncate">{tab.title}</span>
                   {tab.badge != null && tab.badge > 0 && (
-                    <Badge className="h-4 min-w-4 shrink-0 rounded-full px-1 text-[10px]">
+                    <Badge className="h-4 min-w-4 shrink-0 rounded-full px-1 text-xs">
                       {tab.badge > 99 ? "99+" : tab.badge}
                     </Badge>
                   )}
@@ -249,7 +249,7 @@ function WorkspaceTabs({
                   className={cn(
                     // Layout & sizing
                     "group relative flex max-w-[180px] min-w-[152px] cursor-pointer items-center gap-1.5",
-                    "px-3 py-2 text-[13px] whitespace-nowrap select-none",
+                    "px-3 py-2 text-sm whitespace-nowrap select-none",
                     "transition-colors outline-none",
                     "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
                     // Inactive
@@ -271,7 +271,7 @@ function WorkspaceTabs({
 
                   {/* Unread badge */}
                   {tab.badge != null && tab.badge > 0 && (
-                    <Badge className="h-4 min-w-4 shrink-0 rounded-full px-1 text-[10px]">
+                    <Badge className="h-4 min-w-4 shrink-0 rounded-full px-1 text-xs">
                       {tab.badge > 99 ? "99+" : tab.badge}
                     </Badge>
                   )}
@@ -337,7 +337,7 @@ function WorkspaceTabs({
             size="icon-sm"
             aria-label="New tab"
             onClick={onAddTab}
-            className="mx-1 shrink-0 self-center rounded-[8px] text-foreground/50 hover:bg-foreground/5"
+            className="mx-1 shrink-0 self-center rounded-md text-foreground/50 hover:bg-foreground/5"
           >
             <HugeiconsIcon icon={PlusSignIcon} strokeWidth={2} />
           </Button>

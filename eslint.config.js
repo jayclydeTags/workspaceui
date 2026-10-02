@@ -37,7 +37,22 @@ export default defineConfig([
       // go down. Promote a rule to "error" once its findings are fixed.
       "shadcn/no-restyle": ["warn", { allow: ["layout"] }],
       "shadcn/no-raw-colors": "error",
-      "shadcn/no-arbitrary-values": ["warn", { allow: ["layout"] }],
+      "shadcn/no-arbitrary-values": [
+        "error",
+        {
+          // Layout values, plus structural CSS that has no design token:
+          // property lists, selectors, and keyword radii. rounded-[4px] is
+          // shadcn's own Checkbox radius, which the data-grid checkbox matches.
+          allow: [
+            "layout",
+            "transition-[*]",
+            "*:data-[slot=*]",
+            "rounded-[inherit]",
+            "rounded-[4px]",
+            "backdrop-blur-[1px]",
+          ],
+        },
+      ],
       "shadcn/no-inline-styles": "warn",
       // Marker classes: selector hooks in CSS/JS, not Tailwind utilities.
       "shadcn/no-unknown-classes": [

@@ -22,7 +22,7 @@ export function ComponentPreviewShell({
   return (
     <div
       className={cn(
-        "mt-6 mb-12 flex flex-col overflow-clip rounded-[18px] border bg-fd-background",
+        "mt-6 mb-12 flex flex-col overflow-clip rounded-2xl border bg-fd-background",
         className
       )}
     >

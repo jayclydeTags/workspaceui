@@ -15,7 +15,7 @@ export function StepIndicator({ currentStep }: { currentStep: number }) {
           <div key={label} className="flex items-center gap-2">
             <span
               className={cn(
-                "flex size-5 shrink-0 items-center justify-center rounded-full border text-[11px] font-medium",
+                "flex size-5 shrink-0 items-center justify-center rounded-full border text-xs font-medium",
                 isDone && "border-primary bg-primary text-primary-foreground",
                 isActive && "border-primary text-primary",
                 !isDone && !isActive && "border-border text-muted-foreground"

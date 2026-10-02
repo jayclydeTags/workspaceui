@@ -1337,7 +1337,7 @@ function SnapZoneOverlay({ activeZone }: { activeZone: SnapZone | null }) {
         ZONE_BORDER[activeZone]
       )}
     >
-      <p className="max-w-[180px] text-center text-[11px] leading-relaxed whitespace-pre-line text-muted-foreground">
+      <p className="max-w-[180px] text-center text-xs leading-relaxed whitespace-pre-line text-muted-foreground">
         {ZONE_LABEL[activeZone]}
       </p>
     </div>
@@ -1355,7 +1355,7 @@ function DragGhost({ title, x, y }: { title: string; x: number; y: number }) {
       style={{ left: x + 14, top: y - 10, rotate: "-2deg" }}
     >
       <div className="flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1.5 shadow-md">
-        <span className="text-[12px] font-medium text-foreground">{title}</span>
+        <span className="text-xs font-medium text-foreground">{title}</span>
       </div>
     </div>,
     document.body

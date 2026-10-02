@@ -77,7 +77,7 @@ function FileTypeIcon({ name }: { name: string }) {
   const ext = name.split(".").pop() ?? ""
   const label = ext === "ts" || ext === "tsx" ? "TS" : ext.toUpperCase()
   return (
-    <span className="inline-flex size-4 items-center justify-center rounded-[3px] bg-foreground text-[8px] leading-none font-bold text-background">
+    <span className="inline-flex size-4 items-center justify-center rounded-xs bg-foreground text-xs leading-none font-bold text-background">
       {label}
     </span>
   )
@@ -273,7 +273,7 @@ export function BlockPreview({
           {/* Viewport + preview actions — preview only */}
           {tab === "preview" && (
             <>
-              <div className="flex items-center gap-1 rounded-lg border border-border p-[3px]">
+              <div className="flex items-center gap-1 rounded-lg border border-border p-0.75">
                 {(["desktop", "tablet", "mobile"] as const).map((v) => {
                   const Icon = VIEWPORT_ICONS[v]
                   return (
@@ -347,7 +347,7 @@ export function BlockPreview({
           {tab === "preview" ? (
             <ResizablePanelGroup
               orientation="horizontal"
-              className="h-full overflow-hidden rounded-[14px] bg-muted/40"
+              className="h-full overflow-hidden rounded-xl bg-muted/40"
             >
               {/* Border + radius live on the panel itself so the frame tracks
                   the resized preview; the group only supplies the bg backdrop. */}
@@ -355,7 +355,7 @@ export function BlockPreview({
                 panelRef={panelRef}
                 defaultSize="100%"
                 minSize="320px"
-                className="overflow-hidden rounded-[14px] border border-border bg-background"
+                className="overflow-hidden rounded-xl border border-border bg-background"
               >
                 {/* Real iframe: the block sees the panel's width as its own
                     viewport, so its md: breakpoints + useIsMobile fire for real
@@ -375,7 +375,7 @@ export function BlockPreview({
               <ResizablePanel defaultSize={0} />
             </ResizablePanelGroup>
           ) : (
-            <div className="flex h-full overflow-hidden rounded-[14px] border border-border bg-muted/40">
+            <div className="flex h-full overflow-hidden rounded-xl border border-border bg-muted/40">
               {/* File tree */}
               <div className="flex w-72 shrink-0 flex-col overflow-auto border-r border-border bg-muted/40">
                 <div className="flex h-12 shrink-0 items-center border-b border-border px-4 text-sm font-medium text-muted-foreground">

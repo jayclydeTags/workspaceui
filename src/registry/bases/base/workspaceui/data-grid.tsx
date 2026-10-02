@@ -1475,7 +1475,7 @@ export function DataGrid<TData>({
                       className="size-4"
                     />
                     {optionsCount > 0 && (
-                      <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
+                      <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
                         {optionsCount}
                       </span>
                     )}

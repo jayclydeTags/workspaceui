@@ -78,7 +78,7 @@ export function MasterDetail() {
                       status={t.status}
                       variantMap={STATUS_VARIANT}
                       labelMap={STATUS_LABEL}
-                      className="text-[10px]"
+                      className="text-xs"
                     />
                   </span>
                 </button>

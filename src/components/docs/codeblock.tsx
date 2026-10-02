@@ -133,7 +133,7 @@ export function CodeBlock({
         role="region"
         tabIndex={0}
         className={cn(
-          "fd-scroll-container max-h-150 overflow-auto py-3.5 text-[0.8125rem] focus-visible:ring-2 focus-visible:ring-fd-ring focus-visible:outline-none focus-visible:ring-inset",
+          "fd-scroll-container max-h-150 overflow-auto py-3.5 text-sm focus-visible:ring-2 focus-visible:ring-fd-ring focus-visible:outline-none focus-visible:ring-inset",
           viewportProps.className
         )}
         style={

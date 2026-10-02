@@ -72,12 +72,16 @@ export function PayrollCalendar() {
           <TableBody>
             {PAY_PERIODS.map((p) => (
               <TableRow key={p.id}>
-                <TableCell className="font-medium">{p.period}</TableCell>
-                <TableCell className="text-muted-foreground">
-                  {p.start} – {p.end}
+                <TableCell>
+                  <span className="font-medium">{p.period}</span>
                 </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {p.cutoff}
+                <TableCell>
+                  <span className="text-muted-foreground">
+                    {p.start} – {p.end}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span className="text-muted-foreground">{p.cutoff}</span>
                 </TableCell>
                 <TableCell>{p.payDate}</TableCell>
                 <TableCell>

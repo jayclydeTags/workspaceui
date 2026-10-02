@@ -107,9 +107,11 @@ export function PermissionTable({
                   <TableHead
                     colSpan={PERMISSION_ACTIONS.length + 2}
                     scope="colgroup"
-                    className="h-8 ps-6 text-xs text-muted-foreground"
+                    className="h-8 ps-6"
                   >
-                    {group}
+                    <span className="text-xs text-muted-foreground">
+                      {group}
+                    </span>
                   </TableHead>
                 </TableRow>
                 {RESOURCES.filter((r) => r.group === group).map((resource) => (
@@ -119,13 +121,13 @@ export function PermissionTable({
                   >
                     <TableHead
                       scope="row"
-                      className="h-auto py-2.5 ps-6 font-normal whitespace-normal"
+                      className="h-auto py-2.5 ps-6 whitespace-normal"
                     >
                       <span className="flex items-center gap-2 font-medium text-foreground">
                         {resource.name}
                         {changed.has(resource.id) && <EditedDot />}
                       </span>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs font-normal text-muted-foreground">
                         {resource.description}
                       </span>
                     </TableHead>

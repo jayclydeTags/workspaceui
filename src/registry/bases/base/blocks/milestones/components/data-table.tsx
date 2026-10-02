@@ -139,16 +139,20 @@ export function DataTable({
           <TableBody>
             {milestones.map((milestone) => (
               <TableRow key={milestone.id}>
-                <TableCell className="px-6 font-medium">
-                  {milestone.name}
+                <TableCell className="px-6">
+                  <span className="font-medium">{milestone.name}</span>
                 </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {milestone.project}
+                <TableCell>
+                  <span className="text-muted-foreground">
+                    {milestone.project}
+                  </span>
                 </TableCell>
                 <TableCell className="hidden @md:table-cell">
                   {milestone.owner}
                 </TableCell>
-                <TableCell className="tabular-nums">{milestone.due}</TableCell>
+                <TableCell>
+                  <span className="tabular-nums">{milestone.due}</span>
+                </TableCell>
                 <TableCell>
                   <Progress milestone={milestone} />
                 </TableCell>

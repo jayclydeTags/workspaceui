@@ -111,9 +111,11 @@ export function DetailTabs() {
                 <TableBody>
                   {ORDERS.map((o) => (
                     <TableRow key={o.id}>
-                      <TableCell className="font-medium">{o.number}</TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {o.date}
+                      <TableCell>
+                        <span className="font-medium">{o.number}</span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-muted-foreground">{o.date}</span>
                       </TableCell>
                       <TableCell className="text-right">{o.total}</TableCell>
                       <TableCell>

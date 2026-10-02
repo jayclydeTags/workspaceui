@@ -76,9 +76,11 @@ export function PayrollRun() {
           <TableBody>
             {PAYSLIPS.map((p) => (
               <TableRow key={p.id}>
-                <TableCell className="font-medium">{p.employee}</TableCell>
-                <TableCell className="text-muted-foreground">
-                  {p.role}
+                <TableCell>
+                  <span className="font-medium">{p.employee}</span>
+                </TableCell>
+                <TableCell>
+                  <span className="text-muted-foreground">{p.role}</span>
                 </TableCell>
                 <TableCell className="text-right">
                   {formatCurrency(p.gross)}
@@ -86,8 +88,10 @@ export function PayrollRun() {
                 <TableCell className="text-right">
                   {formatCurrency(p.deductions)}
                 </TableCell>
-                <TableCell className="text-right font-medium">
-                  {formatCurrency(netPay(p))}
+                <TableCell className="text-right">
+                  <span className="font-medium">
+                    {formatCurrency(netPay(p))}
+                  </span>
                 </TableCell>
               </TableRow>
             ))}

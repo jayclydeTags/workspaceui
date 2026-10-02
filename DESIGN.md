@@ -191,6 +191,17 @@ Reach for, in order: (1) built-in `variant` / `size`, (2) semantic tokens,
 | `Badge`   | default, secondary, destructive, outline, ghost, link | —                                                                    |
 | `Alert`   | default, destructive, info                            | —                                                                    |
 
+### What callers may restyle
+
+Callers (blocks, docs, site) pass `className` for layout, and these shadcn
+contracts: titles take typography, containers (`Card`, `*Content`, `*Header`,
+`*Footer`, `*Group`, `*Panel`) take spacing, `Avatar` takes a size. Everything
+else (color, type, shape, effects) comes from a variant or from the content
+inside the component, e.g. wrap cell text in a `<span className="tabular-nums
+text-muted-foreground">` instead of styling `TableCell`. Components in
+`workspaceui/` are the design system itself and may style the primitives
+they compose.
+
 ### Composition
 
 - Items live inside their group: `SelectItem` in `SelectGroup`,

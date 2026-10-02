@@ -40,6 +40,14 @@ export default defineConfig([
         {
           allow: ["layout"],
           contracts: [
+            // shadcn's documented contracts (docs/design-systems.md): titles
+            // take typography, containers take spacing, avatars take a size.
+            { pattern: "^CardTitle$", allow: ["layout", "typography"] },
+            {
+              pattern: "^Card$|(Content|Header|Footer|Group|Panel)$",
+              allow: ["layout", "spacing"],
+            },
+            { pattern: "^Avatar$", allow: ["size-*"] },
             // Headless primitives: they ship no appearance, so callers style them.
             {
               pattern: "^Collapsible(Trigger|Content)?$",
@@ -96,8 +104,15 @@ export default defineConfig([
       "shadcn/require-static-classes": "off",
     },
   },
-  // The stock shadcn Checkbox and Progress shipped to consumers have no
-  // indeterminate dash or indicator-color API, so these files style them.
+  // workspaceui components are this design system's own component directory:
+  // they compose and style the primitives, so no-restyle is off here. Blocks,
+  // docs and site code are callers, and stay strict.
+  {
+    files: ["src/registry/bases/base/workspaceui/**"],
+    rules: { "shadcn/no-restyle": "off" },
+  },
+  // The stock shadcn Checkbox shipped to consumers has no indeterminate
+  // dash, so this block styles it.
   {
     files: [
       "src/registry/bases/base/blocks/access-control/components/permission-table.tsx",
@@ -113,21 +128,6 @@ export default defineConfig([
               allow: ["layout", "color", "shape", "effects"],
             },
           ],
-        },
-      ],
-    },
-  },
-  {
-    files: [
-      "src/registry/bases/base/workspaceui/password-input.tsx",
-      "src/registry/bases/base/workspaceui/usage-meter.tsx",
-    ],
-    rules: {
-      "shadcn/no-restyle": [
-        "warn",
-        {
-          allow: ["layout"],
-          contracts: [{ pattern: "^Progress$", allow: ["layout", "color"] }],
         },
       ],
     },

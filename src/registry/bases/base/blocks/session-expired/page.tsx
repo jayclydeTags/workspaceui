@@ -8,6 +8,7 @@ import {
   Alert01Icon,
 } from "@hugeicons/core-free-icons"
 
+import { Alert, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -91,17 +92,10 @@ export function SessionExpired() {
             <form onSubmit={onSubmit} noValidate>
               <FieldGroup>
                 {status === "error" && (
-                  <div
-                    role="alert"
-                    className="flex items-center gap-2 rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive"
-                  >
-                    <HugeiconsIcon
-                      icon={Alert01Icon}
-                      strokeWidth={2}
-                      className="size-4 shrink-0"
-                    />
-                    Incorrect password.
-                  </div>
+                  <Alert variant="destructive">
+                    <HugeiconsIcon icon={Alert01Icon} strokeWidth={2} />
+                    <AlertTitle>Incorrect password.</AlertTitle>
+                  </Alert>
                 )}
 
                 <Field data-invalid={!!fieldError}>

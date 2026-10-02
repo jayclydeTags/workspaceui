@@ -70,7 +70,7 @@ export function DataGridSelectionDemo() {
           <Button
             variant="destructive"
             size="sm"
-            className="bg-destructive text-white hover:bg-destructive/90"
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90 dark:bg-destructive dark:hover:bg-destructive/90"
             onClick={() => setConfirmBulkDelete(true)}
           >
             <HugeiconsIcon

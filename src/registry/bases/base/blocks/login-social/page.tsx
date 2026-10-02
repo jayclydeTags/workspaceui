@@ -4,6 +4,7 @@ import { useState } from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Alert01Icon, Loading03Icon } from "@hugeicons/core-free-icons"
 
+import { Alert, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -147,17 +148,10 @@ export function LoginSocial() {
               <form onSubmit={onSubmit} noValidate>
                 <FieldGroup>
                   {status === "error" && (
-                    <div
-                      role="alert"
-                      className="flex items-center gap-2 rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive"
-                    >
-                      <HugeiconsIcon
-                        icon={Alert01Icon}
-                        strokeWidth={2}
-                        className="size-4 shrink-0"
-                      />
-                      Incorrect email or password.
-                    </div>
+                    <Alert variant="destructive">
+                      <HugeiconsIcon icon={Alert01Icon} strokeWidth={2} />
+                      <AlertTitle>Incorrect email or password.</AlertTitle>
+                    </Alert>
                   )}
 
                   <Field data-invalid={!!fieldErrors.email}>

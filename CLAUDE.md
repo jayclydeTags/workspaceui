@@ -134,6 +134,8 @@ npx shadcn@latest add jayclydeTags/workspaceui/workspace
 
 The repo must be public and have `registry.json` at its root; the CLI resolves items from it directly. Within `registry.json`, `registryDependencies` that point at sibling items in this same repo must use the full `jayclydeTags/workspaceui/<item>` address (not the bare name) — bare names resolve against the consumer's default `@shadcn` registry and 404. Plain shadcn primitives (`utils`, `resizable`, `sidebar`, `breadcrumb`, etc.) stay unprefixed. `src/registry/__tests__/registry.test.ts` validates both of these rules against every item automatically — see [`.claude/rules/component-testing.md`](.claude/rules/component-testing.md).
 
+**Theme tokens outside a stock shadcn theme.** `success` and `warning` are not in a consumer's default theme, so the `status-colors` item (`registry:theme`, no files, just `cssVars`) supplies them. Any item whose shipped files use `text-`/`bg-`/`border-…-success|warning` must list `jayclydeTags/workspaceui/status-colors` in `registryDependencies` (directly or via a sibling); `registry.test.ts` fails otherwise. A new shared token follows the same pattern: add it to `globals.css`, to `status-colors`' `cssVars` (`theme` + `light` + `dark`), and extend the test's utility regex.
+
 `bases/base/` mirrors shadcn's own multi-base registry convention (`apps/v4` on shadcn/ui). There is currently one base; don't add a second `bases/<name>/` directory speculatively.
 
 ### Comment hygiene in distributed components

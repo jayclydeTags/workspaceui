@@ -117,6 +117,9 @@ Rules:
   `success` / `warning` / `info` / `destructive`, or a Badge variant.
 - Adding a color means adding a CSS variable to `:root` and `.dark`, mapping
   it in `@theme inline`, and re-running `node scripts/export-figma-tokens.mjs`.
+  If a distributed component or block uses it, also declare it in the
+  `status-colors` item's `cssVars` in `registry.json` (and depend on that
+  item) so consumers' themes get the variable on install.
 
 ## Typography
 

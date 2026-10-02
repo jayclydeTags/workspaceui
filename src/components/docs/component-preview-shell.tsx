@@ -3,7 +3,7 @@
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
-import { DynamicCodeBlock } from "@/components/dynamic-codeblock"
+import { DynamicCodeBlock } from "@/components/docs/dynamic-codeblock"
 import { cn } from "@/lib/utils"
 
 interface ComponentPreviewShellProps {

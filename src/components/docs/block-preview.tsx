@@ -15,7 +15,7 @@ import {
   TerminalIcon,
   Cancel01Icon,
 } from "@hugeicons/core-free-icons"
-import { DynamicCodeBlock } from "@/components/dynamic-codeblock"
+import { DynamicCodeBlock } from "@/components/docs/dynamic-codeblock"
 import type { PanelImperativeHandle } from "react-resizable-panels"
 
 import { cn } from "@/lib/utils"

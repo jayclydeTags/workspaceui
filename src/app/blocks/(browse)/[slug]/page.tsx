@@ -3,7 +3,7 @@ import { join } from "path"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
-import { BlockPreview, type BlockFile } from "@/components/block-preview"
+import { BlockPreview, type BlockFile } from "@/components/docs/block-preview"
 import { galleryComponents } from "@/lib/blocks"
 import { getBlockTitle } from "@/lib/block-taxonomy"
 import { blockFiles } from "@/lib/block-files"

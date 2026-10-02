@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-import { BlocksSidebarNav } from "@/components/blocks-sidebar-nav"
+import { BlocksSidebarNav } from "@/components/site/blocks-sidebar-nav"
 import { getBlocksNav } from "@/lib/block-taxonomy"
 
 // Default title for the gallery (a client page that can't export metadata);

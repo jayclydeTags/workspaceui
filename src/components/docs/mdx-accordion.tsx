@@ -1,7 +1,7 @@
 "use client"
 
 // Self-contained docs accordion for MDX. Built directly on the base-ui
-// primitive rather than ./ui/accordion, which shadcn owns and overwrites on
+// primitive rather than ui/accordion, which shadcn owns and overwrites on
 // every re-install (that overwrite drops AccordionHeader and breaks this).
 import { Accordion as Primitive } from "@base-ui/react/accordion"
 import { HugeiconsIcon } from "@hugeicons/react"
@@ -19,8 +19,8 @@ import {
 } from "react"
 import { cn } from "@/lib/utils"
 import { useCopyButton } from "@fumadocs/base-ui/utils/use-copy-button"
-import { buttonVariants } from "./ui/button"
-import { mergeRefs } from "../lib/merge-refs"
+import { buttonVariants } from "@/components/ui/button"
+import { mergeRefs } from "@/lib/merge-refs"
 import { useTranslations } from "@fuma-translate/react"
 
 export function Accordions({

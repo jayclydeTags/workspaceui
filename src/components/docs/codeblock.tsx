@@ -13,10 +13,10 @@ import {
 } from "react"
 import { cn } from "@/lib/utils"
 import { useCopyButton } from "@fumadocs/base-ui/utils/use-copy-button"
-import { Button } from "./ui/button"
+import { Button } from "@/components/ui/button"
 import { useTranslations } from "@fuma-translate/react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs"
-import { mergeRefs } from "../lib/merge-refs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { mergeRefs } from "@/lib/merge-refs"
 
 export interface CodeBlockProps extends ComponentProps<"figure"> {
   /**

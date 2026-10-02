@@ -1,7 +1,7 @@
 "use client"
 import * as React from "react"
 import { useConfig } from "@/hooks/use-config"
-import { Tabs } from "./ui/tabs"
+import { Tabs } from "@/components/ui/tabs"
 
 export function CodeTabs({
   children,

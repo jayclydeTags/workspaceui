@@ -10,8 +10,8 @@ import { useRef } from "react"
 
 import { useConfig } from "@/hooks/use-config"
 import { cn } from "@/lib/utils"
-import { Button } from "./ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs"
+import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export interface CodeBlockCommandProps {
   __npm__?: string

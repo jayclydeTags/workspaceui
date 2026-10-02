@@ -3,7 +3,7 @@
 import { useState } from "react"
 
 import type { NavSection } from "@/lib/nav"
-import { SidebarNav } from "@/components/sidebar-nav"
+import { SidebarNav } from "@/components/site/sidebar-nav"
 import {
   Select,
   SelectContent,

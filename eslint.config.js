@@ -102,6 +102,11 @@ export default defineConfig([
               allow: ["layout", "spacing", "text-xs", "text-sm", "font-mono"],
             },
             {
+              // Grip-only handle: no full-height divider line.
+              pattern: "^ResizableHandle$",
+              allow: ["layout", "bg-transparent"],
+            },
+            {
               // Avatars take a size and placement; org/workspace avatars are
               // rounded squares rather than circles.
               pattern: "^Avatar(Fallback)?$",

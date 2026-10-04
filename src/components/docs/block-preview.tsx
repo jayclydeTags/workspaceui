@@ -344,35 +344,36 @@ export function BlockPreview({
         {/* ── Content card ─────────────────────────────────────────────────── */}
         <div className="min-h-0 flex-1">
           {tab === "preview" ? (
-            <ResizablePanelGroup
-              orientation="horizontal"
-              className="h-full overflow-hidden rounded-xl bg-muted/40"
-            >
-              {/* Border + radius live on the panel itself so the frame tracks
-                  the resized preview; the group only supplies the bg backdrop. */}
-              <ResizablePanel
-                panelRef={panelRef}
-                defaultSize="100%"
-                minSize="320px"
-                className="overflow-hidden rounded-xl border border-border bg-background"
-              >
-                {/* Real iframe: the block sees the panel's width as its own
-                    viewport, so its md: breakpoints + useIsMobile fire for real
-                    as the panel is resized/toggled. key=previewKey reloads it. */}
-                <iframe
-                  key={previewKey}
-                  src={`/blocks/preview/${slug}`}
-                  title={title}
-                  className="h-full w-full border-0"
-                />
-              </ResizablePanel>
-              {/* bg-transparent drops the full-height divider line (it clashed
-                  with the rounded frame); only the grip pill shows. after:w-3
-                  gives a ~12px grab area without adding a layout gap. */}
-              <ResizableHandle withHandle className="w-3 bg-transparent" />
-              {/* Empty panel reveals the gray backdrop as the preview shrinks. */}
-              <ResizablePanel defaultSize={0} />
-            </ResizablePanelGroup>
+            <div className="h-full overflow-hidden rounded-xl bg-muted/40">
+              <ResizablePanelGroup orientation="horizontal" className="h-full">
+                {/* Border + radius live on a frame inside the panel so it tracks
+                  the resized preview; the wrapper only supplies the bg backdrop. */}
+                <ResizablePanel
+                  panelRef={panelRef}
+                  defaultSize="100%"
+                  minSize="320px"
+                  className="overflow-hidden"
+                >
+                  <div className="h-full overflow-hidden rounded-xl border border-border bg-background">
+                    {/* Real iframe: the block sees the panel's width as its own
+                        viewport, so its md: breakpoints + useIsMobile fire for real
+                        as the panel is resized/toggled. key=previewKey reloads it. */}
+                    <iframe
+                      key={previewKey}
+                      src={`/blocks/preview/${slug}`}
+                      title={title}
+                      className="h-full w-full border-0"
+                    />
+                  </div>
+                </ResizablePanel>
+                {/* bg-transparent drops the full-height divider line (it clashed
+                  with the rounded frame); only the grip pill shows. w-3 gives a
+                  ~12px grab area without adding a layout gap. */}
+                <ResizableHandle withHandle className="w-3 bg-transparent" />
+                {/* Empty panel reveals the gray backdrop as the preview shrinks. */}
+                <ResizablePanel defaultSize={0} />
+              </ResizablePanelGroup>
+            </div>
           ) : (
             <div className="flex h-full overflow-hidden rounded-xl border border-border bg-muted/40">
               {/* File tree */}

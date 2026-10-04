@@ -4,6 +4,7 @@ import * as React from "react"
 import { createPortal } from "react-dom"
 
 import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/components/ui/button"
 import {
   WorkspaceTabs,
   type WorkspaceTab,
@@ -1359,8 +1360,10 @@ function DragGhost({ title, x, y }: { title: string; x: number; y: number }) {
         } as React.CSSProperties
       }
     >
-      <div className="flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1.5 shadow-md">
-        <span className="text-xs font-medium text-foreground">{title}</span>
+      <div
+        className={cn(buttonVariants({ variant: "secondary" }), "shadow-md")}
+      >
+        {title}
       </div>
     </div>,
     document.body

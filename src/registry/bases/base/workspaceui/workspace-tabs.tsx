@@ -12,7 +12,7 @@ import { Tabs } from "@base-ui/react/tabs"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -112,10 +112,7 @@ function WorkspaceTabs({
       <div
         ref={tabStripRef}
         data-slot="workspace-tab-list"
-        // No border-b: the bg-muted strip meeting the bg-card panel is the
-        // edge. A border here would also show *under* the active tab — the
-        // tab can't overlap it, since the scrolling tab list clips vertically.
-        className="flex shrink-0 items-end bg-muted"
+        className="flex shrink-0 items-center border-b border-border"
       >
         {/* Tab menu — every open tab in this strip, plus split/move for the
             active one (the keyboard route to what dragging does). */}
@@ -127,9 +124,7 @@ function WorkspaceTabs({
                   variant="ghost"
                   size="icon-sm"
                   aria-label="Tab menu"
-                  // self-center (not the strip's items-end) so it sits on the
-                  // tabs' centreline; hover matches the inactive tabs'.
-                  className="ml-1 shrink-0 self-center rounded-md text-foreground/50 hover:bg-foreground/5"
+                  className="ml-1 shrink-0"
                 />
               }
             >
@@ -211,92 +206,96 @@ function WorkspaceTabs({
         {/* Scrollable tab row */}
         <Tabs.List
           aria-label="Open tabs"
-          className="flex min-w-0 [scrollbar-width:none] items-end overflow-x-auto px-1 [&::-webkit-scrollbar]:hidden"
+          className="flex min-w-0 [scrollbar-width:none] items-center gap-1 overflow-x-auto p-1 [&::-webkit-scrollbar]:hidden"
         >
           {tabs.map((tab, index) => {
             const isActive = tab.id === activeTabId
+            const closable = onTabClose != null && !tab.pinned
             return (
               <React.Fragment key={tab.id}>
                 {/* Drop indicator shown when dragging over this strip position */}
                 {tabDropInsertIndex === index && <TabDropIndicator />}
 
-                <Tabs.Tab
-                  value={tab.id}
-                  id={`workspace-tab-${tab.id}`}
-                  onPointerDown={(e) => {
-                    if (tab.pinned || !paneId || !dragCtx) return
-                    onTabChange(tab.id)
-                    // preventDefault suppresses text selection *and* the focus
-                    // that pointerdown would normally do — so focus by hand, or
-                    // Base UI's roving focus never engages after a click.
-                    e.preventDefault()
-                    e.currentTarget.focus()
-                    dragCtx.startDrag(paneId, tab.id, tab.title, e)
-                  }}
-                  onKeyDown={(e) => {
-                    // Close from the tab itself: the close affordance is a
-                    // tabIndex={-1} div (can't be a button inside a button), so
-                    // this is the only keyboard path to it.
-                    if (
-                      onTabClose != null &&
-                      !tab.pinned &&
-                      (e.key === "Delete" || e.key === "Backspace")
-                    ) {
-                      e.preventDefault()
-                      onTabClose(tab.id)
-                    }
-                  }}
-                  className={cn(
-                    // Layout & sizing
-                    "group relative flex max-w-[180px] min-w-[152px] cursor-pointer items-center gap-1.5",
-                    "px-3 py-2 text-sm whitespace-nowrap select-none",
-                    "transition-colors outline-none",
-                    "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
-                    // Inactive
-                    !isActive &&
-                      "text-foreground/60 hover:bg-foreground/5 hover:text-foreground/80",
-                    isActive && "bg-card text-foreground"
-                  )}
+                <div
+                  role="presentation"
+                  className="group relative flex max-w-[180px] min-w-0 shrink-0"
                 >
-                  {/* Favicon / icon */}
-                  {tab.icon != null && (
-                    <span className="flex shrink-0 [&_svg]:size-[14px]">
-                      {tab.icon}
+                  <Tabs.Tab
+                    value={tab.id}
+                    id={`workspace-tab-${tab.id}`}
+                    onPointerDown={(e) => {
+                      if (tab.pinned || !paneId || !dragCtx) return
+                      onTabChange(tab.id)
+                      // preventDefault suppresses text selection *and* the focus
+                      // that pointerdown would normally do — so focus by hand, or
+                      // Base UI's roving focus never engages after a click.
+                      e.preventDefault()
+                      e.currentTarget.focus()
+                      dragCtx.startDrag(paneId, tab.id, tab.title, e)
+                    }}
+                    onKeyDown={(e) => {
+                      // Close from the tab itself: the close button is out of the
+                      // tab order (tabIndex -1), so this is the keyboard path.
+                      if (
+                        onTabClose != null &&
+                        !tab.pinned &&
+                        (e.key === "Delete" || e.key === "Backspace")
+                      ) {
+                        e.preventDefault()
+                        onTabClose(tab.id)
+                      }
+                    }}
+                    className={cn(
+                      buttonVariants({
+                        variant: isActive ? "secondary" : "ghost",
+                      }),
+                      "w-full min-w-0 justify-start",
+                      // The close button is a sibling, so hovering it ends the
+                      // tab's own :hover — repeat the variants' hover on the wrapper.
+                      isActive
+                        ? "group-hover:bg-secondary/80"
+                        : "group-hover:bg-muted group-hover:text-foreground dark:group-hover:bg-muted/50",
+                      // ! beats buttonVariants' px-2.5; reserves room for the close button
+                      closable && "pe-8!"
+                    )}
+                  >
+                    {/* Favicon / icon */}
+                    {tab.icon != null && (
+                      <span className="flex shrink-0 [&_svg]:size-[14px]">
+                        {tab.icon}
+                      </span>
+                    )}
+
+                    <span className="min-w-0 truncate text-left">
+                      {tab.title}
                     </span>
-                  )}
 
-                  <span className="min-w-0 flex-1 truncate text-left">
-                    {tab.title}
-                  </span>
-
-                  {/* Unread badge */}
-                  {tab.badge != null && tab.badge > 0 && (
-                    <Badge className="h-4 min-w-4 shrink-0 rounded-full px-1 text-xs">
-                      {tab.badge > 99 ? "99+" : tab.badge}
-                    </Badge>
-                  )}
-
-                  {/* Close button — hidden for pinned tabs */}
-                  {/* Must be a div, not a button — buttons cannot be nested inside buttons */}
-                  {onTabClose != null && !tab.pinned && (
-                    <div
-                      role="button"
+                    {/* Unread badge */}
+                    {tab.badge != null && tab.badge > 0 && (
+                      <Badge className="h-4 min-w-4 shrink-0 rounded-full px-1 text-xs">
+                        {tab.badge > 99 ? "99+" : tab.badge}
+                      </Badge>
+                    )}
+                  </Tabs.Tab>
+                  {/* Close button — a sibling of the tab, not a child: a button
+                      nested inside the tab's button is invalid interactive
+                      content. Out of the tab order (tabIndex -1) because the
+                      focused tab already closes on Delete/Backspace. */}
+                  {closable && (
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
                       tabIndex={-1}
                       aria-label={
                         tab.dirty
                           ? `Close ${tab.title} (unsaved changes)`
                           : `Close ${tab.title}`
                       }
-                      onPointerDown={(e) => e.stopPropagation()}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        onTabClose(tab.id)
-                      }}
+                      onClick={() => onTabClose(tab.id)}
                       className={cn(
-                        "flex size-4 shrink-0 items-center justify-center rounded",
-                        "text-foreground/40 hover:bg-foreground/10 hover:text-foreground",
-                        "opacity-0 transition-all group-hover:opacity-100",
-                        isActive && "opacity-50 group-hover:opacity-100",
+                        "absolute end-0.5 top-0.5 opacity-60 group-hover:opacity-100",
+                        // Ghost's hover (bg-muted) matches the hovered tab behind it.
+                        "hover:bg-foreground/10 dark:hover:bg-foreground/15",
                         // A dirty tab always shows its dot, even unhovered/inactive.
                         tab.dirty && "opacity-100"
                       )}
@@ -305,24 +304,20 @@ function WorkspaceTabs({
                         <>
                           <span
                             aria-hidden
-                            className="size-2 rounded-full bg-foreground/60 group-hover:hidden"
+                            className="size-2 rounded-full bg-current group-hover:hidden"
                           />
                           <HugeiconsIcon
                             icon={Cancel01Icon}
                             strokeWidth={2}
-                            className="hidden size-3 group-hover:block"
+                            className="hidden group-hover:block"
                           />
                         </>
                       ) : (
-                        <HugeiconsIcon
-                          icon={Cancel01Icon}
-                          strokeWidth={2}
-                          className="size-3"
-                        />
+                        <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} />
                       )}
-                    </div>
+                    </Button>
                   )}
-                </Tabs.Tab>
+                </div>
               </React.Fragment>
             )
           })}
@@ -337,7 +332,7 @@ function WorkspaceTabs({
             size="icon-sm"
             aria-label="New tab"
             onClick={onAddTab}
-            className="mx-1 shrink-0 self-center rounded-md text-foreground/50 hover:bg-foreground/5"
+            className="mx-1 shrink-0"
           >
             <HugeiconsIcon icon={PlusSignIcon} strokeWidth={2} />
           </Button>

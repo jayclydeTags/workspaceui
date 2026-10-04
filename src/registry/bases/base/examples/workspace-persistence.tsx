@@ -55,20 +55,24 @@ export function WorkspacePersistenceDemo() {
   return (
     <div className="flex w-full flex-col gap-3">
       <div className="flex items-center gap-2">
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => setSaved(workspace.current!.serialize())}
-        >
-          <HugeiconsIcon icon={SaveIcon} strokeWidth={2} /> Save layout
+        <Button onClick={() => setSaved(workspace.current!.serialize())}>
+          <HugeiconsIcon
+            icon={SaveIcon}
+            strokeWidth={2}
+            data-icon="inline-start"
+          />
+          Save layout
         </Button>
         <Button
-          size="sm"
-          variant="outline"
           disabled={saved === null}
           onClick={() => workspace.current!.restore(saved!, (id) => TABS[id])}
         >
-          <HugeiconsIcon icon={RotateClockwiseIcon} strokeWidth={2} /> Restore
+          <HugeiconsIcon
+            icon={RotateClockwiseIcon}
+            strokeWidth={2}
+            data-icon="inline-start"
+          />
+          Restore
         </Button>
         <p className="text-xs text-muted-foreground">
           {saved

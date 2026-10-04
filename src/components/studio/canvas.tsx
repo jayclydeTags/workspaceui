@@ -1,12 +1,18 @@
 "use client"
 
-import { Component, type ErrorInfo, type ReactNode } from "react"
+import {
+  Component,
+  type ErrorInfo,
+  type ReactElement,
+  type ReactNode,
+} from "react"
 import Link from "next/link"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   ArrowLeft01Icon,
   ArrowRight01Icon,
   ComputerIcon,
+  SidebarRight01Icon,
   RotateClockwiseIcon,
   SmartPhone01Icon,
   Tablet01Icon,
@@ -14,19 +20,64 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { useStudio, type Viewport } from "@/components/studio/studio-context"
 import type { StudioLink } from "@/components/studio/types"
 
 const VIEWPORTS: {
   id: Viewport
   label: string
+  /** Shown in the tooltip: what the preset actually does. */
+  tip: string
   icon: typeof ComputerIcon
   width: string
 }[] = [
-  { id: "full", label: "Full width", icon: ComputerIcon, width: "max-w-full" },
-  { id: "tablet", label: "Tablet", icon: Tablet01Icon, width: "max-w-3xl" },
-  { id: "mobile", label: "Mobile", icon: SmartPhone01Icon, width: "max-w-sm" },
+  {
+    id: "full",
+    label: "Full width",
+    tip: "Full width: fill the canvas",
+    icon: ComputerIcon,
+    width: "max-w-full",
+  },
+  {
+    id: "tablet",
+    label: "Tablet",
+    tip: "Tablet: cap the stage at 768px",
+    icon: Tablet01Icon,
+    width: "max-w-3xl",
+  },
+  {
+    id: "mobile",
+    label: "Mobile",
+    tip: "Mobile: cap the stage at 384px",
+    icon: SmartPhone01Icon,
+    width: "max-w-sm",
+  },
 ]
+
+// Icon-only toolbar buttons get a tooltip saying what they do; the aria-label
+// stays on the button itself for assistive tech.
+function Tip({
+  label,
+  render,
+  children,
+}: {
+  label: string
+  render: ReactElement
+  children: ReactNode
+}) {
+  return (
+    <Tooltip>
+      <TooltipTrigger render={render}>{children}</TooltipTrigger>
+      <TooltipContent side="bottom">{label}</TooltipContent>
+    </Tooltip>
+  )
+}
 
 export function Canvas() {
   return (
@@ -42,52 +93,87 @@ export function Canvas() {
 }
 
 function CanvasToolbar() {
-  const { slots, viewport, setViewport, remount } = useStudio()
+  const {
+    slots,
+    inspectorOpen,
+    setInspectorOpen,
+    viewport,
+    setViewport,
+    remount,
+  } = useStudio()
 
   return (
-    <div className="flex min-h-12 shrink-0 flex-wrap items-center gap-x-3 gap-y-2 border-b px-4 py-2">
-      <div className="flex items-center gap-1">
-        <NavArrow
-          link={slots.prev}
-          icon={ArrowLeft01Icon}
-          label="Previous component"
-        />
-        <NavArrow
-          link={slots.next}
-          icon={ArrowRight01Icon}
-          label="Next component"
-        />
-      </div>
-      <span className="text-sm font-medium">{slots.title}</span>
-      <div className="ml-auto flex items-center gap-1">
-        <div
-          role="group"
-          aria-label="Canvas width"
-          className="flex items-center gap-0.5 rounded-lg border p-0.5"
-        >
-          {VIEWPORTS.map(({ id, label, icon }) => (
-            <Button
-              key={id}
-              variant={viewport === id ? "secondary" : "ghost"}
-              size="icon-sm"
-              aria-label={label}
-              aria-pressed={viewport === id}
-              onClick={() => setViewport(id)}
-            >
-              <HugeiconsIcon icon={icon} strokeWidth={2} />
-            </Button>
-          ))}
+    <TooltipProvider delay={300}>
+      <div className="flex min-h-12 shrink-0 flex-wrap items-center gap-x-3 gap-y-2 border-b px-4 py-2">
+        <div className="flex items-center gap-1">
+          <NavArrow
+            link={slots.prev}
+            icon={ArrowLeft01Icon}
+            label="Previous component"
+          />
+          <NavArrow
+            link={slots.next}
+            icon={ArrowRight01Icon}
+            label="Next component"
+          />
         </div>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          aria-label="Reload canvas"
-          onClick={remount}
-        >
-          <HugeiconsIcon icon={RotateClockwiseIcon} strokeWidth={2} />
-        </Button>
+        <span className="text-sm font-medium">{slots.title}</span>
+        <div className="ml-auto flex items-center gap-1">
+          <div
+            role="group"
+            aria-label="Canvas width"
+            className="flex items-center gap-0.5 rounded-lg border p-0.5"
+          >
+            {VIEWPORTS.map(({ id, label, tip, icon }) => (
+              <Tip
+                key={id}
+                label={tip}
+                render={
+                  <Button
+                    variant={viewport === id ? "secondary" : "ghost"}
+                    size="icon-sm"
+                    aria-label={label}
+                    aria-pressed={viewport === id}
+                    onClick={() => setViewport(id)}
+                  />
+                }
+              >
+                <HugeiconsIcon icon={icon} strokeWidth={2} />
+              </Tip>
+            ))}
+          </div>
+          <Tip
+            label="Reload the component, resetting its internal state"
+            render={
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label="Reload canvas"
+                onClick={remount}
+              />
+            }
+          >
+            <HugeiconsIcon icon={RotateClockwiseIcon} strokeWidth={2} />
+          </Tip>
+          <Tip
+            label={
+              inspectorOpen ? "Hide component info" : "Show component info"
+            }
+            render={
+              <Button
+                variant={inspectorOpen ? "secondary" : "ghost"}
+                size="icon-sm"
+                aria-label="Component info"
+                aria-pressed={inspectorOpen}
+                onClick={() => setInspectorOpen(!inspectorOpen)}
+              />
+            }
+          >
+            <HugeiconsIcon icon={SidebarRight01Icon} strokeWidth={2} />
+          </Tip>
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   )
 }
 
@@ -110,13 +196,18 @@ function NavArrow({
   }
   return (
     // A real <a>, not a button: this navigates.
-    <Link
-      href={link.href}
-      aria-label={`${label}: ${link.title}`}
-      className={buttonVariants({ variant: "ghost", size: "icon-sm" })}
+    <Tip
+      label={`${label.split(" ")[0]}: ${link.title}`}
+      render={
+        <Link
+          href={link.href}
+          aria-label={`${label}: ${link.title}`}
+          className={buttonVariants({ variant: "ghost", size: "icon-sm" })}
+        />
+      }
     >
       <HugeiconsIcon icon={icon} strokeWidth={2} />
-    </Link>
+    </Tip>
   )
 }
 
@@ -128,7 +219,7 @@ function CanvasSurface() {
 
   return (
     <div className="min-h-0 flex-1 overflow-auto bg-muted/30 canvas-dots">
-      <div className="flex min-h-full flex-col items-center justify-center gap-12 p-6 sm:p-10">
+      <div className="flex min-h-full flex-col items-center justify-center gap-12 p-4">
         {Preview ? (
           <Stage width={viewport}>
             <Boundary resetKey={args} key={remountKey}>

@@ -177,6 +177,78 @@ describe("Studio", () => {
     })
   })
 
+  describe("component info toggle", () => {
+    const panel = () =>
+      screen.queryByRole("complementary", { name: "Component details" })
+
+    it("shows the panel by default", () => {
+      render(<Studio {...slots} />)
+
+      expect(panel()).toBeInTheDocument()
+      expect(
+        screen.getByRole("button", { name: "Component info" })
+      ).toHaveAttribute("aria-pressed", "true")
+    })
+
+    it("hides and re-shows the panel without remounting the canvas", async () => {
+      const user = userEvent.setup()
+      render(<Studio {...slots} />)
+      const toggle = screen.getByRole("button", { name: "Component info" })
+      const before = playground()
+
+      await user.click(toggle)
+      expect(panel()).toBeNull()
+      expect(toggle).toHaveAttribute("aria-pressed", "false")
+      expect(playground()).toBe(before)
+
+      await user.click(toggle)
+      expect(panel()).toBeInTheDocument()
+    })
+
+    it("keeps the current control values while the panel is hidden", async () => {
+      const user = userEvent.setup()
+      render(<Studio {...slots} />)
+
+      await user.click(screen.getByRole("checkbox", { name: "loud" }))
+      await user.click(screen.getByRole("button", { name: "Component info" }))
+      expect(playground()).toHaveTextContent("Hello:2:true:calm")
+
+      await user.click(screen.getByRole("button", { name: "Component info" }))
+      expect(screen.getByRole("checkbox", { name: "loud" })).toBeChecked()
+    })
+  })
+
+  describe("toolbar tooltips", () => {
+    it.each([
+      ["Reload canvas", /Reload the component/],
+      ["Tablet", /768px/],
+      ["Mobile", /384px/],
+      ["Component info", /Hide component info/],
+      ["Next component: Usage Meter", /Next: Usage Meter/],
+    ])("explains the %s button on hover", async (name, text) => {
+      const user = userEvent.setup()
+      render(<Studio {...slots} examples={[]} />)
+
+      await user.hover(
+        screen.getByRole(name.startsWith("Next") ? "link" : "button", { name })
+      )
+
+      expect(await screen.findByText(text)).toBeInTheDocument()
+    })
+
+    it("flips the info tooltip once the panel is hidden", async () => {
+      const user = userEvent.setup()
+      render(<Studio {...slots} examples={[]} />)
+
+      const toggle = screen.getByRole("button", { name: "Component info" })
+      await user.click(toggle)
+      await user.unhover(toggle)
+      await user.hover(toggle)
+
+      expect(await screen.findByText("Show component info")).toBeInTheDocument()
+    })
+  })
+
   describe("canvas", () => {
     it("shows only the component: no Playground or Variants sections", () => {
       render(<Studio {...slots} examples={[]} />)

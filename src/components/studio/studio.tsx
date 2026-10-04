@@ -43,6 +43,7 @@ export function Studio({
   api,
 }: StudioSlots & { story?: Story }) {
   const [args, setArgs] = useState<Args>(() => story?.args ?? {})
+  const [inspectorOpen, setInspectorOpen] = useState(true)
   const [viewport, setViewport] = useState<Viewport>("full")
   const [remountKey, setRemountKey] = useState(0)
   const isDesktop = useIsDesktop()
@@ -60,6 +61,8 @@ export function Studio({
       args,
       setArg,
       resetArgs: () => setArgs(story?.args ?? {}),
+      inspectorOpen,
+      setInspectorOpen,
       viewport,
       setViewport,
       remountKey,
@@ -76,6 +79,7 @@ export function Studio({
       install,
       api,
       args,
+      inspectorOpen,
       viewport,
       remountKey,
       setArg,
@@ -86,18 +90,29 @@ export function Studio({
     <StudioProvider value={value}>
       {isDesktop ? (
         <ResizablePanelGroup orientation="horizontal" className="h-full">
-          <ResizablePanel defaultSize="68%" minSize="35%">
+          {/* ids keep the canvas mounted (and its layout) when the inspector
+              panel is added or removed. */}
+          <ResizablePanel id="canvas" defaultSize="68%" minSize="35%">
             <Canvas />
           </ResizablePanel>
-          <ResizableHandle withHandle />
-          <ResizablePanel defaultSize="32%" minSize="24%" maxSize="55%">
-            <Inspector />
-          </ResizablePanel>
+          {inspectorOpen && (
+            <>
+              <ResizableHandle withHandle />
+              <ResizablePanel
+                id="inspector"
+                defaultSize="32%"
+                minSize="24%"
+                maxSize="55%"
+              >
+                <Inspector />
+              </ResizablePanel>
+            </>
+          )}
         </ResizablePanelGroup>
       ) : (
         <div className="flex flex-col">
           <Canvas />
-          <Inspector />
+          {inspectorOpen && <Inspector />}
         </div>
       )}
     </StudioProvider>

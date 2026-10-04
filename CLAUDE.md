@@ -120,7 +120,9 @@ inspector as one resizable pair (stacked below `lg`).
   with no card frame and no section labels: just the component, centered, driven
   live by the inspector's controls (props and variations). The toolbar has
   prev/next arrows (links to the neighbouring components, in sidebar order), the
-  component name, width presets (they cap the stage) and a reload button.
+  component name, width presets (they cap the stage), a reload button and a
+  "Component info" toggle that hides/shows the inspector (shown by default; the
+  canvas stays mounted either way).
 - **Inspector**: one scrolling panel, no tabs. In order: component name,
   description, **Props** (non-style controls), **Variations** (controls marked
   `group: "style"`; they configure the one component on the canvas), **Installation** (the `shadcn add` command, with copy), and

@@ -18,6 +18,9 @@ export interface StudioContextValue {
   args: Args
   setArg: (key: string, value: unknown) => void
   resetArgs: () => void
+  /** Whether the component-info panel is shown. Open by default. */
+  inspectorOpen: boolean
+  setInspectorOpen: (open: boolean) => void
   viewport: Viewport
   setViewport: (viewport: Viewport) => void
   /** Bumped to remount the canvas content from scratch. */

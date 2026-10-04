@@ -158,6 +158,15 @@ export default defineConfig([
       ],
     },
   },
+  // The docs code-block widgets implement their own tab bars on the Tabs
+  // primitive, so their authored defaults are component styling.
+  {
+    files: [
+      "src/components/docs/codeblock.tsx",
+      "src/components/docs/code-block-command.tsx",
+    ],
+    rules: { "shadcn/no-restyle": "off" },
+  },
   // Brand artwork must keep its fixed colors (Google's G, the WorkspaceUI
   // logo gradient). Configured here, not with inline disables, so the shipped
   // login-social block stays free of lint directives.

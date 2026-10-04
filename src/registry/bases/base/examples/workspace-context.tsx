@@ -30,8 +30,6 @@ function OverviewPanel() {
         className="size-8 text-muted-foreground/40"
       />
       <Button
-        size="sm"
-        variant="outline"
         onClick={() =>
           openTabInPane("main", {
             id: "details",

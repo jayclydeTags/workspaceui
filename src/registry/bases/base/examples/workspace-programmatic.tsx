@@ -8,6 +8,7 @@ import {
   Setting06Icon,
 } from "@hugeicons/core-free-icons"
 
+import { Button } from "@/components/ui/button"
 import {
   Workspace,
   type WorkspaceHandle,
@@ -29,31 +30,17 @@ export function WorkspaceProgrammaticDemo() {
     {
       id: "dashboard",
       title: "Dashboard",
-      icon: (
-        <HugeiconsIcon
-          icon={DashboardSquare01Icon}
-          strokeWidth={2}
-          className="size-4"
-        />
-      ),
+      icon: <HugeiconsIcon icon={DashboardSquare01Icon} strokeWidth={2} />,
     },
     {
       id: "documents",
       title: "Documents",
-      icon: (
-        <HugeiconsIcon icon={File01Icon} strokeWidth={2} className="size-4" />
-      ),
+      icon: <HugeiconsIcon icon={File01Icon} strokeWidth={2} />,
     },
     {
       id: "settings",
       title: "Settings",
-      icon: (
-        <HugeiconsIcon
-          icon={Setting06Icon}
-          strokeWidth={2}
-          className="size-4"
-        />
-      ),
+      icon: <HugeiconsIcon icon={Setting06Icon} strokeWidth={2} />,
     },
   ]
   return (
@@ -61,8 +48,9 @@ export function WorkspaceProgrammaticDemo() {
       <div className="flex h-full">
         <nav className="flex w-44 shrink-0 flex-col gap-1 border-r border-border bg-muted/30 p-2">
           {items.map((item) => (
-            <button
+            <Button
               key={item.id}
+              className="w-full justify-start"
               onClick={() =>
                 workspace.current?.openTabInPane("main", {
                   id: item.id,
@@ -75,11 +63,13 @@ export function WorkspaceProgrammaticDemo() {
                   ),
                 })
               }
-              className="flex items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground"
             >
-              {item.icon}
+              {React.cloneElement(
+                item.icon as React.ReactElement,
+                { "data-icon": "inline-start" } as object
+              )}
               {item.title}
-            </button>
+            </Button>
           ))}
         </nav>
         <Workspace

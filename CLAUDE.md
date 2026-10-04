@@ -170,7 +170,7 @@ Components import each other via `@/components/workspaceui/...`.
 - `WorkspaceTab`: `{ id, title, icon?, badge?, pinned?, dirty? }`
 - Base UI `Tabs.Root/List/Tab/Panel` owns the a11y engine (roving focus, Home/End/Arrow, tab/tablist/tabpanel wiring); styling, drag, badge, and close are ours
 - Drag and the keyboard split/move menu both come from `useWorkspaceDragOptional()` — the component still renders standalone when that context is absent
-- Close is `Delete`/`Backspace` on the focused tab: the close affordance is a `tabIndex={-1}` div, since a button can't nest inside Base UI's tab button
+- Close is `Delete`/`Backspace` on the focused tab: the close affordance is a real icon `Button` (`tabIndex={-1}`) rendered as a sibling of the tab — a button can't nest inside Base UI's tab button — inside a `role="presentation"` wrapper
 
 ### workspace.tsx
 

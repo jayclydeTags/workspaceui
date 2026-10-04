@@ -28,9 +28,9 @@ Every new distributable component or block added to
      `pages` (the `/components` sidebar and route are generated from the mdx —
      see CLAUDE.md's "Component studio" section)
    - **every prop on the component's `export interface <Name>Props`
-     appears as a key in that mdx's `<TypeTable>` block(s)** — this is the
+     appears as a key in that mdx's API Reference table(s)** (the tables the component page shows) — this is the
      check that catches "changed the component but forgot to update the
-     docs": add/rename a prop and the test fails until the `<TypeTable>`
+     docs": add/rename a prop and the test fails until the API Reference table
      is updated to match.
 
 So: add the component test yourself, add the `registry.json` entry and the
@@ -41,7 +41,7 @@ until someone runs `npx shadcn add` or reads stale docs — the tests only
 validate what exists, they can't detect something missing entirely.
 
 Known limitation: the prop-doc check only verifies prop _names_ are
-present in the `<TypeTable>`, not that descriptions/types/defaults are
+present in the API Reference table, not that descriptions/types/defaults are
 accurate — that still needs a human read on review. It also only applies
 where the component follows the `export interface <PascalName>Props`
 naming convention; components that don't are silently skipped (see the

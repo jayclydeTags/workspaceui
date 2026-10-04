@@ -13,6 +13,41 @@ import {
 import { DynamicCodeBlock } from "@/components/docs/dynamic-codeblock"
 import { GithubIcon } from "@/components/site/github-icon"
 
+// Answers are checked against the repo (LICENSE, registry.json, package.json):
+// keep them true when those change.
+const FAQ = [
+  {
+    question: "Is WorkspaceUI free for commercial projects?",
+    answer:
+      "Yes. It's MIT licensed, so you can use, modify, and ship it in commercial work. Keep the copyright notice with the code you copy.",
+  },
+  {
+    question: "How do I install a component?",
+    answer:
+      "Run the shadcn CLI with the component's name, for example `npx shadcn@latest add jayclydeTags/workspaceui/workspace`. It also works with pnpm dlx, yarn dlx, or bun x. Every component page shows its exact command.",
+  },
+  {
+    question: "What does my project need?",
+    answer:
+      "A project set up for shadcn/ui with React 19 and Tailwind CSS v4. Components pull in what they use, such as Base UI, TanStack Table, dnd-kit, or react-resizable-panels, and the CLI installs those dependencies for you.",
+  },
+  {
+    question: "Can I change the design and behavior?",
+    answer:
+      "Yes. The source is copied into your repo, so you own it: edit the markup, styles, and logic directly. Styling uses your theme tokens, so most restyling is a CSS-variable change. The few components that use success or warning colors add those tokens for you.",
+  },
+  {
+    question: "Can I try a component before installing it?",
+    answer:
+      "Yes. Each component page is a live playground where you can change its props and variations, resize the canvas, and read the full API. Blocks open as full-page previews with desktop, tablet, and mobile widths.",
+  },
+  {
+    question: "What's the difference between components and blocks?",
+    answer:
+      "Components are the building pieces: tabs, a data grid, a board column, a usage meter. Blocks are complete layouts assembled from them and from shadcn/ui, such as login flows, dashboards, and settings screens.",
+  },
+]
+
 export default function HomePage() {
   return (
     <main className="mx-auto max-w-screen-xl px-4 py-20 md:px-6">
@@ -33,10 +68,10 @@ export default function HomePage() {
 
         <div className="mb-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
           <Link
-            href="/docs/getting-started/introduction"
+            href="/components"
             className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Get started
+            Browse components
             <HugeiconsIcon
               icon={ArrowRight01Icon}
               strokeWidth={2}
@@ -131,19 +166,44 @@ export default function HomePage() {
         ))}
       </div>
 
+      {/* FAQ */}
+      <section
+        aria-labelledby="faq-heading"
+        className="mx-auto mt-24 max-w-3xl"
+      >
+        <h2
+          id="faq-heading"
+          className="mb-8 text-center text-2xl font-semibold tracking-tight text-foreground"
+        >
+          Frequently asked questions
+        </h2>
+        <div className="divide-y divide-border border-y border-border">
+          {FAQ.map((item) => (
+            <div key={item.question} className="py-5">
+              <h3 className="mb-1.5 font-semibold text-foreground">
+                {item.question}
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {item.answer.split("`").map((part, i) =>
+                  i % 2 === 1 ? (
+                    <code
+                      key={i}
+                      className="rounded bg-muted px-1 py-0.5 text-xs break-words text-foreground"
+                    >
+                      {part}
+                    </code>
+                  ) : (
+                    part
+                  )
+                )}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Explore links */}
       <div className="mt-16 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-        <Link
-          href="/components"
-          className="inline-flex items-center gap-1 text-sm font-medium text-foreground hover:underline"
-        >
-          Browse components
-          <HugeiconsIcon
-            icon={ArrowRight01Icon}
-            strokeWidth={2}
-            className="size-3.5"
-          />
-        </Link>
         <Link
           href="/blocks"
           className="inline-flex items-center gap-1 text-sm font-medium text-foreground hover:underline"

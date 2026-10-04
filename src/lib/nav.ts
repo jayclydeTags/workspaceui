@@ -11,17 +11,7 @@ export interface NavGroup {
 
 export interface NavSection {
   title: string
-  items?: NavItem[] // flat list (docs sidebar)
+  items?: NavItem[] // flat list (components sidebar)
   groups?: NavGroup[] // nested collapsible subcategories (blocks sidebar)
   comingSoon?: boolean // family is announced but has no blocks yet
 }
-
-export const nav: NavSection[] = [
-  {
-    title: "Getting Started",
-    items: [
-      { title: "Introduction", href: "/docs/getting-started/introduction" },
-      { title: "Installation", href: "/docs/getting-started/installation" },
-    ],
-  },
-]

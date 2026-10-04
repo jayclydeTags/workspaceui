@@ -52,14 +52,14 @@ export function SearchDialog() {
           className="size-4 shrink-0 text-muted-foreground"
         />
         <span className="flex-1 truncate text-left text-sm text-muted-foreground">
-          Search documentation...
+          Search components and blocks...
         </span>
         <Kbd className="hidden shrink-0 sm:inline-flex">⌘K</Kbd>
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <Command shouldFilter={false}>
           <CommandInput
-            placeholder="Search documentation..."
+            placeholder="Search components and blocks..."
             value={search}
             onValueChange={setSearch}
           />

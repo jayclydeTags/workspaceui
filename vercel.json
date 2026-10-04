@@ -13,6 +13,16 @@
       "source": "/docs/components/:slug",
       "destination": "/components/:slug",
       "permanent": true
+    },
+    {
+      "source": "/docs",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/docs/getting-started/:slug",
+      "destination": "/",
+      "permanent": true
     }
   ]
 }

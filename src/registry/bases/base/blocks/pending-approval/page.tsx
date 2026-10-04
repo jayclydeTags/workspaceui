@@ -33,15 +33,17 @@ export function PendingApproval() {
           </p>
 
           <Card size="sm" className="mt-4 w-full bg-muted/50">
-            <CardContent className="flex items-center gap-2 text-left text-xs text-muted-foreground">
-              <HugeiconsIcon
-                icon={Mail01Icon}
-                strokeWidth={2}
-                className="size-3.5 shrink-0"
-              />
-              We&apos;ll email{" "}
-              <span className="font-medium text-foreground">{EMAIL}</span> once
-              you&apos;re approved
+            <CardContent className="text-left">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <HugeiconsIcon
+                  icon={Mail01Icon}
+                  strokeWidth={2}
+                  className="size-3.5 shrink-0"
+                />
+                We&apos;ll email{" "}
+                <span className="font-medium text-foreground">{EMAIL}</span>{" "}
+                once you&apos;re approved
+              </div>
             </CardContent>
           </Card>
 

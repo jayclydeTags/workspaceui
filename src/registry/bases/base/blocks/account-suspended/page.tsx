@@ -40,9 +40,11 @@ export function AccountSuspended() {
           </p>
 
           <Card size="sm" className="mt-4 w-full bg-muted/50">
-            <CardContent className="text-left text-xs text-muted-foreground">
-              Reason:{" "}
-              <span className="font-medium text-foreground">{REASON}</span>
+            <CardContent className="text-left">
+              <p className="text-xs text-muted-foreground">
+                Reason:{" "}
+                <span className="font-medium text-foreground">{REASON}</span>
+              </p>
             </CardContent>
           </Card>
 

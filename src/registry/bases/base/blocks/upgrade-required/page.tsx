@@ -52,9 +52,12 @@ export function UpgradeRequired() {
           </p>
 
           <Card size="sm" className="mt-4 w-full bg-muted/50">
-            <CardContent className="flex flex-col gap-2 text-left text-xs text-muted-foreground">
+            <CardContent className="flex flex-col gap-2 text-left">
               {PERKS.map((perk) => (
-                <div key={perk} className="flex items-center gap-2">
+                <div
+                  key={perk}
+                  className="flex items-center gap-2 text-xs text-muted-foreground"
+                >
                   <HugeiconsIcon
                     icon={Tick02Icon}
                     strokeWidth={2}

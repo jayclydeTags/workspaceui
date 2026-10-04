@@ -42,9 +42,11 @@ export function Unauthorized403() {
           </p>
 
           <Card size="sm" className="mt-4 w-full bg-muted/50">
-            <CardContent className="text-left text-xs text-muted-foreground">
-              Error 403 — Forbidden. If you think this is a mistake, contact
-              your workspace administrator.
+            <CardContent className="text-left">
+              <p className="text-xs text-muted-foreground">
+                Error 403 — Forbidden. If you think this is a mistake, contact
+                your workspace administrator.
+              </p>
             </CardContent>
           </Card>
 

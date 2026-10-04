@@ -53,8 +53,10 @@ export function PayrollCalendar() {
                 {next.payDate}
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              {next.period} · timesheets lock {next.cutoff}
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                {next.period} · timesheets lock {next.cutoff}
+              </p>
             </CardContent>
           </Card>
         )}

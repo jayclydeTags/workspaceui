@@ -141,12 +141,8 @@ export function ActivityFeed() {
                     All Types
                   </DropdownMenuRadioItem>
                   {ALL_TYPES.map((t) => (
-                    <DropdownMenuRadioItem
-                      key={t}
-                      value={t}
-                      className="capitalize"
-                    >
-                      {t}
+                    <DropdownMenuRadioItem key={t} value={t}>
+                      <span className="capitalize">{t}</span>
                     </DropdownMenuRadioItem>
                   ))}
                 </DropdownMenuRadioGroup>

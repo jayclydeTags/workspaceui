@@ -248,11 +248,11 @@ export function AppSidebar({
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" side="top">
                 <DropdownMenuGroup>
-                  <DropdownMenuLabel className="flex flex-col gap-0.5 px-1.5 py-1">
+                  <DropdownMenuLabel className="flex flex-col">
                     <span className="text-sm font-medium text-foreground">
                       shadcn
                     </span>
-                    <span className="text-xs font-normal text-muted-foreground">
+                    <span className="mt-0.5 text-xs font-normal text-muted-foreground">
                       m@example.com
                     </span>
                   </DropdownMenuLabel>

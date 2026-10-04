@@ -122,11 +122,8 @@ export function NotificationBell({
         )}
 
         <DropdownMenuSeparator className="my-0" />
-        <DropdownMenuItem
-          onClick={onViewAll}
-          className="justify-center py-2 text-sm font-medium"
-        >
-          View all
+        <DropdownMenuItem onClick={onViewAll} className="justify-center py-2">
+          <span className="text-sm font-medium">View all</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

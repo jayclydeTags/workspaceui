@@ -44,7 +44,7 @@ export default defineConfig([
             // take typography, containers take spacing, avatars take a size.
             { pattern: "^CardTitle$", allow: ["layout", "typography"] },
             {
-              pattern: "^Card$|(Content|Header|Footer|Group|Panel)$",
+              pattern: "^Card$|^Empty$|(Content|Header|Footer|Group|Panel)$",
               allow: ["layout", "spacing"],
             },
             {
@@ -72,6 +72,11 @@ export default defineConfig([
                 "duration-200",
                 "ease-linear",
               ],
+            },
+            {
+              // Rich rows (e.g. notifications) pad themselves and tint unread.
+              pattern: "^DropdownMenuItem$",
+              allow: ["layout", "spacing", "bg-accent/40"],
             },
             { pattern: "^Avatar$", allow: ["size-*"] },
             // Headless primitives: they ship no appearance, so callers style them.

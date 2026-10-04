@@ -53,8 +53,7 @@ function SpinnerRing() {
         strokeWidth="3"
         strokeLinecap="round"
         strokeDasharray="30 120"
-        className="stroke-primary"
-        style={{ transformOrigin: "center" }}
+        className="origin-center stroke-primary"
         animate={{ rotate: 360 }}
         transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
       />
@@ -64,25 +63,16 @@ function SpinnerRing() {
 
 // Completed ring sweeps closed, then the check draws inside it.
 function SuccessRing({ reduceMotion }: { reduceMotion: boolean }) {
-  // ponytail: literal green — shadcn's theme has no success token. Swap for a
-  // --success var if the design system grows one.
-  const green = "stroke-green-600 dark:stroke-green-500"
   return (
     <svg viewBox="0 0 44 44" className="size-11" fill="none">
-      <circle
-        cx="22"
-        cy="22"
-        r="19"
-        className="fill-green-600/10 dark:fill-green-500/10"
-      />
+      <circle cx="22" cy="22" r="19" className="fill-success/10" />
       <motion.circle
         cx="22"
         cy="22"
         r="19"
         strokeWidth="3"
         strokeLinecap="round"
-        className={green}
-        style={{ rotate: -90, transformOrigin: "center" }}
+        className="origin-center -rotate-90 stroke-success"
         initial={reduceMotion ? false : { pathLength: 0 }}
         animate={{ pathLength: 1 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
@@ -92,7 +82,7 @@ function SuccessRing({ reduceMotion }: { reduceMotion: boolean }) {
         strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className={green}
+        className="stroke-success"
         initial={reduceMotion ? false : { pathLength: 0 }}
         animate={{ pathLength: 1 }}
         transition={{
@@ -207,12 +197,10 @@ export function TwoFactorChallenge() {
               </AnimatePresence>
             </div>
 
-            <CardTitle
-              className={
-                success ? "mt-2 text-green-600 dark:text-green-500" : "mt-2"
-              }
-            >
-              {success ? "Verified" : "Two-factor authentication"}
+            <CardTitle className="mt-2">
+              <span className={success ? "text-success" : undefined}>
+                {success ? "Verified" : "Two-factor authentication"}
+              </span>
             </CardTitle>
             <CardDescription>
               {success
@@ -345,22 +333,26 @@ export function TwoFactorChallenge() {
 
                   <Field orientation="horizontal">
                     <Checkbox id="trust-device" disabled={verifying} />
-                    <FieldLabel htmlFor="trust-device" className="font-normal">
-                      Trust this device for 30 days
+                    <FieldLabel htmlFor="trust-device">
+                      <span className="font-normal">
+                        Trust this device for 30 days
+                      </span>
                     </FieldLabel>
                   </Field>
 
                   <Button
                     variant="link"
-                    className="h-auto p-0 text-xs text-muted-foreground"
+                    size="xs"
                     disabled={verifying}
                     onClick={() =>
                       switchMode(mode === "totp" ? "recovery" : "totp")
                     }
                   >
-                    {mode === "totp"
-                      ? "Use a recovery code instead"
-                      : "Use your authenticator app instead"}
+                    <span className="text-muted-foreground group-hover/button:text-primary">
+                      {mode === "totp"
+                        ? "Use a recovery code instead"
+                        : "Use your authenticator app instead"}
+                    </span>
                   </Button>
                 </CardContent>
               </motion.div>

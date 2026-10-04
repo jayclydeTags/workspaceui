@@ -50,10 +50,15 @@ workspaceui/
 │   │   ├── workspaceui/      # Distributable components (source of truth) + __tests__/
 │   │   ├── blocks/           # Distributable blocks — each its own folder: page.tsx, components/, data.ts
 │   │   └── examples/         # Live demo components (registered in component-preview.tsx)
-│   ├── components/           # ui/ (shadcn primitives) + docs-site components:
-│   │   │                     #   site-header, search-dialog, theme-toggle, sidebar-nav, docs-toc,
-│   │   │                     #   mdx-heading, dynamic-codeblock, component-preview{,-shell},
-│   │   │                     #   component-source (fs reads), block-preview, codeblock, type-table, …
+│   ├── components/
+│   │   ├── ui/               # shadcn primitives (shadcn-owned; overwritten on re-install)
+│   │   ├── site/             # app chrome shared by every route: site-header, search-dialog,
+│   │   │                     #   sidebar-nav, blocks-sidebar-nav, theme-provider, theme-toggle,
+│   │   │                     #   workspaceui-logo, github-icon
+│   │   └── docs/             # docs/blocks-gallery rendering: docs-toc, docs-pager, docs-page-actions,
+│   │                         #   mdx-heading, mdx-accordion, callout, steps, files, codeblock,
+│   │                         #   dynamic-codeblock, component-preview{,-shell}, component-source
+│   │                         #   (fs reads), component-tree, block-preview, copy-button, …
 │   ├── lib/
 │   │   ├── source.ts         # fumadocs loader() over .source — content/page data for docs/[[...slug]]
 │   │   ├── nav.ts            # nav + blocksNav config — drives SidebarNav (docs + blocks) and search
@@ -72,22 +77,22 @@ project's own shadcn/ui primitives (`src/components/ui/*`) — not
 `fumadocs-ui`'s pre-built `HomeLayout`/`DocsLayout`/`DocsPage`/`RootProvider`/
 `DynamicCodeBlock` components, which this repo doesn't depend on at all.
 
-- **`SiteHeader`** (`src/components/site-header.tsx`) is mounted once in the
+- **`SiteHeader`** (`src/components/site/site-header.tsx`) is mounted once in the
   root layout and shared by every route (marketing, docs, blocks) — it's not
   per-route-group chrome.
-- **Docs sidebar** reuses `SidebarNav` (`src/components/sidebar-nav.tsx`), the
+- **Docs sidebar** reuses `SidebarNav` (`src/components/site/sidebar-nav.tsx`), the
   same hand-rolled component the blocks gallery already used — fed by the
   hand-maintained `nav` config in `src/lib/nav.ts`, not fumadocs'
   `source.pageTree`.
-- **Search** (`src/components/search-dialog.tsx`) is a shadcn `Command`
+- **Search** (`src/components/site/search-dialog.tsx`) is a shadcn `Command`
   dialog wired to fumadocs-core's headless `useDocsSearch` hook against the
   existing static `/api/search` index.
-- **TOC** (`src/components/docs-toc.tsx`) uses fumadocs-core's headless
+- **TOC** (`src/components/docs/docs-toc.tsx`) uses fumadocs-core's headless
   `AnchorProvider`/`TOCItem`/`useActiveAnchor` (scrollspy) over `page.data.toc`.
-- **Code blocks**: `src/components/dynamic-codeblock.tsx` reimplements
+- **Code blocks**: `src/components/docs/dynamic-codeblock.tsx` reimplements
   fumadocs-ui's `DynamicCodeBlock` directly on fumadocs-core's
   `highlight/shiki/react` + the already-vendored `CodeBlock`/`Pre` in
-  `src/components/codeblock.tsx`.
+  `src/components/docs/codeblock.tsx`.
 - **Typography**: `src/lib/mdx-components.tsx` hand-styles MDX elements
   (headings via `mdx-heading.tsx`, tables, lists, code, etc.) instead of using
   fumadocs-ui's typography preset — there's no Tailwind Typography plugin.
@@ -129,6 +134,8 @@ npx shadcn@latest add jayclydeTags/workspaceui/workspace
 
 The repo must be public and have `registry.json` at its root; the CLI resolves items from it directly. Within `registry.json`, `registryDependencies` that point at sibling items in this same repo must use the full `jayclydeTags/workspaceui/<item>` address (not the bare name) — bare names resolve against the consumer's default `@shadcn` registry and 404. Plain shadcn primitives (`utils`, `resizable`, `sidebar`, `breadcrumb`, etc.) stay unprefixed. `src/registry/__tests__/registry.test.ts` validates both of these rules against every item automatically — see [`.claude/rules/component-testing.md`](.claude/rules/component-testing.md).
 
+**Theme tokens outside a stock shadcn theme.** `success` and `warning` are not in a consumer's default theme, so the `status-colors` item (`registry:theme`, no files, just `cssVars`) supplies them. Any item whose shipped files use `text-`/`bg-`/`border-…-success|warning` must list `jayclydeTags/workspaceui/status-colors` in `registryDependencies` (directly or via a sibling); `registry.test.ts` fails otherwise. A new shared token follows the same pattern: add it to `globals.css`, to `status-colors`' `cssVars` (`theme` + `light` + `dark`), and extend the test's utility regex.
+
 `bases/base/` mirrors shadcn's own multi-base registry convention (`apps/v4` on shadcn/ui). There is currently one base; don't add a second `bases/<name>/` directory speculatively.
 
 ### Comment hygiene in distributed components
@@ -160,7 +167,7 @@ before shipping rather than leaving it inline.
 | ----- | ----------- |
 | `@/*` | `./src/*`   |
 
-Components import each other via `@/components/workspaceui/...`.
+Components import each other via `@/components/workspaceui/...`. Docs-site components live under `@/components/site/*` (app chrome) and `@/components/docs/*` (docs/gallery rendering); shadcn primitives stay in `@/components/ui/*`.
 
 ## Component architecture
 
@@ -189,7 +196,7 @@ Components import each other via `@/components/workspaceui/...`.
 Every component in `src/registry/bases/base/workspaceui/` must have a matching fumadocs page:
 
 - `src/content/docs/components/<component>.mdx` — install (CLI + manual `<ComponentSource>`), usage, and a `<TypeTable>` API reference
-- A live demo in `src/registry/bases/base/examples/<component>-live.tsx`, registered in `previewComponents` in `src/components/component-preview.tsx`, and referenced via `<ComponentPreview name="<component>" code={...} />` in the mdx
+- A live demo in `src/registry/bases/base/examples/<component>-live.tsx`, registered in `previewComponents` in `src/components/docs/component-preview.tsx`, and referenced via `<ComponentPreview name="<component>" code={...} />` in the mdx
 - The component's name added to the `pages` array in `src/content/docs/components/meta.json` (validated by `registry-docs.test.ts`), **and** a sidebar entry in the `Components` section of `src/lib/nav.ts` (this is what actually renders the docs sidebar — see "UI architecture" above)
 - A `registry.json` entry pointing at the component file
 
@@ -222,6 +229,7 @@ New block: before building it, invoke the `shadcn` skill for component context �
 - **Next.js 16** App Router (Turbopack), static export (`output: "export"`)
 - **TypeScript ~6**, strict, `verbatimModuleSyntax`, `erasableSyntaxOnly`, `noUnusedLocals/Params`
 - **ESLint** flat config — `typescript-eslint` + `react-hooks` (generated dirs `.next`/`.source`/`out` ignored)
+- **@shadcn/lint** — all six rules (`no-restyle`, `no-raw-colors`, `no-arbitrary-values`, `no-inline-styles`, `no-unknown-classes`, `require-static-classes`) are `error` in `eslint.config.js` and clean. `components/ui/**`, `registry/bases/base/workspaceui/**` (our own component directory; `no-restyle` off there), the docs code-block widgets and `__tests__/**` are exempted. `no-restyle` is `allow: ["layout"]` plus the named `restyleContracts` list at the top of `eslint.config.js` (shadcn's documented contracts, plus treatments the stock components have no variant for: Card tints, filled sidebar action, segmented ToggleGroup, table gutters, avatar shape, compact Input text, …). To restyle a component, use a variant, put the style on the content inside it, or add a contract only when a named treatment recurs. `pnpm lint` runs with `--max-warnings 0`, so any new finding fails it. Intentional one-off exceptions: `// eslint-disable-next-line shadcn/<rule> -- <reason>`
 - **Prettier** — double quotes, trailing commas (es5), `prettier-plugin-tailwindcss` with `cn` and `cva` listed as Tailwind class functions so class sorting works inside those helpers
 - **Tailwind CSS v4** via `@tailwindcss/postcss` (`postcss.config.mjs`)
 - **Vitest** still runs on Vite (`vitest.config.ts`) — Vite/`@vitejs/plugin-react`/the fumadocs vite plugin are kept as devDeps for tests only

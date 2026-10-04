@@ -142,19 +142,25 @@ export function ShipmentSheet({
                   const short = lineShortfall(line)
                   return (
                     <TableRow key={line.sku}>
-                      <TableCell className="font-medium">{line.sku}</TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {line.requestedQty}
+                      <TableCell>
+                        <span className="font-medium">{line.sku}</span>
                       </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {line.pickedQty}
+                      <TableCell className="text-right">
+                        <span className="tabular-nums">
+                          {line.requestedQty}
+                        </span>
                       </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {short > 0 ? (
-                          <span className="text-destructive">{short}</span>
-                        ) : (
-                          "—"
-                        )}
+                      <TableCell className="text-right">
+                        <span className="tabular-nums">{line.pickedQty}</span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <span className="tabular-nums">
+                          {short > 0 ? (
+                            <span className="text-destructive">{short}</span>
+                          ) : (
+                            "—"
+                          )}
+                        </span>
                       </TableCell>
                     </TableRow>
                   )

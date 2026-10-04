@@ -73,10 +73,12 @@ export function ForgotPassword() {
             </p>
             <Button
               variant="ghost"
-              className="mt-4 text-muted-foreground"
+              className="mt-4"
               onClick={() => setSent(false)}
             >
-              Use a different email
+              <span className="text-muted-foreground group-hover/button:text-foreground">
+                Use a different email
+              </span>
             </Button>
           </div>
         </div>

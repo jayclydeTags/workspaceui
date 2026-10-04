@@ -167,11 +167,7 @@ export function OtpVerify() {
 
             <p className="text-xs text-muted-foreground" aria-live="polite">
               {canResend ? (
-                <Button
-                  variant="link"
-                  className="h-auto p-0 text-xs"
-                  onClick={resend}
-                >
+                <Button variant="link" size="xs" onClick={resend}>
                   Resend code
                 </Button>
               ) : (

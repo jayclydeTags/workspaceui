@@ -70,20 +70,26 @@ export function DataTable({
 
             return (
               <TableRow key={req.id}>
-                <TableCell className="px-6 font-medium">{bin.code}</TableCell>
-                <TableCell className="hidden text-muted-foreground @md:table-cell">
-                  {req.reason}
+                <TableCell className="px-6">
+                  <span className="font-medium">{bin.code}</span>
                 </TableCell>
-                <TableCell className="text-right text-muted-foreground tabular-nums">
-                  {bin.qty}
+                <TableCell className="hidden @md:table-cell">
+                  <span className="text-muted-foreground">{req.reason}</span>
                 </TableCell>
-                <TableCell className="text-right tabular-nums">
-                  {req.countedQty}
+                <TableCell className="text-right">
+                  <span className="text-muted-foreground tabular-nums">
+                    {bin.qty}
+                  </span>
                 </TableCell>
-                <TableCell className="text-right tabular-nums">
-                  {signed(delta(req, bin))}
-                  <span className="ml-1 text-xs text-muted-foreground">
-                    {formatPct(variancePct(req, bin))}
+                <TableCell className="text-right">
+                  <span className="tabular-nums">{req.countedQty}</span>
+                </TableCell>
+                <TableCell className="text-right">
+                  <span className="tabular-nums">
+                    {signed(delta(req, bin))}
+                    <span className="ml-1 text-xs text-muted-foreground">
+                      {formatPct(variancePct(req, bin))}
+                    </span>
                   </span>
                 </TableCell>
                 <TableCell>

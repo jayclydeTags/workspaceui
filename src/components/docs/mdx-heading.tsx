@@ -32,19 +32,20 @@ export function Heading({
       )}
     >
       <a href={`#${props.id}`}>{children}</a>
-      <Button
-        variant="ghost"
-        size="icon-xs"
-        aria-label="Copy anchor link"
-        onClick={onCopy}
-        className="shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover/heading:opacity-100"
-      >
-        {isChecked ? (
-          <HugeiconsIcon icon={CopyCheckIcon} strokeWidth={2} />
-        ) : (
-          <HugeiconsIcon icon={Link01Icon} strokeWidth={2} />
-        )}
-      </Button>
+      <span className="shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover/heading:opacity-100 focus-within:opacity-100">
+        <Button
+          variant="ghost"
+          size="icon-xs"
+          aria-label="Copy anchor link"
+          onClick={onCopy}
+        >
+          {isChecked ? (
+            <HugeiconsIcon icon={CopyCheckIcon} strokeWidth={2} />
+          ) : (
+            <HugeiconsIcon icon={Link01Icon} strokeWidth={2} />
+          )}
+        </Button>
+      </span>
     </As>
   )
 }

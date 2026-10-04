@@ -9,7 +9,7 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,10 +53,7 @@ export function NotificationBell({
         aria-label={
           unread > 0 ? `Notifications, ${unread} unread` : "Notifications"
         }
-        className={cn(
-          buttonVariants({ variant: "ghost", size: "icon" }),
-          "relative"
-        )}
+        render={<Button variant="ghost" size="icon" className="relative" />}
       >
         {unread > 0 ? (
           <HugeiconsIcon icon={BellRingIcon} strokeWidth={2} />
@@ -64,7 +61,7 @@ export function NotificationBell({
           <HugeiconsIcon icon={BellIcon} strokeWidth={2} />
         )}
         {unread > 0 && (
-          <Badge className="absolute -inset-e-1 -top-1 h-4 min-w-4 justify-center rounded-full px-1 text-[10px]">
+          <Badge className="absolute -inset-e-1 -top-1 h-4 min-w-4 justify-center">
             {unread > 9 ? "9+" : unread}
           </Badge>
         )}
@@ -125,11 +122,8 @@ export function NotificationBell({
         )}
 
         <DropdownMenuSeparator className="my-0" />
-        <DropdownMenuItem
-          onClick={onViewAll}
-          className="justify-center py-2 text-sm font-medium"
-        >
-          View all
+        <DropdownMenuItem onClick={onViewAll} className="justify-center py-2">
+          <span className="text-sm font-medium">View all</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

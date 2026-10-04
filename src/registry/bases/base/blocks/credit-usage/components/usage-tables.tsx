@@ -101,11 +101,10 @@ export function AgentsTable({ rows, totalCredits, onReset }: AgentsTableProps) {
         ) : (
           rows.map((agent) => (
             <TableRow key={agent.id}>
-              <TableHead
-                scope="row"
-                className="ps-4 font-normal text-foreground"
-              >
-                {agent.name}
+              <TableHead scope="row" className="ps-4">
+                <span className="font-normal text-foreground">
+                  {agent.name}
+                </span>
               </TableHead>
               <TableCell>
                 <CategoryBadge category={agent.category} />
@@ -159,11 +158,8 @@ export function PowerUsersTable({
         ) : (
           rows.map((user) => (
             <TableRow key={user.id}>
-              <TableHead
-                scope="row"
-                className="ps-4 font-normal text-foreground"
-              >
-                <div className="flex items-center gap-3">
+              <TableHead scope="row" className="ps-4">
+                <div className="flex items-center gap-3 font-normal text-foreground">
                   <Avatar size="sm">
                     <AvatarFallback>
                       {user.name
@@ -180,8 +176,8 @@ export function PowerUsersTable({
                   </div>
                 </div>
               </TableHead>
-              <TableCell className="text-muted-foreground">
-                {user.team}
+              <TableCell>
+                <span className="text-muted-foreground">{user.team}</span>
               </TableCell>
               <TableCell>
                 <div className="flex flex-col items-start gap-1">

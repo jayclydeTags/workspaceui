@@ -11,9 +11,8 @@ import {
   UserAdd01Icon,
 } from "@hugeicons/core-free-icons"
 
-import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -111,10 +110,13 @@ export function ActivityFeed() {
         <>
           <DropdownMenu>
             <DropdownMenuTrigger
-              className={cn(
-                buttonVariants({ variant: "outline", size: "sm" }),
-                "h-9 w-28 justify-between gap-2 shadow-xs"
-              )}
+              render={
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-28 justify-between"
+                />
+              }
             >
               <span className="capitalize">
                 {typeFilter === "all" ? "All Types" : typeFilter}
@@ -139,12 +141,8 @@ export function ActivityFeed() {
                     All Types
                   </DropdownMenuRadioItem>
                   {ALL_TYPES.map((t) => (
-                    <DropdownMenuRadioItem
-                      key={t}
-                      value={t}
-                      className="capitalize"
-                    >
-                      {t}
+                    <DropdownMenuRadioItem key={t} value={t}>
+                      <span className="capitalize">{t}</span>
                     </DropdownMenuRadioItem>
                   ))}
                 </DropdownMenuRadioGroup>
@@ -154,10 +152,13 @@ export function ActivityFeed() {
 
           <DropdownMenu>
             <DropdownMenuTrigger
-              className={cn(
-                buttonVariants({ variant: "outline", size: "sm" }),
-                "h-9 w-28 justify-between gap-2 shadow-xs"
-              )}
+              render={
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-28 justify-between"
+                />
+              }
             >
               <span className="truncate">
                 {userFilter === "all" ? "All users" : userFilter}
@@ -241,7 +242,7 @@ export function ActivityFeed() {
           <span>This month {STATS.thisMonth}</span>
         </div>
         <div className="shrink-0 px-4 py-2">
-          <Button variant="ghost" size="sm" className="w-full text-xs">
+          <Button variant="ghost" size="sm" className="w-full">
             <HugeiconsIcon
               icon={ArrowDown01Icon}
               strokeWidth={2}

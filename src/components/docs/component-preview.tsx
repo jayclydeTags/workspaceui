@@ -3,7 +3,7 @@ import { join } from "path"
 import type { ComponentType } from "react"
 import dynamic from "next/dynamic"
 
-import { ComponentPreviewShell } from "@/components/component-preview-shell"
+import { ComponentPreviewShell } from "@/components/docs/component-preview-shell"
 import { getExampleSource } from "@/lib/example-source"
 
 const EXAMPLES_ROOT = "src/registry/bases/base/examples"

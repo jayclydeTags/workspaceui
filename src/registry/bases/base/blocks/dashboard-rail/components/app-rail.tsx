@@ -45,63 +45,62 @@ export function AppRail({
   const { toggleSidebar, setOpen } = useSidebar()
 
   return (
-    <Sidebar
-      collapsible="none"
-      className="w-[calc(var(--sidebar-width-icon)+1px)]! border-e border-sidebar-border"
-    >
-      <SidebarHeader className="items-center">
-        <div className="flex size-8 items-center justify-center rounded-md bg-primary text-xs font-bold text-primary-foreground">
-          A
-        </div>
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
+    <div className="flex h-full border-e border-sidebar-border">
+      <Sidebar collapsible="none" className="w-(--sidebar-width-icon)!">
+        <SidebarHeader className="items-center">
+          <div className="flex size-8 items-center justify-center rounded-md bg-primary text-xs font-bold text-primary-foreground">
+            A
+          </div>
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarMenu>
+              {RAIL_APPS.map((app) => (
+                <SidebarMenuItem key={app.id}>
+                  <SidebarMenuButton
+                    tooltip={{ children: app.title, hidden: false }}
+                    isActive={activeAppId === app.id}
+                    onClick={() => {
+                      if (app.id === activeAppId) {
+                        toggleSidebar()
+                        return
+                      }
+                      setOpen(true)
+                      onAppSelect(app.id)
+                    }}
+                    className="justify-center"
+                  >
+                    <app.Icon />
+                    <span className="sr-only">{app.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroup>
+        </SidebarContent>
+        <SidebarFooter>
           <SidebarMenu>
-            {RAIL_APPS.map((app) => (
-              <SidebarMenuItem key={app.id}>
-                <SidebarMenuButton
-                  tooltip={{ children: app.title, hidden: false }}
-                  isActive={activeAppId === app.id}
-                  onClick={() => {
-                    if (app.id === activeAppId) {
-                      toggleSidebar()
-                      return
-                    }
-                    setOpen(true)
-                    onAppSelect(app.id)
-                  }}
-                  className="justify-center"
-                >
-                  <app.Icon />
-                  <span className="sr-only">{app.title}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                tooltip={{ children: "Settings", hidden: false }}
+                className="justify-center"
+              >
+                <HugeiconsIcon icon={Setting06Icon} strokeWidth={2} />
+                <span className="sr-only">Settings</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                tooltip={{ children: "Profile", hidden: false }}
+                className="justify-center"
+              >
+                <HugeiconsIcon icon={UserIcon} strokeWidth={2} />
+                <span className="sr-only">Profile</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
           </SidebarMenu>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              tooltip={{ children: "Settings", hidden: false }}
-              className="justify-center"
-            >
-              <HugeiconsIcon icon={Setting06Icon} strokeWidth={2} />
-              <span className="sr-only">Settings</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              tooltip={{ children: "Profile", hidden: false }}
-              className="justify-center"
-            >
-              <HugeiconsIcon icon={UserIcon} strokeWidth={2} />
-              <span className="sr-only">Profile</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-    </Sidebar>
+        </SidebarFooter>
+      </Sidebar>
+    </div>
   )
 }

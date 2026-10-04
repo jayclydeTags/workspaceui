@@ -10,7 +10,7 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -154,10 +154,7 @@ export function NotificationCenter() {
         <div className="flex flex-wrap items-end gap-2 border-b px-4 py-2">
           <DropdownMenu>
             <DropdownMenuTrigger
-              className={cn(
-                buttonVariants({ variant: "outline", size: "sm" }),
-                "gap-1.5 text-xs"
-              )}
+              render={<Button variant="outline" size="sm" />}
             >
               {READ_STATES.find((r) => r.value === readState)?.label}
               <HugeiconsIcon
@@ -189,16 +186,11 @@ export function NotificationCenter() {
 
           <DropdownMenu>
             <DropdownMenuTrigger
-              className={cn(
-                buttonVariants({ variant: "outline", size: "sm" }),
-                "gap-1.5 text-xs"
-              )}
+              render={<Button variant="outline" size="sm" />}
             >
               Severity
               {severities.size > 0 && (
-                <Badge className="h-4 min-w-4 rounded-full px-1 text-[10px]">
-                  {severities.size}
-                </Badge>
+                <Badge className="h-4 min-w-4">{severities.size}</Badge>
               )}
               <HugeiconsIcon
                 icon={ArrowDown01Icon}
@@ -225,8 +217,8 @@ export function NotificationCenter() {
 
           {/* ponytail: native date inputs — no picker dependency for a range. */}
           <div className="flex items-center gap-1.5">
-            <Label htmlFor="notif-from" className="text-xs whitespace-nowrap">
-              From
+            <Label htmlFor="notif-from" className="whitespace-nowrap">
+              <span className="text-xs">From</span>
             </Label>
             <Input
               id="notif-from"
@@ -239,8 +231,8 @@ export function NotificationCenter() {
               }}
               className="h-7 w-auto text-xs"
             />
-            <Label htmlFor="notif-to" className="text-xs whitespace-nowrap">
-              To
+            <Label htmlFor="notif-to" className="whitespace-nowrap">
+              <span className="text-xs">To</span>
             </Label>
             <Input
               id="notif-to"
@@ -256,18 +248,16 @@ export function NotificationCenter() {
           </div>
 
           {hasFilters && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="gap-1 text-xs text-muted-foreground"
-              onClick={clearFilters}
-            >
+            <Button variant="ghost" size="sm" onClick={clearFilters}>
               <HugeiconsIcon
                 icon={Cancel01Icon}
                 strokeWidth={2}
                 data-icon="inline-start"
+                className="text-muted-foreground group-hover/button:text-foreground"
               />
-              Clear
+              <span className="text-muted-foreground group-hover/button:text-foreground">
+                Clear
+              </span>
             </Button>
           )}
         </div>

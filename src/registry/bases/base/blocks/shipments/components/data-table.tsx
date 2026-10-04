@@ -53,14 +53,18 @@ export function DataTable({
             const partial = isPartiallyPicked(pickFor(shipment))
             return (
               <TableRow key={shipment.id}>
-                <TableCell className="px-6 font-medium">
-                  {shipment.orderId}
+                <TableCell className="px-6">
+                  <span className="font-medium">{shipment.orderId}</span>
                 </TableCell>
-                <TableCell className="hidden text-muted-foreground @md:table-cell">
-                  {shipment.carrier ?? "—"}
+                <TableCell className="hidden @md:table-cell">
+                  <span className="text-muted-foreground">
+                    {shipment.carrier ?? "—"}
+                  </span>
                 </TableCell>
-                <TableCell className="hidden text-muted-foreground tabular-nums @lg:table-cell">
-                  {shipment.trackingNumber ?? "—"}
+                <TableCell className="hidden @lg:table-cell">
+                  <span className="text-muted-foreground tabular-nums">
+                    {shipment.trackingNumber ?? "—"}
+                  </span>
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-wrap items-center gap-1">

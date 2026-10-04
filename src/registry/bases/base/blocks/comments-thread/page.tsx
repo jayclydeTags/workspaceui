@@ -11,7 +11,9 @@ import { COMMENTS, CURRENT_USER, type Comment, type Reply } from "./data"
 function CommentAvatar({ initials }: { initials: string }) {
   return (
     <Avatar className="size-8 shrink-0">
-      <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+      <AvatarFallback>
+        <span className="text-xs">{initials}</span>
+      </AvatarFallback>
     </Avatar>
   )
 }
@@ -145,10 +147,11 @@ export function CommentsThread() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-7 px-2 text-xs text-muted-foreground"
                       onClick={() => setReplyingTo(c.id)}
                     >
-                      Reply
+                      <span className="text-muted-foreground group-hover/button:text-foreground">
+                        Reply
+                      </span>
                     </Button>
                   </div>
                 )}

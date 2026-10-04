@@ -98,8 +98,8 @@ function Progress({ milestone }: { milestone: Milestone }) {
     <span className="flex items-center gap-2">
       <span className="h-1.5 w-16 overflow-hidden rounded-full bg-muted">
         <span
-          className="block h-full rounded-full bg-primary"
-          style={{ width: `${pct}%` }}
+          className="block h-full w-(--progress) rounded-full bg-primary"
+          style={{ "--progress": `${pct}%` } as React.CSSProperties}
         />
       </span>
       <span className="tabular-nums">
@@ -139,16 +139,20 @@ export function DataTable({
           <TableBody>
             {milestones.map((milestone) => (
               <TableRow key={milestone.id}>
-                <TableCell className="px-6 font-medium">
-                  {milestone.name}
+                <TableCell className="px-6">
+                  <span className="font-medium">{milestone.name}</span>
                 </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {milestone.project}
+                <TableCell>
+                  <span className="text-muted-foreground">
+                    {milestone.project}
+                  </span>
                 </TableCell>
                 <TableCell className="hidden @md:table-cell">
                   {milestone.owner}
                 </TableCell>
-                <TableCell className="tabular-nums">{milestone.due}</TableCell>
+                <TableCell>
+                  <span className="tabular-nums">{milestone.due}</span>
+                </TableCell>
                 <TableCell>
                   <Progress milestone={milestone} />
                 </TableCell>
@@ -178,9 +182,7 @@ export function DataTable({
                 <span className="truncate text-sm font-medium">
                   {milestone.name}
                 </span>
-                <Badge variant="outline" className="text-[10px]">
-                  {milestone.project}
-                </Badge>
+                <Badge variant="outline">{milestone.project}</Badge>
               </div>
               <p className="mt-0.5 truncate text-xs text-muted-foreground">
                 {milestone.owner} · due {milestone.due}

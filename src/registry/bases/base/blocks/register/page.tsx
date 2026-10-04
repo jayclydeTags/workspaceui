@@ -83,8 +83,10 @@ export function Register() {
               <span className="font-medium text-foreground">{email}</span>. Open
               it to activate your account.
             </p>
-            <Button variant="ghost" className="mt-4 text-muted-foreground">
-              Resend email
+            <Button variant="ghost" className="mt-4">
+              <span className="text-muted-foreground group-hover/button:text-foreground">
+                Resend email
+              </span>
             </Button>
           </div>
         </div>
@@ -158,15 +160,17 @@ export function Register() {
                       aria-invalid={!!errors.terms}
                       onCheckedChange={(v) => setTerms(v === true)}
                     />
-                    <FieldLabel htmlFor="reg-terms" className="font-normal">
-                      I agree to the{" "}
-                      <a href="#" className="underline underline-offset-4">
-                        Terms
-                      </a>{" "}
-                      and{" "}
-                      <a href="#" className="underline underline-offset-4">
-                        Privacy Policy
-                      </a>
+                    <FieldLabel htmlFor="reg-terms">
+                      <span className="font-normal">
+                        I agree to the{" "}
+                        <a href="#" className="underline underline-offset-4">
+                          Terms
+                        </a>{" "}
+                        and{" "}
+                        <a href="#" className="underline underline-offset-4">
+                          Privacy Policy
+                        </a>
+                      </span>
                     </FieldLabel>
                   </div>
                   {errors.terms && <FieldError>{errors.terms}</FieldError>}

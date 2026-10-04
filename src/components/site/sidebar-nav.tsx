@@ -72,7 +72,7 @@ export function SidebarNav({
                   <h4 className="mb-1 flex items-center gap-1.5 rounded-md px-2 py-1 text-sm text-muted-foreground">
                     {section.title}
                     {section.comingSoon ? (
-                      <span className="rounded-full border border-border px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                      <span className="rounded-full border border-border px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
                         Soon
                       </span>
                     ) : (
@@ -168,7 +168,7 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
       >
         {item.title}
         {item.label && (
-          <span className="ml-auto rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-medium text-primary-foreground">
+          <span className="ml-auto rounded-full bg-primary px-1.5 py-0.5 text-xs font-medium text-primary-foreground">
             {item.label}
           </span>
         )}

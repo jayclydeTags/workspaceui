@@ -143,16 +143,14 @@ export function NotificationsInbox() {
         </Button>
       }
     >
-      <Tabs defaultValue="all" className="flex h-full min-h-0 flex-col gap-0">
+      <Tabs defaultValue="all" className="flex h-full min-h-0 flex-col">
         <div className="border-b px-4 py-2">
           <TabsList>
             <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="unread" className="gap-1.5">
+            <TabsTrigger value="unread">
               Unread
               {unreadCount > 0 && (
-                <Badge className="h-4 min-w-4 rounded-full px-1 text-[10px]">
-                  {unreadCount}
-                </Badge>
+                <Badge className="h-4 min-w-4">{unreadCount}</Badge>
               )}
             </TabsTrigger>
           </TabsList>

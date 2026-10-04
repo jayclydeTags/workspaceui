@@ -80,12 +80,16 @@ function LineItemTable({ title, items }: { title: string; items: LineItem[] }) {
         <TableBody>
           {items.map((item) => (
             <TableRow key={item.label}>
-              <TableCell className="font-medium">{item.label}</TableCell>
+              <TableCell>
+                <span className="font-medium">{item.label}</span>
+              </TableCell>
               <TableCell className="text-right">
                 {formatCurrency(item.current)}
               </TableCell>
-              <TableCell className="text-right text-muted-foreground">
-                {formatCurrency(item.ytd)}
+              <TableCell className="text-right">
+                <span className="text-muted-foreground">
+                  {formatCurrency(item.ytd)}
+                </span>
               </TableCell>
             </TableRow>
           ))}

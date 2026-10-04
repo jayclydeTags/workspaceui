@@ -1,6 +1,6 @@
 import { readFileSync } from "fs"
 import { join } from "path"
-import { DynamicCodeBlock } from "@/components/dynamic-codeblock"
+import { DynamicCodeBlock } from "@/components/docs/dynamic-codeblock"
 import { getRegistrySourcePath } from "@/lib/registry-files"
 
 interface ComponentSourceProps {

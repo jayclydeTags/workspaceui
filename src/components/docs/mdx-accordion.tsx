@@ -1,7 +1,7 @@
 "use client"
 
 // Self-contained docs accordion for MDX. Built directly on the base-ui
-// primitive rather than ./ui/accordion, which shadcn owns and overwrites on
+// primitive rather than ui/accordion, which shadcn owns and overwrites on
 // every re-install (that overwrite drops AccordionHeader and breaks this).
 import { Accordion as Primitive } from "@base-ui/react/accordion"
 import { HugeiconsIcon } from "@hugeicons/react"
@@ -19,8 +19,8 @@ import {
 } from "react"
 import { cn } from "@/lib/utils"
 import { useCopyButton } from "@fumadocs/base-ui/utils/use-copy-button"
-import { buttonVariants } from "./ui/button"
-import { mergeRefs } from "../lib/merge-refs"
+import { buttonVariants } from "@/components/ui/button"
+import { mergeRefs } from "@/lib/merge-refs"
 import { useTranslations } from "@fuma-translate/react"
 
 export function Accordions({
@@ -94,7 +94,7 @@ export function Accordion({
         hiddenUntilFound
         className="h-(--accordion-panel-height) overflow-hidden transition-[height] ease-out data-[ending-style]:h-0 data-[starting-style]:h-0"
       >
-        <div className="prose-no-margin px-4 pb-2 text-[0.9375rem] [&[hidden]:not([hidden='until-found'])]:hidden">
+        <div className="prose-no-margin px-4 pb-2 text-sm [&[hidden]:not([hidden='until-found'])]:hidden">
           {children}
         </div>
       </Primitive.Panel>

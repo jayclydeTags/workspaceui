@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog"
 import {
   Field,
-  FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field"
@@ -148,9 +148,9 @@ export function BinDialog({
               </Field>
             </div>
             {duplicatePosition && (
-              <FieldDescription className="text-destructive">
+              <FieldError>
                 Another bin in {draft.warehouse} already sits at that position.
-              </FieldDescription>
+              </FieldError>
             )}
             <Field>
               <FieldLabel htmlFor="bin-capacity">Capacity</FieldLabel>

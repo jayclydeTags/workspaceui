@@ -9,9 +9,8 @@ import {
 import { useRef } from "react"
 
 import { useConfig } from "@/hooks/use-config"
-import { cn } from "@/lib/utils"
-import { Button } from "./ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs"
+import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export interface CodeBlockCommandProps {
   __npm__?: string
@@ -74,29 +73,23 @@ export function CodeBlockCommand({
           <TabsContent key={key} value={key} className="mt-0">
             <pre
               ref={preRef}
-              className="mt-0 overflow-auto px-4 py-3.5 text-[0.8125rem]"
+              className="mt-0 overflow-auto px-4 py-3.5 text-sm"
             >
               <code>{command}</code>
             </pre>
           </TabsContent>
         ))}
       </Tabs>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon-xs"
-        className={cn(
-          "absolute top-1.5 right-2 z-10 opacity-70 hover:opacity-100 focus-visible:opacity-100"
-        )}
-        onClick={onCopy}
-      >
-        <span className="sr-only">Copy</span>
-        {checked ? (
-          <HugeiconsIcon icon={Tick02Icon} strokeWidth={2} />
-        ) : (
-          <HugeiconsIcon icon={ClipboardIcon} strokeWidth={2} />
-        )}
-      </Button>
+      <span className="absolute top-1.5 right-2 z-10 opacity-70 focus-within:opacity-100 hover:opacity-100">
+        <Button type="button" variant="ghost" size="icon-xs" onClick={onCopy}>
+          <span className="sr-only">Copy</span>
+          {checked ? (
+            <HugeiconsIcon icon={Tick02Icon} strokeWidth={2} />
+          ) : (
+            <HugeiconsIcon icon={ClipboardIcon} strokeWidth={2} />
+          )}
+        </Button>
+      </span>
     </div>
   )
 }

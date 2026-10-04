@@ -73,11 +73,11 @@ export function DashboardHeader({ title }: { title: string }) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuGroup>
-              <DropdownMenuLabel className="flex flex-col gap-0.5 px-1.5 py-1">
+              <DropdownMenuLabel className="flex flex-col">
                 <span className="text-sm font-medium text-foreground">
                   Jamie Doe
                 </span>
-                <span className="text-xs font-normal text-muted-foreground">
+                <span className="mt-0.5 text-xs font-normal text-muted-foreground">
                   jamie@example.com
                 </span>
               </DropdownMenuLabel>

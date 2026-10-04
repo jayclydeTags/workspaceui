@@ -54,17 +54,21 @@ export function DataTable({
             const status = pickStatus(list)
             return (
               <TableRow key={list.id}>
-                <TableCell className="px-6 font-medium">
-                  {list.orderId}
+                <TableCell className="px-6">
+                  <span className="font-medium">{list.orderId}</span>
                 </TableCell>
-                <TableCell className="hidden text-muted-foreground @md:table-cell">
-                  {list.warehouse}
+                <TableCell className="hidden @md:table-cell">
+                  <span className="text-muted-foreground">
+                    {list.warehouse}
+                  </span>
                 </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {list.picker ?? "—"}
+                <TableCell>
+                  <span className="text-muted-foreground">
+                    {list.picker ?? "—"}
+                  </span>
                 </TableCell>
-                <TableCell className="text-right tabular-nums">
-                  {progress(list)}
+                <TableCell className="text-right">
+                  <span className="tabular-nums">{progress(list)}</span>
                 </TableCell>
                 <TableCell>
                   <StatusBadge status={status} variantMap={STATUS_VARIANT} />

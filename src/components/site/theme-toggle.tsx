@@ -2,7 +2,7 @@
 
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Moon02Icon, Sun01Icon } from "@hugeicons/core-free-icons"
-import { useTheme } from "@/components/theme-provider"
+import { useTheme } from "@/components/site/theme-provider"
 import { Button } from "@/components/ui/button"
 
 export function ThemeToggle() {

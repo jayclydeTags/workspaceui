@@ -13,10 +13,10 @@ import {
 } from "react"
 import { cn } from "@/lib/utils"
 import { useCopyButton } from "@fumadocs/base-ui/utils/use-copy-button"
-import { Button } from "./ui/button"
+import { Button } from "@/components/ui/button"
 import { useTranslations } from "@fuma-translate/react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs"
-import { mergeRefs } from "../lib/merge-refs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { mergeRefs } from "@/lib/merge-refs"
 
 export interface CodeBlockProps extends ComponentProps<"figure"> {
   /**
@@ -40,7 +40,7 @@ export interface CodeBlockProps extends ComponentProps<"figure"> {
    */
   keepBackground?: boolean
 
-  viewportProps?: HTMLAttributes<HTMLElement>
+  viewportProps?: Omit<HTMLAttributes<HTMLElement>, "style">
 
   /**
    * show line numbers
@@ -133,17 +133,17 @@ export function CodeBlock({
         role="region"
         tabIndex={0}
         className={cn(
-          "fd-scroll-container max-h-150 overflow-auto py-3.5 text-[0.8125rem] focus-visible:ring-2 focus-visible:ring-fd-ring focus-visible:outline-none focus-visible:ring-inset",
+          "fd-scroll-container max-h-150 overflow-auto py-3.5 text-sm focus-visible:ring-2 focus-visible:ring-fd-ring focus-visible:outline-none focus-visible:ring-inset",
+          props["data-line-numbers"] && "[counter-set:line_var(--line-offset)]",
           viewportProps.className
         )}
         style={
           {
             // space for toolbar
             "--padding-right": !title ? "calc(var(--spacing) * 8)" : undefined,
-            counterSet: props["data-line-numbers"]
-              ? `line ${Number(props["data-line-numbers-start"] ?? 1) - 1}`
+            "--line-offset": props["data-line-numbers"]
+              ? Number(props["data-line-numbers-start"] ?? 1) - 1
               : undefined,
-            ...viewportProps.style,
           } as React.CSSProperties
         }
       >
@@ -178,11 +178,7 @@ function CopyButton({
       type="button"
       variant="ghost"
       size="icon-xs"
-      data-checked={checked || undefined}
-      className={cn(
-        "hover:text-fd-accent-foreground data-checked:text-fd-accent-foreground",
-        className
-      )}
+      className={className}
       aria-label={
         checked
           ? t("Copied Text", { note: "aria-label" })
@@ -192,7 +188,11 @@ function CopyButton({
       {...props}
     >
       {checked ? (
-        <HugeiconsIcon icon={Tick02Icon} strokeWidth={2} />
+        <HugeiconsIcon
+          icon={Tick02Icon}
+          strokeWidth={2}
+          className="text-fd-accent-foreground"
+        />
       ) : (
         <HugeiconsIcon icon={ClipboardIcon} strokeWidth={2} />
       )}

@@ -3,7 +3,7 @@
 import { useState } from "react"
 
 import type { NavSection } from "@/lib/nav"
-import { SidebarNav } from "@/components/sidebar-nav"
+import { SidebarNav } from "@/components/site/sidebar-nav"
 import {
   Select,
   SelectContent,
@@ -46,7 +46,7 @@ export function BlocksSidebarNav({
             <SelectItem key={section.title} value={section.title}>
               {section.title}
               {section.comingSoon && (
-                <span className="font-mono text-[10px] text-muted-foreground">
+                <span className="font-mono text-xs text-muted-foreground">
                   Soon
                 </span>
               )}

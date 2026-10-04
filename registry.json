@@ -4,6 +4,26 @@
   "homepage": "https://github.com/jayclydeTags/workspaceui",
   "items": [
     {
+      "name": "status-colors",
+      "type": "registry:theme",
+      "title": "Status colors",
+      "description": "The success and warning color tokens used by WorkspaceUI components (text-success, bg-warning/10, ...). Adds the CSS variables and Tailwind theme mappings for them.",
+      "cssVars": {
+        "theme": {
+          "color-success": "var(--success)",
+          "color-warning": "var(--warning)"
+        },
+        "light": {
+          "success": "oklch(0.596 0.145 163.225)",
+          "warning": "oklch(0.769 0.188 70.08)"
+        },
+        "dark": {
+          "success": "oklch(0.765 0.177 163.223)",
+          "warning": "oklch(0.769 0.188 70.08)"
+        }
+      }
+    },
+    {
       "name": "workspace",
       "type": "registry:ui",
       "title": "Workspace",
@@ -55,7 +75,12 @@
       "title": "Password Input",
       "description": "Password field with a show/hide visibility toggle and an optional live strength meter. Exports a scorePassword heuristic. Wraps InputGroup; works controlled or uncontrolled.",
       "dependencies": ["lucide-react"],
-      "registryDependencies": ["input-group", "progress", "utils"],
+      "registryDependencies": [
+        "input-group",
+        "progress",
+        "utils",
+        "jayclydeTags/workspaceui/status-colors"
+      ],
       "files": [
         {
           "path": "src/registry/bases/base/workspaceui/password-input.tsx",
@@ -237,7 +262,11 @@
       "title": "Usage Meter",
       "description": "Plan-quota meter: used vs. limit with ok, warning, exceeded, and unlimited states spelled out in text as well as color. Exports getUsageStatus for gating features on the same thresholds.",
       "dependencies": ["@hugeicons/react", "@hugeicons/core-free-icons"],
-      "registryDependencies": ["progress", "utils"],
+      "registryDependencies": [
+        "progress",
+        "utils",
+        "jayclydeTags/workspaceui/status-colors"
+      ],
       "files": [
         {
           "path": "src/registry/bases/base/workspaceui/usage-meter.tsx",
@@ -251,7 +280,12 @@
       "title": "Metric Card",
       "description": "Dashboard KPI tile: headline figure, period-over-period delta (with invertDelta for down-is-good metrics), optional sparkline, and a layout-matched loading skeleton.",
       "dependencies": ["@hugeicons/react", "@hugeicons/core-free-icons"],
-      "registryDependencies": ["card", "skeleton", "utils"],
+      "registryDependencies": [
+        "card",
+        "skeleton",
+        "utils",
+        "jayclydeTags/workspaceui/status-colors"
+      ],
       "files": [
         {
           "path": "src/registry/bases/base/workspaceui/metric-card.tsx",
@@ -265,7 +299,13 @@
       "title": "Onboarding Checklist",
       "description": "Get-started card: progress bar, app-owned step completion, the next incomplete step expanded with its call to action, a completion message, and an optional dismiss.",
       "dependencies": ["@hugeicons/react", "@hugeicons/core-free-icons"],
-      "registryDependencies": ["button", "card", "progress", "utils"],
+      "registryDependencies": [
+        "button",
+        "card",
+        "progress",
+        "utils",
+        "jayclydeTags/workspaceui/status-colors"
+      ],
       "files": [
         {
           "path": "src/registry/bases/base/workspaceui/onboarding-checklist.tsx",
@@ -808,7 +848,8 @@
         "sheet",
         "tabs",
         "tooltip",
-        "jayclydeTags/workspaceui/page"
+        "jayclydeTags/workspaceui/page",
+        "jayclydeTags/workspaceui/status-colors"
       ],
       "files": [
         {
@@ -1578,7 +1619,8 @@
         "field",
         "input",
         "input-otp",
-        "jayclydeTags/workspaceui/page"
+        "jayclydeTags/workspaceui/page",
+        "jayclydeTags/workspaceui/status-colors"
       ],
       "files": [
         {
@@ -1739,7 +1781,8 @@
       "registryDependencies": [
         "button",
         "card",
-        "jayclydeTags/workspaceui/page"
+        "jayclydeTags/workspaceui/page",
+        "jayclydeTags/workspaceui/status-colors"
       ],
       "files": [
         {

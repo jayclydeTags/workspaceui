@@ -69,7 +69,7 @@ export function DataGridEmptyStateDemo() {
           setData((prev) => prev.filter((row) => row.id !== rowId))
         }}
         emptyState={
-          <Empty className="border-0">
+          <Empty>
             <EmptyHeader>
               <EmptyMedia variant="icon">
                 <HugeiconsIcon icon={ListPlusIcon} strokeWidth={2} />

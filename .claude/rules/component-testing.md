@@ -16,15 +16,17 @@ Every new distributable component or block added to
      names resolve against the consumer's default `@shadcn` registry and
      404 — see CLAUDE.md "Registry distribution model")
    - item names are unique
-3. **Docs-level** — a doc page and sidebar entries (see the "Documentation"
-   section of CLAUDE.md). Also no test to hand-write:
+3. **Docs-level** — a doc page, a `meta.json` entry and (when it has props worth
+   playing with) a story in `src/stories/<name>.tsx` (see the "Documentation" and
+   "Component studio" sections of CLAUDE.md). The story needs no hand-written
+   test — `src/stories/__tests__/stories.test.tsx` covers every story file.
+   The page checks need none either:
    `src/registry/__tests__/registry-docs.test.ts` runs against every
    `registry:ui` item automatically and checks:
    - `src/content/docs/components/<name>.mdx` exists
    - the component name is listed in `src/content/docs/components/meta.json`
-     `pages` and a sidebar entry exists in `src/lib/nav.ts` (the hand-rolled
-     `SidebarNav` renders the docs sidebar from this config — see CLAUDE.md's
-     "UI architecture" section)
+     `pages` (the `/components` sidebar and route are generated from the mdx —
+     see CLAUDE.md's "Component studio" section)
    - **every prop on the component's `export interface <Name>Props`
      appears as a key in that mdx's `<TypeTable>` block(s)** — this is the
      check that catches "changed the component but forgot to update the

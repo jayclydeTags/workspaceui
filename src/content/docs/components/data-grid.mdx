@@ -124,7 +124,7 @@ included, so decimal points line up down the column and the label sits over
 its values. Every other type stays left-aligned.
 
 Full field reference (`options`, `users`, `maxChips`, `summary`) lives in
-[Data Grid Types](/docs/components/data-grid-types) — install it once as a
+[Data Grid Types](/components/data-grid-types) — install it once as a
 `registryDependencies` entry, no separate import needed beyond the
 side-effect one shown above.
 
@@ -187,7 +187,7 @@ enabled unless you set `enableRowSelection: false`. Pass
 `state: { rowSelection }` and `onRowSelectionChange` to read the selection
 outside the grid (needed for a count or a bulk-action bar). There's no
 `onBulkAction` prop; compose your own bar from
-[`BulkToolbar`](/docs/components/bulk-toolbar) and loop your selected ids
+[`BulkToolbar`](/components/bulk-toolbar) and loop your selected ids
 through the same `onRowDelete(rowId)` for bulk delete — see
 [Row selection & bulk delete](#row-selection--bulk-delete) below.
 
@@ -201,9 +201,9 @@ Search and Filter only appear when you wire `getFilteredRowModel` — without it
 both would be no-ops, so they stay hidden (the same rule the sort affordance
 follows). For search, also set `globalFilterFn: dataGridGlobalFilterFn` and
 `getColumnCanGlobalFilter: dataGridGetColumnCanGlobalFilter` from
-[`DataSearch`](/docs/components/data-search); for filtering, set
+[`DataSearch`](/components/data-search); for filtering, set
 `filterFn: dataGridFilterFn` from
-[`DataFilter`](/docs/components/data-filter) on each filterable column.
+[`DataFilter`](/components/data-filter) on each filterable column.
 
 Below 448px the grid switches to cards (see
 [Responsive behavior](#responsive-behavior)) and the toolbar collapses: search
@@ -273,7 +273,7 @@ hover between-row "+", and a hover kebab menu with a confirm-guarded
 ### Row selection & bulk delete
 
 Row selection is on by default. Read `table.getState().rowSelection` to
-drive a [`BulkToolbar`](/docs/components/bulk-toolbar), and loop the
+drive a [`BulkToolbar`](/components/bulk-toolbar), and loop the
 selected ids through the same `onRowDelete(rowId)` for a bulk action.
 
 <ComponentPreview name="data-grid-selection" />

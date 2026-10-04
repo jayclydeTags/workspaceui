@@ -49,12 +49,12 @@ import { BoardCard } from "@/components/ui/board-card"
 
 `itemId` is passed to dnd-kit's `useSortable({ id: itemId })` — the board's
 `DndContext.onDragEnd` reads it back off `event.active.id` (see
-[`BoardColumn`](/docs/components/board-column) for the full move-and-reorder
+[`BoardColumn`](/components/board-column) for the full move-and-reorder
 wiring). Using `useSortable` instead of the plain `useDraggable` is what lets
 a card be dropped onto another card, not just onto a column — that's the
 `event.over.id` a consumer's `onDragEnd` uses to reorder within a column, not
 just move between columns. A `BoardCard` needs a `DndContext` ancestor to
-actually be draggable, and a [`BoardColumn`](/docs/components/board-column)
+actually be draggable, and a [`BoardColumn`](/components/board-column)
 ancestor to be sortable (it supplies the `SortableContext`); render one
 `DndContext` per board, wrapping every column. Everything else is a plain
 `<div>`: pass any children, `className`, or other div props and they render

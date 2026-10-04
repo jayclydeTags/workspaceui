@@ -248,3 +248,14 @@
     margin-bottom: 0;
   }
 }
+
+/* The component studio's canvas surface: a dot grid, so the page reads as an
+   infinite design surface rather than a card. */
+@utility canvas-dots {
+  background-image: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--foreground) 16%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 20px 20px;
+}

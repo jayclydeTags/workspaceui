@@ -39,12 +39,14 @@ workspaceui/
 │   │   ├── layout.tsx        # root: <html>/<body> + next-themes ThemeProvider + <SiteHeader/>
 │   │   ├── globals.css       # Tailwind v4 + theme tokens (was src/index.css)
 │   │   ├── (marketing)/      # home: page.tsx (no layout — SiteHeader is global now)
-│   │   ├── docs/             # layout.tsx (sidebar + content, hand-built) + [[...slug]]/page.tsx
+│   │   ├── docs/             # Getting Started prose only: layout.tsx (sidebar + content) + [[...slug]]/page.tsx
+│   │   ├── components/       # layout.tsx (sidebar) + page.tsx (index) + [slug]/page.tsx (the studio: canvas + inspector)
 │   │   ├── blocks/
 │   │   │   ├── (browse)/     # layout (sidebar only — SiteHeader is global), page.tsx (gallery), [slug]/page.tsx
 │   │   │   └── preview/[slug]/page.tsx   # bare iframe target — escapes (browse) chrome
 │   │   └── api/search/route.ts           # createSearchAPI advanced → staticGET (out/api/search)
-│   ├── content/docs/         # fumadocs mdx content
+│   ├── content/docs/         # fumadocs mdx content (getting-started/ served at /docs, components/ served at /components)
+│   ├── stories/              # One file per component: playground args + hand-authored controls (see "Component studio")
 │   ├── blocks/               # Copy-only blocks (e.g. navbars): in the gallery with Preview + Code, not in registry.json — manifest in lib/copy-blocks.ts
 │   ├── registry/bases/base/
 │   │   ├── workspaceui/      # Distributable components (source of truth) + __tests__/
@@ -52,6 +54,7 @@ workspaceui/
 │   │   └── examples/         # Live demo components (registered in component-preview.tsx)
 │   ├── components/
 │   │   ├── ui/               # shadcn primitives (shadcn-owned; overwritten on re-install)
+│   │   ├── studio/           # Component page UI: studio (provider + layout), canvas, inspector, props/style/code panels, controls, tokens, to-jsx
 │   │   ├── site/             # app chrome shared by every route: site-header, search-dialog,
 │   │   │                     #   sidebar-nav, blocks-sidebar-nav, theme-provider, theme-toggle,
 │   │   │                     #   workspaceui-logo, github-icon
@@ -61,7 +64,10 @@ workspaceui/
 │   │                         #   (fs reads), component-tree, block-preview, copy-button, …
 │   ├── lib/
 │   │   ├── source.ts         # fumadocs loader() over .source — content/page data for docs/[[...slug]]
-│   │   ├── nav.ts            # nav + blocksNav config — drives SidebarNav (docs + blocks) and search
+│   │   ├── nav.ts            # Getting Started nav (docs sidebar) + blocksNav config
+│   │   ├── component-pages.ts    # Server-only: component pages/sidebar generated from the mdx via `source`
+│   │   ├── component-examples.ts # Pure: <ComponentPreview> examples parsed from an mdx, and pageHref()
+│   │   ├── story-registry.tsx    # Maps slug → story studio (dynamic import of src/stories/<slug>.tsx)
 │   │   ├── blocks.ts         # /blocks gallery data (slug→Component)
 │   │   ├── block-files.ts    # per-block source-file manifest for the Code tab (fs-read paths)
 │   │   ├── mdx-components.tsx # MDX component map (custom typography, no fumadocs-ui)
@@ -80,9 +86,10 @@ project's own shadcn/ui primitives (`src/components/ui/*`) — not
 - **`SiteHeader`** (`src/components/site/site-header.tsx`) is mounted once in the
   root layout and shared by every route (marketing, docs, blocks) — it's not
   per-route-group chrome.
-- **Docs sidebar** reuses `SidebarNav` (`src/components/site/sidebar-nav.tsx`), the
-  same hand-rolled component the blocks gallery already used — fed by the
-  hand-maintained `nav` config in `src/lib/nav.ts`, not fumadocs'
+- **Docs sidebar** reuses `SidebarNav` (`src/components/site/sidebar-nav.tsx`), fed
+  by the hand-maintained `nav` config in `src/lib/nav.ts` (Getting Started
+  only). The components sidebar is generated from the mdx pages by
+  `getComponentsNav()` (`src/lib/component-pages.ts`), not fumadocs'
   `source.pageTree`.
 - **Search** (`src/components/site/search-dialog.tsx`) is a shadcn `Command`
   dialog wired to fumadocs-core's headless `useDocsSearch` hook against the
@@ -100,6 +107,40 @@ project's own shadcn/ui primitives (`src/components/ui/*`) — not
   (the `--color-fd-*` → shadcn-token bridge, the `fd-scroll-container` and
   `prose-no-margin` utilities) since the vendored `codeblock.tsx`/`tabs.tsx`/
   `accordion.tsx`/`type-table.tsx` still reference those classes.
+
+### Component studio (`/components/<slug>`)
+
+Component pages are a three-column layout, Storybook style:
+`[sidebar] [canvas] [inspector]`. The sidebar is the route layout
+(`app/components/layout.tsx`, `SidebarNav` over `getComponentsNav()`); the page
+renders `Studio` (`components/studio/studio.tsx`), which owns the canvas and
+inspector as one resizable pair (stacked below `lg`).
+
+- **Canvas**: a scrollable dot-grid surface (`canvas-dots` in `globals.css`)
+  with no card frame and no section labels: just the component, centered, driven
+  live by the inspector's controls (props and variations). The toolbar has
+  prev/next arrows (links to the neighbouring components, in sidebar order), the
+  component name, width presets (they cap the stage) and a reload button.
+- **Inspector**: one scrolling panel, no tabs. In order: component name,
+  description, **Props** (non-style controls), **Variations** (controls marked
+  `group: "style"`; they configure the one component on the canvas), **Installation** (the `shadcn add` command, with copy), and
+  the **API reference** — the mdx's `## API Reference` section parsed into data
+  by `lib/api-reference.ts` and laid out as one stacked entry per prop. None of
+  the mdx's other content (usage, examples, install tabs) is shown on this page.
+- **Stories** live in `src/stories/<slug>.tsx` and default-export
+  `defineStory<Args>({ args, controls, preview })`. `preview` is a real
+  component (so it may use hooks); `controls` is hand-authored
+  per prop (`text`/`number`/`numbers`/`boolean`/`select`). Mark a variation
+  (size, variant, a state like `disabled`) with `group: "style"` and make it a
+  `select` or `boolean`.
+- **No story** (currently `data-filter` and `data-grid-types`): there's no
+  playground, so the mdx's `<ComponentPreview>` examples go on the canvas as
+  labelled sections, and the inspector has no controls.
+- Because the inspector reads the mdx, a component's `## API Reference` heading
+  and markdown tables are load-bearing; keep that shape.
+- Portaled UI (Select popups, dialogs) renders outside the canvas sections.
+- Old `/docs/components/*` URLs 404 in the static export; `vercel.json`
+  redirects them to `/components/*`.
 
 ### Next.js rendering notes
 
@@ -196,11 +237,12 @@ Components import each other via `@/components/workspaceui/...`. Docs-site compo
 Every component in `src/registry/bases/base/workspaceui/` must have a matching fumadocs page:
 
 - `src/content/docs/components/<component>.mdx` — install (CLI + manual `<ComponentSource>`), usage, and a `<TypeTable>` API reference
-- A live demo in `src/registry/bases/base/examples/<component>-live.tsx`, registered in `previewComponents` in `src/components/docs/component-preview.tsx`, and referenced via `<ComponentPreview name="<component>" code={...} />` in the mdx
-- The component's name added to the `pages` array in `src/content/docs/components/meta.json` (validated by `registry-docs.test.ts`), **and** a sidebar entry in the `Components` section of `src/lib/nav.ts` (this is what actually renders the docs sidebar — see "UI architecture" above)
+- A live demo in `src/registry/bases/base/examples/<component>.tsx` (any file there is picked up automatically), referenced via `<ComponentPreview name="<component>" />` in the mdx — it becomes the canvas's "Overview" example, and every further `<ComponentPreview>` becomes another entry in the example picker
+- The component's name added to the `pages` array in `src/content/docs/components/meta.json` (validated by `registry-docs.test.ts`). The sidebar and `/components/<slug>` route are generated from the mdx, so there is no nav entry to add
+- A story in `src/stories/<component>.tsx` (see "Component studio") when the component has props worth playing with. The `## API Reference` markdown tables in the mdx are what the studio's inspector shows. `src/stories/__tests__/stories.test.tsx` checks every story: it has a docs page, each control maps to an arg, selects include their initial value, and the preview renders
 - A `registry.json` entry pointing at the component file
 
-Use `src/content/docs/components/workspace.mdx` and `src/registry/bases/base/examples/workspace-live.tsx` as the reference pattern.
+Use `src/content/docs/components/metric-card.mdx`, `src/registry/bases/base/examples/metric-card.tsx` and `src/stories/metric-card.tsx` as the reference pattern.
 
 ## Testing
 

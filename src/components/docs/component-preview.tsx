@@ -34,6 +34,17 @@ interface ComponentPreviewProps {
   className?: string
 }
 
+export function hasExample(name: string): boolean {
+  return name in demoComponents
+}
+
+// The bare demo, without the preview/code chrome — the component studio draws
+// its own canvas around it.
+export function ExampleDemo({ name }: { name: string }) {
+  const Demo = demoComponents[name]
+  return Demo ? <Demo /> : null
+}
+
 export function ComponentPreview({ name, className }: ComponentPreviewProps) {
   const Demo = demoComponents[name]
   if (!Demo) return null

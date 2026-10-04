@@ -17,7 +17,6 @@ import {
 import { CodeBlockCommand } from "@/components/docs/code-block-command"
 import { CodeTabs } from "@/components/docs/code-tabs"
 import { ComponentPreview } from "@/components/docs/component-preview"
-import { ComponentsIndex } from "@/components/docs/components-index"
 import { ComponentSource } from "@/components/docs/component-source"
 import { ComponentTree } from "@/components/docs/component-tree"
 import { File, Files, Folder } from "@/components/docs/files"
@@ -83,7 +82,6 @@ export const mdxComponents = {
   Accordions,
   Callout,
   ComponentPreview,
-  ComponentsIndex,
   ComponentSource,
   ComponentTree,
   File,

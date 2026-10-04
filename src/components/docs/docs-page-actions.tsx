@@ -82,48 +82,50 @@ export function DocsPageActions({
           </DropdownMenuContent>
         </DropdownMenu>
       </ButtonGroup>
-      <div className="ms-1 flex items-center gap-1">
-        {prev ? (
-          <Button
-            variant="outline"
-            size="icon-sm"
-            aria-label={`Previous: ${prev.title}`}
-            nativeButton={false}
-            render={<Link href={prev.href} />}
-          >
-            <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={2} />
-          </Button>
-        ) : (
-          <Button
-            variant="outline"
-            size="icon-sm"
-            aria-label="No previous page"
-            disabled
-          >
-            <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={2} />
-          </Button>
-        )}
-        {next ? (
-          <Button
-            variant="outline"
-            size="icon-sm"
-            aria-label={`Next: ${next.title}`}
-            nativeButton={false}
-            render={<Link href={next.href} />}
-          >
-            <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
-          </Button>
-        ) : (
-          <Button
-            variant="outline"
-            size="icon-sm"
-            aria-label="No next page"
-            disabled
-          >
-            <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
-          </Button>
-        )}
-      </div>
+      {(prev || next) && (
+        <div className="ms-1 flex items-center gap-1">
+          {prev ? (
+            <Button
+              variant="outline"
+              size="icon-sm"
+              aria-label={`Previous: ${prev.title}`}
+              nativeButton={false}
+              render={<Link href={prev.href} />}
+            >
+              <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={2} />
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              size="icon-sm"
+              aria-label="No previous page"
+              disabled
+            >
+              <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={2} />
+            </Button>
+          )}
+          {next ? (
+            <Button
+              variant="outline"
+              size="icon-sm"
+              aria-label={`Next: ${next.title}`}
+              nativeButton={false}
+              render={<Link href={next.href} />}
+            >
+              <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              size="icon-sm"
+              aria-label="No next page"
+              disabled
+            >
+              <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   )
 }

@@ -6,9 +6,9 @@ description: A pagination footer over a consumer-owned useReactTable() instance 
 <ComponentPreview name="data-pagination" />
 
 `DataPagination` is a headless-composition component over the same
-`useReactTable()` instance you'd pass to [Data Grid](/docs/components/data-grid),
-[Data Filter](/docs/components/data-filter), and
-[Data Search](/docs/components/data-search) — a sibling toolbar control, not a
+`useReactTable()` instance you'd pass to [Data Grid](/components/data-grid),
+[Data Filter](/components/data-filter), and
+[Data Search](/components/data-search) — a sibling toolbar control, not a
 prop on any of them. It drives TanStack's own `pagination` state; it never
 slices rows itself.
 
@@ -65,7 +65,7 @@ const table = useReactTable({
 `getPaginationRowModel()` is required — without it `table.getRowModel()`
 returns every row and the controls page through nothing.
 
-Inside [Data Grid](/docs/components/data-grid) you don't render it yourself:
+Inside [Data Grid](/components/data-grid) you don't render it yourself:
 the grid appends `DataPagination` automatically whenever the table it's given
 has a `getPaginationRowModel`, the same way it only offers search and filters
 when a filtered row model is present.

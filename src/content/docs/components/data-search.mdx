@@ -6,8 +6,8 @@ description: A debounced global-search input over a consumer-owned useReactTable
 <ComponentPreview name="data-search" />
 
 `DataSearch` is a headless-composition component over the same
-`useReactTable()` instance you'd pass to [Data Grid](/docs/components/data-grid)
-and [Data Filter](/docs/components/data-filter) — a sibling toolbar control,
+`useReactTable()` instance you'd pass to [Data Grid](/components/data-grid)
+and [Data Filter](/components/data-filter) — a sibling toolbar control,
 not a prop on either. It drives TanStack's own `globalFilter` state instead of
 a parallel search implementation.
 
@@ -80,7 +80,7 @@ global search by reading each column's **first row value** and checking
 check and is silently dropped from search entirely, no matter what
 `dataGridGlobalFilterFn` would have matched. `dataGridGetColumnCanGlobalFilter`
 replaces that heuristic with one that understands the same `meta.type`
-contract as [Data Filter](/docs/components/data-filter): every typed column
+contract as [Data Filter](/components/data-filter): every typed column
 stays eligible except `boolean` (not meaningfully free-text-searchable), and
 untyped columns fall back to TanStack's default. Excluding a specific column
 from search on top of that is an ordinary TanStack concern
@@ -94,7 +94,7 @@ from search on top of that is an ordinary TanStack concern
 - **`dataGridGlobalFilterFn`** — the exported `globalFilterFn`. TanStack
   calls it once per column per row and ORs the results, so a row matches if
   _any_ column matches. It reads `column.meta.type` the same way
-  [Data Filter](/docs/components/data-filter) does: `select` and `user`
+  [Data Filter](/components/data-filter) does: `select` and `user`
   resolve the stored value to its option label / user name before matching
   (searching "priya" finds a `user` cell storing id `"u3"` if
   `meta.users` has `{ id: "u3", name: "Priya Patel" }`), `multiSelect`

@@ -1,6 +1,7 @@
 import { createSearchAPI } from "fumadocs-core/search/server"
 
 import { source } from "@/lib/source"
+import { pageHref } from "@/lib/component-examples"
 import { getBlocksNav } from "@/lib/block-taxonomy"
 import { copyBlocks } from "@/lib/copy-blocks"
 import registry from "../../../../registry.json"
@@ -53,7 +54,11 @@ const server = createSearchAPI("advanced", {
     ...source
       .getPages()
       .map((page) =>
-        entry(page.url, page.data.title ?? page.url, page.data.description)
+        entry(
+          pageHref(page),
+          page.data.title ?? page.url,
+          page.data.description
+        )
       ),
     ...getBlocksNav().flatMap((section) =>
       [

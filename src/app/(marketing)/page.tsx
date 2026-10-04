@@ -134,7 +134,7 @@ export default function HomePage() {
       {/* Explore links */}
       <div className="mt-16 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
         <Link
-          href="/docs/components/workspace"
+          href="/components"
           className="inline-flex items-center gap-1 text-sm font-medium text-foreground hover:underline"
         >
           Browse components

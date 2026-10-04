@@ -142,7 +142,10 @@ function WorkspaceTabs({
                   </span>
                   <span className="min-w-0 flex-1 truncate">{tab.title}</span>
                   {tab.badge != null && tab.badge > 0 && (
-                    <Badge className="h-4 min-w-4 shrink-0 rounded-full px-1 text-xs">
+                    // The menu item recolors every descendant's text on focus
+                    // (`focus:**:text-accent-foreground`), which would turn this
+                    // badge's text the same dark as its fill.
+                    <Badge className="h-4 min-w-4 shrink-0 rounded-full px-1 text-xs text-primary-foreground!">
                       {tab.badge > 99 ? "99+" : tab.badge}
                     </Badge>
                   )}

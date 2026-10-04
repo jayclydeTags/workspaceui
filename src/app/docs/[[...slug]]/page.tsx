@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import { source } from "@/lib/source"
+import { getPageMarkdown } from "@/lib/page-markdown"
 import { mdxComponents } from "@/lib/mdx-components"
 import { DocsPageLayout } from "@/components/docs/docs-toc"
 import { DocsPager, getAdjacentDocs } from "@/components/docs/docs-pager"
@@ -9,8 +10,11 @@ import { DocsPageActions } from "@/components/docs/docs-page-actions"
 
 type PageProps = { params: Promise<{ slug?: string[] }> }
 
+// Component pages are served from /components/<slug>; only prose lives here.
+export const dynamicParams = false
+
 export function generateStaticParams() {
-  return source.generateParams()
+  return source.generateParams().filter((p) => p.slug?.[0] !== "components")
 }
 
 export async function generateMetadata({
@@ -25,29 +29,10 @@ export async function generateMetadata({
 export default async function Page({ params }: PageProps) {
   const { slug } = await params
   const page = source.getPage(slug)
-  if (!page) notFound()
+  if (!page || page.slugs[0] === "components") notFound()
 
   const MDX = page.data.body
-  const body = (await page.data.getText("processed"))
-    // resolves `%%CODE_REF:NAME%%` markers left by the TypeTable/ComponentPreview
-    // stringify overrides in source.config.ts for `code={someExportedConst}` refs
-    .replace(/%%CODE_REF:(\w+)%%/g, (match, ref: string) => {
-      const value = page.data._exports[ref]
-      return typeof value === "string" ? `\`\`\`tsx\n${value}\n\`\`\`` : match
-    })
-    .replace(/\n{3,}/g, "\n\n")
-    .trim()
-  const frontmatter = (
-    [
-      ["title", page.data.title],
-      ["description", page.data.description],
-      ["url", page.url],
-    ] as const
-  )
-    .filter(([, value]) => value)
-    .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
-    .join("\n")
-  const markdown = `---\n${frontmatter}\n---\n\n${body}\n`
+  const markdown = await getPageMarkdown(page)
   const { prev, next } = getAdjacentDocs(slug)
 
   return (

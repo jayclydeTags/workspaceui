@@ -128,7 +128,7 @@ and drops fall back to `emptyLabel` when the column is empty.
 
 `DndContext`'s `onDragEnd` is where you move (and reorder) the item in your
 own state — it fires with the dragged item's id on `event.active.id`
-(written by [`BoardCard`](/docs/components/board-card)) and whatever it was
+(written by [`BoardCard`](/components/board-card)) and whatever it was
 dropped on via `event.over.id`, which is either a column id (dropped on empty
 column space — append to the end) or another item's id (dropped on a card —
 that's the in-column/cross-column reorder case). Tell the two apart by
@@ -140,7 +140,7 @@ Add a `DragOverlay` (and its `onDragStart` bookkeeping) so the dragged card
 renders in a portal above everything instead of clipping against a
 column's `overflow-y-auto` — pass `overlay` to the `BoardCard` rendered
 inside it so it skips its own drag listeners (see
-[`BoardCard`](/docs/components/board-card#api-reference)).
+[`BoardCard`](/components/board-card#api-reference)).
 
 ### Reorderable columns
 

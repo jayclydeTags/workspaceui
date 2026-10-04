@@ -92,26 +92,28 @@ function MobileNav({ className }: { className?: string }) {
         <nav aria-label="Mobile" className="flex flex-col px-4">
           {NAV.map((item) =>
             "children" in item ? (
-              <Accordion key={item.label}>
-                <AccordionItem value={item.label} className="border-b">
-                  <AccordionTrigger>{item.label}</AccordionTrigger>
-                  <AccordionContent>
-                    <ul className="flex flex-col gap-1 pb-2">
-                      {item.children.map((child) => (
-                        <li key={child.title}>
-                          <a
-                            href={child.href}
-                            onClick={close}
-                            className="block rounded-md px-2 py-2 text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
-                          >
-                            {child.title}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
+              <div key={item.label} className="border-b">
+                <Accordion>
+                  <AccordionItem value={item.label}>
+                    <AccordionTrigger>{item.label}</AccordionTrigger>
+                    <AccordionContent>
+                      <ul className="flex flex-col gap-1 pb-2">
+                        {item.children.map((child) => (
+                          <li key={child.title}>
+                            <a
+                              href={child.href}
+                              onClick={close}
+                              className="block rounded-md px-2 py-2 text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+                            >
+                              {child.title}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </div>
             ) : (
               <a
                 key={item.label}

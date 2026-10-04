@@ -95,32 +95,30 @@ function MobileNav({ className }: { className?: string }) {
           <SheetTitle>Menu</SheetTitle>
         </SheetHeader>
         <nav aria-label="Mobile" className="flex flex-col px-4">
-          <Accordion>
-            {sections.map((section) => (
-              <AccordionItem
-                key={section.title}
-                value={section.title}
-                className="border-b"
-              >
-                <AccordionTrigger>{section.title}</AccordionTrigger>
-                <AccordionContent>
-                  <ul className="flex flex-col gap-1 pb-2">
-                    {section.links.map((link) => (
-                      <li key={link.title}>
-                        <a
-                          href={link.href}
-                          onClick={close}
-                          className="block rounded-md px-2 py-2 text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
-                        >
-                          {link.title}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+          <div className="border-b">
+            <Accordion>
+              {sections.map((section) => (
+                <AccordionItem key={section.title} value={section.title}>
+                  <AccordionTrigger>{section.title}</AccordionTrigger>
+                  <AccordionContent>
+                    <ul className="flex flex-col gap-1 pb-2">
+                      {section.links.map((link) => (
+                        <li key={link.title}>
+                          <a
+                            href={link.href}
+                            onClick={close}
+                            className="block rounded-md px-2 py-2 text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+                          >
+                            {link.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
           <a
             href="#"
             onClick={close}

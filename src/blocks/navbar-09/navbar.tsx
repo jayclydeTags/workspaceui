@@ -129,32 +129,30 @@ function MobileNav({ className }: { className?: string }) {
           <SheetTitle>Menu</SheetTitle>
         </SheetHeader>
         <nav aria-label="Mobile" className="flex flex-col px-4">
-          <Accordion>
-            {CATEGORY_GROUPS.map((group) => (
-              <AccordionItem
-                key={group.title}
-                value={group.title}
-                className="border-b"
-              >
-                <AccordionTrigger>{group.title}</AccordionTrigger>
-                <AccordionContent>
-                  <ul className="flex flex-col gap-1 pb-2">
-                    {group.links.map((link) => (
-                      <li key={link.label}>
-                        <a
-                          href={link.href}
-                          onClick={close}
-                          className="block rounded-md px-2 py-2 text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
-                        >
-                          {link.label}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+          <div className="border-b">
+            <Accordion>
+              {CATEGORY_GROUPS.map((group) => (
+                <AccordionItem key={group.title} value={group.title}>
+                  <AccordionTrigger>{group.title}</AccordionTrigger>
+                  <AccordionContent>
+                    <ul className="flex flex-col gap-1 pb-2">
+                      {group.links.map((link) => (
+                        <li key={link.label}>
+                          <a
+                            href={link.href}
+                            onClick={close}
+                            className="block rounded-md px-2 py-2 text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+                          >
+                            {link.label}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
           {LINKS.map((link) => (
             <a
               key={link.label}

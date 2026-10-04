@@ -58,6 +58,21 @@ export default defineConfig([
                 "ring-primary/40",
               ],
             },
+            {
+              // Filled primary action in a sidebar (e.g. Quick Create).
+              pattern: "^SidebarMenuButton$",
+              allow: [
+                "layout",
+                "bg-primary",
+                "text-primary-foreground",
+                "hover:bg-primary/90",
+                "hover:text-primary-foreground",
+                "active:bg-primary/90",
+                "active:text-primary-foreground",
+                "duration-200",
+                "ease-linear",
+              ],
+            },
             { pattern: "^Avatar$", allow: ["size-*"] },
             // Headless primitives: they ship no appearance, so callers style them.
             {

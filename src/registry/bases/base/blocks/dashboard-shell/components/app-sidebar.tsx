@@ -132,22 +132,24 @@ export function AppSidebar({
           <SidebarTrigger />
         </div>
         <SidebarMenu>
-          <SidebarMenuItem className="flex items-center gap-2 group-data-[collapsible=icon]:flex-col">
-            <SidebarMenuButton
-              tooltip="Quick Create"
-              className="min-w-8 bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
-            >
-              <HugeiconsIcon icon={PlusSignIcon} strokeWidth={2} />
-              <span>Quick Create</span>
-            </SidebarMenuButton>
-            <Button
-              variant="outline"
-              size="icon"
-              className="size-8 shrink-0"
-              aria-label="Inbox"
-            >
-              <HugeiconsIcon icon={InboxIcon} strokeWidth={2} />
-            </Button>
+          <SidebarMenuItem>
+            <div className="flex items-center gap-2 group-data-[collapsible=icon]:flex-col">
+              <SidebarMenuButton
+                tooltip="Quick Create"
+                className="min-w-8 bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
+              >
+                <HugeiconsIcon icon={PlusSignIcon} strokeWidth={2} />
+                <span>Quick Create</span>
+              </SidebarMenuButton>
+              <Button
+                variant="outline"
+                size="icon"
+                className="size-8 shrink-0"
+                aria-label="Inbox"
+              >
+                <HugeiconsIcon icon={InboxIcon} strokeWidth={2} />
+              </Button>
+            </div>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -187,12 +189,15 @@ export function AppSidebar({
                 </SidebarMenuItem>
               ))}
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  tooltip="More"
-                  className="text-muted-foreground"
-                >
-                  <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
-                  <span>More</span>
+                <SidebarMenuButton tooltip="More">
+                  <HugeiconsIcon
+                    icon={MoreHorizontalIcon}
+                    strokeWidth={2}
+                    className="text-muted-foreground group-hover/menu-button:text-sidebar-accent-foreground"
+                  />
+                  <span className="text-muted-foreground group-hover/menu-button:text-sidebar-accent-foreground">
+                    More
+                  </span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -224,14 +229,7 @@ export function AppSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
-              <DropdownMenuTrigger
-                render={
-                  <SidebarMenuButton
-                    size="lg"
-                    className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                  />
-                }
-              >
+              <DropdownMenuTrigger render={<SidebarMenuButton size="lg" />}>
                 <Avatar className="size-8 rounded-lg grayscale">
                   <AvatarImage src="" alt="" />
                   <AvatarFallback className="rounded-lg">SC</AvatarFallback>

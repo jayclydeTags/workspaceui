@@ -331,8 +331,10 @@ export function TwoFactorChallenge() {
 
                   <Field orientation="horizontal">
                     <Checkbox id="trust-device" disabled={verifying} />
-                    <FieldLabel htmlFor="trust-device" className="font-normal">
-                      Trust this device for 30 days
+                    <FieldLabel htmlFor="trust-device">
+                      <span className="font-normal">
+                        Trust this device for 30 days
+                      </span>
                     </FieldLabel>
                   </Field>
 

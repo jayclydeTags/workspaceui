@@ -217,8 +217,8 @@ export function NotificationCenter() {
 
           {/* ponytail: native date inputs — no picker dependency for a range. */}
           <div className="flex items-center gap-1.5">
-            <Label htmlFor="notif-from" className="text-xs whitespace-nowrap">
-              From
+            <Label htmlFor="notif-from" className="whitespace-nowrap">
+              <span className="text-xs">From</span>
             </Label>
             <Input
               id="notif-from"
@@ -231,8 +231,8 @@ export function NotificationCenter() {
               }}
               className="h-7 w-auto text-xs"
             />
-            <Label htmlFor="notif-to" className="text-xs whitespace-nowrap">
-              To
+            <Label htmlFor="notif-to" className="whitespace-nowrap">
+              <span className="text-xs">To</span>
             </Label>
             <Input
               id="notif-to"

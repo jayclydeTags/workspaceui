@@ -96,6 +96,11 @@ export default defineConfig([
                 "aria-pressed:shadow-sm",
               ],
             },
+            {
+              // Compact (text-xs) and code (font-mono) text entry.
+              pattern: "^(Input|Textarea)$",
+              allow: ["layout", "spacing", "text-xs", "text-sm", "font-mono"],
+            },
             { pattern: "^Avatar$", allow: ["size-*"] },
             // Headless primitives: they ship no appearance, so callers style them.
             {

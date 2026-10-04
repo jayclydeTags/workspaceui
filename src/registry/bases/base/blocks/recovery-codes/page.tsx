@@ -131,8 +131,10 @@ export function RecoveryCodes() {
                 checked={saved}
                 onCheckedChange={(v) => setSaved(v === true)}
               />
-              <FieldLabel htmlFor="rc-saved" className="font-normal">
-                I&apos;ve saved my recovery codes
+              <FieldLabel htmlFor="rc-saved">
+                <span className="font-normal">
+                  I&apos;ve saved my recovery codes
+                </span>
               </FieldLabel>
             </Field>
 

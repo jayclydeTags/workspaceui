@@ -175,10 +175,7 @@ export default defineConfig([
         { allow: ["transform", "transition"] },
       ],
       // Marker classes: selector hooks in CSS/JS, not Tailwind utilities.
-      "shadcn/no-unknown-classes": [
-        "error",
-        { allow: ["not-prose", "steps", "cn-input-otp"] },
-      ],
+      "shadcn/no-unknown-classes": ["error", { allow: ["cn-input-otp"] }],
       "shadcn/require-static-classes": "error",
     },
   },

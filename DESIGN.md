@@ -127,9 +127,8 @@ Rules:
   (`--font-mono`) for code, IDs, and keyboard hints.
 - UI text is `text-sm` (14px) at `font-medium` for controls and labels;
   `text-xs` for dense metadata and compact controls.
-- Long-form docs use shadcn/typeset (`src/app/typeset.css`) via
-  `.typeset-docs`: 14px body, 1.75 line height. There is no Tailwind
-  Typography plugin.
+- There is no long-form prose styling (no Tailwind Typography plugin or
+  shadcn/typeset): the site has no rendered docs pages.
 - Numbers that users compare (counts, amounts, sizes, usage) use
   `tabular-nums`.
 

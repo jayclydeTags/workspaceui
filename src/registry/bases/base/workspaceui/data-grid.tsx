@@ -758,13 +758,19 @@ export function DataGrid<TData>({
   const columnPinningState = table.getState().columnPinning
   const isMountedRef = React.useRef(false)
 
+  // Keeps the reporter below keyed to layout state, not to the callback's identity (an inline prop is new every render).
+  const onColumnLayoutChangeRef = React.useRef(onColumnLayoutChange)
+  React.useEffect(() => {
+    onColumnLayoutChangeRef.current = onColumnLayoutChange
+  }, [onColumnLayoutChange])
+
   // Reports the table's own resize/pin/reorder state out after real changes only (skips the mount-time run).
   React.useEffect(() => {
     if (!isMountedRef.current) {
       isMountedRef.current = true
       return
     }
-    onColumnLayoutChange?.({
+    onColumnLayoutChangeRef.current?.({
       columnOrder: columnOrderState,
       columnSizing: columnSizingState,
       columnPinning: columnPinningState,
@@ -1012,7 +1018,7 @@ export function DataGrid<TData>({
       setPendingAdd(null)
     }
     prevRowCountRef.current = rowCount
-  }, [rowCount, pendingAdd])
+  }, [rowCount, pendingAdd, rows])
 
   // Clears pendingAdd on rejection so a later unrelated row-count change can't steal focus.
   function handleRowAdd(afterRowId?: string) {

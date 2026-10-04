@@ -2115,6 +2115,31 @@ describe("DataGrid", () => {
       )
     })
 
+    it("reports to the latest callback and stays silent when only the callback changes", async () => {
+      const user = userEvent.setup()
+      const first = vi.fn<(layout: DataGridColumnLayout) => void>()
+      const second = vi.fn<(layout: DataGridColumnLayout) => void>()
+      const { rerender } = render(
+        <LayoutHarness onColumnLayoutChange={first} />
+      )
+
+      // A new callback identity with no layout change must not report.
+      rerender(<LayoutHarness onColumnLayoutChange={second} />)
+      expect(first).not.toHaveBeenCalled()
+      expect(second).not.toHaveBeenCalled()
+
+      const header = screen.getAllByRole("columnheader")[1]!
+      await user.click(
+        within(header).getByRole("button", { name: "Name column options" })
+      )
+      await user.click(
+        await screen.findByRole("menuitem", { name: "Pin column left" })
+      )
+
+      expect(first).not.toHaveBeenCalled()
+      expect(second).toHaveBeenCalledTimes(1)
+    })
+
     it("leaves resize/pin/reorder fully working when the callback is omitted (uncontrolled)", async () => {
       const user = userEvent.setup()
       render(<LayoutHarness />)

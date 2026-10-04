@@ -197,8 +197,10 @@ export function TwoFactorChallenge() {
               </AnimatePresence>
             </div>
 
-            <CardTitle className={success ? "mt-2 text-success" : "mt-2"}>
-              {success ? "Verified" : "Two-factor authentication"}
+            <CardTitle className="mt-2">
+              <span className={success ? "text-success" : undefined}>
+                {success ? "Verified" : "Two-factor authentication"}
+              </span>
             </CardTitle>
             <CardDescription>
               {success

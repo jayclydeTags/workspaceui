@@ -212,7 +212,11 @@ Other named treatments with contracts in `eslint.config.js`: the filled primary
 `SidebarMenuButton` (Quick Create), `DropdownMenuItem` rich rows (spacing and an
 unread `bg-accent/40`), and the segmented control (`ToggleGroup` with a muted
 track and a raised `aria-pressed` item). `Input` and `Textarea` may take `text-xs`, `text-sm` and `font-mono` for compact
-and code entry. `Avatar` and `AvatarFallback` take a size and placement, and `rounded-md` or
+and code entry. Table parts: `TableHead` and `TableCell` take spacing (column gutters,
+density) and `tabular-nums`; `TableHeader` may be `bg-background` for a sticky
+header; `TableRow` takes only `hover:bg-transparent`, `bg-muted/40` and
+`hover:bg-muted/40`. Cell color and type still come from a span inside.
+`Avatar` and `AvatarFallback` take a size and placement, and `rounded-md` or
 `rounded-lg` for workspace/org avatars (users stay circular). Validation messages use `FieldError`, not a recolored
 `FieldDescription`; an editor surface that must be borderless is a native
 `<textarea>`, not a restyled `Textarea`. Prefer a built-in variant; add a

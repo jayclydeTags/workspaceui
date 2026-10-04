@@ -5,6 +5,116 @@ import reactHooks from "eslint-plugin-react-hooks"
 import tseslint from "typescript-eslint"
 import { defineConfig, globalIgnores } from "eslint/config"
 
+// Named exceptions to the strict `allow: ["layout"]` no-restyle default.
+// Each entry is a treatment the stock shadcn component has no variant for.
+const restyleContracts = [
+  // shadcn's documented contracts (docs/design-systems.md): titles
+  // take typography, containers take spacing, avatars take a size.
+  { pattern: "^CardTitle$", allow: ["layout", "typography"] },
+  {
+    pattern: "^Card$|^Empty$|(Content|Header|Footer|Group|Panel)$",
+    allow: ["layout", "spacing"],
+  },
+  {
+    // Named Card treatments: quiet info panel and highlighted card.
+    pattern: "^Card$",
+    allow: [
+      "layout",
+      "spacing",
+      "bg-muted/50",
+      "bg-primary/5",
+      "ring-primary/40",
+    ],
+  },
+  {
+    // Filled primary action in a sidebar (e.g. Quick Create).
+    pattern: "^SidebarMenuButton$",
+    allow: [
+      "layout",
+      "bg-primary",
+      "text-primary-foreground",
+      "hover:bg-primary/90",
+      "hover:text-primary-foreground",
+      "active:bg-primary/90",
+      "active:text-primary-foreground",
+      "duration-200",
+      "ease-linear",
+    ],
+  },
+  {
+    // Rich rows (e.g. notifications) pad themselves and tint unread.
+    pattern: "^DropdownMenuItem$",
+    allow: ["layout", "spacing", "bg-accent/40"],
+  },
+  {
+    // Segmented control: muted track, raised active segment.
+    pattern: "^ToggleGroup$",
+    allow: ["layout", "spacing", "bg-muted"],
+  },
+  {
+    pattern: "^ToggleGroupItem$",
+    allow: [
+      "layout",
+      "spacing",
+      "rounded-md",
+      "text-muted-foreground",
+      "hover:bg-transparent",
+      "aria-pressed:bg-background",
+      "aria-pressed:text-foreground",
+      "aria-pressed:shadow-sm",
+    ],
+  },
+  {
+    // Compact (text-xs) and code (font-mono) text entry.
+    pattern: "^(Input|Textarea)$",
+    allow: ["layout", "spacing", "text-xs", "text-sm", "font-mono"],
+  },
+  // Tables: cells and heads are content boxes whose gutters and density
+  // the page owns; numeric columns align figures; a sticky header can
+  // be opaque; rows carry the few hover/tint treatments in use.
+  {
+    pattern: "^Table(Head|Cell)$",
+    allow: ["layout", "spacing", "tabular-nums"],
+  },
+  {
+    pattern: "^TableHeader$",
+    allow: ["layout", "spacing", "bg-background"],
+  },
+  {
+    pattern: "^TableRow$",
+    allow: [
+      "layout",
+      "hover:bg-transparent",
+      "bg-muted/40",
+      "hover:bg-muted/40",
+    ],
+  },
+  {
+    // Grip-only handle: no full-height divider line.
+    pattern: "^ResizableHandle$",
+    allow: ["layout", "bg-transparent"],
+  },
+  {
+    // Avatars take a size and placement; org/workspace avatars are
+    // rounded squares rather than circles.
+    pattern: "^Avatar(Fallback)?$",
+    allow: ["layout", "size-*", "rounded-md", "rounded-lg"],
+  },
+  // Headless primitives: they ship no appearance, so callers style them.
+  {
+    pattern: "^Collapsible(Trigger|Content)?$",
+    allow: [
+      "layout",
+      "spacing",
+      "color",
+      "typography",
+      "shape",
+      "effects",
+      "motion",
+    ],
+  },
+]
+
 export default defineConfig([
   // Generated output — never our code to lint.
   // `templates/` holds standalone starter projects with their own toolchain — not ours to lint.
@@ -36,96 +146,10 @@ export default defineConfig([
       // Adopted at warn; `pnpm lint` caps the warning count so it can only
       // go down. Promote a rule to "error" once its findings are fixed.
       "shadcn/no-restyle": [
-        "warn",
+        "error",
         {
           allow: ["layout"],
-          contracts: [
-            // shadcn's documented contracts (docs/design-systems.md): titles
-            // take typography, containers take spacing, avatars take a size.
-            { pattern: "^CardTitle$", allow: ["layout", "typography"] },
-            {
-              pattern: "^Card$|^Empty$|(Content|Header|Footer|Group|Panel)$",
-              allow: ["layout", "spacing"],
-            },
-            {
-              // Named Card treatments: quiet info panel and highlighted card.
-              pattern: "^Card$",
-              allow: [
-                "layout",
-                "spacing",
-                "bg-muted/50",
-                "bg-primary/5",
-                "ring-primary/40",
-              ],
-            },
-            {
-              // Filled primary action in a sidebar (e.g. Quick Create).
-              pattern: "^SidebarMenuButton$",
-              allow: [
-                "layout",
-                "bg-primary",
-                "text-primary-foreground",
-                "hover:bg-primary/90",
-                "hover:text-primary-foreground",
-                "active:bg-primary/90",
-                "active:text-primary-foreground",
-                "duration-200",
-                "ease-linear",
-              ],
-            },
-            {
-              // Rich rows (e.g. notifications) pad themselves and tint unread.
-              pattern: "^DropdownMenuItem$",
-              allow: ["layout", "spacing", "bg-accent/40"],
-            },
-            {
-              // Segmented control: muted track, raised active segment.
-              pattern: "^ToggleGroup$",
-              allow: ["layout", "spacing", "bg-muted"],
-            },
-            {
-              pattern: "^ToggleGroupItem$",
-              allow: [
-                "layout",
-                "spacing",
-                "rounded-md",
-                "text-muted-foreground",
-                "hover:bg-transparent",
-                "aria-pressed:bg-background",
-                "aria-pressed:text-foreground",
-                "aria-pressed:shadow-sm",
-              ],
-            },
-            {
-              // Compact (text-xs) and code (font-mono) text entry.
-              pattern: "^(Input|Textarea)$",
-              allow: ["layout", "spacing", "text-xs", "text-sm", "font-mono"],
-            },
-            {
-              // Grip-only handle: no full-height divider line.
-              pattern: "^ResizableHandle$",
-              allow: ["layout", "bg-transparent"],
-            },
-            {
-              // Avatars take a size and placement; org/workspace avatars are
-              // rounded squares rather than circles.
-              pattern: "^Avatar(Fallback)?$",
-              allow: ["layout", "size-*", "rounded-md", "rounded-lg"],
-            },
-            // Headless primitives: they ship no appearance, so callers style them.
-            {
-              pattern: "^Collapsible(Trigger|Content)?$",
-              allow: [
-                "layout",
-                "spacing",
-                "color",
-                "typography",
-                "shape",
-                "effects",
-                "motion",
-              ],
-            },
-          ],
+          contracts: restyleContracts,
         },
       ],
       "shadcn/no-raw-colors": "error",
@@ -183,10 +207,11 @@ export default defineConfig([
     ],
     rules: {
       "shadcn/no-restyle": [
-        "warn",
+        "error",
         {
           allow: ["layout"],
           contracts: [
+            ...restyleContracts,
             {
               pattern: "^Checkbox$",
               allow: ["layout", "color", "shape", "effects"],

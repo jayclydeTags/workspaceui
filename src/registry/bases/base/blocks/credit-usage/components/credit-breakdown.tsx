@@ -60,10 +60,12 @@ export function CreditBreakdown({
     <Card>
       <CardHeader>
         <CardTitle>{plan.name}</CardTitle>
-        <CardDescription className="tabular-nums">
-          {isBillingPeriod
-            ? `${formatNumber(summary.used)} of ${formatNumber(plan.limit)} credits used ${phrase}`
-            : `${formatNumber(summary.used)} credits used ${phrase}`}
+        <CardDescription>
+          <span className="tabular-nums">
+            {isBillingPeriod
+              ? `${formatNumber(summary.used)} of ${formatNumber(plan.limit)} credits used ${phrase}`
+              : `${formatNumber(summary.used)} credits used ${phrase}`}
+          </span>
         </CardDescription>
         <CardAction>
           <Button variant="outline" onClick={onManagePlan}>

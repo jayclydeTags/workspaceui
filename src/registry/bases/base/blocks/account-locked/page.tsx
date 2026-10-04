@@ -112,8 +112,10 @@ export function AccountLocked() {
                 Reset password
               </Button>
             )}
-            <Button variant="ghost" className="w-full text-muted-foreground">
-              Contact support
+            <Button variant="ghost" className="w-full">
+              <span className="text-muted-foreground group-hover/button:text-foreground">
+                Contact support
+              </span>
             </Button>
           </div>
         </div>

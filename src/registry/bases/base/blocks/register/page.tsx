@@ -83,8 +83,10 @@ export function Register() {
               <span className="font-medium text-foreground">{email}</span>. Open
               it to activate your account.
             </p>
-            <Button variant="ghost" className="mt-4 text-muted-foreground">
-              Resend email
+            <Button variant="ghost" className="mt-4">
+              <span className="text-muted-foreground group-hover/button:text-foreground">
+                Resend email
+              </span>
             </Button>
           </div>
         </div>

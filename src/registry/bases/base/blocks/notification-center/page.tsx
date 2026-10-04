@@ -250,18 +250,16 @@ export function NotificationCenter() {
           </div>
 
           {hasFilters && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="gap-1 text-xs text-muted-foreground"
-              onClick={clearFilters}
-            >
+            <Button variant="ghost" size="sm" onClick={clearFilters}>
               <HugeiconsIcon
                 icon={Cancel01Icon}
                 strokeWidth={2}
                 data-icon="inline-start"
+                className="text-muted-foreground group-hover/button:text-foreground"
               />
-              Clear
+              <span className="text-muted-foreground group-hover/button:text-foreground">
+                Clear
+              </span>
             </Button>
           )}
         </div>

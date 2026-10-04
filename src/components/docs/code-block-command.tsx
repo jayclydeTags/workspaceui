@@ -9,7 +9,6 @@ import {
 import { useRef } from "react"
 
 import { useConfig } from "@/hooks/use-config"
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
@@ -81,22 +80,16 @@ export function CodeBlockCommand({
           </TabsContent>
         ))}
       </Tabs>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon-xs"
-        className={cn(
-          "absolute top-1.5 right-2 z-10 opacity-70 hover:opacity-100 focus-visible:opacity-100"
-        )}
-        onClick={onCopy}
-      >
-        <span className="sr-only">Copy</span>
-        {checked ? (
-          <HugeiconsIcon icon={Tick02Icon} strokeWidth={2} />
-        ) : (
-          <HugeiconsIcon icon={ClipboardIcon} strokeWidth={2} />
-        )}
-      </Button>
+      <span className="absolute top-1.5 right-2 z-10 opacity-70 focus-within:opacity-100 hover:opacity-100">
+        <Button type="button" variant="ghost" size="icon-xs" onClick={onCopy}>
+          <span className="sr-only">Copy</span>
+          {checked ? (
+            <HugeiconsIcon icon={Tick02Icon} strokeWidth={2} />
+          ) : (
+            <HugeiconsIcon icon={ClipboardIcon} strokeWidth={2} />
+          )}
+        </Button>
+      </span>
     </div>
   )
 }

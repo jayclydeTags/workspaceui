@@ -88,8 +88,10 @@ export function ForbiddenWorkspace() {
               />
               Request access to {BLOCKED}
             </Button>
-            <Button variant="ghost" className="w-full text-muted-foreground">
-              Sign in with a different account
+            <Button variant="ghost" className="w-full">
+              <span className="text-muted-foreground group-hover/button:text-foreground">
+                Sign in with a different account
+              </span>
             </Button>
           </div>
         </div>

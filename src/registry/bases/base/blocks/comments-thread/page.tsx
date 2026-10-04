@@ -145,10 +145,11 @@ export function CommentsThread() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-7 px-2 text-xs text-muted-foreground"
                       onClick={() => setReplyingTo(c.id)}
                     >
-                      Reply
+                      <span className="text-muted-foreground group-hover/button:text-foreground">
+                        Reply
+                      </span>
                     </Button>
                   </div>
                 )}

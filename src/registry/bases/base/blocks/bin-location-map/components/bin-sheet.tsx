@@ -182,10 +182,9 @@ export function BinSheet({
             type="button"
             variant="outline"
             size="sm"
-            className="text-destructive hover:text-destructive"
             onClick={() => onDelete(bin)}
           >
-            Delete bin
+            <span className="text-destructive">Delete bin</span>
           </Button>
         </SheetFooter>
       </SheetContent>

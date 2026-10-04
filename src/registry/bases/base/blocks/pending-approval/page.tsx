@@ -49,8 +49,10 @@ export function PendingApproval() {
             <Button variant="outline" className="w-full">
               Check status
             </Button>
-            <Button variant="ghost" className="w-full text-muted-foreground">
-              Sign out
+            <Button variant="ghost" className="w-full">
+              <span className="text-muted-foreground group-hover/button:text-foreground">
+                Sign out
+              </span>
             </Button>
           </div>
         </div>

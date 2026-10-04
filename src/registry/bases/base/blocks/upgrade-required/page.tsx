@@ -80,10 +80,12 @@ export function UpgradeRequired() {
             ) : (
               <Button
                 variant="ghost"
-                className="w-full text-muted-foreground"
+                className="w-full"
                 onClick={() => setRequested(true)}
               >
-                Ask an admin to upgrade
+                <span className="text-muted-foreground group-hover/button:text-foreground">
+                  Ask an admin to upgrade
+                </span>
               </Button>
             )}
           </div>

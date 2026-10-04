@@ -13,11 +13,7 @@ export function BulkToolbarDemo() {
   return (
     <div className="flex flex-col gap-3">
       <BulkToolbar count={count} onClear={() => setCount(0)}>
-        <Button
-          variant="destructive"
-          size="sm"
-          className="bg-destructive text-destructive-foreground hover:bg-destructive/90 dark:bg-destructive dark:hover:bg-destructive/90"
-        >
+        <Button variant="destructive" size="sm">
           <HugeiconsIcon
             icon={Delete02Icon}
             strokeWidth={2}

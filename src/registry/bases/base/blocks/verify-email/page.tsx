@@ -95,10 +95,12 @@ export function VerifyEmail() {
             {/* ponytail: demo shortcut standing in for the emailed link click. */}
             <Button
               variant="ghost"
-              className="w-full text-muted-foreground"
+              className="w-full"
               onClick={() => setVerified(true)}
             >
-              I&apos;ve verified my email
+              <span className="text-muted-foreground group-hover/button:text-foreground">
+                I&apos;ve verified my email
+              </span>
             </Button>
           </div>
         </div>

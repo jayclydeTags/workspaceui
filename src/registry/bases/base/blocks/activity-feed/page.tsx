@@ -246,7 +246,7 @@ export function ActivityFeed() {
           <span>This month {STATS.thisMonth}</span>
         </div>
         <div className="shrink-0 px-4 py-2">
-          <Button variant="ghost" size="sm" className="w-full text-xs">
+          <Button variant="ghost" size="sm" className="w-full">
             <HugeiconsIcon
               icon={ArrowDown01Icon}
               strokeWidth={2}

@@ -178,11 +178,7 @@ function CopyButton({
       type="button"
       variant="ghost"
       size="icon-xs"
-      data-checked={checked || undefined}
-      className={cn(
-        "hover:text-fd-accent-foreground data-checked:text-fd-accent-foreground",
-        className
-      )}
+      className={className}
       aria-label={
         checked
           ? t("Copied Text", { note: "aria-label" })
@@ -192,7 +188,11 @@ function CopyButton({
       {...props}
     >
       {checked ? (
-        <HugeiconsIcon icon={Tick02Icon} strokeWidth={2} />
+        <HugeiconsIcon
+          icon={Tick02Icon}
+          strokeWidth={2}
+          className="text-fd-accent-foreground"
+        />
       ) : (
         <HugeiconsIcon icon={ClipboardIcon} strokeWidth={2} />
       )}

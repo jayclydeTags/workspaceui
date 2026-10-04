@@ -43,15 +43,15 @@ export function SearchDialog() {
     <>
       <Button
         variant="outline"
-        className="h-8 w-full max-w-56 justify-start gap-2 rounded-full px-3 text-muted-foreground shadow-none sm:w-56"
+        className="h-8 w-full max-w-56 justify-start sm:w-56"
         onClick={() => setOpen(true)}
       >
         <HugeiconsIcon
           icon={Search01Icon}
           strokeWidth={2}
-          className="size-4 shrink-0"
+          className="size-4 shrink-0 text-muted-foreground"
         />
-        <span className="flex-1 truncate text-left text-sm">
+        <span className="flex-1 truncate text-left text-sm text-muted-foreground">
           Search documentation...
         </span>
         <Kbd className="hidden shrink-0 sm:inline-flex">⌘K</Kbd>

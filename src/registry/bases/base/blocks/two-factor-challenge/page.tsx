@@ -338,15 +338,17 @@ export function TwoFactorChallenge() {
 
                   <Button
                     variant="link"
-                    className="h-auto p-0 text-xs text-muted-foreground"
+                    size="xs"
                     disabled={verifying}
                     onClick={() =>
                       switchMode(mode === "totp" ? "recovery" : "totp")
                     }
                   >
-                    {mode === "totp"
-                      ? "Use a recovery code instead"
-                      : "Use your authenticator app instead"}
+                    <span className="text-muted-foreground group-hover/button:text-primary">
+                      {mode === "totp"
+                        ? "Use a recovery code instead"
+                        : "Use your authenticator app instead"}
+                    </span>
                   </Button>
                 </CardContent>
               </motion.div>

@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "lint": "eslint . --max-warnings 98",
+    "lint": "eslint . --max-warnings 89",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
     "preview": "npx serve out",

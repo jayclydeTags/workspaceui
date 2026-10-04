@@ -78,6 +78,24 @@ export default defineConfig([
               pattern: "^DropdownMenuItem$",
               allow: ["layout", "spacing", "bg-accent/40"],
             },
+            {
+              // Segmented control: muted track, raised active segment.
+              pattern: "^ToggleGroup$",
+              allow: ["layout", "spacing", "bg-muted"],
+            },
+            {
+              pattern: "^ToggleGroupItem$",
+              allow: [
+                "layout",
+                "spacing",
+                "rounded-md",
+                "text-muted-foreground",
+                "hover:bg-transparent",
+                "aria-pressed:bg-background",
+                "aria-pressed:text-foreground",
+                "aria-pressed:shadow-sm",
+              ],
+            },
             { pattern: "^Avatar$", allow: ["size-*"] },
             // Headless primitives: they ship no appearance, so callers style them.
             {

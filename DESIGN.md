@@ -208,6 +208,13 @@ ring-primary/40`, for the emphasized card on a page). Any other card color is
 a new treatment: decide it, then add it to the `Card` contract in
 `eslint.config.js`.
 
+Other named treatments with contracts in `eslint.config.js`: the filled primary
+`SidebarMenuButton` (Quick Create), `DropdownMenuItem` rich rows (spacing and an
+unread `bg-accent/40`), and the segmented control (`ToggleGroup` with a muted
+track and a raised `aria-pressed` item). Prefer a built-in variant; add a
+contract only when the same treatment recurs and the stock component has no
+variant for it.
+
 ### Composition
 
 - Items live inside their group: `SelectItem` in `SelectGroup`,

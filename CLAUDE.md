@@ -40,7 +40,7 @@ workspaceui/
 │   │   ├── globals.css       # Tailwind v4 + theme tokens (was src/index.css)
 │   │   ├── (marketing)/      # home: page.tsx (no layout — SiteHeader is global now)
 │   │   ├── docs/             # Getting Started prose only: layout.tsx (sidebar + content) + [[...slug]]/page.tsx
-│   │   ├── components/       # layout.tsx (sidebar) + page.tsx (index) + [slug]/page.tsx (the studio: canvas + inspector)
+│   │   ├── components/       # layout.tsx (sidebar) + page.tsx (redirects to the first component; there is no catalog) + [slug]/page.tsx (the studio: canvas + inspector)
 │   │   ├── blocks/
 │   │   │   ├── (browse)/     # layout (sidebar only — SiteHeader is global), page.tsx (gallery), [slug]/page.tsx
 │   │   │   └── preview/[slug]/page.tsx   # bare iframe target — escapes (browse) chrome
@@ -141,6 +141,8 @@ inspector as one resizable pair (stacked below `lg`).
 - Because the inspector reads the mdx, a component's `## API Reference` heading
   and markdown tables are load-bearing; keep that shape.
 - Portaled UI (Select popups, dialogs) renders outside the canvas sections.
+- `/components` itself is not a page: it redirects to the first component in the
+  sidebar (a client-side redirect in the static export).
 - Old `/docs/components/*` URLs 404 in the static export; `vercel.json`
   redirects them to `/components/*`.
 

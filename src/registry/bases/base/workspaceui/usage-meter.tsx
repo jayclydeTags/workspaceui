@@ -25,13 +25,6 @@ const defaultFormat = new Intl.NumberFormat()
 
 // Targets Progress's indicator via its data-slot, since the component
 // doesn't expose an indicatorClassName prop.
-const INDICATOR: Record<UsageStatus, string> = {
-  ok: "",
-  warning: "[&_[data-slot=progress-indicator]]:bg-warning",
-  exceeded: "[&_[data-slot=progress-indicator]]:bg-destructive",
-  unlimited: "",
-}
-
 export interface UsageMeterProps extends Omit<
   React.ComponentProps<"div">,
   "children"
@@ -148,7 +141,13 @@ export function UsageMeter({
       <Progress
         value={Math.min(percent, 100)}
         getAriaValueText={() => `${figures}, ${statusText}`}
-        className={cn("gap-2", INDICATOR[status])}
+        className={cn(
+          "gap-2",
+          status === "warning" &&
+            "[&_[data-slot=progress-indicator]]:bg-warning",
+          status === "exceeded" &&
+            "[&_[data-slot=progress-indicator]]:bg-destructive"
+        )}
       >
         <div className="flex w-full items-baseline justify-between gap-2">
           <ProgressLabel>{label}</ProgressLabel>

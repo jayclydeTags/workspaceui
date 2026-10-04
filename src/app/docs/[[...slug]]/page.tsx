@@ -3,9 +3,9 @@ import { notFound } from "next/navigation"
 
 import { source } from "@/lib/source"
 import { mdxComponents } from "@/lib/mdx-components"
-import { DocsPageLayout } from "@/components/docs-toc"
-import { DocsPager, getAdjacentDocs } from "@/components/docs-pager"
-import { DocsPageActions } from "@/components/docs-page-actions"
+import { DocsPageLayout } from "@/components/docs/docs-toc"
+import { DocsPager, getAdjacentDocs } from "@/components/docs/docs-pager"
+import { DocsPageActions } from "@/components/docs/docs-page-actions"
 
 type PageProps = { params: Promise<{ slug?: string[] }> }
 

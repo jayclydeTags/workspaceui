@@ -4,7 +4,6 @@ import * as React from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { File01Icon } from "@hugeicons/core-free-icons"
 
-import { Textarea } from "@/components/ui/textarea"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -82,13 +81,13 @@ export function WorkspaceDirtyTabsDemo() {
             })
           }}
           renderTabContent={(paneId, tabId) => (
-            <Textarea
+            <textarea
               value={text[tabId] ?? ""}
               onChange={(e) => {
                 setText((prev) => ({ ...prev, [tabId]: e.target.value }))
                 workspace.current?.updateTab(paneId, tabId, { dirty: true })
               }}
-              className="h-full resize-none rounded-none border-0 font-mono text-sm focus-visible:ring-0"
+              className="h-full w-full resize-none bg-transparent px-2.5 py-2 font-mono text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
             />
           )}
         />

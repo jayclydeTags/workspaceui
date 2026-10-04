@@ -78,18 +78,28 @@ export function DataTable({
             const { expected, received, varTotal } = totals(receipt)
             return (
               <TableRow key={receipt.id}>
-                <TableCell className="px-6 font-medium">{receipt.po}</TableCell>
-                <TableCell className="text-muted-foreground">
-                  {receipt.vendor}
+                <TableCell className="px-6">
+                  <span className="font-medium">{receipt.po}</span>
                 </TableCell>
-                <TableCell className="hidden text-muted-foreground @md:table-cell">
-                  {receipt.warehouse}
+                <TableCell>
+                  <span className="text-muted-foreground">
+                    {receipt.vendor}
+                  </span>
                 </TableCell>
-                <TableCell className="text-right tabular-nums">
-                  {received} / {expected}
+                <TableCell className="hidden @md:table-cell">
+                  <span className="text-muted-foreground">
+                    {receipt.warehouse}
+                  </span>
                 </TableCell>
-                <TableCell className="text-right tabular-nums">
-                  <VarianceCell value={varTotal} />
+                <TableCell className="text-right">
+                  <span className="tabular-nums">
+                    {received} / {expected}
+                  </span>
+                </TableCell>
+                <TableCell className="text-right">
+                  <span className="tabular-nums">
+                    <VarianceCell value={varTotal} />
+                  </span>
                 </TableCell>
                 <TableCell>
                   <StatusBadge

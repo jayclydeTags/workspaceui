@@ -5,8 +5,15 @@ import { describe, expect, it } from "vitest"
 
 interface RegistryItem {
   name: string
+  type: string
   registryDependencies?: string[]
-  files: { path: string }[]
+  // Theme-only items (e.g. status-colors) carry cssVars and no files.
+  files?: { path: string }[]
+  cssVars?: {
+    theme?: Record<string, string>
+    light?: Record<string, string>
+    dark?: Record<string, string>
+  }
 }
 
 // vitest always runs from the project root, so process.cwd() is the repo root.
@@ -24,7 +31,7 @@ describe("registry.json", () => {
   })
 
   it.each(registry.items)("$name: every file exists on disk", (item) => {
-    for (const file of item.files) {
+    for (const file of item.files ?? []) {
       expect(
         existsSync(resolve(REPO_ROOT, file.path)),
         `${item.name} references missing file: ${file.path}`
@@ -66,4 +73,57 @@ describe("registry.json", () => {
       }
     }
   )
+
+  // Status tokens (success, warning) are not in a stock shadcn theme. An item
+  // that ships a file using them must pull in `status-colors`, directly or
+  // through a sibling dependency, or consumers get unstyled output.
+  describe("status color tokens", () => {
+    const STATUS_ITEM = "status-colors"
+    const STATUS_UTILITY =
+      /\b(?:[a-z-]+:)*(?:text|bg|border|ring|fill|stroke|outline|from|to|via|decoration|divide|accent|caret)-(?:success|warning)\b/
+    const byName = new Map(registry.items.map((item) => [item.name, item]))
+
+    function siblingClosure(item: RegistryItem, seen = new Set<string>()) {
+      for (const dep of item.registryDependencies ?? []) {
+        const name = dep.startsWith(REGISTRY_ADDRESS_PREFIX)
+          ? dep.slice(REGISTRY_ADDRESS_PREFIX.length)
+          : dep
+        const sibling = byName.get(name)
+        if (sibling && !seen.has(name)) {
+          seen.add(name)
+          siblingClosure(sibling, seen)
+        }
+      }
+      return seen
+    }
+
+    it("status-colors declares every token in theme, light and dark", () => {
+      const item = byName.get(STATUS_ITEM)
+      expect(
+        item,
+        "registry.json is missing the status-colors item"
+      ).toBeDefined()
+      for (const token of ["success", "warning"]) {
+        expect(item?.cssVars?.theme?.[`color-${token}`]).toBe(`var(--${token})`)
+        expect(item?.cssVars?.light?.[token], `light ${token}`).toBeTruthy()
+        expect(item?.cssVars?.dark?.[token], `dark ${token}`).toBeTruthy()
+      }
+    })
+
+    it.each(registry.items.filter((item) => item.files?.length))(
+      "$name: depends on status-colors if its files use status tokens",
+      (item) => {
+        const usesStatusToken = item.files!.some((file) =>
+          STATUS_UTILITY.test(
+            readFileSync(resolve(REPO_ROOT, file.path), "utf-8")
+          )
+        )
+        if (!usesStatusToken) return
+        expect(
+          siblingClosure(item).has(STATUS_ITEM),
+          `${item.name} uses text-/bg-success|warning but does not depend on "${REGISTRY_ADDRESS_PREFIX}${STATUS_ITEM}"`
+        ).toBe(true)
+      }
+    )
+  })
 })

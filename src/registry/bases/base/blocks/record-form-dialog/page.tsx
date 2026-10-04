@@ -83,9 +83,8 @@ export function RecordFormDialog() {
                   <span className="truncate text-sm font-medium">{c.name}</span>
                   <Badge
                     variant={c.status === "active" ? "secondary" : "outline"}
-                    className="capitalize"
                   >
-                    {c.status}
+                    <span className="capitalize">{c.status}</span>
                   </Badge>
                 </div>
                 <p className="truncate text-xs text-muted-foreground">

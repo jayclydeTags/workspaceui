@@ -128,12 +128,10 @@ export function SessionExpired() {
                     )}
                     {submitting ? "Signing in…" : "Continue"}
                   </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    className="w-full text-muted-foreground"
-                  >
-                    Sign in as a different user
+                  <Button type="button" variant="ghost" className="w-full">
+                    <span className="text-muted-foreground group-hover/button:text-foreground">
+                      Sign in as a different user
+                    </span>
                   </Button>
                 </Field>
               </FieldGroup>

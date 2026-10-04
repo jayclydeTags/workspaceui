@@ -10,8 +10,8 @@ import {
   SourceCodeIcon,
 } from "@hugeicons/core-free-icons"
 
-import { DynamicCodeBlock } from "@/components/dynamic-codeblock"
-import { GithubIcon } from "@/components/github-icon"
+import { DynamicCodeBlock } from "@/components/docs/dynamic-codeblock"
+import { GithubIcon } from "@/components/site/github-icon"
 
 export default function HomePage() {
   return (

@@ -1,9 +1,9 @@
 import type { ReactNode } from "react"
 import type { Metadata } from "next"
 import Script from "next/script"
-import { ThemeProvider } from "@/components/theme-provider"
+import { ThemeProvider } from "@/components/site/theme-provider"
 
-import { SiteHeader } from "@/components/site-header"
+import { SiteHeader } from "@/components/site/site-header"
 import { getDocsNav } from "@/lib/docs-nav"
 import { getBlocksNav } from "@/lib/block-taxonomy"
 

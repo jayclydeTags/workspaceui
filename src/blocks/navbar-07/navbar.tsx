@@ -136,35 +136,37 @@ function MobileNav({ className }: { className?: string }) {
           <SheetTitle>Menu</SheetTitle>
         </SheetHeader>
         <nav aria-label="Mobile" className="flex flex-col px-4">
-          <Accordion>
-            <AccordionItem value="platform" className="border-b">
-              <AccordionTrigger>Platform</AccordionTrigger>
-              <AccordionContent>
-                <div className="flex flex-col gap-3 pb-2">
-                  {PLATFORM_GROUPS.map((group) => (
-                    <div key={group.title}>
-                      <p className="px-2 text-xs font-medium text-muted-foreground">
-                        {group.title}
-                      </p>
-                      <ul className="flex flex-col">
-                        {group.links.map((link) => (
-                          <li key={link.title}>
-                            <a
-                              href={link.href}
-                              onClick={close}
-                              className="block rounded-md px-2 py-2 outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
-                            >
-                              {link.title}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+          <div className="border-b">
+            <Accordion>
+              <AccordionItem value="platform">
+                <AccordionTrigger>Platform</AccordionTrigger>
+                <AccordionContent>
+                  <div className="flex flex-col gap-3 pb-2">
+                    {PLATFORM_GROUPS.map((group) => (
+                      <div key={group.title}>
+                        <p className="px-2 text-xs font-medium text-muted-foreground">
+                          {group.title}
+                        </p>
+                        <ul className="flex flex-col">
+                          {group.links.map((link) => (
+                            <li key={link.title}>
+                              <a
+                                href={link.href}
+                                onClick={close}
+                                className="block rounded-md px-2 py-2 outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
+                              >
+                                {link.title}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
           {LINKS.map((link) => (
             <a
               key={link.label}

@@ -15,7 +15,7 @@ import {
   TerminalIcon,
   Cancel01Icon,
 } from "@hugeicons/core-free-icons"
-import { DynamicCodeBlock } from "@/components/dynamic-codeblock"
+import { DynamicCodeBlock } from "@/components/docs/dynamic-codeblock"
 import type { PanelImperativeHandle } from "react-resizable-panels"
 
 import { cn } from "@/lib/utils"
@@ -77,7 +77,7 @@ function FileTypeIcon({ name }: { name: string }) {
   const ext = name.split(".").pop() ?? ""
   const label = ext === "ts" || ext === "tsx" ? "TS" : ext.toUpperCase()
   return (
-    <span className="inline-flex size-4 items-center justify-center rounded-[3px] bg-foreground text-[8px] leading-none font-bold text-background">
+    <span className="inline-flex size-4 items-center justify-center rounded-xs bg-foreground text-xs leading-none font-bold text-background">
       {label}
     </span>
   )
@@ -122,8 +122,7 @@ function Divider({ className }: { className?: string }) {
 // Full-bleed row: left padding indents by depth so the active highlight still
 // spans the full panel width (matches the Paper design's file tree).
 const rowClass =
-  "flex h-8 w-full items-center gap-2 pr-2 text-left text-sm transition-colors [&_svg]:size-4 [&_svg]:shrink-0"
-const indent = (depth: number) => ({ paddingLeft: 16 + depth * 22 })
+  "flex h-8 w-full items-center gap-2 pr-2 text-left text-sm transition-colors pl-(--indent) [&_svg]:size-4 [&_svg]:shrink-0"
 
 function TreeFolder({
   node,
@@ -140,7 +139,7 @@ function TreeFolder({
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger
-        style={indent(depth)}
+        style={{ "--indent": `${16 + depth * 22}px` } as React.CSSProperties}
         className={cn(rowClass, "text-foreground hover:bg-muted")}
       >
         <HugeiconsIcon
@@ -194,7 +193,7 @@ function FileTree({
       <button
         key={node.fileKey}
         type="button"
-        style={indent(depth)}
+        style={{ "--indent": `${16 + depth * 22}px` } as React.CSSProperties}
         onClick={() => onSelect(node.fileKey!)}
         className={cn(
           rowClass,
@@ -273,7 +272,7 @@ export function BlockPreview({
           {/* Viewport + preview actions — preview only */}
           {tab === "preview" && (
             <>
-              <div className="flex items-center gap-1 rounded-lg border border-border p-[3px]">
+              <div className="flex items-center gap-1 rounded-lg border border-border p-0.75">
                 {(["desktop", "tablet", "mobile"] as const).map((v) => {
                   const Icon = VIEWPORT_ICONS[v]
                   return (
@@ -328,7 +327,7 @@ export function BlockPreview({
                 <HugeiconsIcon
                   icon={Tick02Icon}
                   strokeWidth={2}
-                  className="text-emerald-600"
+                  className="text-success"
                 />
               ) : (
                 <HugeiconsIcon
@@ -345,37 +344,38 @@ export function BlockPreview({
         {/* ── Content card ─────────────────────────────────────────────────── */}
         <div className="min-h-0 flex-1">
           {tab === "preview" ? (
-            <ResizablePanelGroup
-              orientation="horizontal"
-              className="h-full overflow-hidden rounded-[14px] bg-muted/40"
-            >
-              {/* Border + radius live on the panel itself so the frame tracks
-                  the resized preview; the group only supplies the bg backdrop. */}
-              <ResizablePanel
-                panelRef={panelRef}
-                defaultSize="100%"
-                minSize="320px"
-                className="overflow-hidden rounded-[14px] border border-border bg-background"
-              >
-                {/* Real iframe: the block sees the panel's width as its own
-                    viewport, so its md: breakpoints + useIsMobile fire for real
-                    as the panel is resized/toggled. key=previewKey reloads it. */}
-                <iframe
-                  key={previewKey}
-                  src={`/blocks/preview/${slug}`}
-                  title={title}
-                  className="h-full w-full border-0"
-                />
-              </ResizablePanel>
-              {/* bg-transparent drops the full-height divider line (it clashed
-                  with the rounded frame); only the grip pill shows. after:w-3
-                  gives a ~12px grab area without adding a layout gap. */}
-              <ResizableHandle withHandle className="w-3 bg-transparent" />
-              {/* Empty panel reveals the gray backdrop as the preview shrinks. */}
-              <ResizablePanel defaultSize={0} />
-            </ResizablePanelGroup>
+            <div className="h-full overflow-hidden rounded-xl bg-muted/40">
+              <ResizablePanelGroup orientation="horizontal" className="h-full">
+                {/* Border + radius live on a frame inside the panel so it tracks
+                  the resized preview; the wrapper only supplies the bg backdrop. */}
+                <ResizablePanel
+                  panelRef={panelRef}
+                  defaultSize="100%"
+                  minSize="320px"
+                  className="overflow-hidden"
+                >
+                  <div className="h-full overflow-hidden rounded-xl border border-border bg-background">
+                    {/* Real iframe: the block sees the panel's width as its own
+                        viewport, so its md: breakpoints + useIsMobile fire for real
+                        as the panel is resized/toggled. key=previewKey reloads it. */}
+                    <iframe
+                      key={previewKey}
+                      src={`/blocks/preview/${slug}`}
+                      title={title}
+                      className="h-full w-full border-0"
+                    />
+                  </div>
+                </ResizablePanel>
+                {/* bg-transparent drops the full-height divider line (it clashed
+                  with the rounded frame); only the grip pill shows. w-3 gives a
+                  ~12px grab area without adding a layout gap. */}
+                <ResizableHandle withHandle className="w-3 bg-transparent" />
+                {/* Empty panel reveals the gray backdrop as the preview shrinks. */}
+                <ResizablePanel defaultSize={0} />
+              </ResizablePanelGroup>
+            </div>
           ) : (
-            <div className="flex h-full overflow-hidden rounded-[14px] border border-border bg-muted/40">
+            <div className="flex h-full overflow-hidden rounded-xl border border-border bg-muted/40">
               {/* File tree */}
               <div className="flex w-72 shrink-0 flex-col overflow-auto border-r border-border bg-muted/40">
                 <div className="flex h-12 shrink-0 items-center border-b border-border px-4 text-sm font-medium text-muted-foreground">

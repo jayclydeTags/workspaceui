@@ -3,9 +3,9 @@ import NextLink from "next/link"
 import NextImage from "next/image"
 
 import { cn } from "@/lib/utils"
-import { Heading } from "@/components/mdx-heading"
-import { Accordion, Accordions } from "@/components/mdx-accordion"
-import { Callout } from "@/components/callout"
+import { Heading } from "@/components/docs/mdx-heading"
+import { Accordion, Accordions } from "@/components/docs/mdx-accordion"
+import { Callout } from "@/components/docs/callout"
 import {
   CodeBlock,
   Pre,
@@ -13,15 +13,15 @@ import {
   CodeBlockTabs,
   CodeBlockTabsList,
   CodeBlockTabsTrigger,
-} from "@/components/codeblock"
-import { CodeBlockCommand } from "@/components/code-block-command"
-import { CodeTabs } from "@/components/code-tabs"
-import { ComponentPreview } from "@/components/component-preview"
-import { ComponentsIndex } from "@/components/components-index"
-import { ComponentSource } from "@/components/component-source"
-import { ComponentTree } from "@/components/component-tree"
-import { File, Files, Folder } from "@/components/files"
-import { Step, Steps } from "@/components/steps"
+} from "@/components/docs/codeblock"
+import { CodeBlockCommand } from "@/components/docs/code-block-command"
+import { CodeTabs } from "@/components/docs/code-tabs"
+import { ComponentPreview } from "@/components/docs/component-preview"
+import { ComponentsIndex } from "@/components/docs/components-index"
+import { ComponentSource } from "@/components/docs/component-source"
+import { ComponentTree } from "@/components/docs/component-tree"
+import { File, Files, Folder } from "@/components/docs/files"
+import { Step, Steps } from "@/components/docs/steps"
 import { TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 function MdxLink({ href = "#", children, ...props }: ComponentProps<"a">) {

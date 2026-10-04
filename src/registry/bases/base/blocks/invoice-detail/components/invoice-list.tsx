@@ -51,7 +51,7 @@ export function InvoiceList({ activeInvoiceId, onSelect }: InvoiceListProps) {
   return (
     <div className="flex h-full flex-col">
       <div className="shrink-0 border-b border-border p-3">
-        <InputGroup className="h-8 text-sm">
+        <InputGroup className="h-8">
           <InputGroupAddon>
             <HugeiconsIcon icon={Search01Icon} strokeWidth={2} />
           </InputGroupAddon>

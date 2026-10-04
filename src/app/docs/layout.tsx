@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 
-import { SidebarNav } from "@/components/sidebar-nav"
+import { SidebarNav } from "@/components/site/sidebar-nav"
 import { getDocsNav } from "@/lib/docs-nav"
 
 // "Getting Started" is hand-maintained in src/lib/nav.ts; the Components

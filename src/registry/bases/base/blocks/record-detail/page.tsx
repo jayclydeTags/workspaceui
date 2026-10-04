@@ -48,11 +48,10 @@ export function RecordDetail() {
       title={e.name}
       subtitle={e.title}
       badge={
-        <Badge
-          variant={e.status === "active" ? "secondary" : "outline"}
-          className="capitalize"
-        >
-          {e.status === "active" ? "Active" : "On leave"}
+        <Badge variant={e.status === "active" ? "secondary" : "outline"}>
+          <span className="capitalize">
+            {e.status === "active" ? "Active" : "On leave"}
+          </span>
         </Badge>
       }
       hasPadding

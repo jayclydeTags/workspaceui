@@ -11,6 +11,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -159,7 +160,7 @@ export function CreditUsage({ className }: { className?: string }) {
               if (value[0]) setPeriod(value[0] as Period)
             }}
             spacing={0}
-            className="rounded-lg bg-muted p-[3px]"
+            className="bg-muted p-0.75"
           >
             {PERIODS.map((p) => (
               <ToggleGroupItem
@@ -175,11 +176,7 @@ export function CreditUsage({ className }: { className?: string }) {
 
         <CreditBreakdown plan={PLAN} period={period} summary={summary} />
 
-        <Tabs
-          value={view}
-          onValueChange={(value) => setView(value as View)}
-          className="gap-4"
-        >
+        <Tabs value={view} onValueChange={(value) => setView(value as View)}>
           <div className="flex flex-wrap items-center gap-2">
             <TabsList>
               <TabsTrigger value="agents">Agents</TabsTrigger>
@@ -222,8 +219,10 @@ export function CreditUsage({ className }: { className?: string }) {
                       />
                       Filter
                       {categories.size > 0 && (
-                        <Badge variant="secondary" className="tabular-nums">
-                          {categories.size}
+                        <Badge variant="secondary">
+                          <span className="tabular-nums">
+                            {categories.size}
+                          </span>
                         </Badge>
                       )}
                     </Button>
@@ -260,25 +259,23 @@ export function CreditUsage({ className }: { className?: string }) {
             </div>
           </div>
 
-          <TabsContent
-            value="agents"
-            className="overflow-hidden rounded-xl ring-1 ring-foreground/10"
-          >
-            <AgentsTable
-              rows={visibleAgents}
-              totalCredits={summary.used}
-              onReset={reset}
-            />
+          <TabsContent value="agents" className="mt-2">
+            <Card className="gap-0 py-0">
+              <AgentsTable
+                rows={visibleAgents}
+                totalCredits={summary.used}
+                onReset={reset}
+              />
+            </Card>
           </TabsContent>
-          <TabsContent
-            value="users"
-            className="overflow-hidden rounded-xl ring-1 ring-foreground/10"
-          >
-            <PowerUsersTable
-              rows={visibleUsers}
-              totalCredits={summary.used}
-              onReset={reset}
-            />
+          <TabsContent value="users" className="mt-2">
+            <Card className="gap-0 py-0">
+              <PowerUsersTable
+                rows={visibleUsers}
+                totalCredits={summary.used}
+                onReset={reset}
+              />
+            </Card>
           </TabsContent>
         </Tabs>
       </div>

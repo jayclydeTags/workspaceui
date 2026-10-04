@@ -16,6 +16,13 @@ export interface BlockFileRef {
 
 const REGISTRY_DIR = "src/registry/bases/base/blocks"
 
+// registry.json's inferred item type is a union (theme-only items have no
+// files), so name the file shape blocks actually have.
+interface RegistryFile {
+  path: string
+  target?: string
+}
+
 // A file's display path is the install `target` when the registry declares one
 // (that's where the consumer's copy lands). Files without a target are the
 // block's own internals, shown under the same app/… vs components/… split the
@@ -32,15 +39,11 @@ export const blockFiles: Record<string, BlockFileRef[]> = Object.fromEntries(
     .filter((item) => item.type === "registry:block")
     .map((item) => {
       const prefix = `${REGISTRY_DIR}/${item.name}/`
-      const refs = item.files.map((file) => {
+      const refs = ((item.files ?? []) as RegistryFile[]).map((file) => {
         const src = file.path.slice(prefix.length)
         return {
           name: src.slice(src.lastIndexOf("/") + 1),
-          path: displayPath(
-            item.name,
-            src,
-            "target" in file ? file.target : undefined
-          ),
+          path: displayPath(item.name, src, file.target),
           src,
         }
       })

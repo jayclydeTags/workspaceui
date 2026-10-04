@@ -1,4 +1,4 @@
-import { CopyButton } from "@/components/copy-button"
+import { CopyButton } from "@/components/docs/copy-button"
 
 export interface TreeNode {
   name: string

@@ -66,13 +66,15 @@ export function MagicLinkSent() {
                 </>
               )}
             </Button>
-            <Button variant="ghost" className="w-full text-muted-foreground">
-              <HugeiconsIcon
-                icon={ArrowLeft01Icon}
-                strokeWidth={2}
-                data-icon="inline-start"
-              />
-              Use a different email
+            <Button variant="ghost" className="w-full">
+              <span className="text-muted-foreground group-hover/button:text-foreground">
+                <HugeiconsIcon
+                  icon={ArrowLeft01Icon}
+                  strokeWidth={2}
+                  data-icon="inline-start"
+                />
+                Use a different email
+              </span>
             </Button>
           </div>
         </div>

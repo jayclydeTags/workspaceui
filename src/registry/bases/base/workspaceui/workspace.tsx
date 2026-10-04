@@ -1338,7 +1338,7 @@ function SnapZoneOverlay({ activeZone }: { activeZone: SnapZone | null }) {
         ZONE_BORDER[activeZone]
       )}
     >
-      <p className="max-w-[180px] text-center text-[11px] leading-relaxed whitespace-pre-line text-muted-foreground">
+      <p className="max-w-[180px] text-center text-xs leading-relaxed whitespace-pre-line text-muted-foreground">
         {ZONE_LABEL[activeZone]}
       </p>
     </div>
@@ -1352,8 +1352,13 @@ function DragGhost({ title, x, y }: { title: string; x: number; y: number }) {
   return createPortal(
     <div
       aria-hidden
-      className="pointer-events-none fixed z-50 select-none"
-      style={{ left: x + 14, top: y - 10, rotate: "-2deg" }}
+      className="pointer-events-none fixed top-(--ghost-y) left-(--ghost-x) z-50 -rotate-2 select-none"
+      style={
+        {
+          "--ghost-x": `${x + 14}px`,
+          "--ghost-y": `${y - 10}px`,
+        } as React.CSSProperties
+      }
     >
       <div
         className={cn(buttonVariants({ variant: "secondary" }), "shadow-md")}

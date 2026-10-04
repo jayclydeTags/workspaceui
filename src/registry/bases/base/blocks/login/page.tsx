@@ -152,8 +152,8 @@ export function Login() {
 
                 <Field orientation="horizontal">
                   <Checkbox id="login-remember" disabled={submitting} />
-                  <FieldLabel htmlFor="login-remember" className="font-normal">
-                    Remember me for 30 days
+                  <FieldLabel htmlFor="login-remember">
+                    <span className="font-normal">Remember me for 30 days</span>
                   </FieldLabel>
                 </Field>
 

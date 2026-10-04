@@ -34,12 +34,6 @@ const STRENGTH = ["Too weak", "Weak", "Good", "Strong"] as const
 // Indexed by score (0–3). Index 0 is unused — nothing is filled at score 0.
 // Targets Progress's indicator via its data-slot, since the component
 // doesn't expose an indicatorClassName prop.
-const STRENGTH_INDICATOR = [
-  "",
-  "[&_[data-slot=progress-indicator]]:bg-destructive",
-  "[&_[data-slot=progress-indicator]]:bg-warning",
-  "[&_[data-slot=progress-indicator]]:bg-success",
-] as const
 const STRENGTH_TEXT = [
   "text-muted-foreground",
   "text-destructive",
@@ -138,7 +132,13 @@ export function PasswordInput({
           <Progress
             value={(strength / 3) * 100}
             aria-label={`Password strength: ${STRENGTH[strength]}`}
-            className={cn("flex-1 gap-0", STRENGTH_INDICATOR[strength])}
+            className={cn(
+              "flex-1 gap-0",
+              strength === 1 &&
+                "[&_[data-slot=progress-indicator]]:bg-destructive",
+              strength === 2 && "[&_[data-slot=progress-indicator]]:bg-warning",
+              strength === 3 && "[&_[data-slot=progress-indicator]]:bg-success"
+            )}
           />
           <span
             className={cn("text-xs tabular-nums", STRENGTH_TEXT[strength])}

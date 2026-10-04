@@ -78,7 +78,7 @@ export function NotificationBody({
             {label}
           </Badge>
           {!item.read && (
-            <Badge variant="outline" className="shrink-0 gap-1.5">
+            <Badge variant="outline" className="shrink-0">
               <span
                 className="size-1.5 rounded-full bg-primary"
                 aria-hidden="true"

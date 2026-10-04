@@ -40,9 +40,11 @@ export function AccountSuspended() {
           </p>
 
           <Card size="sm" className="mt-4 w-full bg-muted/50">
-            <CardContent className="text-left text-xs text-muted-foreground">
-              Reason:{" "}
-              <span className="font-medium text-foreground">{REASON}</span>
+            <CardContent className="text-left">
+              <p className="text-xs text-muted-foreground">
+                Reason:{" "}
+                <span className="font-medium text-foreground">{REASON}</span>
+              </p>
             </CardContent>
           </Card>
 
@@ -61,13 +63,15 @@ export function AccountSuspended() {
                 Appeal suspension
               </Button>
             )}
-            <Button variant="ghost" className="w-full text-muted-foreground">
-              <HugeiconsIcon
-                icon={LifebuoyIcon}
-                strokeWidth={2}
-                data-icon="inline-start"
-              />
-              Contact support
+            <Button variant="ghost" className="w-full">
+              <span className="text-muted-foreground group-hover/button:text-foreground">
+                <HugeiconsIcon
+                  icon={LifebuoyIcon}
+                  strokeWidth={2}
+                  data-icon="inline-start"
+                />
+                Contact support
+              </span>
             </Button>
           </div>
         </div>

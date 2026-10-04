@@ -45,64 +45,84 @@ function heat(bin: Bin): {
   const pct = fillPct(bin)
   if (pct >= 90)
     return {
-      bg: "bg-red-500/10",
-      fill: "bg-red-500/70",
-      ring: "ring-red-500/50",
-      text: "text-red-700 dark:text-red-300",
+      bg: "bg-destructive/10",
+      fill: "bg-destructive/70",
+      ring: "ring-destructive/50",
+      text: "text-foreground",
     }
   if (pct >= 60)
     return {
-      bg: "bg-amber-500/10",
-      fill: "bg-amber-500/70",
-      ring: "ring-amber-500/50",
-      text: "text-amber-700 dark:text-amber-300",
+      bg: "bg-warning/10",
+      fill: "bg-warning/70",
+      ring: "ring-warning/50",
+      text: "text-foreground",
     }
   return {
-    bg: "bg-emerald-500/10",
-    fill: "bg-emerald-500/70",
-    ring: "ring-emerald-500/50",
-    text: "text-emerald-700 dark:text-emerald-300",
+    bg: "bg-success/10",
+    fill: "bg-success/70",
+    ring: "ring-success/50",
+    text: "text-foreground",
   }
 }
 
 // Hatched "do not store" floor markings, shared by the slot overlay and legend.
+// The gradient carries the theme color; opacity on the element sets the tint.
 const STATUS_STRIPE: Record<"blocked" | "quarantine", string> = {
   blocked:
-    "repeating-linear-gradient(45deg,transparent,transparent 4px,rgb(100 116 139 / 0.35) 4px,rgb(100 116 139 / 0.35) 6px)",
+    "repeating-linear-gradient(45deg,transparent,transparent 4px,var(--color-muted-foreground) 4px,var(--color-muted-foreground) 6px)",
   quarantine:
-    "repeating-linear-gradient(45deg,transparent,transparent 4px,rgb(245 158 11 / 0.35) 4px,rgb(245 158 11 / 0.35) 6px)",
+    "repeating-linear-gradient(45deg,transparent,transparent 4px,var(--color-warning) 4px,var(--color-warning) 6px)",
+}
+
+function Stripe({
+  status,
+  className,
+}: {
+  status: "blocked" | "quarantine"
+  className?: string
+}) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        "absolute inset-0 bg-(image:--stripe) opacity-35",
+        className
+      )}
+      style={{ "--stripe": STATUS_STRIPE[status] } as React.CSSProperties}
+    />
+  )
 }
 
 function statusOverlay(bin: Bin): React.ReactNode {
   if (bin.status === "active") return null
   return (
-    <span
-      aria-hidden
-      className="pointer-events-none absolute inset-0 z-10 rounded-[inherit]"
-      style={{ backgroundImage: STATUS_STRIPE[bin.status] }}
+    <Stripe
+      status={bin.status}
+      className="pointer-events-none z-10 rounded-[inherit]"
     />
   )
 }
 
 function Swatch({
   className,
-  style,
   label,
+  children,
 }: {
   className?: string
-  style?: React.CSSProperties
   label: string
+  children?: React.ReactNode
 }) {
   return (
     <span className="flex items-center gap-1.5">
       <span
         aria-hidden
         className={cn(
-          "size-3 rounded-[3px] ring-1 ring-border ring-inset",
+          "relative size-3 rounded-xs ring-1 ring-border ring-inset",
           className
         )}
-        style={style}
-      />
+      >
+        {children}
+      </span>
       {label}
     </span>
   )
@@ -110,21 +130,19 @@ function Swatch({
 
 export function FloorLegend() {
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[10px] text-muted-foreground">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
       <span className="font-semibold tracking-widest uppercase">Occupancy</span>
       <Swatch className="bg-muted" label="Empty" />
-      <Swatch className="bg-emerald-500/60" label="<60%" />
-      <Swatch className="bg-amber-500/60" label="60–89%" />
-      <Swatch className="bg-red-500/60" label="≥90%" />
+      <Swatch className="bg-success/60" label="<60%" />
+      <Swatch className="bg-warning/60" label="60–89%" />
+      <Swatch className="bg-destructive/60" label="≥90%" />
       <Separator orientation="vertical" className="h-3" />
-      <Swatch
-        style={{ backgroundImage: STATUS_STRIPE.blocked }}
-        label="Blocked"
-      />
-      <Swatch
-        style={{ backgroundImage: STATUS_STRIPE.quarantine }}
-        label="Quarantine"
-      />
+      <Swatch label="Blocked">
+        <Stripe status="blocked" className="rounded-[inherit]" />
+      </Swatch>
+      <Swatch label="Quarantine">
+        <Stripe status="quarantine" className="rounded-[inherit]" />
+      </Swatch>
     </div>
   )
 }
@@ -168,25 +186,23 @@ function RackSlot({
         {/* Load rising from the floor edge — the pallet stack. */}
         <span
           aria-hidden
-          className={cn("absolute inset-x-0 bottom-0 z-0", h.fill)}
-          style={{ height: `${pct}%` }}
+          className={cn("absolute inset-x-0 bottom-0 z-0 h-(--fill)", h.fill)}
+          style={{ "--fill": `${pct}%` } as React.CSSProperties}
         />
         <span
           aria-hidden
           className="relative z-[5] flex items-center justify-between"
         >
-          <span
-            className={cn("text-[10px] leading-none font-semibold", h.text)}
-          >
+          <span className={cn("text-xs leading-none font-semibold", h.text)}>
             {bin.code}
           </span>
-          <span className="text-[9px] leading-none text-muted-foreground">
+          <span className="text-xs leading-none text-muted-foreground">
             {isOccupied(bin) ? `${pct}%` : "—"}
           </span>
         </span>
         <span
           aria-hidden
-          className="relative z-[5] truncate text-[9px] leading-none text-muted-foreground"
+          className="relative z-[5] truncate text-xs leading-none text-muted-foreground"
         >
           {bin.sku ?? "empty"}
         </span>
@@ -255,9 +271,9 @@ export function BinGrid({
   // floor; without it, render only the occupied footprint.
   const gridRows = onAdd ? rows + 1 : rows
   const gridCols = onAdd ? cols + 1 : cols
-  const track: React.CSSProperties = {
-    gridTemplateColumns: `repeat(${gridCols}, minmax(4rem, 7rem))`,
-  }
+  const track = {
+    "--bin-cols": `repeat(${gridCols}, minmax(4rem, 7rem))`,
+  } as React.CSSProperties
 
   return (
     <TooltipProvider>
@@ -271,7 +287,7 @@ export function BinGrid({
                   <div className="flex items-stretch gap-2">
                     <span
                       className={cn(
-                        "flex w-6 shrink-0 items-center justify-center rounded-sm text-[9px] font-bold",
+                        "flex w-6 shrink-0 items-center justify-center rounded-sm text-xs font-bold",
                         isMarginRow
                           ? "border-2 border-dashed border-muted-foreground/30 text-muted-foreground/50"
                           : "bg-foreground/80 text-background"
@@ -279,7 +295,10 @@ export function BinGrid({
                     >
                       R{r + 1}
                     </span>
-                    <div className="grid flex-1 gap-1" style={track}>
+                    <div
+                      className="grid flex-1 grid-cols-(--bin-cols) gap-1"
+                      style={track}
+                    >
                       {Array.from({ length: gridCols }, (_, c) => {
                         const bin = at(r, c)
                         if (bin)
@@ -306,7 +325,7 @@ export function BinGrid({
                   {r < rows - 1 && (
                     <div className="relative my-1 ml-8 flex h-5 items-center">
                       <span className="absolute inset-x-0 top-1/2 border-t border-dashed border-muted-foreground/40" />
-                      <span className="relative mx-auto rounded-full bg-background px-2 text-[9px] font-medium tracking-widest text-muted-foreground uppercase">
+                      <span className="relative mx-auto rounded-full bg-background px-2 text-xs font-medium tracking-widest text-muted-foreground uppercase">
                         Aisle {AISLE_LETTERS[r]}
                       </span>
                     </div>

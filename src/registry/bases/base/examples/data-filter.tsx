@@ -128,11 +128,8 @@ export function DataFilterDemo() {
         <TableBody>
           {table.getRowModel().rows.length === 0 ? (
             <TableRow>
-              <TableCell
-                colSpan={columns.length}
-                className="h-24 text-center text-muted-foreground"
-              >
-                No results.
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                <span className="text-muted-foreground">No results.</span>
               </TableCell>
             </TableRow>
           ) : (

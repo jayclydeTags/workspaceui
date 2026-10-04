@@ -16,11 +16,11 @@ export function PendingApproval() {
     <Page hasHeader={false}>
       <div className="flex min-h-full items-center justify-center p-6">
         <div className="flex w-full max-w-sm flex-col items-center text-center">
-          <div className="flex size-11 items-center justify-center rounded-full bg-amber-500/10">
+          <div className="flex size-11 items-center justify-center rounded-full bg-warning/10">
             <HugeiconsIcon
               icon={Clock01Icon}
               strokeWidth={2}
-              className="size-5 text-amber-600 dark:text-amber-500"
+              className="size-5 text-warning"
             />
           </div>
 
@@ -33,15 +33,17 @@ export function PendingApproval() {
           </p>
 
           <Card size="sm" className="mt-4 w-full bg-muted/50">
-            <CardContent className="flex items-center gap-2 text-left text-xs text-muted-foreground">
-              <HugeiconsIcon
-                icon={Mail01Icon}
-                strokeWidth={2}
-                className="size-3.5 shrink-0"
-              />
-              We&apos;ll email{" "}
-              <span className="font-medium text-foreground">{EMAIL}</span> once
-              you&apos;re approved
+            <CardContent className="text-left">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <HugeiconsIcon
+                  icon={Mail01Icon}
+                  strokeWidth={2}
+                  className="size-3.5 shrink-0"
+                />
+                We&apos;ll email{" "}
+                <span className="font-medium text-foreground">{EMAIL}</span>{" "}
+                once you&apos;re approved
+              </div>
             </CardContent>
           </Card>
 
@@ -49,8 +51,10 @@ export function PendingApproval() {
             <Button variant="outline" className="w-full">
               Check status
             </Button>
-            <Button variant="ghost" className="w-full text-muted-foreground">
-              Sign out
+            <Button variant="ghost" className="w-full">
+              <span className="text-muted-foreground group-hover/button:text-foreground">
+                Sign out
+              </span>
             </Button>
           </div>
         </div>

@@ -142,7 +142,7 @@ function WorkspaceTabs({
                   </span>
                   <span className="min-w-0 flex-1 truncate">{tab.title}</span>
                   {tab.badge != null && tab.badge > 0 && (
-                    <Badge className="h-4 min-w-4 shrink-0 rounded-full px-1 text-[10px]">
+                    <Badge className="h-4 min-w-4 shrink-0 rounded-full px-1 text-xs">
                       {tab.badge > 99 ? "99+" : tab.badge}
                     </Badge>
                   )}
@@ -253,7 +253,7 @@ function WorkspaceTabs({
                       // The close button is a sibling, so hovering it ends the
                       // tab's own :hover — repeat the variants' hover on the wrapper.
                       isActive
-                        ? "group-hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)]"
+                        ? "group-hover:bg-secondary/80"
                         : "group-hover:bg-muted group-hover:text-foreground dark:group-hover:bg-muted/50",
                       // ! beats buttonVariants' px-2.5; reserves room for the close button
                       closable && "pe-8!"
@@ -272,7 +272,7 @@ function WorkspaceTabs({
 
                     {/* Unread badge */}
                     {tab.badge != null && tab.badge > 0 && (
-                      <Badge className="h-4 min-w-4 shrink-0 rounded-full px-1 text-[10px]">
+                      <Badge className="h-4 min-w-4 shrink-0 rounded-full px-1 text-xs">
                         {tab.badge > 99 ? "99+" : tab.badge}
                       </Badge>
                     )}

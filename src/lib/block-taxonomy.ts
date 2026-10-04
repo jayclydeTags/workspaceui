@@ -24,12 +24,6 @@ const FAMILIES: BlockFamily[] = [
   {
     title: "Application UI",
     categories: [
-      "Forms & Wizards",
-      "Dialogs",
-      "Detail Views",
-      "Boards, Grids & Timelines",
-      "Feeds & Notifications",
-      "Multi-step Workflows",
       "App Shells",
       "Settings & Permissions",
       "Billing & Usage",

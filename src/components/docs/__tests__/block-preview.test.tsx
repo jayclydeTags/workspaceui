@@ -4,21 +4,21 @@ import { describe, expect, it } from "vitest"
 import { BlockPreview } from "@/components/docs/block-preview"
 
 const props = {
-  title: "Invoice Detail",
-  slug: "invoice-detail",
-  installCmd: "npx shadcn@latest add jayclydeTags/workspaceui/invoice-detail",
+  title: "Settings",
+  slug: "settings",
+  installCmd: "npx shadcn@latest add jayclydeTags/workspaceui/settings",
   files: [{ name: "page.tsx", path: "page.tsx", code: "export const a = 1" }],
-  prev: { title: "Record Detail", href: "/blocks/record-detail" },
-  next: { title: "Master Detail", href: "/blocks/master-detail" },
+  prev: { title: "Credit Usage", href: "/blocks/credit-usage" },
+  next: { title: "Login", href: "/blocks/login" },
 }
 
 describe("BlockPreview", () => {
   it("is the block on a canvas: toolbar plus preview, no side panel", () => {
     render(<BlockPreview {...props} />)
 
-    expect(screen.getByTitle("Invoice Detail")).toHaveAttribute(
+    expect(screen.getByTitle("Settings")).toHaveAttribute(
       "src",
-      "/blocks/preview/invoice-detail"
+      "/blocks/preview/settings"
     )
     expect(screen.queryByRole("complementary")).toBeNull()
   })
@@ -27,11 +27,11 @@ describe("BlockPreview", () => {
     render(<BlockPreview {...props} />)
 
     expect(
-      screen.getByRole("link", { name: "Previous block: Record Detail" })
-    ).toHaveAttribute("href", "/blocks/record-detail")
+      screen.getByRole("link", { name: "Previous block: Credit Usage" })
+    ).toHaveAttribute("href", "/blocks/credit-usage")
     expect(
-      screen.getByRole("link", { name: "Next block: Master Detail" })
-    ).toHaveAttribute("href", "/blocks/master-detail")
+      screen.getByRole("link", { name: "Next block: Login" })
+    ).toHaveAttribute("href", "/blocks/login")
   })
 
   it("disables an arrow at either end of the list", () => {
@@ -62,7 +62,7 @@ describe("BlockPreview", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Code" }))
 
     expect(screen.getByText("Files")).toBeInTheDocument()
-    expect(screen.queryByTitle("Invoice Detail")).toBeNull()
+    expect(screen.queryByTitle("Settings")).toBeNull()
     expect(screen.queryByRole("group", { name: "Preview width" })).toBeNull()
   })
 })

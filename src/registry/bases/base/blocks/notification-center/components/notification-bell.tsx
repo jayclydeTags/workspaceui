@@ -61,7 +61,7 @@ export function NotificationBell({
           <HugeiconsIcon icon={BellIcon} strokeWidth={2} />
         )}
         {unread > 0 && (
-          <Badge className="absolute -inset-e-1 -top-1 h-4 min-w-4 justify-center rounded-full px-1 text-xs">
+          <Badge className="absolute -inset-e-1 -top-1 h-4 min-w-4 justify-center">
             {unread > 9 ? "9+" : unread}
           </Badge>
         )}

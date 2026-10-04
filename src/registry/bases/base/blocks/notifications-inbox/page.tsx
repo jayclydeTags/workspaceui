@@ -150,9 +150,7 @@ export function NotificationsInbox() {
             <TabsTrigger value="unread" className="gap-1.5">
               Unread
               {unreadCount > 0 && (
-                <Badge className="h-4 min-w-4 rounded-full px-1 text-xs">
-                  {unreadCount}
-                </Badge>
+                <Badge className="h-4 min-w-4">{unreadCount}</Badge>
               )}
             </TabsTrigger>
           </TabsList>

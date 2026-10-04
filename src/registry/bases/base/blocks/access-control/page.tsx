@@ -270,8 +270,10 @@ export function AccessControl({ className }: { className?: string }) {
                   <Badge variant="outline">
                     {role.builtIn ? "Built-in" : "Custom"}
                   </Badge>
-                  <Badge variant="secondary" className="tabular-nums">
-                    {plural(role.memberCount, "member")}
+                  <Badge variant="secondary">
+                    <span className="tabular-nums">
+                      {plural(role.memberCount, "member")}
+                    </span>
                   </Badge>
                 </div>
                 {role.description && (

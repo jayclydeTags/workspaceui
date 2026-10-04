@@ -208,11 +208,8 @@ export function Navbar09() {
             className="relative"
           >
             <HugeiconsIcon icon={ShoppingBag01Icon} strokeWidth={2} />
-            <Badge
-              aria-hidden
-              className="absolute -end-1 -top-1 h-4 min-w-4 px-1 tabular-nums"
-            >
-              {CART_COUNT}
+            <Badge aria-hidden className="absolute -end-1 -top-1 h-4 min-w-4">
+              <span className="tabular-nums">{CART_COUNT}</span>
             </Badge>
           </Button>
         </div>

@@ -52,9 +52,8 @@ export function DetailTabs() {
               <h2 className="truncate text-lg font-semibold">{c.name}</h2>
               <Badge
                 variant={c.status === "active" ? "secondary" : "destructive"}
-                className="capitalize"
               >
-                {c.status}
+                <span className="capitalize">{c.status}</span>
               </Badge>
             </div>
             <p className="truncate text-sm text-muted-foreground">{c.email}</p>
@@ -119,11 +118,8 @@ export function DetailTabs() {
                       </TableCell>
                       <TableCell className="text-right">{o.total}</TableCell>
                       <TableCell>
-                        <Badge
-                          variant={orderStatus[o.status]}
-                          className="capitalize"
-                        >
-                          {o.status}
+                        <Badge variant={orderStatus[o.status]}>
+                          <span className="capitalize">{o.status}</span>
                         </Badge>
                       </TableCell>
                     </TableRow>

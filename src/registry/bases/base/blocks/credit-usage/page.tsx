@@ -222,8 +222,10 @@ export function CreditUsage({ className }: { className?: string }) {
                       />
                       Filter
                       {categories.size > 0 && (
-                        <Badge variant="secondary" className="tabular-nums">
-                          {categories.size}
+                        <Badge variant="secondary">
+                          <span className="tabular-nums">
+                            {categories.size}
+                          </span>
                         </Badge>
                       )}
                     </Button>

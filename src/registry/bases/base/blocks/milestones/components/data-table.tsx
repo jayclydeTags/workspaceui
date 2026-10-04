@@ -182,9 +182,7 @@ export function DataTable({
                 <span className="truncate text-sm font-medium">
                   {milestone.name}
                 </span>
-                <Badge variant="outline" className="text-xs">
-                  {milestone.project}
-                </Badge>
+                <Badge variant="outline">{milestone.project}</Badge>
               </div>
               <p className="mt-0.5 truncate text-xs text-muted-foreground">
                 {milestone.owner} · due {milestone.due}

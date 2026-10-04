@@ -230,7 +230,7 @@ export function AppSidebar({
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger render={<SidebarMenuButton size="lg" />}>
-                <Avatar className="size-8 rounded-lg grayscale">
+                <Avatar className="size-8 rounded-lg">
                   <AvatarImage src="" alt="" />
                   <AvatarFallback className="rounded-lg">SC</AvatarFallback>
                 </Avatar>

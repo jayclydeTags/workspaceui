@@ -11,7 +11,9 @@ import { COMMENTS, CURRENT_USER, type Comment, type Reply } from "./data"
 function CommentAvatar({ initials }: { initials: string }) {
   return (
     <Avatar className="size-8 shrink-0">
-      <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+      <AvatarFallback>
+        <span className="text-xs">{initials}</span>
+      </AvatarFallback>
     </Avatar>
   )
 }

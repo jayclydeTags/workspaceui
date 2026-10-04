@@ -101,7 +101,12 @@ export default defineConfig([
               pattern: "^(Input|Textarea)$",
               allow: ["layout", "spacing", "text-xs", "text-sm", "font-mono"],
             },
-            { pattern: "^Avatar$", allow: ["size-*"] },
+            {
+              // Avatars take a size and placement; org/workspace avatars are
+              // rounded squares rather than circles.
+              pattern: "^Avatar(Fallback)?$",
+              allow: ["layout", "size-*", "rounded-md", "rounded-lg"],
+            },
             // Headless primitives: they ship no appearance, so callers style them.
             {
               pattern: "^Collapsible(Trigger|Content)?$",

@@ -59,8 +59,8 @@ export function ForbiddenWorkspace() {
                   className="flex items-center gap-3 rounded-md px-2 py-2 text-left hover:bg-muted"
                 >
                   <Avatar className="size-8 rounded-md">
-                    <AvatarFallback className="rounded-md text-xs">
-                      {initials(ws.name)}
+                    <AvatarFallback className="rounded-md">
+                      <span className="text-xs">{initials(ws.name)}</span>
                     </AvatarFallback>
                   </Avatar>
                   <div className="min-w-0 flex-1">

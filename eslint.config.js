@@ -47,6 +47,17 @@ export default defineConfig([
               pattern: "^Card$|(Content|Header|Footer|Group|Panel)$",
               allow: ["layout", "spacing"],
             },
+            {
+              // Named Card treatments: quiet info panel and highlighted card.
+              pattern: "^Card$",
+              allow: [
+                "layout",
+                "spacing",
+                "bg-muted/50",
+                "bg-primary/5",
+                "ring-primary/40",
+              ],
+            },
             { pattern: "^Avatar$", allow: ["size-*"] },
             // Headless primitives: they ship no appearance, so callers style them.
             {

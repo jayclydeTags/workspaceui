@@ -202,6 +202,12 @@ text-muted-foreground">` instead of styling `TableCell`. Components in
 `workspaceui/` are the design system itself and may style the primitives
 they compose.
 
+`Card` has two named treatments, the only color changes callers may make:
+quiet (`bg-muted/50`, for informational panels) and highlight (`bg-primary/5
+ring-primary/40`, for the emphasized card on a page). Any other card color is
+a new treatment: decide it, then add it to the `Card` contract in
+`eslint.config.js`.
+
 ### Composition
 
 - Items live inside their group: `SelectItem` in `SelectGroup`,

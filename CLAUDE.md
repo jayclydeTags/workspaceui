@@ -42,7 +42,7 @@ workspaceui/
 │   │   ├── docs/             # Getting Started prose only: layout.tsx (sidebar + content) + [[...slug]]/page.tsx
 │   │   ├── components/       # layout.tsx (sidebar) + page.tsx (redirects to the first component; there is no catalog) + [slug]/page.tsx (the studio: canvas + inspector)
 │   │   ├── blocks/
-│   │   │   ├── (browse)/     # layout (sidebar only — SiteHeader is global), page.tsx (gallery), [slug]/page.tsx
+│   │   │   ├── (browse)/     # layout (sidebar only — SiteHeader is global), page.tsx (redirects to the first block; there is no gallery), [slug]/page.tsx (the canvas: BlockPreview)
 │   │   │   └── preview/[slug]/page.tsx   # bare iframe target — escapes (browse) chrome
 │   │   └── api/search/route.ts           # createSearchAPI advanced → staticGET (out/api/search)
 │   ├── content/docs/         # fumadocs mdx content (getting-started/ served at /docs, components/ served at /components)
@@ -145,6 +145,17 @@ inspector as one resizable pair (stacked below `lg`).
   sidebar (a client-side redirect in the static export).
 - Old `/docs/components/*` URLs 404 in the static export; `vercel.json`
   redirects them to `/components/*`.
+
+### Blocks (`/blocks/<slug>`)
+
+Same idea as the component studio, without the inspector: `[sidebar] [canvas]`.
+`/blocks` redirects to the first block in the sidebar (`getBlockPages()` in
+`lib/block-taxonomy.ts`, which is also what the prev/next arrows walk). The
+canvas is `BlockPreview`: a toolbar shared with the component canvas
+(`components/studio/toolbar.tsx` — prev/next links + tooltips), a Preview/Code
+tab, width presets, fullscreen, reload and the install command, over a dot-grid
+surface holding the iframe preview. The sidebar opens the group containing the
+current page on landing.
 
 ### Next.js rendering notes
 

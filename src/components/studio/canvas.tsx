@@ -1,16 +1,8 @@
 "use client"
 
-import {
-  Component,
-  type ErrorInfo,
-  type ReactElement,
-  type ReactNode,
-} from "react"
-import Link from "next/link"
+import { Component, type ErrorInfo, type ReactNode } from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
-  ArrowLeft01Icon,
-  ArrowRight01Icon,
   ComputerIcon,
   SidebarRight01Icon,
   RotateClockwiseIcon,
@@ -19,15 +11,10 @@ import {
 } from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
+import { Button } from "@/components/ui/button"
+import { TooltipProvider } from "@/components/ui/tooltip"
 import { useStudio, type Viewport } from "@/components/studio/studio-context"
-import type { StudioLink } from "@/components/studio/types"
+import { NavArrows, Tip } from "@/components/studio/toolbar"
 
 const VIEWPORTS: {
   id: Viewport
@@ -60,25 +47,6 @@ const VIEWPORTS: {
   },
 ]
 
-// Icon-only toolbar buttons get a tooltip saying what they do; the aria-label
-// stays on the button itself for assistive tech.
-function Tip({
-  label,
-  render,
-  children,
-}: {
-  label: string
-  render: ReactElement
-  children: ReactNode
-}) {
-  return (
-    <Tooltip>
-      <TooltipTrigger render={render}>{children}</TooltipTrigger>
-      <TooltipContent side="bottom">{label}</TooltipContent>
-    </Tooltip>
-  )
-}
-
 export function Canvas() {
   return (
     <section
@@ -105,18 +73,7 @@ function CanvasToolbar() {
   return (
     <TooltipProvider delay={300}>
       <div className="flex min-h-12 shrink-0 flex-wrap items-center gap-x-3 gap-y-2 border-b px-4 py-2">
-        <div className="flex items-center gap-1">
-          <NavArrow
-            link={slots.prev}
-            icon={ArrowLeft01Icon}
-            label="Previous component"
-          />
-          <NavArrow
-            link={slots.next}
-            icon={ArrowRight01Icon}
-            label="Next component"
-          />
-        </div>
+        <NavArrows prev={slots.prev} next={slots.next} noun="component" />
         <span className="text-sm font-medium">{slots.title}</span>
         <div className="ml-auto flex items-center gap-1">
           <div
@@ -174,40 +131,6 @@ function CanvasToolbar() {
         </div>
       </div>
     </TooltipProvider>
-  )
-}
-
-// Links to the neighbouring component; disabled at either end of the list.
-function NavArrow({
-  link,
-  icon,
-  label,
-}: {
-  link?: StudioLink
-  icon: typeof ArrowLeft01Icon
-  label: string
-}) {
-  if (!link) {
-    return (
-      <Button variant="ghost" size="icon-sm" aria-label={label} disabled>
-        <HugeiconsIcon icon={icon} strokeWidth={2} />
-      </Button>
-    )
-  }
-  return (
-    // A real <a>, not a button: this navigates.
-    <Tip
-      label={`${label.split(" ")[0]}: ${link.title}`}
-      render={
-        <Link
-          href={link.href}
-          aria-label={`${label}: ${link.title}`}
-          className={buttonVariants({ variant: "ghost", size: "icon-sm" })}
-        />
-      }
-    >
-      <HugeiconsIcon icon={icon} strokeWidth={2} />
-    </Tip>
   )
 }
 

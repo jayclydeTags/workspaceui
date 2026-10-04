@@ -32,6 +32,10 @@ export function SidebarNav({
   scrollAreaClassName?: string
 }) {
   const pathname = usePathname()
+  // A group is open when the user opened it, or — until they say otherwise —
+  // when it holds the current page, so landing on a page never hides its own
+  // sidebar entry.
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({})
   const scrollRef = useRef<HTMLDivElement>(null)
   const [fades, setFades] = useState({ top: false, bottom: false })
 
@@ -98,8 +102,20 @@ export function SidebarNav({
                     ))
                   : section.groups
                     ? section.groups.map((group) => (
-                        // ponytail: uncontrolled, default-closed
-                        <Collapsible key={group.title} className="mb-1">
+                        <Collapsible
+                          key={group.title}
+                          className="mb-1"
+                          open={
+                            openGroups[group.title] ??
+                            group.items.some((item) => item.href === pathname)
+                          }
+                          onOpenChange={(open) =>
+                            setOpenGroups((prev) => ({
+                              ...prev,
+                              [group.title]: open,
+                            }))
+                          }
+                        >
                           <CollapsibleTrigger className="group flex w-full items-center gap-1.5 rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted">
                             <HugeiconsIcon
                               icon={ArrowDown01Icon}

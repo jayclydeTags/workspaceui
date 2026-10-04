@@ -7,7 +7,8 @@ import { getBlocksNav } from "@/lib/block-taxonomy"
 // block detail pages override it via their own generateMetadata.
 export const metadata: Metadata = { title: "Blocks" }
 
-// Wraps the gallery + block detail pages. The bare preview route
+// [sidebar] [canvas]: wraps the block pages (there is no gallery; /blocks
+// redirects to the first block). The bare preview route
 // (blocks/preview/[slug]) lives outside this group so the iframe renders
 // without this chrome — see its page.tsx.
 export default function BlocksLayout({
@@ -20,7 +21,7 @@ export default function BlocksLayout({
       <aside className="hidden w-56 shrink-0 px-4 py-6 md:flex">
         <BlocksSidebarNav sections={getBlocksNav()} />
       </aside>
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden border-l">
         {children}
       </div>
     </div>

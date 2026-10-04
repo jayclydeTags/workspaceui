@@ -5,7 +5,7 @@ import { notFound } from "next/navigation"
 
 import { BlockPreview, type BlockFile } from "@/components/docs/block-preview"
 import { galleryComponents } from "@/lib/blocks"
-import { getBlockTitle } from "@/lib/block-taxonomy"
+import { getBlockPages, getBlockTitle } from "@/lib/block-taxonomy"
 import { blockFiles } from "@/lib/block-files"
 import { COPY_BLOCKS_DIR, getCopyBlock } from "@/lib/copy-blocks"
 
@@ -50,6 +50,9 @@ export default async function BlockPage({ params }: PageProps) {
   const files = readSources(slug)
   if (!title || !files) notFound()
 
+  const pages = getBlockPages()
+  const index = pages.findIndex((page) => page.href === `/blocks/${slug}`)
+
   return (
     <BlockPreview
       title={title}
@@ -61,6 +64,8 @@ export default async function BlockPage({ params }: PageProps) {
           : `npx shadcn@latest add jayclydeTags/workspaceui/${slug}`
       }
       files={files}
+      prev={pages[index - 1]}
+      next={pages[index + 1]}
     />
   )
 }

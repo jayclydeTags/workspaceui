@@ -102,6 +102,17 @@ export function getBlocksNav(): NavSection[] {
   }))
 }
 
+/**
+ * Every shipped block in sidebar order (family, then category, then registry
+ * order): what the preview's prev/next arrows walk, and what /blocks opens first.
+ */
+export function getBlockPages() {
+  return getBlocksNav()
+    .filter((section) => !section.comingSoon)
+    .flatMap((section) => section.groups ?? [])
+    .flatMap((group) => group.items)
+}
+
 /** Title for one block, or undefined when the slug isn't a known block. */
 export function getBlockTitle(slug: string) {
   return blocks.find((block) => block.slug === slug)?.title

@@ -40,86 +40,88 @@ export function AccountLocked() {
   }, [unlocked])
 
   return (
-    <Page hasHeader={false}>
-      <div className="flex min-h-full items-center justify-center p-6">
-        <div className="flex w-full max-w-sm flex-col items-center text-center">
-          <div className="flex size-11 items-center justify-center rounded-full bg-destructive/10">
-            <HugeiconsIcon
-              icon={LockIcon}
-              strokeWidth={2}
-              className="size-5 text-destructive"
-            />
-          </div>
+    <Page.Root>
+      <Page.Content>
+        <div className="flex min-h-full items-center justify-center p-6">
+          <div className="flex w-full max-w-sm flex-col items-center text-center">
+            <div className="flex size-11 items-center justify-center rounded-full bg-destructive/10">
+              <HugeiconsIcon
+                icon={LockIcon}
+                strokeWidth={2}
+                className="size-5 text-destructive"
+              />
+            </div>
 
-          <h1 className="mt-4 text-sm font-medium" role="alert">
-            Account locked
-          </h1>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Too many failed sign-in attempts
-          </p>
+            <h1 className="mt-4 text-sm font-medium" role="alert">
+              Account locked
+            </h1>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Too many failed sign-in attempts
+            </p>
 
-          <Card size="sm" className="mt-4 w-full bg-muted/50">
-            <CardContent className="flex flex-col gap-2 text-left">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <HugeiconsIcon
-                  icon={Mail01Icon}
-                  strokeWidth={2}
-                  className="size-3.5 shrink-0"
-                />
-                {EMAIL}
-              </div>
-              <div
-                className="flex items-center gap-2 text-xs text-muted-foreground"
-                aria-live="polite"
-              >
-                <HugeiconsIcon
-                  icon={Clock01Icon}
-                  strokeWidth={2}
-                  className="size-3.5 shrink-0"
-                />
-                {unlocked ? (
-                  "You can sign in again now"
-                ) : (
-                  <span>
-                    Try again in{" "}
-                    <span className="font-medium text-foreground tabular-nums">
-                      {formatClock(remaining)}
+            <Card size="sm" className="mt-4 w-full bg-muted/50">
+              <CardContent className="flex flex-col gap-2 text-left">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <HugeiconsIcon
+                    icon={Mail01Icon}
+                    strokeWidth={2}
+                    className="size-3.5 shrink-0"
+                  />
+                  {EMAIL}
+                </div>
+                <div
+                  className="flex items-center gap-2 text-xs text-muted-foreground"
+                  aria-live="polite"
+                >
+                  <HugeiconsIcon
+                    icon={Clock01Icon}
+                    strokeWidth={2}
+                    className="size-3.5 shrink-0"
+                  />
+                  {unlocked ? (
+                    "You can sign in again now"
+                  ) : (
+                    <span>
+                      Try again in{" "}
+                      <span className="font-medium text-foreground tabular-nums">
+                        {formatClock(remaining)}
+                      </span>
                     </span>
-                  </span>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
 
-          <div className="mt-6 flex w-full flex-col gap-2" aria-live="polite">
-            {unlocked ? (
-              <Button className="w-full">Return to sign in</Button>
-            ) : resetSent ? (
-              <div className="flex items-center justify-center gap-2 rounded-md border border-dashed py-2 text-xs text-muted-foreground">
-                <HugeiconsIcon
-                  icon={MailValidation02Icon}
-                  strokeWidth={2}
-                  className="size-3.5 shrink-0 text-foreground"
-                />
-                Reset link sent to {EMAIL}
-              </div>
-            ) : (
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => setResetSent(true)}
-              >
-                Reset password
+            <div className="mt-6 flex w-full flex-col gap-2" aria-live="polite">
+              {unlocked ? (
+                <Button className="w-full">Return to sign in</Button>
+              ) : resetSent ? (
+                <div className="flex items-center justify-center gap-2 rounded-md border border-dashed py-2 text-xs text-muted-foreground">
+                  <HugeiconsIcon
+                    icon={MailValidation02Icon}
+                    strokeWidth={2}
+                    className="size-3.5 shrink-0 text-foreground"
+                  />
+                  Reset link sent to {EMAIL}
+                </div>
+              ) : (
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setResetSent(true)}
+                >
+                  Reset password
+                </Button>
+              )}
+              <Button variant="ghost" className="w-full">
+                <span className="text-muted-foreground group-hover/button:text-foreground">
+                  Contact support
+                </span>
               </Button>
-            )}
-            <Button variant="ghost" className="w-full">
-              <span className="text-muted-foreground group-hover/button:text-foreground">
-                Contact support
-              </span>
-            </Button>
+            </div>
           </div>
         </div>
-      </div>
-    </Page>
+      </Page.Content>
+    </Page.Root>
   )
 }

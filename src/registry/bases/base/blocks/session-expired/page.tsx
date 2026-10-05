@@ -56,89 +56,93 @@ export function SessionExpired() {
 
   if (status === "success") {
     return (
-      <Page hasHeader={false}>
-        <div className="flex min-h-full items-center justify-center p-6">
-          <div className="flex w-full max-w-sm flex-col items-center text-center">
-            <h1 className="text-sm font-medium">Welcome back</h1>
-            <p className="mt-1 text-xs text-muted-foreground">
-              You&apos;re signed back in — returning to where you left off.
-            </p>
+      <Page.Root>
+        <Page.Content>
+          <div className="flex min-h-full items-center justify-center p-6">
+            <div className="flex w-full max-w-sm flex-col items-center text-center">
+              <h1 className="text-sm font-medium">Welcome back</h1>
+              <p className="mt-1 text-xs text-muted-foreground">
+                You&apos;re signed back in — returning to where you left off.
+              </p>
+            </div>
           </div>
-        </div>
-      </Page>
+        </Page.Content>
+      </Page.Root>
     )
   }
 
   return (
-    <Page hasHeader={false}>
-      <div className="flex min-h-full items-center justify-center p-6">
-        <Card className="w-full max-w-sm">
-          <CardHeader className="items-center text-center">
-            <div className="mx-auto flex size-11 items-center justify-center rounded-full bg-muted">
-              <HugeiconsIcon
-                icon={Clock01Icon}
-                strokeWidth={2}
-                className="size-5"
-              />
-            </div>
-            <CardTitle className="mt-2">Session expired</CardTitle>
-            <CardDescription>
-              You were signed out after a period of inactivity. Enter your
-              password to continue as{" "}
-              <span className="font-medium text-foreground">{EMAIL}</span>.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={onSubmit} noValidate>
-              <FieldGroup>
-                {status === "error" && (
-                  <Alert variant="destructive">
-                    <HugeiconsIcon icon={Alert01Icon} strokeWidth={2} />
-                    <AlertTitle>Incorrect password.</AlertTitle>
-                  </Alert>
-                )}
+    <Page.Root>
+      <Page.Content>
+        <div className="flex min-h-full items-center justify-center p-6">
+          <Card className="w-full max-w-sm">
+            <CardHeader className="items-center text-center">
+              <div className="mx-auto flex size-11 items-center justify-center rounded-full bg-muted">
+                <HugeiconsIcon
+                  icon={Clock01Icon}
+                  strokeWidth={2}
+                  className="size-5"
+                />
+              </div>
+              <CardTitle className="mt-2">Session expired</CardTitle>
+              <CardDescription>
+                You were signed out after a period of inactivity. Enter your
+                password to continue as{" "}
+                <span className="font-medium text-foreground">{EMAIL}</span>.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={onSubmit} noValidate>
+                <FieldGroup>
+                  {status === "error" && (
+                    <Alert variant="destructive">
+                      <HugeiconsIcon icon={Alert01Icon} strokeWidth={2} />
+                      <AlertTitle>Incorrect password.</AlertTitle>
+                    </Alert>
+                  )}
 
-                <Field data-invalid={!!fieldError}>
-                  <FieldLabel htmlFor="se-password">Password</FieldLabel>
-                  <PasswordInput
-                    id="se-password"
-                    autoComplete="current-password"
-                    autoFocus
-                    value={password}
-                    disabled={submitting}
-                    aria-invalid={!!fieldError}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  {fieldError && <FieldError>{fieldError}</FieldError>}
-                </Field>
+                  <Field data-invalid={!!fieldError}>
+                    <FieldLabel htmlFor="se-password">Password</FieldLabel>
+                    <PasswordInput
+                      id="se-password"
+                      autoComplete="current-password"
+                      autoFocus
+                      value={password}
+                      disabled={submitting}
+                      aria-invalid={!!fieldError}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                    {fieldError && <FieldError>{fieldError}</FieldError>}
+                  </Field>
 
-                <Field>
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={submitting}
-                  >
-                    {submitting && (
-                      <HugeiconsIcon
-                        icon={Loading03Icon}
-                        strokeWidth={2}
-                        data-icon="inline-start"
-                        className="animate-spin"
-                      />
-                    )}
-                    {submitting ? "Signing in…" : "Continue"}
-                  </Button>
-                  <Button type="button" variant="ghost" className="w-full">
-                    <span className="text-muted-foreground group-hover/button:text-foreground">
-                      Sign in as a different user
-                    </span>
-                  </Button>
-                </Field>
-              </FieldGroup>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
-    </Page>
+                  <Field>
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      disabled={submitting}
+                    >
+                      {submitting && (
+                        <HugeiconsIcon
+                          icon={Loading03Icon}
+                          strokeWidth={2}
+                          data-icon="inline-start"
+                          className="animate-spin"
+                        />
+                      )}
+                      {submitting ? "Signing in…" : "Continue"}
+                    </Button>
+                    <Button type="button" variant="ghost" className="w-full">
+                      <span className="text-muted-foreground group-hover/button:text-foreground">
+                        Sign in as a different user
+                      </span>
+                    </Button>
+                  </Field>
+                </FieldGroup>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </Page.Content>
+    </Page.Root>
   )
 }

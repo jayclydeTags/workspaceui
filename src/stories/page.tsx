@@ -3,6 +3,12 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { defineStory } from "@/components/studio/studio"
+import {
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 import { Page } from "@/registry/bases/base/workspaceui/page"
 
 interface Args {
@@ -26,23 +32,42 @@ function Preview({
 }: Args) {
   return (
     <div className="h-72 w-full overflow-hidden rounded-lg border bg-background">
-      <Page
-        title={title}
-        subtitle={subtitle || undefined}
-        breadcrumbs={
-          breadcrumbs
-            ? [{ label: "Settings", href: "#" }, { label: title }]
-            : undefined
-        }
-        badge={badge ? <Badge variant="secondary">{badge}</Badge> : undefined}
-        actions={
-          actionLabel ? <Button size="sm">{actionLabel}</Button> : undefined
-        }
-        hasHeader={hasHeader}
-        hasPadding={hasPadding}
-      >
-        <p className="text-sm text-muted-foreground">Page content goes here.</p>
-      </Page>
+      <Page.Root>
+        {hasHeader && (
+          <Page.Header>
+            <Page.Heading>
+              {breadcrumbs ? (
+                <>
+                  <Page.Breadcrumbs>
+                    <BreadcrumbItem>
+                      <BreadcrumbLink href="#">Settings</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <BreadcrumbPage>{title}</BreadcrumbPage>
+                    </BreadcrumbItem>
+                  </Page.Breadcrumbs>
+                  <Page.Title className="sr-only">{title}</Page.Title>
+                </>
+              ) : (
+                <Page.Title>{title}</Page.Title>
+              )}
+              {badge ? <Badge variant="secondary">{badge}</Badge> : null}
+            </Page.Heading>
+            {actionLabel ? (
+              <Page.Actions>
+                <Button size="sm">{actionLabel}</Button>
+              </Page.Actions>
+            ) : null}
+            {subtitle ? <Page.Subtitle>{subtitle}</Page.Subtitle> : null}
+          </Page.Header>
+        )}
+        <Page.Content padded={hasPadding}>
+          <p className="text-sm text-muted-foreground">
+            Page content goes here.
+          </p>
+        </Page.Content>
+      </Page.Root>
     </div>
   )
 }

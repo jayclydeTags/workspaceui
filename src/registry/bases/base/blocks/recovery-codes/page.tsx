@@ -72,78 +72,80 @@ export function RecoveryCodes() {
   }
 
   return (
-    <Page hasHeader={false}>
-      <div className="flex min-h-full items-center justify-center p-6">
-        <Card className="w-full max-w-sm">
-          <CardHeader className="text-center">
-            <CardTitle>Save your recovery codes</CardTitle>
-            <CardDescription>
-              Store these somewhere safe. Each code works once if you lose
-              access to your authenticator.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <ul className="grid grid-cols-2 gap-2 rounded-md border bg-muted/50 p-3 font-mono text-sm">
-              {codes.map((code) => (
-                <li key={code} className="text-center tracking-wider">
-                  {code}
-                </li>
-              ))}
-            </ul>
+    <Page.Root>
+      <Page.Content>
+        <div className="flex min-h-full items-center justify-center p-6">
+          <Card className="w-full max-w-sm">
+            <CardHeader className="text-center">
+              <CardTitle>Save your recovery codes</CardTitle>
+              <CardDescription>
+                Store these somewhere safe. Each code works once if you lose
+                access to your authenticator.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              <ul className="grid grid-cols-2 gap-2 rounded-md border bg-muted/50 p-3 font-mono text-sm">
+                {codes.map((code) => (
+                  <li key={code} className="text-center tracking-wider">
+                    {code}
+                  </li>
+                ))}
+              </ul>
 
-            <div className="flex gap-2">
-              <Button variant="outline" className="flex-1" onClick={copyAll}>
-                {copied ? (
+              <div className="flex gap-2">
+                <Button variant="outline" className="flex-1" onClick={copyAll}>
+                  {copied ? (
+                    <HugeiconsIcon
+                      icon={Tick02Icon}
+                      strokeWidth={2}
+                      data-icon="inline-start"
+                    />
+                  ) : (
+                    <HugeiconsIcon
+                      icon={Copy01Icon}
+                      strokeWidth={2}
+                      data-icon="inline-start"
+                    />
+                  )}
+                  {copied ? "Copied" : "Copy"}
+                </Button>
+                <Button variant="outline" className="flex-1" onClick={download}>
                   <HugeiconsIcon
-                    icon={Tick02Icon}
+                    icon={Download01Icon}
                     strokeWidth={2}
                     data-icon="inline-start"
                   />
-                ) : (
-                  <HugeiconsIcon
-                    icon={Copy01Icon}
-                    strokeWidth={2}
-                    data-icon="inline-start"
-                  />
-                )}
-                {copied ? "Copied" : "Copy"}
-              </Button>
-              <Button variant="outline" className="flex-1" onClick={download}>
-                <HugeiconsIcon
-                  icon={Download01Icon}
-                  strokeWidth={2}
-                  data-icon="inline-start"
+                  Download
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={regenerate}
+                  aria-label="Regenerate codes"
+                >
+                  <HugeiconsIcon icon={RefreshIcon} strokeWidth={2} />
+                </Button>
+              </div>
+
+              <Field orientation="horizontal">
+                <Checkbox
+                  id="rc-saved"
+                  checked={saved}
+                  onCheckedChange={(v) => setSaved(v === true)}
                 />
-                Download
-              </Button>
-              <Button
-                variant="outline"
-                onClick={regenerate}
-                aria-label="Regenerate codes"
-              >
-                <HugeiconsIcon icon={RefreshIcon} strokeWidth={2} />
-              </Button>
-            </div>
+                <FieldLabel htmlFor="rc-saved">
+                  <span className="font-normal">
+                    I&apos;ve saved my recovery codes
+                  </span>
+                </FieldLabel>
+              </Field>
 
-            <Field orientation="horizontal">
-              <Checkbox
-                id="rc-saved"
-                checked={saved}
-                onCheckedChange={(v) => setSaved(v === true)}
-              />
-              <FieldLabel htmlFor="rc-saved">
-                <span className="font-normal">
-                  I&apos;ve saved my recovery codes
-                </span>
-              </FieldLabel>
-            </Field>
-
-            <Button className="w-full" disabled={!saved}>
-              Continue
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    </Page>
+              <Button className="w-full" disabled={!saved}>
+                Continue
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </Page.Content>
+    </Page.Root>
   )
 }

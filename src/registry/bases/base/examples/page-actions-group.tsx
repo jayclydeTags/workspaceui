@@ -9,11 +9,12 @@ import { Page } from "@/registry/bases/base/workspaceui/page"
 export function PageWithActionsGroupDemo() {
   return (
     <div className="h-[240px] w-full overflow-hidden rounded-lg border border-border shadow-sm">
-      <Page
-        title="Report"
-        subtitle="Q3 2026 performance"
-        actions={
-          <div className="flex items-center gap-2">
+      <Page.Root>
+        <Page.Header>
+          <Page.Heading>
+            <Page.Title>Report</Page.Title>
+          </Page.Heading>
+          <Page.Actions>
             <Button size="sm" variant="outline">
               <HugeiconsIcon
                 icon={Share08Icon}
@@ -30,11 +31,15 @@ export function PageWithActionsGroupDemo() {
               />
               Export
             </Button>
-          </div>
-        }
-      >
-        <p className="text-sm text-muted-foreground">Page content goes here.</p>
-      </Page>
+          </Page.Actions>
+          <Page.Subtitle>Q3 2026 performance</Page.Subtitle>
+        </Page.Header>
+        <Page.Content>
+          <p className="text-sm text-muted-foreground">
+            Page content goes here.
+          </p>
+        </Page.Content>
+      </Page.Root>
     </div>
   )
 }

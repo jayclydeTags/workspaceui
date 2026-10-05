@@ -55,100 +55,104 @@ export function ForgotPassword() {
 
   if (sent) {
     return (
-      <Page hasHeader={false}>
-        <div className="flex min-h-full items-center justify-center p-6">
-          <div className="flex w-full max-w-sm flex-col items-center text-center">
-            <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
-              <HugeiconsIcon
-                icon={MailValidation02Icon}
-                strokeWidth={2}
-                className="size-5 text-primary"
-              />
+      <Page.Root>
+        <Page.Content>
+          <div className="flex min-h-full items-center justify-center p-6">
+            <div className="flex w-full max-w-sm flex-col items-center text-center">
+              <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
+                <HugeiconsIcon
+                  icon={MailValidation02Icon}
+                  strokeWidth={2}
+                  className="size-5 text-primary"
+                />
+              </div>
+              <h1 className="mt-4 text-sm font-medium">Check your email</h1>
+              <p className="mt-1 text-xs text-muted-foreground">
+                If an account exists for{" "}
+                <span className="font-medium text-foreground">{email}</span>, we
+                sent a link to reset your password.
+              </p>
+              <Button
+                variant="ghost"
+                className="mt-4"
+                onClick={() => setSent(false)}
+              >
+                <span className="text-muted-foreground group-hover/button:text-foreground">
+                  Use a different email
+                </span>
+              </Button>
             </div>
-            <h1 className="mt-4 text-sm font-medium">Check your email</h1>
-            <p className="mt-1 text-xs text-muted-foreground">
-              If an account exists for{" "}
-              <span className="font-medium text-foreground">{email}</span>, we
-              sent a link to reset your password.
-            </p>
-            <Button
-              variant="ghost"
-              className="mt-4"
-              onClick={() => setSent(false)}
-            >
-              <span className="text-muted-foreground group-hover/button:text-foreground">
-                Use a different email
-              </span>
-            </Button>
           </div>
-        </div>
-      </Page>
+        </Page.Content>
+      </Page.Root>
     )
   }
 
   return (
-    <Page hasHeader={false}>
-      <div className="flex min-h-full items-center justify-center p-6">
-        <Card className="w-full max-w-sm">
-          <CardHeader className="text-center">
-            <CardTitle>Forgot your password?</CardTitle>
-            <CardDescription>
-              Enter your email and we&apos;ll send a reset link
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={onSubmit} noValidate>
-              <FieldGroup>
-                <Field data-invalid={!!error}>
-                  <FieldLabel htmlFor="fp-email">Email</FieldLabel>
-                  <Input
-                    id="fp-email"
-                    type="email"
-                    autoComplete="email"
-                    placeholder="you@acme.com"
-                    value={email}
-                    disabled={submitting}
-                    aria-invalid={!!error}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                  {error && <FieldError>{error}</FieldError>}
-                </Field>
+    <Page.Root>
+      <Page.Content>
+        <div className="flex min-h-full items-center justify-center p-6">
+          <Card className="w-full max-w-sm">
+            <CardHeader className="text-center">
+              <CardTitle>Forgot your password?</CardTitle>
+              <CardDescription>
+                Enter your email and we&apos;ll send a reset link
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={onSubmit} noValidate>
+                <FieldGroup>
+                  <Field data-invalid={!!error}>
+                    <FieldLabel htmlFor="fp-email">Email</FieldLabel>
+                    <Input
+                      id="fp-email"
+                      type="email"
+                      autoComplete="email"
+                      placeholder="you@acme.com"
+                      value={email}
+                      disabled={submitting}
+                      aria-invalid={!!error}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                    {error && <FieldError>{error}</FieldError>}
+                  </Field>
 
-                <Field>
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={submitting}
-                  >
-                    {submitting && (
-                      <HugeiconsIcon
-                        icon={Loading03Icon}
-                        strokeWidth={2}
-                        data-icon="inline-start"
-                        className="animate-spin"
-                      />
-                    )}
-                    {submitting ? "Sending…" : "Send reset link"}
-                  </Button>
-                  <FieldDescription className="text-center">
-                    <a
-                      href="#"
-                      className="inline-flex items-center gap-1 underline-offset-4 hover:underline"
+                  <Field>
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      disabled={submitting}
                     >
-                      <HugeiconsIcon
-                        icon={ArrowLeft01Icon}
-                        strokeWidth={2}
-                        className="size-3"
-                      />
-                      Back to sign in
-                    </a>
-                  </FieldDescription>
-                </Field>
-              </FieldGroup>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
-    </Page>
+                      {submitting && (
+                        <HugeiconsIcon
+                          icon={Loading03Icon}
+                          strokeWidth={2}
+                          data-icon="inline-start"
+                          className="animate-spin"
+                        />
+                      )}
+                      {submitting ? "Sending…" : "Send reset link"}
+                    </Button>
+                    <FieldDescription className="text-center">
+                      <a
+                        href="#"
+                        className="inline-flex items-center gap-1 underline-offset-4 hover:underline"
+                      >
+                        <HugeiconsIcon
+                          icon={ArrowLeft01Icon}
+                          strokeWidth={2}
+                          className="size-3"
+                        />
+                        Back to sign in
+                      </a>
+                    </FieldDescription>
+                  </Field>
+                </FieldGroup>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </Page.Content>
+    </Page.Root>
   )
 }

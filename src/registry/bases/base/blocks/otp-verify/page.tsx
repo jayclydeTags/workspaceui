@@ -80,108 +80,112 @@ export function OtpVerify() {
 
   if (status === "success") {
     return (
-      <Page hasHeader={false}>
-        <div className="flex min-h-full items-center justify-center p-6">
-          <div className="flex w-full max-w-sm flex-col items-center text-center">
-            <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
-              <HugeiconsIcon
-                icon={CheckmarkCircle02Icon}
-                strokeWidth={2}
-                className="size-5 text-primary"
-              />
+      <Page.Root>
+        <Page.Content>
+          <div className="flex min-h-full items-center justify-center p-6">
+            <div className="flex w-full max-w-sm flex-col items-center text-center">
+              <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
+                <HugeiconsIcon
+                  icon={CheckmarkCircle02Icon}
+                  strokeWidth={2}
+                  className="size-5 text-primary"
+                />
+              </div>
+              <h1 className="mt-4 text-sm font-medium">Verified</h1>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Your identity is confirmed — continuing to your account.
+              </p>
             </div>
-            <h1 className="mt-4 text-sm font-medium">Verified</h1>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Your identity is confirmed — continuing to your account.
-            </p>
           </div>
-        </div>
-      </Page>
+        </Page.Content>
+      </Page.Root>
     )
   }
 
   const verifying = status === "verifying"
 
   return (
-    <Page hasHeader={false}>
-      <div className="flex min-h-full items-center justify-center p-6">
-        <Card className="w-full max-w-sm">
-          <CardHeader className="items-center text-center">
-            <div className="mx-auto flex size-11 items-center justify-center rounded-full bg-muted">
-              <HugeiconsIcon
-                icon={Shield01Icon}
-                strokeWidth={2}
-                className="size-5"
-              />
-            </div>
-            <CardTitle className="mt-2">Enter verification code</CardTitle>
-            <CardDescription>
-              We sent a 6-digit code to your phone ending in {DESTINATION}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col items-center gap-4">
-            <InputOTP
-              maxLength={6}
-              value={code}
-              disabled={verifying}
-              onChange={onChange}
-              aria-invalid={status === "error"}
-              aria-label="Verification code"
-            >
-              <InputOTPGroup>
-                {[0, 1, 2, 3, 4, 5].map((i) => (
-                  <InputOTPSlot
-                    key={i}
-                    index={i}
-                    aria-invalid={status === "error"}
-                  />
-                ))}
-              </InputOTPGroup>
-            </InputOTP>
+    <Page.Root>
+      <Page.Content>
+        <div className="flex min-h-full items-center justify-center p-6">
+          <Card className="w-full max-w-sm">
+            <CardHeader className="items-center text-center">
+              <div className="mx-auto flex size-11 items-center justify-center rounded-full bg-muted">
+                <HugeiconsIcon
+                  icon={Shield01Icon}
+                  strokeWidth={2}
+                  className="size-5"
+                />
+              </div>
+              <CardTitle className="mt-2">Enter verification code</CardTitle>
+              <CardDescription>
+                We sent a 6-digit code to your phone ending in {DESTINATION}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col items-center gap-4">
+              <InputOTP
+                maxLength={6}
+                value={code}
+                disabled={verifying}
+                onChange={onChange}
+                aria-invalid={status === "error"}
+                aria-label="Verification code"
+              >
+                <InputOTPGroup>
+                  {[0, 1, 2, 3, 4, 5].map((i) => (
+                    <InputOTPSlot
+                      key={i}
+                      index={i}
+                      aria-invalid={status === "error"}
+                    />
+                  ))}
+                </InputOTPGroup>
+              </InputOTP>
 
-            <div className="h-5 text-sm" aria-live="polite">
-              {verifying && (
-                <span className="flex items-center gap-2 text-muted-foreground">
-                  <HugeiconsIcon
-                    icon={Loading03Icon}
-                    strokeWidth={2}
-                    className="size-4 animate-spin"
-                  />
-                  Verifying…
-                </span>
-              )}
-              {status === "error" && (
-                <span
-                  className="flex items-center gap-2 text-destructive"
-                  role="alert"
-                >
-                  <HugeiconsIcon
-                    icon={Alert01Icon}
-                    strokeWidth={2}
-                    className="size-4"
-                  />
-                  Incorrect code. Try again.
-                </span>
-              )}
-            </div>
-
-            <p className="text-xs text-muted-foreground" aria-live="polite">
-              {canResend ? (
-                <Button variant="link" size="xs" onClick={resend}>
-                  Resend code
-                </Button>
-              ) : (
-                <>
-                  Resend code in{" "}
-                  <span className="font-medium text-foreground tabular-nums">
-                    {Math.ceil(remaining / 1000)}s
+              <div className="h-5 text-sm" aria-live="polite">
+                {verifying && (
+                  <span className="flex items-center gap-2 text-muted-foreground">
+                    <HugeiconsIcon
+                      icon={Loading03Icon}
+                      strokeWidth={2}
+                      className="size-4 animate-spin"
+                    />
+                    Verifying…
                   </span>
-                </>
-              )}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    </Page>
+                )}
+                {status === "error" && (
+                  <span
+                    className="flex items-center gap-2 text-destructive"
+                    role="alert"
+                  >
+                    <HugeiconsIcon
+                      icon={Alert01Icon}
+                      strokeWidth={2}
+                      className="size-4"
+                    />
+                    Incorrect code. Try again.
+                  </span>
+                )}
+              </div>
+
+              <p className="text-xs text-muted-foreground" aria-live="polite">
+                {canResend ? (
+                  <Button variant="link" size="xs" onClick={resend}>
+                    Resend code
+                  </Button>
+                ) : (
+                  <>
+                    Resend code in{" "}
+                    <span className="font-medium text-foreground tabular-nums">
+                      {Math.ceil(remaining / 1000)}s
+                    </span>
+                  </>
+                )}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </Page.Content>
+    </Page.Root>
   )
 }

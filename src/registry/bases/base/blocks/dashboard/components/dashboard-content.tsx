@@ -18,11 +18,18 @@ export function PlaceholderContent({
   title: string
 }) {
   return (
-    <Page title={title}>
-      <div className="flex h-full flex-col items-center justify-center gap-2">
-        <Icon className="size-8 text-muted-foreground/40" />
-        <p className="text-sm text-muted-foreground">{title}</p>
-      </div>
-    </Page>
+    <Page.Root>
+      <Page.Header>
+        <Page.Heading>
+          <Page.Title>{title}</Page.Title>
+        </Page.Heading>
+      </Page.Header>
+      <Page.Content>
+        <div className="flex h-full flex-col items-center justify-center gap-2">
+          <Icon className="size-8 text-muted-foreground/40" />
+          <p className="text-sm text-muted-foreground">{title}</p>
+        </div>
+      </Page.Content>
+    </Page.Root>
   )
 }

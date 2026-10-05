@@ -67,143 +67,147 @@ export function Register() {
 
   if (done) {
     return (
-      <Page hasHeader={false}>
-        <div className="flex min-h-full items-center justify-center p-6">
-          <div className="flex w-full max-w-sm flex-col items-center text-center">
-            <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
-              <HugeiconsIcon
-                icon={MailValidation02Icon}
-                strokeWidth={2}
-                className="size-5 text-primary"
-              />
+      <Page.Root>
+        <Page.Content>
+          <div className="flex min-h-full items-center justify-center p-6">
+            <div className="flex w-full max-w-sm flex-col items-center text-center">
+              <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
+                <HugeiconsIcon
+                  icon={MailValidation02Icon}
+                  strokeWidth={2}
+                  className="size-5 text-primary"
+                />
+              </div>
+              <h1 className="mt-4 text-sm font-medium">Verify your email</h1>
+              <p className="mt-1 text-xs text-muted-foreground">
+                We sent a confirmation link to{" "}
+                <span className="font-medium text-foreground">{email}</span>.
+                Open it to activate your account.
+              </p>
+              <Button variant="ghost" className="mt-4">
+                <span className="text-muted-foreground group-hover/button:text-foreground">
+                  Resend email
+                </span>
+              </Button>
             </div>
-            <h1 className="mt-4 text-sm font-medium">Verify your email</h1>
-            <p className="mt-1 text-xs text-muted-foreground">
-              We sent a confirmation link to{" "}
-              <span className="font-medium text-foreground">{email}</span>. Open
-              it to activate your account.
-            </p>
-            <Button variant="ghost" className="mt-4">
-              <span className="text-muted-foreground group-hover/button:text-foreground">
-                Resend email
-              </span>
-            </Button>
           </div>
-        </div>
-      </Page>
+        </Page.Content>
+      </Page.Root>
     )
   }
 
   return (
-    <Page hasHeader={false}>
-      <div className="flex min-h-full items-center justify-center p-6">
-        <Card className="w-full max-w-sm">
-          <CardHeader className="text-center">
-            <CardTitle>Create your account</CardTitle>
-            <CardDescription>Start your 14-day free trial</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={onSubmit} noValidate>
-              <FieldGroup>
-                <Field data-invalid={!!errors.name}>
-                  <FieldLabel htmlFor="reg-name">Full name</FieldLabel>
-                  <Input
-                    id="reg-name"
-                    autoComplete="name"
-                    placeholder="Alex Rivera"
-                    value={name}
-                    disabled={submitting}
-                    aria-invalid={!!errors.name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                  {errors.name && <FieldError>{errors.name}</FieldError>}
-                </Field>
-
-                <Field data-invalid={!!errors.email}>
-                  <FieldLabel htmlFor="reg-email">Email</FieldLabel>
-                  <Input
-                    id="reg-email"
-                    type="email"
-                    autoComplete="email"
-                    placeholder="you@acme.com"
-                    value={email}
-                    disabled={submitting}
-                    aria-invalid={!!errors.email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                  {errors.email && <FieldError>{errors.email}</FieldError>}
-                </Field>
-
-                <Field data-invalid={!!errors.password}>
-                  <FieldLabel htmlFor="reg-password">Password</FieldLabel>
-                  <PasswordInput
-                    id="reg-password"
-                    autoComplete="new-password"
-                    showStrength
-                    showChecklist
-                    value={password}
-                    disabled={submitting}
-                    aria-invalid={!!errors.password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  {errors.password && (
-                    <FieldError>{errors.password}</FieldError>
-                  )}
-                </Field>
-
-                <Field data-invalid={!!errors.terms}>
-                  <div className="flex items-start gap-2">
-                    <Checkbox
-                      id="reg-terms"
-                      checked={terms}
+    <Page.Root>
+      <Page.Content>
+        <div className="flex min-h-full items-center justify-center p-6">
+          <Card className="w-full max-w-sm">
+            <CardHeader className="text-center">
+              <CardTitle>Create your account</CardTitle>
+              <CardDescription>Start your 14-day free trial</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={onSubmit} noValidate>
+                <FieldGroup>
+                  <Field data-invalid={!!errors.name}>
+                    <FieldLabel htmlFor="reg-name">Full name</FieldLabel>
+                    <Input
+                      id="reg-name"
+                      autoComplete="name"
+                      placeholder="Alex Rivera"
+                      value={name}
                       disabled={submitting}
-                      aria-invalid={!!errors.terms}
-                      onCheckedChange={(v) => setTerms(v === true)}
+                      aria-invalid={!!errors.name}
+                      onChange={(e) => setName(e.target.value)}
                     />
-                    <FieldLabel htmlFor="reg-terms">
-                      <span className="font-normal">
-                        I agree to the{" "}
-                        <a href="#" className="underline underline-offset-4">
-                          Terms
-                        </a>{" "}
-                        and{" "}
-                        <a href="#" className="underline underline-offset-4">
-                          Privacy Policy
-                        </a>
-                      </span>
-                    </FieldLabel>
-                  </div>
-                  {errors.terms && <FieldError>{errors.terms}</FieldError>}
-                </Field>
+                    {errors.name && <FieldError>{errors.name}</FieldError>}
+                  </Field>
 
-                <Field>
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={submitting}
-                  >
-                    {submitting && (
-                      <HugeiconsIcon
-                        icon={Loading03Icon}
-                        strokeWidth={2}
-                        data-icon="inline-start"
-                        className="animate-spin"
-                      />
+                  <Field data-invalid={!!errors.email}>
+                    <FieldLabel htmlFor="reg-email">Email</FieldLabel>
+                    <Input
+                      id="reg-email"
+                      type="email"
+                      autoComplete="email"
+                      placeholder="you@acme.com"
+                      value={email}
+                      disabled={submitting}
+                      aria-invalid={!!errors.email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                    {errors.email && <FieldError>{errors.email}</FieldError>}
+                  </Field>
+
+                  <Field data-invalid={!!errors.password}>
+                    <FieldLabel htmlFor="reg-password">Password</FieldLabel>
+                    <PasswordInput
+                      id="reg-password"
+                      autoComplete="new-password"
+                      showStrength
+                      showChecklist
+                      value={password}
+                      disabled={submitting}
+                      aria-invalid={!!errors.password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                    {errors.password && (
+                      <FieldError>{errors.password}</FieldError>
                     )}
-                    {submitting ? "Creating account…" : "Create account"}
-                  </Button>
-                  <FieldDescription className="text-center">
-                    Already have an account?{" "}
-                    <a href="#" className="underline underline-offset-4">
-                      Sign in
-                    </a>
-                  </FieldDescription>
-                </Field>
-              </FieldGroup>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
-    </Page>
+                  </Field>
+
+                  <Field data-invalid={!!errors.terms}>
+                    <div className="flex items-start gap-2">
+                      <Checkbox
+                        id="reg-terms"
+                        checked={terms}
+                        disabled={submitting}
+                        aria-invalid={!!errors.terms}
+                        onCheckedChange={(v) => setTerms(v === true)}
+                      />
+                      <FieldLabel htmlFor="reg-terms">
+                        <span className="font-normal">
+                          I agree to the{" "}
+                          <a href="#" className="underline underline-offset-4">
+                            Terms
+                          </a>{" "}
+                          and{" "}
+                          <a href="#" className="underline underline-offset-4">
+                            Privacy Policy
+                          </a>
+                        </span>
+                      </FieldLabel>
+                    </div>
+                    {errors.terms && <FieldError>{errors.terms}</FieldError>}
+                  </Field>
+
+                  <Field>
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      disabled={submitting}
+                    >
+                      {submitting && (
+                        <HugeiconsIcon
+                          icon={Loading03Icon}
+                          strokeWidth={2}
+                          data-icon="inline-start"
+                          className="animate-spin"
+                        />
+                      )}
+                      {submitting ? "Creating account…" : "Create account"}
+                    </Button>
+                    <FieldDescription className="text-center">
+                      Already have an account?{" "}
+                      <a href="#" className="underline underline-offset-4">
+                        Sign in
+                      </a>
+                    </FieldDescription>
+                  </Field>
+                </FieldGroup>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </Page.Content>
+    </Page.Root>
   )
 }

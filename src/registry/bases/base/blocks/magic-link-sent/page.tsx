@@ -35,50 +35,52 @@ export function MagicLinkSent() {
   }
 
   return (
-    <Page hasHeader={false}>
-      <div className="flex min-h-full items-center justify-center p-6">
-        <div className="flex w-full max-w-sm flex-col items-center text-center">
-          <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
-            <HugeiconsIcon
-              icon={MailValidation02Icon}
-              strokeWidth={2}
-              className="size-5 text-primary"
-            />
-          </div>
+    <Page.Root>
+      <Page.Content>
+        <div className="flex min-h-full items-center justify-center p-6">
+          <div className="flex w-full max-w-sm flex-col items-center text-center">
+            <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
+              <HugeiconsIcon
+                icon={MailValidation02Icon}
+                strokeWidth={2}
+                className="size-5 text-primary"
+              />
+            </div>
 
-          <h1 className="mt-4 text-sm font-medium">Check your email</h1>
-          <p className="mt-1 text-xs text-muted-foreground">
-            We sent a magic sign-in link to{" "}
-            <span className="font-medium text-foreground">{EMAIL}</span>. Click
-            it to sign in — the link expires in 10 minutes.
-          </p>
+            <h1 className="mt-4 text-sm font-medium">Check your email</h1>
+            <p className="mt-1 text-xs text-muted-foreground">
+              We sent a magic sign-in link to{" "}
+              <span className="font-medium text-foreground">{EMAIL}</span>.
+              Click it to sign in — the link expires in 10 minutes.
+            </p>
 
-          <div className="mt-6 flex w-full flex-col gap-2" aria-live="polite">
-            <Button className="w-full" disabled={!canResend} onClick={resend}>
-              {canResend ? (
-                "Resend link"
-              ) : (
-                <>
-                  Resend in{" "}
-                  <span className="font-medium tabular-nums">
-                    {Math.ceil(remaining / 1000)}s
-                  </span>
-                </>
-              )}
-            </Button>
-            <Button variant="ghost" className="w-full">
-              <span className="text-muted-foreground group-hover/button:text-foreground">
-                <HugeiconsIcon
-                  icon={ArrowLeft01Icon}
-                  strokeWidth={2}
-                  data-icon="inline-start"
-                />
-                Use a different email
-              </span>
-            </Button>
+            <div className="mt-6 flex w-full flex-col gap-2" aria-live="polite">
+              <Button className="w-full" disabled={!canResend} onClick={resend}>
+                {canResend ? (
+                  "Resend link"
+                ) : (
+                  <>
+                    Resend in{" "}
+                    <span className="font-medium tabular-nums">
+                      {Math.ceil(remaining / 1000)}s
+                    </span>
+                  </>
+                )}
+              </Button>
+              <Button variant="ghost" className="w-full">
+                <span className="text-muted-foreground group-hover/button:text-foreground">
+                  <HugeiconsIcon
+                    icon={ArrowLeft01Icon}
+                    strokeWidth={2}
+                    data-icon="inline-start"
+                  />
+                  Use a different email
+                </span>
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
-    </Page>
+      </Page.Content>
+    </Page.Root>
   )
 }

@@ -99,130 +99,134 @@ export function LoginSocial() {
 
   if (status === "success") {
     return (
-      <Page hasHeader={false}>
-        <div className="flex min-h-full items-center justify-center p-6">
-          <div className="flex w-full max-w-sm flex-col items-center text-center">
-            <h1 className="text-sm font-medium">Signed in</h1>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Welcome back — redirecting to your workspace.
-            </p>
+      <Page.Root>
+        <Page.Content>
+          <div className="flex min-h-full items-center justify-center p-6">
+            <div className="flex w-full max-w-sm flex-col items-center text-center">
+              <h1 className="text-sm font-medium">Signed in</h1>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Welcome back — redirecting to your workspace.
+              </p>
+            </div>
           </div>
-        </div>
-      </Page>
+        </Page.Content>
+      </Page.Root>
     )
   }
 
   return (
-    <Page hasHeader={false}>
-      <div className="flex min-h-full items-center justify-center p-6">
-        <Card className="w-full max-w-sm">
-          <CardHeader className="text-center">
-            <CardTitle>Sign in to Acme</CardTitle>
-            <CardDescription>
-              Continue with a provider or your email
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <FieldGroup>
-              <div className="flex flex-col gap-2">
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  disabled={submitting}
-                >
-                  <GoogleIcon data-icon="inline-start" />
-                  Continue with Google
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  disabled={submitting}
-                >
-                  <GithubIcon data-icon="inline-start" />
-                  Continue with GitHub
-                </Button>
-              </div>
+    <Page.Root>
+      <Page.Content>
+        <div className="flex min-h-full items-center justify-center p-6">
+          <Card className="w-full max-w-sm">
+            <CardHeader className="text-center">
+              <CardTitle>Sign in to Acme</CardTitle>
+              <CardDescription>
+                Continue with a provider or your email
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FieldGroup>
+                <div className="flex flex-col gap-2">
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    disabled={submitting}
+                  >
+                    <GoogleIcon data-icon="inline-start" />
+                    Continue with Google
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    disabled={submitting}
+                  >
+                    <GithubIcon data-icon="inline-start" />
+                    Continue with GitHub
+                  </Button>
+                </div>
 
-              <FieldSeparator>or</FieldSeparator>
+                <FieldSeparator>or</FieldSeparator>
 
-              <form onSubmit={onSubmit} noValidate>
-                <FieldGroup>
-                  {status === "error" && (
-                    <Alert variant="destructive">
-                      <HugeiconsIcon icon={Alert01Icon} strokeWidth={2} />
-                      <AlertTitle>Incorrect email or password.</AlertTitle>
-                    </Alert>
-                  )}
-
-                  <Field data-invalid={!!fieldErrors.email}>
-                    <FieldLabel htmlFor="ls-email">Email</FieldLabel>
-                    <Input
-                      id="ls-email"
-                      type="email"
-                      autoComplete="email"
-                      placeholder="you@acme.com"
-                      value={email}
-                      disabled={submitting}
-                      aria-invalid={!!fieldErrors.email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                    {fieldErrors.email && (
-                      <FieldError>{fieldErrors.email}</FieldError>
+                <form onSubmit={onSubmit} noValidate>
+                  <FieldGroup>
+                    {status === "error" && (
+                      <Alert variant="destructive">
+                        <HugeiconsIcon icon={Alert01Icon} strokeWidth={2} />
+                        <AlertTitle>Incorrect email or password.</AlertTitle>
+                      </Alert>
                     )}
-                  </Field>
 
-                  <Field data-invalid={!!fieldErrors.password}>
-                    <div className="flex items-center justify-between">
-                      <FieldLabel htmlFor="ls-password">Password</FieldLabel>
-                      <a
-                        href="#"
-                        className="text-xs text-muted-foreground underline-offset-4 hover:underline"
-                      >
-                        Forgot password?
-                      </a>
-                    </div>
-                    <PasswordInput
-                      id="ls-password"
-                      autoComplete="current-password"
-                      value={password}
-                      disabled={submitting}
-                      aria-invalid={!!fieldErrors.password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                    {fieldErrors.password && (
-                      <FieldError>{fieldErrors.password}</FieldError>
-                    )}
-                  </Field>
-
-                  <Field>
-                    <Button
-                      type="submit"
-                      className="w-full"
-                      disabled={submitting}
-                    >
-                      {submitting && (
-                        <HugeiconsIcon
-                          icon={Loading03Icon}
-                          strokeWidth={2}
-                          data-icon="inline-start"
-                          className="animate-spin"
-                        />
+                    <Field data-invalid={!!fieldErrors.email}>
+                      <FieldLabel htmlFor="ls-email">Email</FieldLabel>
+                      <Input
+                        id="ls-email"
+                        type="email"
+                        autoComplete="email"
+                        placeholder="you@acme.com"
+                        value={email}
+                        disabled={submitting}
+                        aria-invalid={!!fieldErrors.email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                      {fieldErrors.email && (
+                        <FieldError>{fieldErrors.email}</FieldError>
                       )}
-                      {submitting ? "Signing in…" : "Sign in"}
-                    </Button>
-                    <FieldDescription className="text-center">
-                      Don&apos;t have an account?{" "}
-                      <a href="#" className="underline underline-offset-4">
-                        Sign up
-                      </a>
-                    </FieldDescription>
-                  </Field>
-                </FieldGroup>
-              </form>
-            </FieldGroup>
-          </CardContent>
-        </Card>
-      </div>
-    </Page>
+                    </Field>
+
+                    <Field data-invalid={!!fieldErrors.password}>
+                      <div className="flex items-center justify-between">
+                        <FieldLabel htmlFor="ls-password">Password</FieldLabel>
+                        <a
+                          href="#"
+                          className="text-xs text-muted-foreground underline-offset-4 hover:underline"
+                        >
+                          Forgot password?
+                        </a>
+                      </div>
+                      <PasswordInput
+                        id="ls-password"
+                        autoComplete="current-password"
+                        value={password}
+                        disabled={submitting}
+                        aria-invalid={!!fieldErrors.password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                      {fieldErrors.password && (
+                        <FieldError>{fieldErrors.password}</FieldError>
+                      )}
+                    </Field>
+
+                    <Field>
+                      <Button
+                        type="submit"
+                        className="w-full"
+                        disabled={submitting}
+                      >
+                        {submitting && (
+                          <HugeiconsIcon
+                            icon={Loading03Icon}
+                            strokeWidth={2}
+                            data-icon="inline-start"
+                            className="animate-spin"
+                          />
+                        )}
+                        {submitting ? "Signing in…" : "Sign in"}
+                      </Button>
+                      <FieldDescription className="text-center">
+                        Don&apos;t have an account?{" "}
+                        <a href="#" className="underline underline-offset-4">
+                          Sign up
+                        </a>
+                      </FieldDescription>
+                    </Field>
+                  </FieldGroup>
+                </form>
+              </FieldGroup>
+            </CardContent>
+          </Card>
+        </div>
+      </Page.Content>
+    </Page.Root>
   )
 }

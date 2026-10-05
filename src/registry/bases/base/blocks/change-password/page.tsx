@@ -70,107 +70,117 @@ export function ChangePassword() {
 
   if (done) {
     return (
-      <Page hasHeader={false}>
-        <div className="flex min-h-full items-center justify-center p-6">
-          <div className="flex w-full max-w-sm flex-col items-center text-center">
-            <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
-              <HugeiconsIcon
-                icon={CheckmarkCircle02Icon}
-                strokeWidth={2}
-                className="size-5 text-primary"
-              />
+      <Page.Root>
+        <Page.Content>
+          <div className="flex min-h-full items-center justify-center p-6">
+            <div className="flex w-full max-w-sm flex-col items-center text-center">
+              <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
+                <HugeiconsIcon
+                  icon={CheckmarkCircle02Icon}
+                  strokeWidth={2}
+                  className="size-5 text-primary"
+                />
+              </div>
+              <h1 className="mt-4 text-sm font-medium">Password changed</h1>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Your password was updated. Other sessions have been signed out.
+              </p>
             </div>
-            <h1 className="mt-4 text-sm font-medium">Password changed</h1>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Your password was updated. Other sessions have been signed out.
-            </p>
           </div>
-        </div>
-      </Page>
+        </Page.Content>
+      </Page.Root>
     )
   }
 
   return (
-    <Page hasHeader={false}>
-      <div className="flex min-h-full items-center justify-center p-6">
-        <Card className="w-full max-w-sm">
-          <CardHeader>
-            <CardTitle>Change password</CardTitle>
-            <CardDescription>
-              Enter your current password, then choose a new one
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={onSubmit} noValidate>
-              <FieldGroup>
-                <Field data-invalid={!!errors.current}>
-                  <FieldLabel htmlFor="cp-current">Current password</FieldLabel>
-                  <PasswordInput
-                    id="cp-current"
-                    autoComplete="current-password"
-                    value={current}
-                    disabled={submitting}
-                    aria-invalid={!!errors.current}
-                    onChange={(e) => setCurrent(e.target.value)}
-                  />
-                  {errors.current && <FieldError>{errors.current}</FieldError>}
-                </Field>
-
-                <Field data-invalid={!!errors.next}>
-                  <FieldLabel htmlFor="cp-next">New password</FieldLabel>
-                  <PasswordInput
-                    id="cp-next"
-                    autoComplete="new-password"
-                    showStrength
-                    showChecklist
-                    value={next}
-                    disabled={submitting}
-                    aria-invalid={!!errors.next}
-                    onChange={(e) => setNext(e.target.value)}
-                  />
-                  {errors.next && <FieldError>{errors.next}</FieldError>}
-                </Field>
-
-                <Field data-invalid={!!errors.confirm}>
-                  <FieldLabel htmlFor="cp-confirm">
-                    Confirm new password
-                  </FieldLabel>
-                  <PasswordInput
-                    id="cp-confirm"
-                    autoComplete="new-password"
-                    value={confirm}
-                    disabled={submitting}
-                    aria-invalid={!!errors.confirm}
-                    onChange={(e) => setConfirm(e.target.value)}
-                  />
-                  {errors.confirm && <FieldError>{errors.confirm}</FieldError>}
-                </Field>
-
-                <Field>
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={submitting}
-                  >
-                    {submitting && (
-                      <HugeiconsIcon
-                        icon={Loading03Icon}
-                        strokeWidth={2}
-                        data-icon="inline-start"
-                        className="animate-spin"
-                      />
+    <Page.Root>
+      <Page.Content>
+        <div className="flex min-h-full items-center justify-center p-6">
+          <Card className="w-full max-w-sm">
+            <CardHeader>
+              <CardTitle>Change password</CardTitle>
+              <CardDescription>
+                Enter your current password, then choose a new one
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={onSubmit} noValidate>
+                <FieldGroup>
+                  <Field data-invalid={!!errors.current}>
+                    <FieldLabel htmlFor="cp-current">
+                      Current password
+                    </FieldLabel>
+                    <PasswordInput
+                      id="cp-current"
+                      autoComplete="current-password"
+                      value={current}
+                      disabled={submitting}
+                      aria-invalid={!!errors.current}
+                      onChange={(e) => setCurrent(e.target.value)}
+                    />
+                    {errors.current && (
+                      <FieldError>{errors.current}</FieldError>
                     )}
-                    {submitting ? "Updating…" : "Update password"}
-                  </Button>
-                  <FieldDescription>
-                    Changing your password signs out other devices.
-                  </FieldDescription>
-                </Field>
-              </FieldGroup>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
-    </Page>
+                  </Field>
+
+                  <Field data-invalid={!!errors.next}>
+                    <FieldLabel htmlFor="cp-next">New password</FieldLabel>
+                    <PasswordInput
+                      id="cp-next"
+                      autoComplete="new-password"
+                      showStrength
+                      showChecklist
+                      value={next}
+                      disabled={submitting}
+                      aria-invalid={!!errors.next}
+                      onChange={(e) => setNext(e.target.value)}
+                    />
+                    {errors.next && <FieldError>{errors.next}</FieldError>}
+                  </Field>
+
+                  <Field data-invalid={!!errors.confirm}>
+                    <FieldLabel htmlFor="cp-confirm">
+                      Confirm new password
+                    </FieldLabel>
+                    <PasswordInput
+                      id="cp-confirm"
+                      autoComplete="new-password"
+                      value={confirm}
+                      disabled={submitting}
+                      aria-invalid={!!errors.confirm}
+                      onChange={(e) => setConfirm(e.target.value)}
+                    />
+                    {errors.confirm && (
+                      <FieldError>{errors.confirm}</FieldError>
+                    )}
+                  </Field>
+
+                  <Field>
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      disabled={submitting}
+                    >
+                      {submitting && (
+                        <HugeiconsIcon
+                          icon={Loading03Icon}
+                          strokeWidth={2}
+                          data-icon="inline-start"
+                          className="animate-spin"
+                        />
+                      )}
+                      {submitting ? "Updating…" : "Update password"}
+                    </Button>
+                    <FieldDescription>
+                      Changing your password signs out other devices.
+                    </FieldDescription>
+                  </Field>
+                </FieldGroup>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </Page.Content>
+    </Page.Root>
   )
 }

@@ -147,219 +147,226 @@ export function TwoFactorChallenge() {
   const success = status === "success"
 
   return (
-    <Page hasHeader={false}>
-      <div className="flex min-h-full items-center justify-center p-6">
-        <Card className="w-full max-w-sm">
-          <CardHeader className="items-center text-center">
-            {/* Badge: mode icon → spinner ring → completed ring + check, all in place */}
-            <div className="relative mx-auto flex size-11 items-center justify-center">
-              <AnimatePresence mode="wait" initial={false}>
-                {success ? (
-                  <motion.div
-                    key="success"
-                    initial={reduceMotion ? false : { opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                  >
-                    <SuccessRing reduceMotion={reduceMotion} />
-                  </motion.div>
-                ) : verifying ? (
-                  <motion.div
-                    key="verifying"
-                    initial={reduceMotion ? false : { opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={reduceMotion ? undefined : { opacity: 0 }}
-                  >
-                    <SpinnerRing />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="icon"
-                    className="flex size-11 items-center justify-center rounded-full bg-muted"
-                    initial={reduceMotion ? false : { opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={reduceMotion ? undefined : { opacity: 0 }}
-                  >
-                    {mode === "totp" ? (
-                      <HugeiconsIcon
-                        icon={SmartPhone01Icon}
-                        strokeWidth={2}
-                        className="size-5"
-                      />
-                    ) : (
-                      <HugeiconsIcon
-                        icon={Key01Icon}
-                        strokeWidth={2}
-                        className="size-5"
-                      />
-                    )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            <CardTitle className="mt-2">
-              <span className={success ? "text-success" : undefined}>
-                {success ? "Verified" : "Two-factor authentication"}
-              </span>
-            </CardTitle>
-            <CardDescription>
-              {success
-                ? "Two-factor check passed — signing you in."
-                : mode === "totp"
-                  ? "Enter the 6-digit code from your authenticator app"
-                  : "Enter one of your saved recovery codes"}
-            </CardDescription>
-          </CardHeader>
-
-          {/* Body collapses away on success — the card stays put, header does the talking */}
-          <AnimatePresence initial={false}>
-            {!success && (
-              <motion.div
-                key="body"
-                className="overflow-hidden"
-                exit={reduceMotion ? { opacity: 0 } : { opacity: 0, height: 0 }}
-                transition={{ duration: 0.25 }}
-              >
-                {/* py-2: keep the OTP focus ring from being clipped by the
-                    overflow-hidden collapse wrapper (CardContent has no y-padding) */}
-                <CardContent className="flex flex-col items-center gap-4 py-2">
-                  <AnimatePresence mode="popLayout" initial={false}>
+    <Page.Root>
+      <Page.Content>
+        <div className="flex min-h-full items-center justify-center p-6">
+          <Card className="w-full max-w-sm">
+            <CardHeader className="items-center text-center">
+              {/* Badge: mode icon → spinner ring → completed ring + check, all in place */}
+              <div className="relative mx-auto flex size-11 items-center justify-center">
+                <AnimatePresence mode="wait" initial={false}>
+                  {success ? (
                     <motion.div
-                      key={mode}
-                      className="flex w-full flex-col items-center gap-4"
-                      initial={reduceMotion ? false : { opacity: 0, y: 4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={reduceMotion ? undefined : { opacity: 0, y: -4 }}
-                      transition={{ duration: 0.15 }}
+                      key="success"
+                      initial={reduceMotion ? false : { opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                    >
+                      <SuccessRing reduceMotion={reduceMotion} />
+                    </motion.div>
+                  ) : verifying ? (
+                    <motion.div
+                      key="verifying"
+                      initial={reduceMotion ? false : { opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={reduceMotion ? undefined : { opacity: 0 }}
+                    >
+                      <SpinnerRing />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="icon"
+                      className="flex size-11 items-center justify-center rounded-full bg-muted"
+                      initial={reduceMotion ? false : { opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={reduceMotion ? undefined : { opacity: 0 }}
                     >
                       {mode === "totp" ? (
-                        <>
-                          <div ref={shakeScope}>
-                            <InputOTP
-                              maxLength={6}
-                              value={code}
-                              disabled={verifying}
-                              onChange={onCodeChange}
-                              aria-invalid={status === "error"}
-                              aria-label="Authentication code"
-                            >
-                              <InputOTPGroup>
-                                {[0, 1, 2, 3, 4, 5].map((i) => (
-                                  <InputOTPSlot
-                                    key={i}
-                                    index={i}
-                                    aria-invalid={status === "error"}
-                                  />
-                                ))}
-                              </InputOTPGroup>
-                            </InputOTP>
-                          </div>
+                        <HugeiconsIcon
+                          icon={SmartPhone01Icon}
+                          strokeWidth={2}
+                          className="size-5"
+                        />
+                      ) : (
+                        <HugeiconsIcon
+                          icon={Key01Icon}
+                          strokeWidth={2}
+                          className="size-5"
+                        />
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
-                          <div className="h-5 text-sm" aria-live="polite">
-                            {verifying && (
-                              <span className="flex items-center gap-2 text-muted-foreground">
+              <CardTitle className="mt-2">
+                <span className={success ? "text-success" : undefined}>
+                  {success ? "Verified" : "Two-factor authentication"}
+                </span>
+              </CardTitle>
+              <CardDescription>
+                {success
+                  ? "Two-factor check passed — signing you in."
+                  : mode === "totp"
+                    ? "Enter the 6-digit code from your authenticator app"
+                    : "Enter one of your saved recovery codes"}
+              </CardDescription>
+            </CardHeader>
+
+            {/* Body collapses away on success — the card stays put, header does the talking */}
+            <AnimatePresence initial={false}>
+              {!success && (
+                <motion.div
+                  key="body"
+                  className="overflow-hidden"
+                  exit={
+                    reduceMotion ? { opacity: 0 } : { opacity: 0, height: 0 }
+                  }
+                  transition={{ duration: 0.25 }}
+                >
+                  {/* py-2: keep the OTP focus ring from being clipped by the
+                    overflow-hidden collapse wrapper (CardContent has no y-padding) */}
+                  <CardContent className="flex flex-col items-center gap-4 py-2">
+                    <AnimatePresence mode="popLayout" initial={false}>
+                      <motion.div
+                        key={mode}
+                        className="flex w-full flex-col items-center gap-4"
+                        initial={reduceMotion ? false : { opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={reduceMotion ? undefined : { opacity: 0, y: -4 }}
+                        transition={{ duration: 0.15 }}
+                      >
+                        {mode === "totp" ? (
+                          <>
+                            <div ref={shakeScope}>
+                              <InputOTP
+                                maxLength={6}
+                                value={code}
+                                disabled={verifying}
+                                onChange={onCodeChange}
+                                aria-invalid={status === "error"}
+                                aria-label="Authentication code"
+                              >
+                                <InputOTPGroup>
+                                  {[0, 1, 2, 3, 4, 5].map((i) => (
+                                    <InputOTPSlot
+                                      key={i}
+                                      index={i}
+                                      aria-invalid={status === "error"}
+                                    />
+                                  ))}
+                                </InputOTPGroup>
+                              </InputOTP>
+                            </div>
+
+                            <div className="h-5 text-sm" aria-live="polite">
+                              {verifying && (
+                                <span className="flex items-center gap-2 text-muted-foreground">
+                                  <HugeiconsIcon
+                                    icon={Loading03Icon}
+                                    strokeWidth={2}
+                                    className="size-4 animate-spin"
+                                  />
+                                  Verifying…
+                                </span>
+                              )}
+                              {status === "error" && (
+                                <span
+                                  className="flex items-center gap-2 text-destructive"
+                                  role="alert"
+                                >
+                                  <HugeiconsIcon
+                                    icon={Alert01Icon}
+                                    strokeWidth={2}
+                                    className="size-4"
+                                  />
+                                  Incorrect code. Try again.
+                                </span>
+                              )}
+                            </div>
+                          </>
+                        ) : (
+                          <form
+                            className="w-full"
+                            onSubmit={(e) => {
+                              e.preventDefault()
+                              verify(
+                                recovery.trim().toUpperCase(),
+                                DEMO_RECOVERY
+                              )
+                            }}
+                          >
+                            <Field data-invalid={status === "error"}>
+                              <FieldLabel htmlFor="recovery-code">
+                                Recovery code
+                              </FieldLabel>
+                              <Input
+                                id="recovery-code"
+                                placeholder="ACME-XXXX-XXXX"
+                                autoComplete="one-time-code"
+                                value={recovery}
+                                disabled={verifying}
+                                aria-invalid={status === "error"}
+                                onChange={(e) => {
+                                  if (status === "error") setStatus("idle")
+                                  setRecovery(e.target.value)
+                                }}
+                              />
+                              {status === "error" && (
+                                <FieldError>
+                                  That recovery code isn&apos;t valid.
+                                </FieldError>
+                              )}
+                            </Field>
+                            <Button
+                              type="submit"
+                              className="mt-4 w-full"
+                              disabled={verifying}
+                            >
+                              {verifying && (
                                 <HugeiconsIcon
                                   icon={Loading03Icon}
                                   strokeWidth={2}
-                                  className="size-4 animate-spin"
+                                  data-icon="inline-start"
+                                  className="animate-spin"
                                 />
-                                Verifying…
-                              </span>
-                            )}
-                            {status === "error" && (
-                              <span
-                                className="flex items-center gap-2 text-destructive"
-                                role="alert"
-                              >
-                                <HugeiconsIcon
-                                  icon={Alert01Icon}
-                                  strokeWidth={2}
-                                  className="size-4"
-                                />
-                                Incorrect code. Try again.
-                              </span>
-                            )}
-                          </div>
-                        </>
-                      ) : (
-                        <form
-                          className="w-full"
-                          onSubmit={(e) => {
-                            e.preventDefault()
-                            verify(recovery.trim().toUpperCase(), DEMO_RECOVERY)
-                          }}
-                        >
-                          <Field data-invalid={status === "error"}>
-                            <FieldLabel htmlFor="recovery-code">
-                              Recovery code
-                            </FieldLabel>
-                            <Input
-                              id="recovery-code"
-                              placeholder="ACME-XXXX-XXXX"
-                              autoComplete="one-time-code"
-                              value={recovery}
-                              disabled={verifying}
-                              aria-invalid={status === "error"}
-                              onChange={(e) => {
-                                if (status === "error") setStatus("idle")
-                                setRecovery(e.target.value)
-                              }}
-                            />
-                            {status === "error" && (
-                              <FieldError>
-                                That recovery code isn&apos;t valid.
-                              </FieldError>
-                            )}
-                          </Field>
-                          <Button
-                            type="submit"
-                            className="mt-4 w-full"
-                            disabled={verifying}
-                          >
-                            {verifying && (
-                              <HugeiconsIcon
-                                icon={Loading03Icon}
-                                strokeWidth={2}
-                                data-icon="inline-start"
-                                className="animate-spin"
-                              />
-                            )}
-                            {verifying ? "Verifying…" : "Verify"}
-                          </Button>
-                        </form>
-                      )}
-                    </motion.div>
-                  </AnimatePresence>
+                              )}
+                              {verifying ? "Verifying…" : "Verify"}
+                            </Button>
+                          </form>
+                        )}
+                      </motion.div>
+                    </AnimatePresence>
 
-                  <Field orientation="horizontal">
-                    <Checkbox id="trust-device" disabled={verifying} />
-                    <FieldLabel htmlFor="trust-device">
-                      <span className="font-normal">
-                        Trust this device for 30 days
+                    <Field orientation="horizontal">
+                      <Checkbox id="trust-device" disabled={verifying} />
+                      <FieldLabel htmlFor="trust-device">
+                        <span className="font-normal">
+                          Trust this device for 30 days
+                        </span>
+                      </FieldLabel>
+                    </Field>
+
+                    <Button
+                      variant="link"
+                      size="xs"
+                      disabled={verifying}
+                      onClick={() =>
+                        switchMode(mode === "totp" ? "recovery" : "totp")
+                      }
+                    >
+                      <span className="text-muted-foreground group-hover/button:text-primary">
+                        {mode === "totp"
+                          ? "Use a recovery code instead"
+                          : "Use your authenticator app instead"}
                       </span>
-                    </FieldLabel>
-                  </Field>
-
-                  <Button
-                    variant="link"
-                    size="xs"
-                    disabled={verifying}
-                    onClick={() =>
-                      switchMode(mode === "totp" ? "recovery" : "totp")
-                    }
-                  >
-                    <span className="text-muted-foreground group-hover/button:text-primary">
-                      {mode === "totp"
-                        ? "Use a recovery code instead"
-                        : "Use your authenticator app instead"}
-                    </span>
-                  </Button>
-                </CardContent>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </Card>
-      </div>
-    </Page>
+                    </Button>
+                  </CardContent>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </Card>
+        </div>
+      </Page.Content>
+    </Page.Root>
   )
 }

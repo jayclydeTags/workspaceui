@@ -266,6 +266,18 @@ it. Follow the same rules when converting another component:
 - `column.meta` (including `validate`) and its types live in `data-filter.tsx`
   and are re-exported from `data-grid.tsx`.
 
+### page.tsx (compound)
+
+Second compound component, and a stateless one: `Page.Root`, `Header`,
+`Heading`, `Visual`, `Title`, `Breadcrumbs`, `Actions`, `Subtitle`, `Content`
+(namespace object plus flat `PageRoot`, … exports; no default-layout wrapper). `Breadcrumbs` is composed from the shadcn `Breadcrumb*` items, not an `items` array, and `Title` is always the one `<h1>`.
+Because `Root` owns no state there is no context, so parts don't throw outside
+it — only add a context (and the throw-outside-Root rule above) when a root
+actually has state to share. A "slot" is a part you leave out, not a
+`hasX={false}` prop. `export interface <Name>Props` is what
+`registry-docs.test.ts` checks, so a compound whose root props are just element
+props exports `type PageProps` and is covered by its mdx tables alone.
+
 ## Documentation
 
 Every component in `src/registry/bases/base/workspaceui/` must have a matching page, which is an mdx file the site only partly reads:

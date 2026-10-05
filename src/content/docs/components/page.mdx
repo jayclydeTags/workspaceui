@@ -1,6 +1,6 @@
 ---
 title: Page
-description: A page shell with an optional header — title or breadcrumbs, subtitle, a visual, a badge, and actions — plus a content area that can be padded.
+description: A compound page shell — Page.Root with an optional Page.Header (title or breadcrumbs, subtitle, visual, actions) over a Page.Content area that can be padded.
 ---
 
 <ComponentPreview name="page" />
@@ -37,11 +37,54 @@ description: A page shell with an optional header — title or breadcrumbs, subt
 import { Page } from "@/components/ui/page"
 ```
 
+`Page` is a set of parts you compose, not a single component with props for
+every slot. `Page.Root` is the shell; put a `Page.Header` and a `Page.Content`
+inside it.
+
 ```tsx
-<Page title="Settings" subtitle="Manage your account">
-  <div>{/* page content */}</div>
-</Page>
+<Page.Root>
+  <Page.Header>
+    <Page.Heading>
+      <Page.Title>Settings</Page.Title>
+    </Page.Heading>
+    <Page.Subtitle>Manage your account</Page.Subtitle>
+  </Page.Header>
+  <Page.Content padded>{/* page content */}</Page.Content>
+</Page.Root>
 ```
+
+### Composition
+
+Every part is optional, so leaving one out removes it:
+
+```tsx
+<Page.Root>
+  <Page.Header>
+    <Page.Heading>
+      <Page.Visual>{/* icon */}</Page.Visual>
+      <Page.Breadcrumbs
+        items={[{ label: "Settings", href: "/settings" }, { label: "Billing" }]}
+      />
+      <Badge>Beta</Badge>
+    </Page.Heading>
+    <Page.Actions>
+      <Button size="sm">Save changes</Button>
+    </Page.Actions>
+    <Page.Subtitle>Manage your subscription and invoices</Page.Subtitle>
+  </Page.Header>
+  <Page.Content padded>{/* page content */}</Page.Content>
+</Page.Root>
+```
+
+- **No header**: leave out `Page.Header` — the page then has no `<h1>`, so render your own heading in the content if it still needs one.
+- **Title and breadcrumbs**: `Page.Title` is always the page's `<h1>`. A `Page.Breadcrumbs` trail renders no heading of its own, so when the trail is the visible heading, add `<Page.Title className="sr-only">` with the current page's name beside it. Compose the trail from the shadcn `Breadcrumb*` items (`BreadcrumbItem`, `BreadcrumbLink`, `BreadcrumbPage`, `BreadcrumbSeparator`).
+- **Badge**: any node placed in `Page.Heading` sits next to the title (or the last breadcrumb); there is no dedicated badge part.
+- **Subtitle** always takes its own row, wherever it sits in the header. `Page.Subtitle` and `Page.Actions` are laid out by `Page.Header`'s wrapping row, so use them inside it.
+
+Each part is also exported by name (`PageRoot`, `PageHeader`, …) if you'd
+rather not use the namespace. The parts have no shared state, so they work
+outside `Page.Root` too, but the shell layout (`flex h-full flex-col`) comes
+from the root.
 
 ## Examples
 
@@ -59,19 +102,19 @@ A secondary line under the title.
 
 ### With Breadcrumbs
 
-Pass `breadcrumbs` to replace the plain title with a breadcrumb trail — the last item renders as the current page, and `badge` (if set) appears next to it instead of next to the title.
+Compose `Page.Breadcrumbs` from the shadcn breadcrumb items, with a visually hidden `Page.Title` for the page's `<h1>`.
 
 <ComponentPreview name="page-with-breadcrumbs" />
 
 ### With Badge & Actions
 
-A decorative `visual`, a `badge` next to the title, and right-aligned `actions`.
+A decorative `Page.Visual`, a badge next to the title, and right-aligned `Page.Actions`.
 
 <ComponentPreview name="page-with-badge-and-actions" />
 
 ### Without a Header
 
-Set `hasHeader={false}` to omit the header entirely and render only the content area.
+Leave out `Page.Header` to render only the content area.
 
 <ComponentPreview name="page-without-header" />
 
@@ -83,48 +126,79 @@ The minimal header — just a title, no subtitle or extras.
 
 ### Multiple Actions
 
-`actions` accepts any node — group several buttons for related operations.
+`Page.Actions` accepts any nodes — group several buttons for related operations.
 
 <ComponentPreview name="page-actions-group" />
 
 ### Scrollable Content
 
-The header stays fixed while the content area scrolls on overflow. `hasPadding` adds inset spacing.
+The header stays fixed while `Page.Content` scrolls on overflow. `padded` adds inset spacing.
 
 <ComponentPreview name="page-scroll" />
 
 ### Full Configuration
 
-Every prop combined — `visual`, `breadcrumbs`, `subtitle`, `badge`, `actions`, and `hasPadding`.
+Every part together — visual, breadcrumbs, badge, actions, subtitle and padded content.
 
 <ComponentPreview name="page-full" />
 
 ## API Reference
 
-| Prop          | Type               | Default | Description                                                                                                                                                                                                                                               |
-| ------------- | ------------------ | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `title`       | `React.ReactNode`  | -       | Page title. Ignored when `breadcrumbs` is set.                                                                                                                                                                                                            |
-| `subtitle`    | `React.ReactNode`  | -       | Secondary line shown under the title or breadcrumbs.                                                                                                                                                                                                      |
-| `breadcrumbs` | `PageBreadcrumb[]` | -       | Renders a breadcrumb trail in place of the plain title; the last item is the current page. `PageBreadcrumb` is `{ label: string; href?: string; render?: BreadcrumbLinkProps["render"] }` — `render` swaps in a router `Link` for client-side navigation. |
-| `visual`      | `React.ReactNode`  | -       | Decorative visual shown left of the title/breadcrumbs.                                                                                                                                                                                                    |
-| `badge`       | `React.ReactNode`  | -       | Shown next to the title, or next to the last breadcrumb when `breadcrumbs` is set.                                                                                                                                                                        |
-| `actions`     | `React.ReactNode`  | -       | Right-aligned actions in the header.                                                                                                                                                                                                                      |
-| `hasHeader`   | `boolean`          | `true`  | Set to `false` to omit the header entirely — the page then has no `<h1>`; render your own heading in `children` if it still needs one.                                                                                                                    |
-| `hasPadding`  | `boolean`          | `false` | Adds padding to the content area.                                                                                                                                                                                                                         |
-| `className`   | `string`           | -       | Additional CSS classes applied to the root element.                                                                                                                                                                                                       |
-| `children`    | `React.ReactNode`  | -       | Content area.                                                                                                                                                                                                                                             |
+### Page.Root
+
+The shell. Fills its parent (`flex h-full flex-col`) and stacks the header over the content.
+
+| Prop        | Type              | Default | Description                                         |
+| ----------- | ----------------- | ------- | --------------------------------------------------- |
+| `className` | `string`          | -       | Additional CSS classes applied to the root element. |
+| `children`  | `React.ReactNode` | -       | `Page.Header` and `Page.Content`.                   |
 
 Any other `div` prop (`id`, `data-*`, `aria-*`, `style`, `onClick`, ...) is forwarded to the root element.
 
+### Parts
+
+| Part            | Renders    | Description                                                                                                                                                                                                          |
+| --------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Page.Header`   | `<header>` | The header landmark. A wrapping row holding `Page.Heading`, `Page.Actions` and `Page.Subtitle`. Leave it out for a page with no header.                                                                              |
+| `Page.Heading`  | `<div>`    | Left side of the header: a row for `Page.Visual`, `Page.Title` or `Page.Breadcrumbs`, and any badge.                                                                                                                 |
+| `Page.Visual`   | `<span>`   | Decorative visual (icon, image, illustration). Hidden from assistive tech (`aria-hidden`).                                                                                                                           |
+| `Page.Title`    | `<h1>`     | The page's heading — always render one, with `className="sr-only"` when a breadcrumb trail is the visible heading. A string child is also set as the `title` attribute, so a truncated title shows in full on hover. |
+| `Page.Actions`  | `<div>`    | Right-aligned actions in the header.                                                                                                                                                                                 |
+| `Page.Subtitle` | `<p>`      | Secondary line under the heading, always on its own row. A string child is also set as the `title` attribute.                                                                                                        |
+
+Each part forwards `className` and the props of the element it renders.
+
+### Page.Breadcrumbs
+
+A `<nav aria-label="breadcrumb">` around a non-wrapping list. Its children are the shadcn `BreadcrumbItem`s and `BreadcrumbSeparator`s; links and the current page truncate. It renders no heading — pair it with a `Page.Title className="sr-only"`.
+
+| Prop        | Type              | Default | Description                                                      |
+| ----------- | ----------------- | ------- | ---------------------------------------------------------------- |
+| `className` | `string`          | -       | Additional CSS classes applied to the `<nav>`.                   |
+| `children`  | `React.ReactNode` | -       | `BreadcrumbItem` and `BreadcrumbSeparator` elements, root first. |
+
+Any other `nav` prop is forwarded.
+
+### Page.Content
+
+| Prop        | Type              | Default | Description                                                   |
+| ----------- | ----------------- | ------- | ------------------------------------------------------------- |
+| `padded`    | `boolean`         | `false` | Adds padding around the content.                              |
+| `className` | `string`          | -       | Additional CSS classes applied to the content element.        |
+| `children`  | `React.ReactNode` | -       | The page content. This area scrolls (`flex-1 overflow-auto`). |
+
 ### Router-aware breadcrumbs
 
-Pass `render` on a `PageBreadcrumb` to swap the rendered anchor for a router `Link` (e.g. Next.js's), so breadcrumb navigation is client-side instead of a full page load:
+`BreadcrumbLink` takes `render` to swap the anchor for a router `Link` (e.g. Next.js's), so navigation is client-side instead of a full page load:
 
 ```tsx
-<Page
-  breadcrumbs={[
-    { label: "Settings", href: "/settings", render: <Link href="/settings" /> },
-    { label: "Billing" },
-  ]}
-/>
+<Page.Breadcrumbs>
+  <BreadcrumbItem>
+    <BreadcrumbLink render={<Link href="/settings" />}>Settings</BreadcrumbLink>
+  </BreadcrumbItem>
+  <BreadcrumbSeparator />
+  <BreadcrumbItem>
+    <BreadcrumbPage>Billing</BreadcrumbPage>
+  </BreadcrumbItem>
+</Page.Breadcrumbs>
 ```

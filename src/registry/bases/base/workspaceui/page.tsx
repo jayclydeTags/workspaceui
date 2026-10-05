@@ -1,136 +1,183 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+import { Breadcrumb, BreadcrumbList } from "@/components/ui/breadcrumb"
 
-export interface PageBreadcrumb {
-  label: string
-  href?: string
-  /** Overrides the rendered element (e.g. a router `Link`) — forwarded to the underlying `BreadcrumbLink`. */
-  render?: React.ComponentProps<typeof BreadcrumbLink>["render"]
+export type PageProps = React.ComponentProps<"div">
+
+export type PageHeaderProps = React.ComponentProps<"header">
+
+export type PageHeadingProps = React.ComponentProps<"div">
+
+export type PageVisualProps = React.ComponentProps<"span">
+
+export type PageTitleProps = React.ComponentProps<"h1">
+
+export type PageBreadcrumbsProps = React.ComponentProps<typeof Breadcrumb>
+
+export type PageActionsProps = React.ComponentProps<"div">
+
+export type PageSubtitleProps = React.ComponentProps<"p">
+
+export interface PageContentProps extends React.ComponentProps<"div"> {
+  /** Adds padding around the content. Default `false`. */
+  padded?: boolean
 }
 
-export interface PageProps extends Omit<
-  React.ComponentProps<"div">,
-  "title" | "children"
-> {
-  /** Page title. Ignored when `breadcrumbs` is set — the last breadcrumb becomes the title. */
-  title?: React.ReactNode
-  subtitle?: React.ReactNode
-  /**
-   * Renders a breadcrumb trail in place of the plain title; the last item is the current page.
-   */
-  breadcrumbs?: PageBreadcrumb[]
-  /** Decorative visual (icon, image, illustration) shown left of the title/breadcrumbs. */
-  visual?: React.ReactNode
-  /** Shown next to the title, or next to the last breadcrumb when `breadcrumbs` is set. */
-  badge?: React.ReactNode
-  actions?: React.ReactNode
-  /**
-   * Set to `false` to omit the header entirely. Default `true`. The page then has no
-   * `<h1>` — render your own heading in `children` if the page still needs one.
-   */
-  hasHeader?: boolean
-  /** Adds padding to the content area. Default `false`. */
-  hasPadding?: boolean
-  children?: React.ReactNode
+/** The page shell: fills its parent and stacks an optional `Page.Header` over `Page.Content`. */
+function PageRoot({ className, ...props }: PageProps) {
+  return (
+    <div
+      data-slot="page"
+      className={cn("flex h-full flex-col", className)}
+      {...props}
+    />
+  )
 }
 
-export function Page({
-  title,
-  subtitle,
-  breadcrumbs,
-  visual,
-  badge,
-  actions,
-  hasHeader = true,
-  hasPadding = false,
+/** The `<header>` landmark. Holds `Heading`, `Actions` and `Subtitle`; omit it for a page with no header. */
+function PageHeader({ className, ...props }: PageHeaderProps) {
+  return (
+    <header
+      data-slot="page-header"
+      className={cn(
+        "flex flex-wrap items-start justify-between gap-x-4 gap-y-1 border-b px-6 py-4",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+/** Left side of the header: a row for `Visual`, `Title` or `Breadcrumbs`, and any badge. */
+function PageHeading({ className, ...props }: PageHeadingProps) {
+  return (
+    <div
+      data-slot="page-heading"
+      className={cn("flex min-w-0 items-center gap-3", className)}
+      {...props}
+    />
+  )
+}
+
+/** Decorative visual (icon, image, illustration), hidden from assistive tech. */
+function PageVisual({ className, ...props }: PageVisualProps) {
+  return (
+    <span
+      data-slot="page-visual"
+      aria-hidden="true"
+      className={cn("shrink-0", className)}
+      {...props}
+    />
+  )
+}
+
+/** The page's `<h1>`. Always render one, with `className="sr-only"` when a `Breadcrumbs` trail is the visible heading. */
+function PageTitle({ className, title, children, ...props }: PageTitleProps) {
+  return (
+    <h1
+      data-slot="page-title"
+      title={title ?? (typeof children === "string" ? children : undefined)}
+      className={cn("truncate text-lg font-semibold", className)}
+      {...props}
+    >
+      {children}
+    </h1>
+  )
+}
+
+/**
+ * A breadcrumb trail for the heading. Compose it from the shadcn `Breadcrumb*` items. It
+ * renders no heading, so give the page a `Page.Title` too (add `className="sr-only"` to
+ * keep it visually hidden).
+ */
+function PageBreadcrumbs({
   className,
   children,
   ...props
-}: PageProps) {
+}: PageBreadcrumbsProps) {
   return (
-    <div className={cn("flex h-full flex-col", className)} {...props}>
-      {hasHeader && (
-        <header className="flex flex-col gap-1 border-b px-6 py-4">
-          <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
-            <div className="flex min-w-0 items-center gap-3">
-              {visual && (
-                <span aria-hidden="true" className="shrink-0">
-                  {visual}
-                </span>
-              )}
-              {breadcrumbs ? (
-                <>
-                  <h1 className="sr-only">
-                    {breadcrumbs[breadcrumbs.length - 1]?.label}
-                  </h1>
-                  <Breadcrumb className="min-w-0">
-                    <BreadcrumbList className="flex-nowrap">
-                      {breadcrumbs.map((crumb, i) => {
-                        const isLast = i === breadcrumbs.length - 1
-                        return (
-                          <React.Fragment key={i}>
-                            {i > 0 && <BreadcrumbSeparator />}
-                            <BreadcrumbItem className="min-w-0">
-                              {isLast ? (
-                                <BreadcrumbPage
-                                  title={crumb.label}
-                                  className="truncate"
-                                >
-                                  {crumb.label}
-                                </BreadcrumbPage>
-                              ) : (
-                                <BreadcrumbLink
-                                  href={crumb.href}
-                                  render={crumb.render}
-                                  title={crumb.label}
-                                  className="truncate"
-                                >
-                                  {crumb.label}
-                                </BreadcrumbLink>
-                              )}
-                            </BreadcrumbItem>
-                          </React.Fragment>
-                        )
-                      })}
-                    </BreadcrumbList>
-                  </Breadcrumb>
-                </>
-              ) : (
-                <h1
-                  title={typeof title === "string" ? title : undefined}
-                  className="truncate text-lg font-semibold"
-                >
-                  {title}
-                </h1>
-              )}
-              {badge}
-            </div>
-            {actions && (
-              <div className="flex shrink-0 items-center gap-2">{actions}</div>
-            )}
-          </div>
-          {subtitle && (
-            <p
-              title={typeof subtitle === "string" ? subtitle : undefined}
-              className="truncate text-sm text-muted-foreground"
-            >
-              {subtitle}
-            </p>
-          )}
-        </header>
-      )}
-      <div className={cn("flex-1 overflow-auto", hasPadding && "p-6")}>
+    <Breadcrumb
+      data-slot="page-breadcrumbs"
+      className={cn("min-w-0", className)}
+      {...props}
+    >
+      <BreadcrumbList className="flex-nowrap [&_[data-slot=breadcrumb-item]]:min-w-0 [&_[data-slot=breadcrumb-link]]:truncate [&_[data-slot=breadcrumb-page]]:truncate">
         {children}
-      </div>
-    </div>
+      </BreadcrumbList>
+    </Breadcrumb>
   )
+}
+
+/** Right-aligned actions in the header. */
+function PageActions({ className, ...props }: PageActionsProps) {
+  return (
+    <div
+      data-slot="page-actions"
+      className={cn("ms-auto flex shrink-0 items-center gap-2", className)}
+      {...props}
+    />
+  )
+}
+
+/** Secondary line under the heading. Always renders on its own row, wherever it sits in the header. */
+function PageSubtitle({
+  className,
+  title,
+  children,
+  ...props
+}: PageSubtitleProps) {
+  return (
+    <p
+      data-slot="page-subtitle"
+      title={title ?? (typeof children === "string" ? children : undefined)}
+      className={cn(
+        "order-last w-full truncate text-sm text-muted-foreground",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </p>
+  )
+}
+
+/** The scrollable content area under the header. */
+function PageContent({
+  padded = false,
+  className,
+  ...props
+}: PageContentProps) {
+  return (
+    <div
+      data-slot="page-content"
+      className={cn("flex-1 overflow-auto", padded && "p-6", className)}
+      {...props}
+    />
+  )
+}
+
+const Page = {
+  Root: PageRoot,
+  Header: PageHeader,
+  Heading: PageHeading,
+  Visual: PageVisual,
+  Title: PageTitle,
+  Breadcrumbs: PageBreadcrumbs,
+  Actions: PageActions,
+  Subtitle: PageSubtitle,
+  Content: PageContent,
+}
+
+export {
+  Page,
+  PageRoot,
+  PageHeader,
+  PageHeading,
+  PageVisual,
+  PageTitle,
+  PageBreadcrumbs,
+  PageActions,
+  PageSubtitle,
+  PageContent,
 }

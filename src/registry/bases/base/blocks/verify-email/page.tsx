@@ -34,77 +34,81 @@ export function VerifyEmail() {
 
   if (verified) {
     return (
-      <Page hasHeader={false}>
-        <div className="flex min-h-full items-center justify-center p-6">
-          <div className="flex w-full max-w-sm flex-col items-center text-center">
-            <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
-              <HugeiconsIcon
-                icon={CheckmarkCircle02Icon}
-                strokeWidth={2}
-                className="size-5 text-primary"
-              />
+      <Page.Root>
+        <Page.Content>
+          <div className="flex min-h-full items-center justify-center p-6">
+            <div className="flex w-full max-w-sm flex-col items-center text-center">
+              <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
+                <HugeiconsIcon
+                  icon={CheckmarkCircle02Icon}
+                  strokeWidth={2}
+                  className="size-5 text-primary"
+                />
+              </div>
+              <h1 className="mt-4 text-sm font-medium">Email confirmed</h1>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Your address is verified — your account is ready.
+              </p>
+              <Button className="mt-4 w-full max-w-xs">Continue</Button>
             </div>
-            <h1 className="mt-4 text-sm font-medium">Email confirmed</h1>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Your address is verified — your account is ready.
-            </p>
-            <Button className="mt-4 w-full max-w-xs">Continue</Button>
           </div>
-        </div>
-      </Page>
+        </Page.Content>
+      </Page.Root>
     )
   }
 
   return (
-    <Page hasHeader={false}>
-      <div className="flex min-h-full items-center justify-center p-6">
-        <div className="flex w-full max-w-sm flex-col items-center text-center">
-          <div className="flex size-11 items-center justify-center rounded-full bg-muted">
-            <HugeiconsIcon
-              icon={MailOpenIcon}
-              strokeWidth={2}
-              className="size-5"
-            />
-          </div>
+    <Page.Root>
+      <Page.Content>
+        <div className="flex min-h-full items-center justify-center p-6">
+          <div className="flex w-full max-w-sm flex-col items-center text-center">
+            <div className="flex size-11 items-center justify-center rounded-full bg-muted">
+              <HugeiconsIcon
+                icon={MailOpenIcon}
+                strokeWidth={2}
+                className="size-5"
+              />
+            </div>
 
-          <h1 className="mt-4 text-sm font-medium">Confirm your email</h1>
-          <p className="mt-1 text-xs text-muted-foreground">
-            We sent a confirmation link to{" "}
-            <span className="font-medium text-foreground">{EMAIL}</span>. Open
-            it to activate your account.
-          </p>
+            <h1 className="mt-4 text-sm font-medium">Confirm your email</h1>
+            <p className="mt-1 text-xs text-muted-foreground">
+              We sent a confirmation link to{" "}
+              <span className="font-medium text-foreground">{EMAIL}</span>. Open
+              it to activate your account.
+            </p>
 
-          <div className="mt-6 flex w-full flex-col gap-2" aria-live="polite">
-            <Button
-              variant="outline"
-              className="w-full"
-              disabled={!canResend}
-              onClick={resend}
-            >
-              {canResend ? (
-                "Resend confirmation email"
-              ) : (
-                <>
-                  Resend in{" "}
-                  <span className="font-medium tabular-nums">
-                    {Math.ceil(remaining / 1000)}s
-                  </span>
-                </>
-              )}
-            </Button>
-            {/* ponytail: demo shortcut standing in for the emailed link click. */}
-            <Button
-              variant="ghost"
-              className="w-full"
-              onClick={() => setVerified(true)}
-            >
-              <span className="text-muted-foreground group-hover/button:text-foreground">
-                I&apos;ve verified my email
-              </span>
-            </Button>
+            <div className="mt-6 flex w-full flex-col gap-2" aria-live="polite">
+              <Button
+                variant="outline"
+                className="w-full"
+                disabled={!canResend}
+                onClick={resend}
+              >
+                {canResend ? (
+                  "Resend confirmation email"
+                ) : (
+                  <>
+                    Resend in{" "}
+                    <span className="font-medium tabular-nums">
+                      {Math.ceil(remaining / 1000)}s
+                    </span>
+                  </>
+                )}
+              </Button>
+              {/* ponytail: demo shortcut standing in for the emailed link click. */}
+              <Button
+                variant="ghost"
+                className="w-full"
+                onClick={() => setVerified(true)}
+              >
+                <span className="text-muted-foreground group-hover/button:text-foreground">
+                  I&apos;ve verified my email
+                </span>
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
-    </Page>
+      </Page.Content>
+    </Page.Root>
   )
 }

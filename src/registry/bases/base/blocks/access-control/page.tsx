@@ -188,230 +188,234 @@ export function AccessControl({ className }: { className?: string }) {
   }
 
   return (
-    <Page
-      title="Access Control"
-      subtitle="Decide what each role can see and change."
-      className={cn("@container overflow-hidden", className)}
-      actions={
-        <Button size="sm" onClick={() => setDialog({ open: true })}>
-          <HugeiconsIcon
-            icon={PlusSignIcon}
-            strokeWidth={2}
-            data-icon="inline-start"
-          />
-          Add role
-        </Button>
-      }
-    >
-      <div className="flex h-full min-h-0 flex-col @2xl:flex-row">
-        <nav
-          aria-label="Roles"
-          className="shrink-0 border-b @2xl:w-60 @2xl:overflow-y-auto @2xl:border-e @2xl:border-b-0"
-        >
-          <ul className="flex gap-1 overflow-x-auto p-2 @2xl:flex-col">
-            {roles.map((r) => {
-              const selected = r.id === role.id
-              const edited = editedRoles.includes(r)
-              return (
-                <li key={r.id} className="shrink-0">
-                  <button
-                    type="button"
-                    aria-current={selected || undefined}
-                    onClick={() => setRoleId(r.id)}
-                    className={cn(
-                      "flex w-full flex-col items-start gap-0.5 rounded-md px-3 py-2 text-start text-sm outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50",
-                      selected && "bg-muted"
-                    )}
-                  >
-                    <span className="flex items-center gap-1.5 font-medium whitespace-nowrap">
-                      {r.locked && (
-                        <>
-                          <HugeiconsIcon
-                            icon={LockIcon}
-                            strokeWidth={2}
-                            className="size-3.5 text-muted-foreground"
-                            aria-hidden="true"
-                          />
-                          <span className="sr-only">Locked:</span>
-                        </>
+    <Page.Root className={cn("@container overflow-hidden", className)}>
+      <Page.Header>
+        <Page.Heading>
+          <Page.Title>Access Control</Page.Title>
+        </Page.Heading>
+        <Page.Actions>
+          <Button size="sm" onClick={() => setDialog({ open: true })}>
+            <HugeiconsIcon
+              icon={PlusSignIcon}
+              strokeWidth={2}
+              data-icon="inline-start"
+            />
+            Add role
+          </Button>
+        </Page.Actions>
+        <Page.Subtitle>Decide what each role can see and change.</Page.Subtitle>
+      </Page.Header>
+      <Page.Content>
+        <div className="flex h-full min-h-0 flex-col @2xl:flex-row">
+          <nav
+            aria-label="Roles"
+            className="shrink-0 border-b @2xl:w-60 @2xl:overflow-y-auto @2xl:border-e @2xl:border-b-0"
+          >
+            <ul className="flex gap-1 overflow-x-auto p-2 @2xl:flex-col">
+              {roles.map((r) => {
+                const selected = r.id === role.id
+                const edited = editedRoles.includes(r)
+                return (
+                  <li key={r.id} className="shrink-0">
+                    <button
+                      type="button"
+                      aria-current={selected || undefined}
+                      onClick={() => setRoleId(r.id)}
+                      className={cn(
+                        "flex w-full flex-col items-start gap-0.5 rounded-md px-3 py-2 text-start text-sm outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50",
+                        selected && "bg-muted"
                       )}
-                      {r.name}
-                      {edited && (
-                        <span className="inline-flex items-center gap-1 text-xs font-normal text-muted-foreground">
-                          <span
-                            aria-hidden="true"
-                            className="size-1.5 rounded-full bg-primary"
-                          />
-                          Edited
-                        </span>
-                      )}
-                    </span>
-                    <span className="text-xs whitespace-nowrap text-muted-foreground tabular-nums">
-                      {plural(r.memberCount, "member")}
-                    </span>
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
-        </nav>
+                    >
+                      <span className="flex items-center gap-1.5 font-medium whitespace-nowrap">
+                        {r.locked && (
+                          <>
+                            <HugeiconsIcon
+                              icon={LockIcon}
+                              strokeWidth={2}
+                              className="size-3.5 text-muted-foreground"
+                              aria-hidden="true"
+                            />
+                            <span className="sr-only">Locked:</span>
+                          </>
+                        )}
+                        {r.name}
+                        {edited && (
+                          <span className="inline-flex items-center gap-1 text-xs font-normal text-muted-foreground">
+                            <span
+                              aria-hidden="true"
+                              className="size-1.5 rounded-full bg-primary"
+                            />
+                            Edited
+                          </span>
+                        )}
+                      </span>
+                      <span className="text-xs whitespace-nowrap text-muted-foreground tabular-nums">
+                        {plural(r.memberCount, "member")}
+                      </span>
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          </nav>
 
-        <section
-          aria-labelledby="role-heading"
-          className="@container flex min-h-0 min-w-0 flex-1 flex-col"
-        >
-          <div className="min-h-0 flex-1 overflow-auto">
-            <header className="flex items-start justify-between gap-4 px-4 pt-4 pb-3 @xl:px-6">
-              <div className="flex min-w-0 flex-col gap-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h2 id="role-heading" className="text-base font-semibold">
-                    {role.name}
-                  </h2>
-                  <Badge variant="outline">
-                    {role.builtIn ? "Built-in" : "Custom"}
-                  </Badge>
-                  <Badge variant="secondary">
-                    <span className="tabular-nums">
-                      {plural(role.memberCount, "member")}
-                    </span>
-                  </Badge>
+          <section
+            aria-labelledby="role-heading"
+            className="@container flex min-h-0 min-w-0 flex-1 flex-col"
+          >
+            <div className="min-h-0 flex-1 overflow-auto">
+              <header className="flex items-start justify-between gap-4 px-4 pt-4 pb-3 @xl:px-6">
+                <div className="flex min-w-0 flex-col gap-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 id="role-heading" className="text-base font-semibold">
+                      {role.name}
+                    </h2>
+                    <Badge variant="outline">
+                      {role.builtIn ? "Built-in" : "Custom"}
+                    </Badge>
+                    <Badge variant="secondary">
+                      <span className="tabular-nums">
+                        {plural(role.memberCount, "member")}
+                      </span>
+                    </Badge>
+                  </div>
+                  {role.description && (
+                    <p className="text-sm text-muted-foreground">
+                      {role.description}
+                    </p>
+                  )}
                 </div>
-                {role.description && (
-                  <p className="text-sm text-muted-foreground">
-                    {role.description}
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        aria-label={`More actions for ${role.name}`}
+                      >
+                        <HugeiconsIcon
+                          icon={MoreHorizontalIcon}
+                          strokeWidth={2}
+                        />
+                      </Button>
+                    }
+                  />
+                  <DropdownMenuContent align="end" className="w-44">
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem onClick={() => duplicate(role)}>
+                        <HugeiconsIcon icon={Copy01Icon} strokeWidth={2} />
+                        Duplicate
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem
+                        variant="destructive"
+                        disabled={role.builtIn}
+                        onClick={() => setDeleting(role)}
+                      >
+                        <HugeiconsIcon icon={Delete02Icon} strokeWidth={2} />
+                        Delete role
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </header>
+
+              <div className="px-4 pb-3 @xl:px-6">
+                {role.locked ? (
+                  <Alert role="note">
+                    <HugeiconsIcon icon={LockIcon} strokeWidth={2} />
+                    <AlertTitle>{role.name} always has full access</AlertTitle>
+                    <AlertDescription>
+                      This role can’t be edited. Duplicate it to make a custom
+                      role you can change.
+                    </AlertDescription>
+                    <AlertAction>
+                      <Button
+                        size="xs"
+                        variant="outline"
+                        onClick={() => duplicate(role)}
+                      >
+                        Duplicate
+                      </Button>
+                    </AlertAction>
+                  </Alert>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    Create, edit, and delete include view access. Use the column
+                    and “All” checkboxes to change many at once.
                   </p>
                 )}
               </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      aria-label={`More actions for ${role.name}`}
-                    >
-                      <HugeiconsIcon
-                        icon={MoreHorizontalIcon}
-                        strokeWidth={2}
-                      />
-                    </Button>
-                  }
-                />
-                <DropdownMenuContent align="end" className="w-44">
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem onClick={() => duplicate(role)}>
-                      <HugeiconsIcon icon={Copy01Icon} strokeWidth={2} />
-                      Duplicate
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem
-                      variant="destructive"
-                      disabled={role.builtIn}
-                      onClick={() => setDeleting(role)}
-                    >
-                      <HugeiconsIcon icon={Delete02Icon} strokeWidth={2} />
-                      Delete role
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </header>
 
-            <div className="px-4 pb-3 @xl:px-6">
-              {role.locked ? (
-                <Alert role="note">
-                  <HugeiconsIcon icon={LockIcon} strokeWidth={2} />
-                  <AlertTitle>{role.name} always has full access</AlertTitle>
-                  <AlertDescription>
-                    This role can’t be edited. Duplicate it to make a custom
-                    role you can change.
-                  </AlertDescription>
-                  <AlertAction>
-                    <Button
-                      size="xs"
-                      variant="outline"
-                      onClick={() => duplicate(role)}
-                    >
-                      Duplicate
-                    </Button>
-                  </AlertAction>
-                </Alert>
-              ) : (
-                <p className="text-xs text-muted-foreground">
-                  Create, edit, and delete include view access. Use the column
-                  and “All” checkboxes to change many at once.
+              <PermissionTable
+                permissions={grants}
+                changed={changedResources}
+                disabled={role.locked}
+                onToggle={toggle}
+                onToggleResource={toggleResource}
+                onToggleAction={toggleAction}
+              />
+            </div>
+
+            {changes > 0 && (
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t bg-background px-4 py-3 @xl:px-6">
+                <p className="me-auto text-sm">
+                  <span className="font-medium tabular-nums">
+                    {plural(changes, "unsaved change")}
+                  </span>
+                  <span className="text-muted-foreground">
+                    {" "}
+                    in {editedRoles.map((r) => r.name).join(", ")} · affects{" "}
+                    {plural(affectedMembers, "member")}
+                  </span>
                 </p>
-              )}
-            </div>
+                <Button variant="outline" size="sm" onClick={discard}>
+                  Discard
+                </Button>
+                <Button size="sm" onClick={save}>
+                  Save changes
+                </Button>
+              </div>
+            )}
+            <p role="status" className="sr-only">
+              {announcement}
+            </p>
+          </section>
+        </div>
 
-            <PermissionTable
-              permissions={grants}
-              changed={changedResources}
-              disabled={role.locked}
-              onToggle={toggle}
-              onToggleResource={toggleResource}
-              onToggleAction={toggleAction}
-            />
-          </div>
+        <AddRoleDialog
+          open={dialog.open}
+          onOpenChange={(open) => setDialog((prev) => ({ ...prev, open }))}
+          roles={roles}
+          initial={dialog.initial}
+          onSubmit={addRole}
+        />
 
-          {changes > 0 && (
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t bg-background px-4 py-3 @xl:px-6">
-              <p className="me-auto text-sm">
-                <span className="font-medium tabular-nums">
-                  {plural(changes, "unsaved change")}
-                </span>
-                <span className="text-muted-foreground">
-                  {" "}
-                  in {editedRoles.map((r) => r.name).join(", ")} · affects{" "}
-                  {plural(affectedMembers, "member")}
-                </span>
-              </p>
-              <Button variant="outline" size="sm" onClick={discard}>
-                Discard
-              </Button>
-              <Button size="sm" onClick={save}>
-                Save changes
-              </Button>
-            </div>
-          )}
-          <p role="status" className="sr-only">
-            {announcement}
-          </p>
-        </section>
-      </div>
-
-      <AddRoleDialog
-        open={dialog.open}
-        onOpenChange={(open) => setDialog((prev) => ({ ...prev, open }))}
-        roles={roles}
-        initial={dialog.initial}
-        onSubmit={addRole}
-      />
-
-      <AlertDialog
-        open={deleting !== null}
-        onOpenChange={(open) => !open && setDeleting(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete “{deleting?.name}”?</AlertDialogTitle>
-            <AlertDialogDescription>
-              {deleting && deleting.memberCount > 0
-                ? `${plural(deleting.memberCount, "member")} will lose this role’s permissions. `
-                : ""}
-              This can’t be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" onClick={confirmDelete}>
-              Delete role
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </Page>
+        <AlertDialog
+          open={deleting !== null}
+          onOpenChange={(open) => !open && setDeleting(null)}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete “{deleting?.name}”?</AlertDialogTitle>
+              <AlertDialogDescription>
+                {deleting && deleting.memberCount > 0
+                  ? `${plural(deleting.memberCount, "member")} will lose this role’s permissions. `
+                  : ""}
+                This can’t be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction variant="destructive" onClick={confirmDelete}>
+                Delete role
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </Page.Content>
+    </Page.Root>
   )
 }

@@ -84,125 +84,129 @@ export function TwoFactorSetup() {
 
   if (status === "success") {
     return (
-      <Page hasHeader={false}>
-        <div className="flex min-h-full items-center justify-center p-6">
-          <div className="flex w-full max-w-sm flex-col items-center text-center">
-            <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
-              <HugeiconsIcon
-                icon={Shield01Icon}
-                strokeWidth={2}
-                className="size-5 text-primary"
-              />
+      <Page.Root>
+        <Page.Content>
+          <div className="flex min-h-full items-center justify-center p-6">
+            <div className="flex w-full max-w-sm flex-col items-center text-center">
+              <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
+                <HugeiconsIcon
+                  icon={Shield01Icon}
+                  strokeWidth={2}
+                  className="size-5 text-primary"
+                />
+              </div>
+              <h1 className="mt-4 text-sm font-medium">Two-factor enabled</h1>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Your authenticator app is now set up. We&apos;ll ask for a code
+                at each sign-in.
+              </p>
+              <Button className="mt-4 w-full max-w-xs">
+                View recovery codes
+              </Button>
             </div>
-            <h1 className="mt-4 text-sm font-medium">Two-factor enabled</h1>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Your authenticator app is now set up. We&apos;ll ask for a code at
-              each sign-in.
-            </p>
-            <Button className="mt-4 w-full max-w-xs">
-              View recovery codes
-            </Button>
           </div>
-        </div>
-      </Page>
+        </Page.Content>
+      </Page.Root>
     )
   }
 
   const verifying = status === "verifying"
 
   return (
-    <Page hasHeader={false}>
-      <div className="flex min-h-full items-center justify-center p-6">
-        <Card className="w-full max-w-sm">
-          <CardHeader className="text-center">
-            <CardTitle>Set up two-factor auth</CardTitle>
-            <CardDescription>
-              Scan the QR code with your authenticator app, then enter the code
-              it shows
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col items-center gap-4">
-            <QrPlaceholder />
+    <Page.Root>
+      <Page.Content>
+        <div className="flex min-h-full items-center justify-center p-6">
+          <Card className="w-full max-w-sm">
+            <CardHeader className="text-center">
+              <CardTitle>Set up two-factor auth</CardTitle>
+              <CardDescription>
+                Scan the QR code with your authenticator app, then enter the
+                code it shows
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col items-center gap-4">
+              <QrPlaceholder />
 
-            <div className="w-full">
-              <p className="mb-1 text-center text-xs text-muted-foreground">
-                Or enter this key manually
-              </p>
-              <button
-                type="button"
-                onClick={copySecret}
-                className="flex w-full items-center justify-center gap-2 rounded-md border bg-muted/50 px-3 py-2 font-mono text-sm tracking-wider hover:bg-muted"
-              >
-                {SECRET}
-                {copied ? (
-                  <HugeiconsIcon
-                    icon={Tick02Icon}
-                    strokeWidth={2}
-                    className="size-3.5 text-primary"
-                  />
-                ) : (
-                  <HugeiconsIcon
-                    icon={Copy01Icon}
-                    strokeWidth={2}
-                    className="size-3.5 text-muted-foreground"
-                  />
-                )}
-                <span className="sr-only">Copy setup key</span>
-              </button>
-            </div>
-
-            <div className="flex w-full flex-col items-center gap-2">
-              <p className="text-xs text-muted-foreground">
-                Enter the 6-digit code
-              </p>
-              <InputOTP
-                maxLength={6}
-                value={code}
-                disabled={verifying}
-                onChange={onChange}
-                aria-invalid={status === "error"}
-                aria-label="Authenticator code"
-              >
-                <InputOTPGroup>
-                  {[0, 1, 2, 3, 4, 5].map((i) => (
-                    <InputOTPSlot
-                      key={i}
-                      index={i}
-                      aria-invalid={status === "error"}
-                    />
-                  ))}
-                </InputOTPGroup>
-              </InputOTP>
-
-              <div className="h-5 text-sm" aria-live="polite">
-                {verifying && (
-                  <span className="flex items-center gap-2 text-muted-foreground">
+              <div className="w-full">
+                <p className="mb-1 text-center text-xs text-muted-foreground">
+                  Or enter this key manually
+                </p>
+                <button
+                  type="button"
+                  onClick={copySecret}
+                  className="flex w-full items-center justify-center gap-2 rounded-md border bg-muted/50 px-3 py-2 font-mono text-sm tracking-wider hover:bg-muted"
+                >
+                  {SECRET}
+                  {copied ? (
                     <HugeiconsIcon
-                      icon={Loading03Icon}
+                      icon={Tick02Icon}
                       strokeWidth={2}
-                      className="size-4 animate-spin"
+                      className="size-3.5 text-primary"
                     />
-                    Verifying…
-                  </span>
-                )}
-                {status === "error" && (
-                  <span
-                    className="flex items-center gap-2 text-destructive"
-                    role="alert"
-                  >
+                  ) : (
                     <HugeiconsIcon
-                      icon={Alert01Icon}
+                      icon={Copy01Icon}
                       strokeWidth={2}
-                      className="size-4"
+                      className="size-3.5 text-muted-foreground"
                     />
-                    That code didn&apos;t match. Try again.
-                  </span>
-                )}
+                  )}
+                  <span className="sr-only">Copy setup key</span>
+                </button>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </Page>
+
+              <div className="flex w-full flex-col items-center gap-2">
+                <p className="text-xs text-muted-foreground">
+                  Enter the 6-digit code
+                </p>
+                <InputOTP
+                  maxLength={6}
+                  value={code}
+                  disabled={verifying}
+                  onChange={onChange}
+                  aria-invalid={status === "error"}
+                  aria-label="Authenticator code"
+                >
+                  <InputOTPGroup>
+                    {[0, 1, 2, 3, 4, 5].map((i) => (
+                      <InputOTPSlot
+                        key={i}
+                        index={i}
+                        aria-invalid={status === "error"}
+                      />
+                    ))}
+                  </InputOTPGroup>
+                </InputOTP>
+
+                <div className="h-5 text-sm" aria-live="polite">
+                  {verifying && (
+                    <span className="flex items-center gap-2 text-muted-foreground">
+                      <HugeiconsIcon
+                        icon={Loading03Icon}
+                        strokeWidth={2}
+                        className="size-4 animate-spin"
+                      />
+                      Verifying…
+                    </span>
+                  )}
+                  {status === "error" && (
+                    <span
+                      className="flex items-center gap-2 text-destructive"
+                      role="alert"
+                    >
+                      <HugeiconsIcon
+                        icon={Alert01Icon}
+                        strokeWidth={2}
+                        className="size-4"
+                      />
+                      That code didn&apos;t match. Try again.
+                    </span>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </Page.Content>
+    </Page.Root>
   )
 }

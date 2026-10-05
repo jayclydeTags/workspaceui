@@ -63,123 +63,135 @@ export function ResetPassword() {
 
   if (!TOKEN_VALID) {
     return (
-      <Page hasHeader={false}>
-        <div className="flex min-h-full items-center justify-center p-6">
-          <div className="flex w-full max-w-sm flex-col items-center text-center">
-            <div className="flex size-11 items-center justify-center rounded-full bg-destructive/10">
-              <HugeiconsIcon
-                icon={Link01Icon}
-                strokeWidth={2}
-                className="size-5 text-destructive"
-              />
+      <Page.Root>
+        <Page.Content>
+          <div className="flex min-h-full items-center justify-center p-6">
+            <div className="flex w-full max-w-sm flex-col items-center text-center">
+              <div className="flex size-11 items-center justify-center rounded-full bg-destructive/10">
+                <HugeiconsIcon
+                  icon={Link01Icon}
+                  strokeWidth={2}
+                  className="size-5 text-destructive"
+                />
+              </div>
+              <h1 className="mt-4 text-sm font-medium" role="alert">
+                Reset link expired
+              </h1>
+              <p className="mt-1 text-xs text-muted-foreground">
+                This password-reset link is no longer valid. Request a new one
+                to continue.
+              </p>
+              <Button className="mt-4 w-full max-w-xs">
+                Request a new link
+              </Button>
             </div>
-            <h1 className="mt-4 text-sm font-medium" role="alert">
-              Reset link expired
-            </h1>
-            <p className="mt-1 text-xs text-muted-foreground">
-              This password-reset link is no longer valid. Request a new one to
-              continue.
-            </p>
-            <Button className="mt-4 w-full max-w-xs">Request a new link</Button>
           </div>
-        </div>
-      </Page>
+        </Page.Content>
+      </Page.Root>
     )
   }
 
   if (done) {
     return (
-      <Page hasHeader={false}>
-        <div className="flex min-h-full items-center justify-center p-6">
-          <div className="flex w-full max-w-sm flex-col items-center text-center">
-            <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
-              <HugeiconsIcon
-                icon={CheckmarkCircle02Icon}
-                strokeWidth={2}
-                className="size-5 text-primary"
-              />
+      <Page.Root>
+        <Page.Content>
+          <div className="flex min-h-full items-center justify-center p-6">
+            <div className="flex w-full max-w-sm flex-col items-center text-center">
+              <div className="flex size-11 items-center justify-center rounded-full bg-primary/10">
+                <HugeiconsIcon
+                  icon={CheckmarkCircle02Icon}
+                  strokeWidth={2}
+                  className="size-5 text-primary"
+                />
+              </div>
+              <h1 className="mt-4 text-sm font-medium">Password updated</h1>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Your password has been changed. You can now sign in with it.
+              </p>
+              <Button className="mt-4 w-full max-w-xs">
+                Continue to sign in
+              </Button>
             </div>
-            <h1 className="mt-4 text-sm font-medium">Password updated</h1>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Your password has been changed. You can now sign in with it.
-            </p>
-            <Button className="mt-4 w-full max-w-xs">
-              Continue to sign in
-            </Button>
           </div>
-        </div>
-      </Page>
+        </Page.Content>
+      </Page.Root>
     )
   }
 
   return (
-    <Page hasHeader={false}>
-      <div className="flex min-h-full items-center justify-center p-6">
-        <Card className="w-full max-w-sm">
-          <CardHeader className="text-center">
-            <CardTitle>Set a new password</CardTitle>
-            <CardDescription>
-              Choose a strong password you haven&apos;t used before
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={onSubmit} noValidate>
-              <FieldGroup>
-                <Field data-invalid={!!errors.password}>
-                  <FieldLabel htmlFor="rp-password">New password</FieldLabel>
-                  <PasswordInput
-                    id="rp-password"
-                    autoComplete="new-password"
-                    showStrength
-                    showChecklist
-                    value={password}
-                    disabled={submitting}
-                    aria-invalid={!!errors.password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  {errors.password && (
-                    <FieldError>{errors.password}</FieldError>
-                  )}
-                </Field>
-
-                <Field data-invalid={!!errors.confirm}>
-                  <FieldLabel htmlFor="rp-confirm">Confirm password</FieldLabel>
-                  <PasswordInput
-                    id="rp-confirm"
-                    autoComplete="new-password"
-                    value={confirm}
-                    disabled={submitting}
-                    aria-invalid={!!errors.confirm}
-                    onChange={(e) => setConfirm(e.target.value)}
-                  />
-                  {errors.confirm && <FieldError>{errors.confirm}</FieldError>}
-                </Field>
-
-                <Field>
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={submitting}
-                  >
-                    {submitting && (
-                      <HugeiconsIcon
-                        icon={Loading03Icon}
-                        strokeWidth={2}
-                        data-icon="inline-start"
-                        className="animate-spin"
-                      />
+    <Page.Root>
+      <Page.Content>
+        <div className="flex min-h-full items-center justify-center p-6">
+          <Card className="w-full max-w-sm">
+            <CardHeader className="text-center">
+              <CardTitle>Set a new password</CardTitle>
+              <CardDescription>
+                Choose a strong password you haven&apos;t used before
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={onSubmit} noValidate>
+                <FieldGroup>
+                  <Field data-invalid={!!errors.password}>
+                    <FieldLabel htmlFor="rp-password">New password</FieldLabel>
+                    <PasswordInput
+                      id="rp-password"
+                      autoComplete="new-password"
+                      showStrength
+                      showChecklist
+                      value={password}
+                      disabled={submitting}
+                      aria-invalid={!!errors.password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                    {errors.password && (
+                      <FieldError>{errors.password}</FieldError>
                     )}
-                    {submitting ? "Updating…" : "Update password"}
-                  </Button>
-                  <FieldDescription className="text-center">
-                    Passwords are encrypted and never shared.
-                  </FieldDescription>
-                </Field>
-              </FieldGroup>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
-    </Page>
+                  </Field>
+
+                  <Field data-invalid={!!errors.confirm}>
+                    <FieldLabel htmlFor="rp-confirm">
+                      Confirm password
+                    </FieldLabel>
+                    <PasswordInput
+                      id="rp-confirm"
+                      autoComplete="new-password"
+                      value={confirm}
+                      disabled={submitting}
+                      aria-invalid={!!errors.confirm}
+                      onChange={(e) => setConfirm(e.target.value)}
+                    />
+                    {errors.confirm && (
+                      <FieldError>{errors.confirm}</FieldError>
+                    )}
+                  </Field>
+
+                  <Field>
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      disabled={submitting}
+                    >
+                      {submitting && (
+                        <HugeiconsIcon
+                          icon={Loading03Icon}
+                          strokeWidth={2}
+                          data-icon="inline-start"
+                          className="animate-spin"
+                        />
+                      )}
+                      {submitting ? "Updating…" : "Update password"}
+                    </Button>
+                    <FieldDescription className="text-center">
+                      Passwords are encrypted and never shared.
+                    </FieldDescription>
+                  </Field>
+                </FieldGroup>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </Page.Content>
+    </Page.Root>
   )
 }

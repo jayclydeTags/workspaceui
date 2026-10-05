@@ -48,68 +48,72 @@ export function Settings({ className }: { className?: string }) {
   const section = SETTINGS_SECTIONS.find((s) => s.id === activeId)!
 
   return (
-    <Page
-      title="Settings"
-      subtitle={section.label}
-      className={cn("@container overflow-hidden", className)}
-    >
-      <div className="flex h-full @max-md:flex-col">
-        <SettingsNav
-          activeId={activeId}
-          onChange={(id) => {
-            setActiveId(id)
-            setSaved(false)
-          }}
-        />
+    <Page.Root className={cn("@container overflow-hidden", className)}>
+      <Page.Header>
+        <Page.Heading>
+          <Page.Title>Settings</Page.Title>
+        </Page.Heading>
+        <Page.Subtitle>{section.label}</Page.Subtitle>
+      </Page.Header>
+      <Page.Content>
+        <div className="flex h-full @max-md:flex-col">
+          <SettingsNav
+            activeId={activeId}
+            onChange={(id) => {
+              setActiveId(id)
+              setSaved(false)
+            }}
+          />
 
-        <div className="flex min-h-0 flex-1 flex-col">
-          <div className="flex-1 overflow-y-auto p-6">
-            {activeId === "general" && (
-              <GeneralSection
-                profile={profile}
-                onChange={withDirty((patch) =>
-                  setProfile((p) => ({ ...p, ...patch }))
-                )}
-              />
-            )}
-            {activeId === "notifications" && (
-              <NotificationsSection
-                prefs={prefs}
-                onChange={withDirty((patch) =>
-                  setPrefs((p) => ({ ...p, ...patch }))
-                )}
-              />
-            )}
-            {activeId === "billing" && (
-              <BillingSection
-                billing={billing}
-                onChange={withDirty((patch) =>
-                  setBilling((b) => ({ ...b, ...patch }))
-                )}
-              />
-            )}
-            {activeId === "security" && (
-              <SecuritySection
-                twoFactorEnabled={twoFactorEnabled}
-                onToggleTwoFactor={withDirty(setTwoFactorEnabled)}
-                sessions={sessions}
-                onRevoke={(id) =>
-                  setSessions((prev) => prev.filter((s) => s.id !== id))
-                }
-              />
-            )}
-          </div>
+          <div className="flex min-h-0 flex-1 flex-col">
+            <div className="flex-1 overflow-y-auto p-6">
+              {activeId === "general" && (
+                <GeneralSection
+                  profile={profile}
+                  onChange={withDirty((patch) =>
+                    setProfile((p) => ({ ...p, ...patch }))
+                  )}
+                />
+              )}
+              {activeId === "notifications" && (
+                <NotificationsSection
+                  prefs={prefs}
+                  onChange={withDirty((patch) =>
+                    setPrefs((p) => ({ ...p, ...patch }))
+                  )}
+                />
+              )}
+              {activeId === "billing" && (
+                <BillingSection
+                  billing={billing}
+                  onChange={withDirty((patch) =>
+                    setBilling((b) => ({ ...b, ...patch }))
+                  )}
+                />
+              )}
+              {activeId === "security" && (
+                <SecuritySection
+                  twoFactorEnabled={twoFactorEnabled}
+                  onToggleTwoFactor={withDirty(setTwoFactorEnabled)}
+                  sessions={sessions}
+                  onRevoke={(id) =>
+                    setSessions((prev) => prev.filter((s) => s.id !== id))
+                  }
+                />
+              )}
+            </div>
 
-          <div className="flex shrink-0 items-center gap-3 border-t border-border px-6 py-3">
-            <Button size="sm" onClick={() => setSaved(true)}>
-              Save changes
-            </Button>
-            {saved && (
-              <span className="text-sm text-muted-foreground">Saved</span>
-            )}
+            <div className="flex shrink-0 items-center gap-3 border-t border-border px-6 py-3">
+              <Button size="sm" onClick={() => setSaved(true)}>
+                Save changes
+              </Button>
+              {saved && (
+                <span className="text-sm text-muted-foreground">Saved</span>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </Page>
+      </Page.Content>
+    </Page.Root>
   )
 }

@@ -31,71 +31,73 @@ function initials(name: string) {
 
 export function ForbiddenWorkspace() {
   return (
-    <Page hasHeader={false}>
-      <div className="flex min-h-full items-center justify-center p-6">
-        <div className="flex w-full max-w-sm flex-col items-center text-center">
-          <div className="flex size-11 items-center justify-center rounded-full bg-destructive/10">
-            <HugeiconsIcon
-              icon={ShieldBanIcon}
-              strokeWidth={2}
-              className="size-5 text-destructive"
-            />
-          </div>
-
-          <h1 className="mt-4 text-sm font-medium" role="alert">
-            You&apos;re not a member of {BLOCKED}
-          </h1>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Your account doesn&apos;t have access to this workspace. Switch to
-            one you belong to, or ask an admin to invite you.
-          </p>
-
-          <Card size="sm" className="mt-4 w-full py-0">
-            <CardContent className="flex flex-col gap-1 p-1.5">
-              {WORKSPACES.map((ws) => (
-                <button
-                  key={ws.id}
-                  type="button"
-                  className="flex items-center gap-3 rounded-md px-2 py-2 text-left hover:bg-muted"
-                >
-                  <Avatar className="size-8 rounded-md">
-                    <AvatarFallback className="rounded-md">
-                      <span className="text-xs">{initials(ws.name)}</span>
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">{ws.name}</p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {ws.role}
-                    </p>
-                  </div>
-                  <HugeiconsIcon
-                    icon={ArrowRight01Icon}
-                    strokeWidth={2}
-                    className="size-4 shrink-0 text-muted-foreground"
-                  />
-                </button>
-              ))}
-            </CardContent>
-          </Card>
-
-          <div className="mt-4 flex w-full flex-col gap-2">
-            <Button variant="outline" className="w-full">
+    <Page.Root>
+      <Page.Content>
+        <div className="flex min-h-full items-center justify-center p-6">
+          <div className="flex w-full max-w-sm flex-col items-center text-center">
+            <div className="flex size-11 items-center justify-center rounded-full bg-destructive/10">
               <HugeiconsIcon
-                icon={Building02Icon}
+                icon={ShieldBanIcon}
                 strokeWidth={2}
-                data-icon="inline-start"
+                className="size-5 text-destructive"
               />
-              Request access to {BLOCKED}
-            </Button>
-            <Button variant="ghost" className="w-full">
-              <span className="text-muted-foreground group-hover/button:text-foreground">
-                Sign in with a different account
-              </span>
-            </Button>
+            </div>
+
+            <h1 className="mt-4 text-sm font-medium" role="alert">
+              You&apos;re not a member of {BLOCKED}
+            </h1>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Your account doesn&apos;t have access to this workspace. Switch to
+              one you belong to, or ask an admin to invite you.
+            </p>
+
+            <Card size="sm" className="mt-4 w-full py-0">
+              <CardContent className="flex flex-col gap-1 p-1.5">
+                {WORKSPACES.map((ws) => (
+                  <button
+                    key={ws.id}
+                    type="button"
+                    className="flex items-center gap-3 rounded-md px-2 py-2 text-left hover:bg-muted"
+                  >
+                    <Avatar className="size-8 rounded-md">
+                      <AvatarFallback className="rounded-md">
+                        <span className="text-xs">{initials(ws.name)}</span>
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium">{ws.name}</p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {ws.role}
+                      </p>
+                    </div>
+                    <HugeiconsIcon
+                      icon={ArrowRight01Icon}
+                      strokeWidth={2}
+                      className="size-4 shrink-0 text-muted-foreground"
+                    />
+                  </button>
+                ))}
+              </CardContent>
+            </Card>
+
+            <div className="mt-4 flex w-full flex-col gap-2">
+              <Button variant="outline" className="w-full">
+                <HugeiconsIcon
+                  icon={Building02Icon}
+                  strokeWidth={2}
+                  data-icon="inline-start"
+                />
+                Request access to {BLOCKED}
+              </Button>
+              <Button variant="ghost" className="w-full">
+                <span className="text-muted-foreground group-hover/button:text-foreground">
+                  Sign in with a different account
+                </span>
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
-    </Page>
+      </Page.Content>
+    </Page.Root>
   )
 }

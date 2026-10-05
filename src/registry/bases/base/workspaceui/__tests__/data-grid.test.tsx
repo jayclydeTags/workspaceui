@@ -15,6 +15,7 @@ import {
   type SortingState,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
@@ -37,11 +38,44 @@ import {
 import { resizeTo } from "@/test/setup"
 
 import {
-  DataGrid,
+  DataGrid as DataGridParts,
+  DataGridColumns,
+  DataGridFilter,
+  DataGridFilterChips,
+  DataGridOptions,
+  DataGridPagination,
+  DataGridRoot,
+  DataGridSearch,
+  DataGridTable,
+  DataGridToolbar,
+  DataGridToolbarActions,
   getDataGridRowDefaults,
   type DataGridColumnLayout,
+  type DataGridProps,
 } from "../data-grid"
-import "../data-grid-types"
+
+// The default layout, composed from the parts, so tests read like a consumer's
+// screen: toolbar, rows, pagination.
+function DataGrid<TData>({
+  emptyState,
+  ...rootProps
+}: Omit<DataGridProps<TData>, "children"> & { emptyState?: React.ReactNode }) {
+  return (
+    <DataGridParts.Root {...rootProps}>
+      <DataGridParts.Toolbar>
+        <DataGridParts.Search />
+        <DataGridParts.ToolbarActions>
+          <DataGridParts.Filter />
+          <DataGridParts.Columns />
+          <DataGridParts.Options />
+        </DataGridParts.ToolbarActions>
+      </DataGridParts.Toolbar>
+      <DataGridParts.FilterChips />
+      <DataGridParts.Table emptyState={emptyState} />
+      <DataGridParts.Pagination />
+    </DataGridParts.Root>
+  )
+}
 
 interface Person {
   id: string
@@ -93,6 +127,54 @@ function Harness({
       onRowDelete={onRowDelete}
     />
   )
+}
+
+interface Item {
+  id: string
+  title: string
+  qty: number
+}
+
+// Columns carrying a `meta.validate` hook, to test it through the real editor.
+function ValidatedHarness({
+  onCellEdit,
+  validateTitle,
+  validateQty,
+}: {
+  onCellEdit: OnCellEdit
+  validateTitle?: (value: string, row: Item) => string | null | undefined
+  validateQty?: (value: number, row: Item) => string | null | undefined
+}) {
+  const data: Item[] = [{ id: "1", title: "Widget", qty: 3 }]
+  const validatedColumns: ColumnDef<Item>[] = [
+    {
+      accessorKey: "title",
+      header: "Title",
+      meta: {
+        type: "text",
+        validate:
+          validateTitle &&
+          ((value, row) => validateTitle(value as string, row)),
+      },
+    },
+    {
+      accessorKey: "qty",
+      header: "Qty",
+      meta: {
+        type: "number",
+        validate:
+          validateQty && ((value, row) => validateQty(value as number, row)),
+      },
+    },
+  ]
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const table = useReactTable({
+    data,
+    columns: validatedColumns,
+    getCoreRowModel: getCoreRowModel(),
+    getRowId: (row) => row.id,
+  })
+  return <DataGrid table={table} onCellEdit={onCellEdit} />
 }
 
 // A 3-row fixture so range selection (anchor to a target two rows away) is
@@ -715,6 +797,174 @@ function goNarrowGrid(container: HTMLElement, width = 320) {
   act(() => resizeTo(gridRoot(container), width))
 }
 
+// Free composition: only the parts a screen asks for render, and each part
+// hides itself when its feature isn't wired on the table.
+function PartsHarness({
+  filtered = true,
+  paginated = false,
+  children,
+}: {
+  filtered?: boolean
+  paginated?: boolean
+  children: React.ReactNode
+}) {
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const table = useReactTable({
+    data: defaultData,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: filtered ? getFilteredRowModel() : undefined,
+    getPaginationRowModel: paginated ? getPaginationRowModel() : undefined,
+    getRowId: (row) => row.id,
+  })
+  return (
+    <DataGridParts.Root table={table} onCellEdit={vi.fn()}>
+      {children}
+    </DataGridParts.Root>
+  )
+}
+
+describe("DataGrid compound parts", () => {
+  it("exposes every part on the DataGrid namespace and as a flat export", () => {
+    expect(DataGridParts).toEqual({
+      Root: DataGridRoot,
+      Toolbar: DataGridToolbar,
+      ToolbarActions: DataGridToolbarActions,
+      Search: DataGridSearch,
+      Filter: DataGridFilter,
+      Columns: DataGridColumns,
+      Options: DataGridOptions,
+      FilterChips: DataGridFilterChips,
+      Table: DataGridTable,
+      Pagination: DataGridPagination,
+    })
+  })
+
+  it.each([
+    ["Table", DataGridParts.Table],
+    ["Search", DataGridParts.Search],
+    ["Pagination", DataGridParts.Pagination],
+    ["Columns", DataGridParts.Columns],
+  ])(
+    "throws a clear error when <DataGrid.%s> is used outside Root",
+    (_, Part) => {
+      const error = vi.spyOn(console, "error").mockImplementation(() => {})
+      expect(() => render(<Part />)).toThrow(
+        "DataGrid parts must be used within <DataGrid.Root>"
+      )
+      error.mockRestore()
+    }
+  )
+
+  it("renders just the rows when only the Table part is composed", () => {
+    render(
+      <PartsHarness>
+        <DataGridParts.Table />
+      </PartsHarness>
+    )
+
+    expect(screen.getByRole("grid")).toBeInTheDocument()
+    expect(screen.queryByRole("button", { name: "Columns" })).toBeNull()
+    expect(screen.queryByRole("textbox", { name: "Search" })).toBeNull()
+  })
+
+  it("lets a screen pick its toolbar controls", () => {
+    render(
+      <PartsHarness>
+        <DataGridParts.Toolbar>
+          <DataGridParts.Search />
+        </DataGridParts.Toolbar>
+        <DataGridParts.Table />
+      </PartsHarness>
+    )
+
+    expect(screen.getByRole("textbox", { name: "Search" })).toBeInTheDocument()
+    expect(screen.queryByRole("button", { name: "Columns" })).toBeNull()
+  })
+
+  it("renders the Columns control only when composed", () => {
+    render(
+      <PartsHarness>
+        <DataGridParts.ToolbarActions>
+          <DataGridParts.Columns />
+        </DataGridParts.ToolbarActions>
+        <DataGridParts.Table />
+      </PartsHarness>
+    )
+    expect(screen.getByRole("button", { name: "Columns" })).toBeInTheDocument()
+  })
+
+  it("hides Search when the table has no filtered row model", () => {
+    render(
+      <PartsHarness filtered={false}>
+        <DataGridParts.Search />
+        <DataGridParts.Table />
+      </PartsHarness>
+    )
+    expect(screen.queryByRole("textbox", { name: "Search" })).toBeNull()
+  })
+
+  it("shows Pagination only when the table has a pagination row model", () => {
+    const { rerender } = render(
+      <PartsHarness>
+        <DataGridParts.Table />
+        <DataGridParts.Pagination />
+      </PartsHarness>
+    )
+    expect(screen.queryByText(/rows per page/i)).toBeNull()
+
+    rerender(
+      <PartsHarness paginated>
+        <DataGridParts.Table />
+        <DataGridParts.Pagination />
+      </PartsHarness>
+    )
+    expect(screen.getByText(/rows per page/i)).toBeInTheDocument()
+  })
+
+  it("renders a custom emptyState on the Table part", () => {
+    function Empty() {
+      // eslint-disable-next-line react-hooks/incompatible-library
+      const table = useReactTable({
+        data: [] as Person[],
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+      })
+      return (
+        <DataGridParts.Root table={table} onCellEdit={vi.fn()}>
+          <DataGridParts.Table emptyState={<p>Nothing here yet</p>} />
+        </DataGridParts.Root>
+      )
+    }
+    render(<Empty />)
+    expect(screen.getByText("Nothing here yet")).toBeInTheDocument()
+  })
+
+  it("applies className and data-slot to the Root wrapper", () => {
+    function Styled() {
+      // eslint-disable-next-line react-hooks/incompatible-library
+      const table = useReactTable({
+        data: defaultData,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        getRowId: (row) => row.id,
+      })
+      return (
+        <DataGridParts.Root
+          table={table}
+          onCellEdit={vi.fn()}
+          className="custom-root"
+        >
+          <DataGridParts.Table />
+        </DataGridParts.Root>
+      )
+    }
+    const { container } = render(<Styled />)
+    const root = container.querySelector('[data-slot="data-grid"]')
+    expect(root).toHaveClass("custom-root")
+  })
+})
+
 describe("DataGrid", () => {
   describe("rendering", () => {
     it("exposes role=grid with row and gridcell semantics", () => {
@@ -1148,6 +1398,93 @@ describe("DataGrid", () => {
     })
   })
 
+  describe("column validate hook", () => {
+    it("blocks the commit and shows the hook's message on the cell", async () => {
+      const user = userEvent.setup()
+      const onCellEdit = vi.fn()
+      render(
+        <ValidatedHarness
+          onCellEdit={onCellEdit}
+          validateTitle={(value) =>
+            value.length > 5 ? "Max 5 characters" : null
+          }
+        />
+      )
+      const cell = screen.getAllByRole("gridcell")[0]!
+      await user.click(cell)
+      const input = within(cell).getByRole("textbox")
+      await user.clear(input)
+      await user.type(input, "Gadgets")
+
+      expect(input).toHaveAttribute("aria-invalid", "true")
+      expect(
+        document.getElementById(input.getAttribute("aria-describedby")!)
+      ).toHaveTextContent("Max 5 characters")
+
+      await user.keyboard("{Enter}")
+      expect(onCellEdit).not.toHaveBeenCalled()
+      expect(input).toHaveFocus()
+    })
+
+    it("commits once the hook stops complaining", async () => {
+      const user = userEvent.setup()
+      const onCellEdit = vi.fn()
+      render(
+        <ValidatedHarness
+          onCellEdit={onCellEdit}
+          validateTitle={(value) =>
+            value.length > 5 ? "Max 5 characters" : undefined
+          }
+        />
+      )
+      const cell = screen.getAllByRole("gridcell")[0]!
+      await user.click(cell)
+      const input = within(cell).getByRole("textbox")
+      await user.clear(input)
+      await user.type(input, "Gizmo")
+      await user.keyboard("{Enter}")
+
+      expect(onCellEdit).toHaveBeenCalledWith("1", "title", "Gizmo")
+    })
+
+    it("gives the hook the coerced value and the row's original data", async () => {
+      const user = userEvent.setup()
+      const validateQty = vi.fn().mockReturnValue(null)
+      render(
+        <ValidatedHarness onCellEdit={vi.fn()} validateQty={validateQty} />
+      )
+      const cell = screen.getAllByRole("gridcell")[1]!
+      await user.click(cell)
+      const input = within(cell).getByRole("spinbutton")
+      await user.clear(input)
+      await user.type(input, "12")
+
+      expect(validateQty).toHaveBeenLastCalledWith(12, {
+        id: "1",
+        title: "Widget",
+        qty: 3,
+      })
+    })
+
+    it("runs the built-in checks first, so the hook never sees an empty value", async () => {
+      const user = userEvent.setup()
+      const validateTitle = vi.fn().mockReturnValue("custom")
+      render(
+        <ValidatedHarness onCellEdit={vi.fn()} validateTitle={validateTitle} />
+      )
+      const cell = screen.getAllByRole("gridcell")[0]!
+      await user.click(cell)
+      const input = within(cell).getByRole("textbox")
+      validateTitle.mockClear()
+      await user.clear(input)
+
+      expect(
+        document.getElementById(input.getAttribute("aria-describedby")!)
+      ).toHaveTextContent("Required")
+      expect(validateTitle).not.toHaveBeenCalled()
+    })
+  })
+
   describe("async commit contract", () => {
     it("shows a spinner and disables the control while the commit is pending", async () => {
       const user = userEvent.setup()
@@ -1353,6 +1690,74 @@ describe("DataGrid", () => {
     })
   })
 
+  describe("row add pending and error state", () => {
+    it("disables the add controls while the add is in flight, then re-enables them", async () => {
+      const user = userEvent.setup()
+      const pending = deferred<void>()
+      render(<Harness onCellEdit={vi.fn()} onRowAdd={() => pending.promise} />)
+
+      await user.click(screen.getByRole("button", { name: "New row" }))
+
+      const add = screen.getByRole("button", { name: "New row" })
+      expect(add).toBeDisabled()
+      expect(add).toHaveAttribute("aria-busy", "true")
+      expect(
+        screen.getByRole("button", { name: "Insert row after row 1" })
+      ).toBeDisabled()
+
+      await act(async () => pending.resolve())
+      expect(screen.getByRole("button", { name: "New row" })).toBeEnabled()
+      expect(screen.getByRole("button", { name: "New row" })).toHaveAttribute(
+        "aria-busy",
+        "false"
+      )
+    })
+
+    it("shows the rejection's message and clears it on the next attempt", async () => {
+      const user = userEvent.setup()
+      const onRowAdd = vi
+        .fn()
+        .mockRejectedValueOnce(new Error("Quota reached"))
+        .mockResolvedValue(undefined)
+      render(<Harness onCellEdit={vi.fn()} onRowAdd={onRowAdd} />)
+
+      await user.click(screen.getByRole("button", { name: "New row" }))
+      expect(await screen.findByRole("alert")).toHaveTextContent(
+        "Quota reached"
+      )
+
+      await user.click(screen.getByRole("button", { name: "New row" }))
+      await waitFor(() => expect(screen.queryByRole("alert")).toBeNull())
+    })
+
+    it("falls back to a generic message for a non-Error rejection", async () => {
+      const user = userEvent.setup()
+      render(
+        <Harness onCellEdit={vi.fn()} onRowAdd={() => Promise.reject("nope")} />
+      )
+
+      await user.click(screen.getByRole("button", { name: "New row" }))
+      expect(await screen.findByRole("alert")).toHaveTextContent(
+        "Couldn't add the row."
+      )
+    })
+
+    it("reports a synchronous throw the same way", async () => {
+      const user = userEvent.setup()
+      render(
+        <Harness
+          onCellEdit={vi.fn()}
+          onRowAdd={() => {
+            throw new Error("Sync failure")
+          }}
+        />
+      )
+
+      await user.click(screen.getByRole("button", { name: "New row" }))
+      expect(await screen.findByRole("alert")).toHaveTextContent("Sync failure")
+    })
+  })
+
   describe("row delete", () => {
     it("renders no kebab menu when onRowDelete is omitted", () => {
       renderGrid()
@@ -1392,6 +1797,88 @@ describe("DataGrid", () => {
 
       expect(onRowDelete).not.toHaveBeenCalled()
       expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument()
+    })
+  })
+
+  describe("row delete pending and error state", () => {
+    async function openDeleteDialog(user: ReturnType<typeof userEvent.setup>) {
+      await user.click(screen.getByRole("button", { name: "Row 1 actions" }))
+      await user.click(
+        await screen.findByRole("menuitem", { name: "Delete row" })
+      )
+      return screen.getByRole("alertdialog")
+    }
+
+    it("keeps the dialog open with the buttons disabled while the delete runs, then closes it", async () => {
+      const user = userEvent.setup()
+      const pending = deferred<void>()
+      render(
+        <Harness onCellEdit={vi.fn()} onRowDelete={() => pending.promise} />
+      )
+      const dialog = await openDeleteDialog(user)
+
+      await user.click(within(dialog).getByRole("button", { name: "Delete" }))
+
+      expect(screen.getByRole("alertdialog")).toBeInTheDocument()
+      expect(
+        within(dialog).getByRole("button", { name: "Delete" })
+      ).toBeDisabled()
+      expect(
+        within(dialog).getByRole("button", { name: "Delete" })
+      ).toHaveAttribute("aria-busy", "true")
+      expect(
+        within(dialog).getByRole("button", { name: "Cancel" })
+      ).toBeDisabled()
+
+      await act(async () => pending.resolve())
+      await waitFor(() =>
+        expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument()
+      )
+    })
+
+    it("stays open with the error shown when the delete rejects, and can be retried", async () => {
+      const user = userEvent.setup()
+      const onRowDelete = vi
+        .fn()
+        .mockRejectedValueOnce(new Error("Row is locked"))
+        .mockResolvedValue(undefined)
+      render(<Harness onCellEdit={vi.fn()} onRowDelete={onRowDelete} />)
+      const dialog = await openDeleteDialog(user)
+
+      await user.click(within(dialog).getByRole("button", { name: "Delete" }))
+      expect(await within(dialog).findByRole("alert")).toHaveTextContent(
+        "Row is locked"
+      )
+      expect(
+        within(dialog).getByRole("button", { name: "Delete" })
+      ).toBeEnabled()
+
+      await user.click(within(dialog).getByRole("button", { name: "Delete" }))
+      await waitFor(() =>
+        expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument()
+      )
+      expect(onRowDelete).toHaveBeenCalledTimes(2)
+    })
+
+    it("clears the error when the dialog is cancelled and reopened", async () => {
+      const user = userEvent.setup()
+      render(
+        <Harness
+          onCellEdit={vi.fn()}
+          onRowDelete={() => Promise.reject(new Error("Row is locked"))}
+        />
+      )
+      const dialog = await openDeleteDialog(user)
+      await user.click(within(dialog).getByRole("button", { name: "Delete" }))
+      await within(dialog).findByRole("alert")
+
+      await user.click(within(dialog).getByRole("button", { name: "Cancel" }))
+      await waitFor(() =>
+        expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument()
+      )
+
+      const reopened = await openDeleteDialog(user)
+      expect(within(reopened).queryByRole("alert")).toBeNull()
     })
   })
 

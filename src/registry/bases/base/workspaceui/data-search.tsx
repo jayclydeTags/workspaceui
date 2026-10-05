@@ -11,9 +11,9 @@ import { Search01Icon, Cancel01Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-// Side-effect import: pulls in the column.meta type augmentation this
-// component reads (column.columnDef.meta?.type / .options / .users).
-import "@/registry/bases/base/workspaceui/data-grid-types"
+// Type-only: brings in the column.meta augmentation this file reads
+// (column.columnDef.meta?.type / .options / .users) without loading data-filter.
+import type { DataGridSelectOption } from "@/registry/bases/base/workspaceui/data-filter"
 
 export interface DataSearchProps<TData> {
   table: TanstackTable<TData>
@@ -37,7 +37,7 @@ export function dataGridGetColumnCanGlobalFilter<TData>(
 }
 
 function optionLabel(
-  options: { value: string; label: string }[] | undefined,
+  options: DataGridSelectOption[] | undefined,
   value: string
 ): string {
   return options?.find((o) => o.value === value)?.label ?? value

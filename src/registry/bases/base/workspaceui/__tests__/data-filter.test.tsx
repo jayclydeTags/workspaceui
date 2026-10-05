@@ -11,7 +11,6 @@ import {
 
 import { resizeTo } from "@/test/setup"
 import { DataFilter, dataGridFilterFn } from "../data-filter"
-import "../data-grid-types"
 
 interface Item {
   id: string

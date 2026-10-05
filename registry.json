@@ -139,20 +139,6 @@
       ]
     },
     {
-      "name": "data-grid-types",
-      "type": "registry:ui",
-      "title": "Data Grid Types",
-      "description": "column.meta type contract shared by data-grid and data-filter — the eight-type column union plus per-type meta fields, declared via TanStack's own module augmentation.",
-      "dependencies": ["@tanstack/react-table"],
-      "registryDependencies": [],
-      "files": [
-        {
-          "path": "src/registry/bases/base/workspaceui/data-grid-types.ts",
-          "type": "registry:ui"
-        }
-      ]
-    },
-    {
       "name": "data-grid",
       "type": "registry:ui",
       "title": "Data Grid",
@@ -164,7 +150,6 @@
         "@dnd-kit/utilities"
       ],
       "registryDependencies": [
-        "jayclydeTags/workspaceui/data-grid-types",
         "jayclydeTags/workspaceui/data-filter",
         "jayclydeTags/workspaceui/data-search",
         "jayclydeTags/workspaceui/data-pagination",
@@ -197,7 +182,6 @@
       "description": "A composable filter builder over a consumer-owned useReactTable() instance. A single \"+ Filter\" trigger opens a popover chaining column → operator → value; committing writes a clickable, removable chip. Operators and the value input follow from the column's meta.type — text, number, currency, date, select, and boolean are implemented here (multiSelect and user are a follow-up). Exports dataGridFilterFn, the filterFn every filterable column must set: it unwraps the chip chain's { operator, value } object and dispatches on meta.type, since none of TanStack's built-in filter functions can read that shape. Measures its own container width via ResizeObserver; below 448px the chip chain and popover give way to swipeable bottom-drawer \"Sort\" and \"Filter\" toolbar buttons.",
       "dependencies": ["@tanstack/react-table"],
       "registryDependencies": [
-        "jayclydeTags/workspaceui/data-grid-types",
         "popover",
         "command",
         "button",
@@ -220,7 +204,11 @@
       "title": "Data Search",
       "description": "A debounced global-search input over a consumer-owned useReactTable() instance. Exports dataGridGlobalFilterFn, the globalFilterFn every table needs set: it matches primitive cell values (string/number/boolean) case-insensitively and skips columns with no accessor value (id/select/action columns) and array/object values (multiSelect tags, user objects).",
       "dependencies": ["@tanstack/react-table"],
-      "registryDependencies": ["button", "input"],
+      "registryDependencies": [
+        "button",
+        "input",
+        "jayclydeTags/workspaceui/data-filter"
+      ],
       "files": [
         {
           "path": "src/registry/bases/base/workspaceui/data-search.tsx",

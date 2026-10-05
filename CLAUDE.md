@@ -134,7 +134,7 @@ inspector as one resizable pair (stacked below `lg`).
   in that list. Installing a new primitive means adding it to the list and
   writing its story; `shadcn-components.test.ts` fails if the list and the ui
   directory disagree or a story is missing.
-- **No story** (currently `data-filter` and `data-grid-types`): there's no
+- **No story** (currently `data-filter`): there's no
   playground, so the mdx's `<ComponentPreview>` examples go on the canvas as
   labelled sections, and the inspector has no controls.
 - Because the inspector reads the mdx, a component's `## API Reference` heading
@@ -240,6 +240,31 @@ Components import each other via `@/components/workspaceui/...`. Docs-site compo
 - `renderTabContent(paneId, tabId)` — called on every render for the active tab in each pane; keep it fast
 - Fallback content shown when all panes are closed (configurable via `fallback` prop)
 - Constants: `MIN_COL_SIZE = 20%`, `MIN_ROW_SIZE = 30%`
+
+### data-grid.tsx (compound)
+
+`DataGrid` is the pilot for the compound-component architecture (Base UI's
+shape): a `Root` that owns state and provides context, plus parts that consume
+it. Follow the same rules when converting another component:
+
+- **`DataGrid.Root`** runs `useDataGridController` (all state and handlers) and
+  provides two contexts: a small memoized **config** (`table`, `canFilter`,
+  `canFilterColumns`, `canPaginate`, `showCards`) and the full **controller**.
+  A part that only needs config reads `useDataGridConfig()` and doesn't read
+  the controller.
+- **Parts** (`Toolbar`, `ToolbarActions`, `Search`, `Filter`, `Columns`,
+  `Options`, `FilterChips`, `Table`, `Pagination`) each render one slice of the
+  UI and **hide themselves when they don't apply** (no filtered row model, wrong
+  layout…), so one composition works across the wide and narrow layouts.
+- A part used outside Root **throws** ("DataGrid parts must be used within
+  <DataGrid.Root>").
+- Exports: the `DataGrid` namespace object (`DataGrid.Root`, …) **and** each
+  part as a flat named export. The old single `<DataGrid table=…/>` no longer
+  exists; there is no wrapper that renders a default layout.
+- The card-edit drawer, delete dialog and live region are internal to Root
+  (`DataGridOverlays`), not composable parts.
+- `column.meta` (including `validate`) and its types live in `data-filter.tsx`
+  and are re-exported from `data-grid.tsx`.
 
 ## Documentation
 

@@ -5,24 +5,6 @@ Notes extracted from inline comments in
 pass, so the deferred-work context isn't lost even though it no longer lives
 inline.
 
-## Validation
-
-`validateForType` only checks "required" (+ "must be a number" for
-`number`/`currency`) — `boolean` never fails, since a checkbox has no invalid
-state. This is the only validation until a real validation hook lands;
-consumers wanting custom rules currently have to validate inside `onCellEdit`
-and throw. ponytail: upgrade path is a `validate` prop/column-meta hook when a
-real requirement shows up.
-
-## Row add/delete has no pending/error UI
-
-Unlike `onCellEdit`, `onRowAdd`/`onRowDelete` render no pending spinner or
-error state of their own — the grid just clears `pendingAdd` on rejection so
-a later unrelated row-count change can't be mistaken for the add landing.
-ponytail: add pending/error UI for row add/delete if the spec ever asks for
-it; until then, failures are silent from the grid's perspective (the promise
-rejection is swallowed after clearing `pendingAdd`/deleteTarget).
-
 ## Cell-range selection not implemented
 
 Row-level range selection (anchor + Shift+Click/Shift+Arrow) is implemented,

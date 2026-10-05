@@ -47,7 +47,7 @@ export function DataGridNarrowDemo() {
     // Below DataGrid's 448px measured-container breakpoint, forcing the
     // card/drawer fallback without needing to resize the browser window.
     <div className="mx-auto w-[320px] min-w-0">
-      <DataGrid
+      <DataGrid.Root
         table={table}
         onCellEdit={(rowId, columnId, value) => {
           setData((prev) =>
@@ -56,7 +56,19 @@ export function DataGridNarrowDemo() {
             )
           )
         }}
-      />
+      >
+        <DataGrid.Toolbar>
+          <DataGrid.Search />
+          <DataGrid.ToolbarActions>
+            <DataGrid.Filter />
+            <DataGrid.Columns />
+            <DataGrid.Options />
+          </DataGrid.ToolbarActions>
+        </DataGrid.Toolbar>
+        <DataGrid.FilterChips />
+        <DataGrid.Table />
+        <DataGrid.Pagination />
+      </DataGrid.Root>
     </div>
   )
 }

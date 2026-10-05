@@ -120,14 +120,19 @@ import {
 } from "@/registry/bases/base/workspaceui/data-filter"
 import { DataPagination } from "@/registry/bases/base/workspaceui/data-pagination"
 import { DataSearch } from "@/registry/bases/base/workspaceui/data-search"
-// Side-effect import: pulls in the column.meta type augmentation this
-// component reads (cell.column.columnDef.meta?.type).
-import "@/registry/bases/base/workspaceui/data-grid-types"
 import type {
   DataGridColumnType,
   DataGridSelectOption,
   DataGridUser,
-} from "@/registry/bases/base/workspaceui/data-grid-types"
+} from "@/registry/bases/base/workspaceui/data-filter"
+
+// The `column.meta` contract lives in data-filter (which this file already
+// depends on); re-exported so consumers import every grid type from here.
+export type {
+  DataGridColumnType,
+  DataGridSelectOption,
+  DataGridUser,
+} from "@/registry/bases/base/workspaceui/data-filter"
 
 /** A snapshot of column resize/pin/reorder state, reported via `onColumnLayoutChange`. */
 export interface DataGridColumnLayout {
@@ -155,9 +160,9 @@ export interface DataGridProps<TData> {
    * stuck sticky-left so it stays visible under horizontal scroll.
    */
   narrowFallback?: "cards" | "none"
-  /** Rendered in place of rows when `table.getRowModel().rows` is empty. Defaults to plain "No results." text. */
-  emptyState?: React.ReactNode
   className?: string
+  /** The grid's parts: `DataGrid.Toolbar`, `DataGrid.Table`, `DataGrid.Pagination`, … */
+  children?: React.ReactNode
 }
 
 // Matches data-filter.tsx's own NARROW_BREAKPOINT so both flip together in a shared narrow pane.
@@ -482,6 +487,11 @@ function validateForType(
   return null
 }
 
+// A rejected add/delete shows the error's own message when it has one.
+function rejectionMessage(error: unknown, fallback: string): string {
+  return error instanceof Error && error.message ? error.message : fallback
+}
+
 function coerceForType(
   type: DataGridColumnType | undefined,
   raw: string
@@ -615,16 +625,27 @@ function ColumnMenuRow<TData>({
   )
 }
 
-export function DataGrid<TData>({
+// ── Controller ───────────────────────────────────────────────────────────
+// All grid state and handlers live in one hook, owned by DataGrid.Root. Parts
+// read it through context, so each can render its own slice of the UI.
+
+interface DataGridControllerOptions<TData> {
+  table: TanstackTable<TData>
+  onCellEdit: DataGridProps<TData>["onCellEdit"]
+  onRowAdd?: DataGridProps<TData>["onRowAdd"]
+  onRowDelete?: DataGridProps<TData>["onRowDelete"]
+  onColumnLayoutChange?: DataGridProps<TData>["onColumnLayoutChange"]
+  narrowFallback?: DataGridProps<TData>["narrowFallback"]
+}
+
+function useDataGridController<TData>({
   table,
   onCellEdit,
   onRowAdd,
   onRowDelete,
   onColumnLayoutChange,
   narrowFallback = "cards",
-  emptyState = "No results.",
-  className,
-}: DataGridProps<TData>) {
+}: DataGridControllerOptions<TData>) {
   const { ref: containerRef, width: containerWidth } =
     useContainerWidth<HTMLDivElement>()
   const isNarrow = containerWidth != null && containerWidth < NARROW_BREAKPOINT
@@ -675,6 +696,10 @@ export function DataGrid<TData>({
   } | null>(null)
   const prevRowCountRef = React.useRef(rowCount)
   const [deleteTarget, setDeleteTarget] = React.useState<string | null>(null)
+  const [deleting, setDeleting] = React.useState(false)
+  const [deleteError, setDeleteError] = React.useState<string | null>(null)
+  const [addPending, setAddPending] = React.useState(false)
+  const [addError, setAddError] = React.useState<string | null>(null)
 
   // Anchor-and-extend selection; cleared on any plain (non-shift) move so the next extension starts fresh.
   const [selectionAnchor, setSelectionAnchor] = React.useState<number | null>(
@@ -1021,17 +1046,38 @@ export function DataGrid<TData>({
   }, [rowCount, pendingAdd, rows])
 
   // Clears pendingAdd on rejection so a later unrelated row-count change can't steal focus.
-  function handleRowAdd(afterRowId?: string) {
-    if (!onRowAdd) return
+  // While the add is in flight the add controls are disabled, so a second click can't queue a duplicate row.
+  async function handleRowAdd(afterRowId?: string) {
+    if (!onRowAdd || addPending) return
+    setAddError(null)
     setPendingAdd({ afterRowId })
-    Promise.resolve(onRowAdd(afterRowId)).catch(() => setPendingAdd(null))
+    setAddPending(true)
+    try {
+      await onRowAdd(afterRowId)
+    } catch (error) {
+      setPendingAdd(null)
+      setAddError(rejectionMessage(error, "Couldn't add the row."))
+    } finally {
+      setAddPending(false)
+    }
   }
 
-  function confirmRowDelete() {
+  // The dialog stays open while the delete runs, and again if it fails, so the user can retry or cancel.
+  async function confirmRowDelete() {
     const rowId = deleteTarget
-    setDeleteTarget(null)
-    if (rowId == null || !onRowDelete) return
-    void Promise.resolve(onRowDelete(rowId)).catch(() => {})
+    if (rowId == null || !onRowDelete || deleting) return
+    setDeleting(true)
+    setDeleteError(null)
+    try {
+      await onRowDelete(rowId)
+      setDeleteTarget(null)
+    } catch (error) {
+      setDeleteError(
+        rejectionMessage(error, "Couldn't delete the row. Try again.")
+      )
+    } finally {
+      setDeleting(false)
+    }
   }
 
   // A synchronous throw and a rejected promise both land here through the same try/catch.
@@ -1084,13 +1130,23 @@ export function DataGrid<TData>({
     )
   }
 
+  // Built-in checks first, then the column's own `meta.validate`. `raw` is the edit buffer (a string); the hook sees the coerced value.
+  function validateAt(r: number, c: number, raw: string): string | null {
+    const cell = rows[r]?.getVisibleCells()[c]
+    const meta = cell?.column.columnDef.meta
+    const type = meta?.type
+    const builtIn = validateForType(type, raw)
+    if (builtIn != null || !cell || !meta?.validate) return builtIn
+    return meta.validate(coerceForType(type, raw), cell.row.original) ?? null
+  }
+
   function commitEdit() {
     if (!editCoord) return
     const { r, c } = editCoord
     const row = rows[r]
     const cell = row?.getVisibleCells()[c]
     const type = cell?.column.columnDef.meta?.type
-    const err = validateForType(type, buffer)
+    const err = validateAt(r, c, buffer)
     setEditCoord(null)
     if (!cell || err != null) return
 
@@ -1231,7 +1287,7 @@ export function DataGrid<TData>({
     setFocusCoord({ r, c })
     setEditCoord({ r, c })
     setBuffer(initial)
-    setError(isPopoverType ? null : validateForType(type, initial))
+    setError(isPopoverType ? null : validateAt(r, c, initial))
     focusEditControl(key)
   }
 
@@ -1319,9 +1375,8 @@ export function DataGrid<TData>({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) {
     const value = e.target.value
-    const type = editCoord ? columnTypeAt(editCoord.r, editCoord.c) : undefined
     setBuffer(value)
-    setError(validateForType(type, value))
+    setError(editCoord ? validateAt(editCoord.r, editCoord.c, value) : null)
   }
 
   function onEditInputKeyDown(
@@ -1390,7 +1445,7 @@ export function DataGrid<TData>({
   function sheetFieldError(r: number, c: number): string | null {
     const key = cellKey(r, c)
     const buf = sheetBuffers[key]
-    if (buf !== undefined) return validateForType(columnTypeAt(r, c), buf)
+    if (buf !== undefined) return validateAt(r, c, buf)
     return commits.get(key)?.error ?? null
   }
 
@@ -1407,7 +1462,7 @@ export function DataGrid<TData>({
     const row = rows[r]
     const cell = row?.getVisibleCells()[c]
     const type = cell?.column.columnDef.meta?.type
-    const err = validateForType(type, buf)
+    const err = validateAt(r, c, buf)
     setSheetBuffers((prev) => {
       const next = { ...prev }
       delete next[key]
@@ -1453,997 +1508,264 @@ export function DataGrid<TData>({
   }
   const displayRow = openRow ?? lastOpenRow?.row
   const displayRowIndex = openRow ? openRowIndex : (lastOpenRow?.index ?? 0)
+  return {
+    addError,
+    addPending,
+    applyColumnDrag,
+    beginEdit,
+    booleanCellValue,
+    buffer,
+    canFilter,
+    canFilterColumns,
+    canPaginate,
+    canSort,
+    cancelEdit,
+    cellRefs,
+    closeCardSheet,
+    closePopoverEditAt,
+    colCount,
+    columnDragSensors,
+    columnGroupOrder,
+    columnOrderState,
+    columnPinningState,
+    columnSizingState,
+    columnTypeAt,
+    commitEdit,
+    commitSheetField,
+    commitSheetSelect,
+    commits,
+    confirmRowDelete,
+    containerRef,
+    containerWidth,
+    currentHiddenIds,
+    deleteError,
+    deleteTarget,
+    deleting,
+    displayRow,
+    displayRowIndex,
+    dragSnapshotRef,
+    editCoord,
+    error,
+    errorId,
+    firstVisibleColumnId,
+    focusCoord,
+    focusEditControl,
+    focusTo,
+    forceStickyFirstColumn,
+    getColumnLabel,
+    getSummaryColumns,
+    handleColumnDragCancel,
+    handleColumnDragEnd,
+    handleColumnDragOver,
+    handleColumnDragStart,
+    handleRowAdd,
+    hasDeleteColumn,
+    hasSelectionColumn,
+    headerGroups,
+    hiddenMenuColumns,
+    hiddenOrder,
+    inputRefs,
+    isMountedRef,
+    isNarrow,
+    lastOpenRow,
+    liveMessage,
+    mergedHiddenOrder,
+    moveColumn,
+    multiSelectCellValue,
+    narrowFallback,
+    onCellClick,
+    onCellEdit,
+    onColumnLayoutChange,
+    onColumnLayoutChangeRef,
+    onEditInputBlur,
+    onEditInputChange,
+    onEditInputKeyDown,
+    onGridCellKeyDown,
+    onRowAdd,
+    onRowCheckboxChange,
+    onRowDelete,
+    onSheetFieldChange,
+    onSheetFieldKeyDown,
+    openCardSheet,
+    openRow,
+    openRowId,
+    openRowIndex,
+    optionsCount,
+    optionsOpen,
+    pendingAdd,
+    pickUser,
+    prevRowCountRef,
+    renderColumnMenuRow,
+    renderFieldRow,
+    renderSortRow,
+    rowCount,
+    rows,
+    runCommit,
+    selectRefs,
+    selectRowRange,
+    selectionAnchor,
+    setAddError,
+    setAddPending,
+    setBuffer,
+    setCommits,
+    setDeleteError,
+    setDeleteTarget,
+    setDeleting,
+    setEditCoord,
+    setError,
+    setFocusCoord,
+    setHiddenOrder,
+    setLastOpenRow,
+    setLiveMessage,
+    setOpenRowId,
+    setOptionsOpen,
+    setPendingAdd,
+    setSelectionAnchor,
+    setSheetBuffers,
+    setTrackedOpenRowId,
+    sheetBuffers,
+    sheetFieldError,
+    sheetFieldValue,
+    showCards,
+    startCommit,
+    subtitleColumns,
+    summaryColumns,
+    suppressNextBlurRef,
+    table,
+    titleColumn,
+    toggleBooleanCell,
+    toggleMultiSelectValue,
+    totalColCount,
+    trackedOpenRowId,
+    userCellValue,
+    validateAt,
+    wrapIndex,
+  }
+}
+
+type DataGridController<TData> = ReturnType<typeof useDataGridController<TData>>
+
+// ── Context ──────────────────────────────────────────────────────────────
+// Two contexts: a small, stable config (what most parts need) and the full
+// controller (focus, editing, commits, selection …). A part that only needs the
+// config doesn't read — or re-render for — the controller.
+
+interface DataGridConfig {
+  table: TanstackTable<unknown>
+  canFilter: boolean
+  canFilterColumns: boolean
+  canPaginate: boolean
+  showCards: boolean
+}
+
+const DataGridContext = React.createContext<DataGridController<unknown> | null>(
+  null
+)
+const DataGridConfigContext = React.createContext<DataGridConfig | null>(null)
+
+function useDataGrid<TData = unknown>(): DataGridController<TData> {
+  const grid = React.use(DataGridContext)
+  if (!grid) {
+    throw new Error("DataGrid parts must be used within <DataGrid.Root>")
+  }
+  return grid as unknown as DataGridController<TData>
+}
+
+function useDataGridConfig(): DataGridConfig {
+  const config = React.use(DataGridConfigContext)
+  if (!config) {
+    throw new Error("DataGrid parts must be used within <DataGrid.Root>")
+  }
+  return config
+}
+
+// ── Root ─────────────────────────────────────────────────────────────────
+
+function DataGridRoot<TData>({
+  table,
+  onCellEdit,
+  onRowAdd,
+  onRowDelete,
+  onColumnLayoutChange,
+  narrowFallback,
+  className,
+  children,
+}: DataGridProps<TData>) {
+  const grid = useDataGridController({
+    table,
+    onCellEdit,
+    onRowAdd,
+    onRowDelete,
+    onColumnLayoutChange,
+    narrowFallback,
+  })
+  const { containerRef, canFilter, canFilterColumns, canPaginate, showCards } =
+    grid
+  const config = React.useMemo<DataGridConfig>(
+    () => ({
+      table: table as unknown as TanstackTable<unknown>,
+      canFilter,
+      canFilterColumns,
+      canPaginate,
+      showCards,
+    }),
+    [table, canFilter, canFilterColumns, canPaginate, showCards]
+  )
 
   return (
-    <div ref={containerRef} className={cn("flex flex-col gap-2", className)}>
-      {showCards ? (
-        <>
-          {/* Cards have no headers to click and no room for a button per
-              concern, so search sits inline and everything else stacks in one
-              sheet. */}
-          <div className="flex items-center gap-2">
-            {canFilter && <DataSearch table={table} />}
-            <Drawer
-              open={optionsOpen}
-              onOpenChange={setOptionsOpen}
-              showSwipeHandle
-            >
-              <DrawerTrigger
-                render={
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    aria-label="Options"
-                    className="relative ms-auto shrink-0"
-                  >
-                    <HugeiconsIcon
-                      icon={SlidersHorizontalIcon}
-                      strokeWidth={2}
-                      className="size-4"
-                    />
-                    {optionsCount > 0 && (
-                      <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
-                        {optionsCount}
-                      </span>
-                    )}
-                  </Button>
-                }
-              />
-              <DrawerContent className="h-[80vh]">
-                <DrawerHeader>
-                  <DrawerTitle>Options</DrawerTitle>
-                </DrawerHeader>
-                <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pb-6">
-                  {canSort && (
-                    <section>
-                      <h3 className="px-4 py-1 text-xs font-medium text-muted-foreground">
-                        Sort
-                      </h3>
-                      <div className="flex flex-col gap-0.5 px-4">
-                        {table.getAllLeafColumns().map(renderSortRow)}
-                      </div>
-                    </section>
-                  )}
-                  {canFilterColumns && (
-                    <section>
-                      <h3 className="px-4 py-1 text-xs font-medium text-muted-foreground">
-                        Filters
-                      </h3>
-                      <DataFilterChain table={table} open={optionsOpen} />
-                    </section>
-                  )}
-                  <section>
-                    <h3 className="px-4 py-1 text-xs font-medium text-muted-foreground">
-                      Visible fields
-                    </h3>
-                    <div className="flex flex-col gap-0.5 px-4">
-                      {table.getAllLeafColumns().map(renderFieldRow)}
-                    </div>
-                    <p className="px-4 py-2 text-xs text-muted-foreground">
-                      The first visible field titles each card; the next two are
-                      its subtitle.
-                    </p>
-                  </section>
-                </div>
-              </DrawerContent>
-            </Drawer>
-          </div>
-          <ul className="flex list-none flex-col divide-y rounded-md border ps-0">
-            {rowCount === 0 ? (
-              <li className="p-4 text-center text-sm text-muted-foreground">
-                {emptyState}
-              </li>
-            ) : (
-              rows.map((row) => {
-                const cells = row.getVisibleCells()
-                const titleCell = cells.find(
-                  (c) => c.column.id === titleColumn?.id
-                )
-                const subtitleCells = subtitleColumns
-                  .map((col) => cells.find((c) => c.column.id === col.id))
-                  .filter((c): c is NonNullable<typeof c> => c != null)
-                const subtitleText = subtitleCells
-                  .map((c) => formatCardValue(c))
-                  .filter(Boolean)
-                  .join(" · ")
-                return (
-                  <li key={row.id}>
-                    <button
-                      type="button"
-                      onClick={() => openCardSheet(row.id)}
-                      className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left hover:bg-accent/30"
-                    >
-                      <span className="flex min-w-0 flex-col">
-                        <span className="truncate font-medium">
-                          {titleCell ? formatCardValue(titleCell) || "—" : "—"}
-                        </span>
-                        {subtitleText && (
-                          <span className="truncate text-sm text-muted-foreground">
-                            {subtitleText}
-                          </span>
-                        )}
-                      </span>
-                      <HugeiconsIcon
-                        icon={ArrowRight01Icon}
-                        strokeWidth={2}
-                        aria-hidden="true"
-                        className="size-4 shrink-0 text-muted-foreground"
-                      />
-                    </button>
-                  </li>
-                )
-              })
-            )}
-            {onRowAdd && (
-              <li>
-                <button
-                  type="button"
-                  onClick={() => handleRowAdd()}
-                  className="flex w-full items-center gap-1.5 px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent/30 hover:text-foreground"
-                >
-                  <HugeiconsIcon
-                    icon={PlusSignIcon}
-                    strokeWidth={2}
-                    className="size-3.5"
-                  />
-                  New row
-                </button>
-              </li>
-            )}
-          </ul>
-        </>
-      ) : (
-        <>
-          <div className="flex items-center gap-2">
-            {canFilter && <DataSearch table={table} />}
-            <div className="ms-auto flex shrink-0 items-center gap-1.5">
-              {canFilterColumns && (
-                <DataFilterPopover
-                  table={table}
-                  trigger={
-                    <Button variant="outline" size="icon" aria-label="Filter">
-                      <HugeiconsIcon
-                        icon={FilterIcon}
-                        strokeWidth={2}
-                        className="size-4"
-                      />
-                    </Button>
-                  }
-                />
-              )}
-              <Popover>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger
-                      render={
-                        <PopoverTrigger
-                          render={
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              aria-label="Columns"
-                            >
-                              <HugeiconsIcon
-                                icon={LayoutThreeColumnIcon}
-                                strokeWidth={2}
-                                className="size-4"
-                              />
-                            </Button>
-                          }
-                        />
-                      }
-                    />
-                    <TooltipContent>Column</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                <PopoverContent align="end" className="w-64 p-1">
-                  <DndContext
-                    sensors={columnDragSensors}
-                    collisionDetection={closestCenter}
-                    measuring={columnDragMeasuring}
-                    onDragStart={handleColumnDragStart}
-                    onDragOver={handleColumnDragOver}
-                    onDragEnd={handleColumnDragEnd}
-                    onDragCancel={handleColumnDragCancel}
-                  >
-                    <div className="px-1.5 py-1 text-xs font-medium text-muted-foreground">
-                      Shown in table
-                    </div>
-                    <SortableContext
-                      items={table.getVisibleLeafColumns().map((c) => c.id)}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      <ul className="flex list-none flex-col gap-0.5 ps-0">
-                        {table
-                          .getVisibleLeafColumns()
-                          .map((column) => renderColumnMenuRow(column, false))}
-                      </ul>
-                    </SortableContext>
-                    {hiddenMenuColumns.length > 0 && (
-                      <>
-                        <div className="px-1.5 py-1 text-xs font-medium text-muted-foreground">
-                          Hidden in table
-                        </div>
-                        <SortableContext
-                          items={hiddenMenuColumns.map((c) => c.id)}
-                          strategy={verticalListSortingStrategy}
-                        >
-                          <ul className="flex list-none flex-col gap-0.5 ps-0">
-                            {hiddenMenuColumns.map((column) =>
-                              renderColumnMenuRow(column, true)
-                            )}
-                          </ul>
-                        </SortableContext>
-                      </>
-                    )}
-                  </DndContext>
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
-          {canFilterColumns && <DataFilterChips table={table} />}
-          {/* aria-rowcount includes the header row, per the grid pattern's own convention. */}
-          {/* Gridlines come from a trailing border on every cell (last column
-              excluded) rather than a class on each TableHead/TableCell call
-              site — there are six of those, and they'd drift. */}
-          <div className="overflow-hidden rounded-md border">
-            <Table
-              role="grid"
-              aria-rowcount={rowCount + 1}
-              aria-colcount={totalColCount}
-              className="w-auto min-w-full table-fixed [&_td]:border-e [&_td:last-child]:border-e-0 [&_th]:border-e [&_th:last-child]:border-e-0"
-            >
-              <TableHeader>
-                {headerGroups.map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {hasSelectionColumn && (
-                      <TableHead className="w-10 min-w-10 p-0 text-center">
-                        <div className="flex items-center justify-center px-2 py-2.5">
-                          <SelectAllCheckbox
-                            checked={table.getIsAllRowsSelected()}
-                            indeterminate={
-                              !table.getIsAllRowsSelected() &&
-                              table.getIsSomeRowsSelected()
-                            }
-                            onCheckedChange={(checked) =>
-                              table.toggleAllRowsSelected(checked)
-                            }
-                          />
-                        </div>
-                      </TableHead>
-                    )}
-                    {headerGroup.headers.map((header, headerIndex) => {
-                      const pinned = header.column.getIsPinned()
-                      const pin = columnPin(
-                        header.column,
-                        forceStickyFirstColumn &&
-                          header.column.id === firstVisibleColumnId,
-                        table.getTotalSize()
-                      )
-                      // getCanSort() is true for any accessor column; only expose
-                      // the affordance when the consumer actually wired a sorted
-                      // row model, so a click can't be a no-op.
-                      const canSort =
-                        header.column.getCanSort() &&
-                        table.options.getSortedRowModel != null
-                      const sortDirection = header.column.getIsSorted()
-                      const isNumericHeader = isNumericType(
-                        header.column.columnDef.meta?.type
-                      )
-                      const canMoveLeft = headerIndex > 0
-                      const canMoveRight =
-                        headerIndex < headerGroup.headers.length - 1
-                      const stickyHeader =
-                        pinned ||
-                        (forceStickyFirstColumn &&
-                          header.column.id === firstVisibleColumnId)
-                      return (
-                        <TableHead
-                          key={header.id}
-                          className={cn(
-                            "group relative w-(--col-width)",
-                            (pin.stickyLeft || pin.stickyRight) && "sticky z-1",
-                            pin.stickyLeft && "left-(--pin-left)",
-                            pin.stickyRight && "right-(--pin-right)",
-                            stickyHeader && "bg-background"
-                          )}
-                          style={
-                            {
-                              "--col-width": pin.width,
-                              "--pin-left": pin.left,
-                              "--pin-right": pin.right,
-                            } as React.CSSProperties
-                          }
-                        >
-                          {!header.isPlaceholder && (
-                            <div className="flex items-center justify-between gap-1 pe-2">
-                              {canSort ? (
-                                <button
-                                  type="button"
-                                  onClick={header.column.getToggleSortingHandler()}
-                                  aria-label={`Sort by ${getColumnLabel(header.column)}`}
-                                  className={cn(
-                                    "flex min-w-0 flex-1 items-center gap-1 text-left",
-                                    isNumericHeader &&
-                                      "flex-row-reverse text-right"
-                                  )}
-                                >
-                                  <span className="truncate">
-                                    {flexRender(
-                                      header.column.columnDef.header,
-                                      header.getContext()
-                                    )}
-                                  </span>
-                                  {sortIcon(sortDirection)}
-                                </button>
-                              ) : (
-                                <span
-                                  className={cn(
-                                    "truncate",
-                                    isNumericHeader && "flex-1 text-right"
-                                  )}
-                                >
-                                  {flexRender(
-                                    header.column.columnDef.header,
-                                    header.getContext()
-                                  )}
-                                </span>
-                              )}
-                              <DropdownMenu>
-                                <DropdownMenuTrigger
-                                  render={
-                                    <Button
-                                      type="button"
-                                      variant="ghost"
-                                      size="icon-xs"
-                                      aria-label={`${getColumnLabel(header.column)} column options`}
-                                      className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 data-[popup-open]:opacity-100"
-                                    >
-                                      <HugeiconsIcon
-                                        icon={MoreVerticalIcon}
-                                        strokeWidth={2}
-                                      />
-                                    </Button>
-                                  }
-                                />
-                                <DropdownMenuContent align="start">
-                                  <DropdownMenuItem
-                                    disabled={!canMoveLeft}
-                                    onClick={() =>
-                                      moveColumn(header.column.id, -1)
-                                    }
-                                  >
-                                    Move left
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    disabled={!canMoveRight}
-                                    onClick={() =>
-                                      moveColumn(header.column.id, 1)
-                                    }
-                                  >
-                                    Move right
-                                  </DropdownMenuItem>
-                                  <DropdownMenuSeparator />
-                                  {header.column.getCanHide() && (
-                                    <DropdownMenuItem
-                                      onClick={() =>
-                                        header.column.toggleVisibility(false)
-                                      }
-                                    >
-                                      Hide column
-                                    </DropdownMenuItem>
-                                  )}
-                                  <DropdownMenuItem
-                                    onClick={() =>
-                                      header.column.pin(nextPinPosition(pinned))
-                                    }
-                                  >
-                                    {pinActionLabel(pinned)}
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </div>
-                          )}
-                          {header.column.getCanResize() && (
-                            <div
-                              role="separator"
-                              aria-orientation="vertical"
-                              aria-label={`Resize ${getColumnLabel(header.column)} column`}
-                              onMouseDown={header.getResizeHandler()}
-                              onTouchStart={header.getResizeHandler()}
-                              onDoubleClick={() => header.column.resetSize()}
-                              className="absolute top-0 right-0 h-full w-1 cursor-col-resize touch-none select-none hover:bg-accent"
-                              style={
-                                header.column.getIsResizing()
-                                  ? {
-                                      transform: `translateX(${table.getState().columnSizingInfo.deltaOffset ?? 0}px)`,
-                                    }
-                                  : undefined
-                              }
-                            />
-                          )}
-                        </TableHead>
-                      )
-                    })}
-                    {hasDeleteColumn && (
-                      <TableHead aria-hidden="true" className="w-10 min-w-10" />
-                    )}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {rowCount === 0 ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={totalColCount}
-                      className="h-24 text-center text-muted-foreground"
-                    >
-                      {emptyState}
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  rows.map((row, r) => {
-                    // Absolutely positioned against the row, not its own <tr> — a table row/cell can't render at height:0 (browsers floor it ~1px), which would show as a second hairline.
-                    const showInsertAfter = onRowAdd && r < rowCount - 1
-                    const insertAfterButton = showInsertAfter && (
-                      <button
-                        type="button"
-                        aria-label={`Insert row after row ${r + 1}`}
-                        onClick={() => handleRowAdd(row.id)}
-                        className="absolute inset-x-0 bottom-0 z-10 flex h-4 translate-y-1/2 items-center justify-center opacity-0 transition-opacity group-hover/row:opacity-100 focus-visible:opacity-100"
-                      >
-                        <span className="flex size-5 items-center justify-center rounded-full border bg-background shadow-sm">
-                          <HugeiconsIcon
-                            icon={PlusSignIcon}
-                            strokeWidth={2}
-                            className="size-3"
-                          />
-                        </span>
-                      </button>
-                    )
+    <DataGridConfigContext value={config}>
+      <DataGridContext value={grid as unknown as DataGridController<unknown>}>
+        <div
+          ref={containerRef}
+          data-slot="data-grid"
+          className={cn("flex flex-col gap-2", className)}
+        >
+          {children}
+          <DataGridOverlays />
+        </div>
+      </DataGridContext>
+    </DataGridConfigContext>
+  )
+}
 
-                    return (
-                      <TableRow key={row.id} className="group/row relative">
-                        {hasSelectionColumn && (
-                          <TableCell className="w-10 min-w-10 p-0 text-center align-top">
-                            <div className="flex items-center justify-center px-2 py-2.5">
-                              <Checkbox
-                                checked={row.getIsSelected()}
-                                aria-label={`Select row ${r + 1}`}
-                                onCheckedChange={(_checked, eventDetails) =>
-                                  onRowCheckboxChange(r, eventDetails.event)
-                                }
-                              />
-                            </div>
-                          </TableCell>
-                        )}
-                        {row.getVisibleCells().map((cell, c) => {
-                          const key = cellKey(r, c)
-                          const isFocused =
-                            focusCoord.r === r && focusCoord.c === c
-                          const isEditing =
-                            editCoord?.r === r && editCoord?.c === c
-                          const commit = commits.get(key)
-                          const isPending = commit?.pending ?? false
-                          const columnType = cell.column.columnDef.meta?.type
-                          const isPlainInputColumn =
-                            columnType === "text" ||
-                            columnType === "number" ||
-                            columnType === "currency" ||
-                            columnType === "date"
-                          const isSelectColumn = columnType === "select"
-                          const isBooleanColumn = columnType === "boolean"
-                          const isMultiSelectColumn =
-                            columnType === "multiSelect"
-                          const isUserColumn = columnType === "user"
-                          // multiSelect's popover can stay open through a rejected toggle-commit, so it always reads the commit's error, not the buffer-editor's live `error`.
-                          const displayError =
-                            isEditing && !isMultiSelectColumn
-                              ? error
-                              : (commit?.error ?? null)
-                          const showError = displayError != null
-                          const value = cell.getValue()
-                          const cellErrorId = `${errorId}-${key}`
-                          const isLastCell =
-                            !hasDeleteColumn && c === colCount - 1
-                          const forceSticky =
-                            forceStickyFirstColumn &&
-                            cell.column.id === firstVisibleColumnId
-                          const isPinned =
-                            cell.column.getIsPinned() || forceSticky
-                          const pin = columnPin(
-                            cell.column,
-                            forceSticky,
-                            table.getTotalSize()
-                          )
+// The card-edit drawer, the delete confirmation and the live region render
+// outside the parts a consumer composes, so Root always provides them.
+function DataGridOverlays() {
+  const {
+    booleanCellValue,
+    closeCardSheet,
+    commitSheetField,
+    commitSheetSelect,
+    commits,
+    confirmRowDelete,
+    deleteError,
+    deleteTarget,
+    deleting,
+    displayRow,
+    displayRowIndex,
+    errorId,
+    getColumnLabel,
+    hasDeleteColumn,
+    liveMessage,
+    multiSelectCellValue,
+    onRowDelete,
+    onSheetFieldChange,
+    onSheetFieldKeyDown,
+    openRow,
+    pickUser,
+    setDeleteError,
+    setDeleteTarget,
+    sheetFieldError,
+    sheetFieldValue,
+    showCards,
+    titleColumn,
+    toggleBooleanCell,
+    toggleMultiSelectValue,
+    userCellValue,
+  } = useDataGrid()
 
-                          return (
-                            <TableCell
-                              key={cell.id}
-                              ref={setMapRef(cellRefs, key)}
-                              role="gridcell"
-                              tabIndex={isFocused ? 0 : -1}
-                              onFocus={() => setFocusCoord({ r, c })}
-                              onClick={() => onCellClick(r, c)}
-                              onKeyDown={(e) => onGridCellKeyDown(e, r, c)}
-                              style={
-                                {
-                                  "--col-width": pin.width,
-                                  "--pin-left": pin.left,
-                                  "--pin-right": pin.right,
-                                } as React.CSSProperties
-                              }
-                              className={cn(
-                                "w-(--col-width) p-0 align-top whitespace-normal outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
-                                (pin.stickyLeft || pin.stickyRight) &&
-                                  "sticky z-1",
-                                pin.stickyLeft && "left-(--pin-left)",
-                                pin.stickyRight && "right-(--pin-right)",
-                                isPinned && "bg-background"
-                              )}
-                            >
-                              {isPlainInputColumn ? (
-                                <>
-                                  <div className="relative">
-                                    {columnType === "currency" && isEditing && (
-                                      <span
-                                        aria-hidden="true"
-                                        className="pointer-events-none absolute top-1/2 left-2 -translate-y-1/2 text-muted-foreground"
-                                      >
-                                        $
-                                      </span>
-                                    )}
-                                    <Input
-                                      ref={setMapRef(inputRefs, key)}
-                                      type={
-                                        columnType === "date"
-                                          ? "date"
-                                          : columnType === "number"
-                                            ? "number"
-                                            : "text"
-                                      }
-                                      value={
-                                        isEditing
-                                          ? buffer
-                                          : formatReadValue(
-                                              columnType,
-                                              commit?.value ?? value
-                                            )
-                                      }
-                                      readOnly={!isEditing}
-                                      disabled={isPending}
-                                      tabIndex={-1}
-                                      aria-invalid={showError || undefined}
-                                      aria-describedby={
-                                        showError ? cellErrorId : undefined
-                                      }
-                                      onMouseDown={(e) => {
-                                        if (!isEditing) e.preventDefault()
-                                      }}
-                                      onChange={
-                                        isEditing
-                                          ? onEditInputChange
-                                          : undefined
-                                      }
-                                      onKeyDown={
-                                        isEditing
-                                          ? onEditInputKeyDown
-                                          : undefined
-                                      }
-                                      onBlur={
-                                        isEditing ? onEditInputBlur : undefined
-                                      }
-                                      className={cn(
-                                        "h-auto rounded-none border-none bg-transparent px-2 py-2 shadow-none hover:bg-accent/30 focus-visible:bg-background focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset dark:bg-transparent",
-                                        isNumericType(columnType) &&
-                                          "text-right tabular-nums",
-                                        columnType === "currency" &&
-                                          isEditing &&
-                                          "pl-5",
-                                        isPending && "pr-7"
-                                      )}
-                                    />
-                                    {isPending && (
-                                      <Spinner
-                                        role="presentation"
-                                        aria-hidden="true"
-                                        aria-label={undefined}
-                                        className="absolute top-1/2 right-2 size-3.5 -translate-y-1/2"
-                                      />
-                                    )}
-                                  </div>
-                                  {showError && (
-                                    <span
-                                      id={cellErrorId}
-                                      className="block px-2 pb-1.5 text-xs text-destructive"
-                                    >
-                                      {displayError}
-                                    </span>
-                                  )}
-                                </>
-                              ) : isSelectColumn ? (
-                                <>
-                                  <div className="relative">
-                                    <select
-                                      ref={setMapRef(selectRefs, key)}
-                                      value={
-                                        isEditing
-                                          ? buffer
-                                          : cellDisplayValue(
-                                              commit?.value ?? value
-                                            )
-                                      }
-                                      disabled={!isEditing || isPending}
-                                      tabIndex={-1}
-                                      aria-invalid={showError || undefined}
-                                      aria-describedby={
-                                        showError ? cellErrorId : undefined
-                                      }
-                                      onMouseDown={(e) => {
-                                        if (!isEditing) e.preventDefault()
-                                      }}
-                                      onChange={
-                                        isEditing
-                                          ? onEditInputChange
-                                          : undefined
-                                      }
-                                      onKeyDown={
-                                        isEditing
-                                          ? onEditInputKeyDown
-                                          : undefined
-                                      }
-                                      onBlur={
-                                        isEditing ? onEditInputBlur : undefined
-                                      }
-                                      className={cn(
-                                        "h-auto w-full appearance-none rounded-none border-none bg-transparent px-2 py-2 text-sm shadow-none hover:bg-accent/30 focus-visible:bg-background focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset disabled:cursor-default disabled:opacity-100 dark:bg-transparent",
-                                        isPending && "pr-7"
-                                      )}
-                                    >
-                                      {cell.column.columnDef.meta?.options?.map(
-                                        (opt) => (
-                                          <option
-                                            key={opt.value}
-                                            value={opt.value}
-                                          >
-                                            {opt.label}
-                                          </option>
-                                        )
-                                      )}
-                                    </select>
-                                    {isPending && (
-                                      <Spinner
-                                        role="presentation"
-                                        aria-hidden="true"
-                                        aria-label={undefined}
-                                        className="absolute top-1/2 right-2 size-3.5 -translate-y-1/2"
-                                      />
-                                    )}
-                                  </div>
-                                  {showError && (
-                                    <span
-                                      id={cellErrorId}
-                                      className="block px-2 pb-1.5 text-xs text-destructive"
-                                    >
-                                      {displayError}
-                                    </span>
-                                  )}
-                                </>
-                              ) : isBooleanColumn ? (
-                                <>
-                                  <div className="flex items-center px-2 py-2 hover:bg-accent/30">
-                                    <Checkbox
-                                      checked={booleanCellValue(r, c, value)}
-                                      disabled={isPending}
-                                      tabIndex={-1}
-                                      aria-invalid={showError || undefined}
-                                      aria-describedby={
-                                        showError ? cellErrorId : undefined
-                                      }
-                                      aria-label={`${getColumnLabel(cell.column)}, row ${r + 1}`}
-                                      onCheckedChange={() =>
-                                        toggleBooleanCell(r, c)
-                                      }
-                                    />
-                                    {isPending && (
-                                      <Spinner
-                                        role="presentation"
-                                        aria-hidden="true"
-                                        aria-label={undefined}
-                                        className="ml-2 size-3.5"
-                                      />
-                                    )}
-                                  </div>
-                                  {showError && (
-                                    <span
-                                      id={cellErrorId}
-                                      className="block px-2 pb-1.5 text-xs text-destructive"
-                                    >
-                                      {displayError}
-                                    </span>
-                                  )}
-                                </>
-                              ) : isMultiSelectColumn ? (
-                                <>
-                                  <Popover
-                                    open={isEditing}
-                                    onOpenChange={(next) =>
-                                      next
-                                        ? beginEdit(r, c)
-                                        : closePopoverEditAt(r, c)
-                                    }
-                                  >
-                                    <PopoverTrigger
-                                      render={
-                                        <button
-                                          type="button"
-                                          tabIndex={-1}
-                                          disabled={isPending}
-                                          aria-invalid={showError || undefined}
-                                          aria-describedby={
-                                            showError ? cellErrorId : undefined
-                                          }
-                                          aria-label={`${getColumnLabel(cell.column)}, row ${r + 1}`}
-                                          className="flex w-full items-center gap-1 overflow-hidden px-2 py-2 hover:bg-accent/30 focus-visible:bg-background disabled:cursor-default"
-                                        >
-                                          {renderMultiSelectTrigger(
-                                            multiSelectCellValue(r, c, value),
-                                            cell.column.columnDef.meta
-                                              ?.options ?? [],
-                                            cell.column.columnDef.meta
-                                              ?.maxChips ?? 2
-                                          )}
-                                          {isPending && (
-                                            <Spinner
-                                              role="presentation"
-                                              aria-hidden="true"
-                                              aria-label={undefined}
-                                              className="ml-auto size-3.5 shrink-0"
-                                            />
-                                          )}
-                                        </button>
-                                      }
-                                    />
-                                    <PopoverContent
-                                      align="start"
-                                      className="w-64 p-0"
-                                    >
-                                      <Command>
-                                        <CommandInput
-                                          placeholder="Search options..."
-                                          value={buffer}
-                                          onValueChange={setBuffer}
-                                        />
-                                        <CommandList>
-                                          <CommandEmpty>
-                                            No options.
-                                          </CommandEmpty>
-                                          <CommandGroup>
-                                            {(
-                                              cell.column.columnDef.meta
-                                                ?.options ?? []
-                                            ).map((opt) => (
-                                              <CommandItem
-                                                key={opt.value}
-                                                value={opt.label}
-                                                data-checked={
-                                                  multiSelectCellValue(
-                                                    r,
-                                                    c,
-                                                    value
-                                                  ).includes(opt.value)
-                                                    ? "true"
-                                                    : undefined
-                                                }
-                                                onSelect={() =>
-                                                  toggleMultiSelectValue(
-                                                    r,
-                                                    c,
-                                                    opt.value
-                                                  )
-                                                }
-                                              >
-                                                {opt.label}
-                                              </CommandItem>
-                                            ))}
-                                          </CommandGroup>
-                                        </CommandList>
-                                      </Command>
-                                    </PopoverContent>
-                                  </Popover>
-                                  {showError && (
-                                    <span
-                                      id={cellErrorId}
-                                      className="block px-2 pb-1.5 text-xs text-destructive"
-                                    >
-                                      {displayError}
-                                    </span>
-                                  )}
-                                </>
-                              ) : isUserColumn ? (
-                                <>
-                                  <Popover
-                                    open={isEditing}
-                                    onOpenChange={(next) =>
-                                      next
-                                        ? beginEdit(r, c)
-                                        : closePopoverEditAt(r, c)
-                                    }
-                                  >
-                                    <PopoverTrigger
-                                      render={
-                                        <button
-                                          type="button"
-                                          tabIndex={-1}
-                                          disabled={isPending}
-                                          aria-invalid={showError || undefined}
-                                          aria-describedby={
-                                            showError ? cellErrorId : undefined
-                                          }
-                                          aria-label={`${getColumnLabel(cell.column)}, row ${r + 1}`}
-                                          className="flex w-full items-center gap-2 overflow-hidden px-2 py-1.5 hover:bg-accent/30 focus-visible:bg-background disabled:cursor-default"
-                                        >
-                                          {renderUserTrigger(
-                                            userCellValue(r, c, value),
-                                            cell.column.columnDef.meta?.users ??
-                                              []
-                                          )}
-                                          {isPending && (
-                                            <Spinner
-                                              role="presentation"
-                                              aria-hidden="true"
-                                              aria-label={undefined}
-                                              className="ml-auto size-3.5 shrink-0"
-                                            />
-                                          )}
-                                        </button>
-                                      }
-                                    />
-                                    <PopoverContent
-                                      align="start"
-                                      className="w-64 p-0"
-                                    >
-                                      <Command>
-                                        <CommandInput
-                                          placeholder="Search people..."
-                                          value={buffer}
-                                          onValueChange={setBuffer}
-                                        />
-                                        <CommandList>
-                                          <CommandEmpty>
-                                            No people.
-                                          </CommandEmpty>
-                                          <CommandGroup>
-                                            <CommandItem
-                                              value="Unassigned"
-                                              data-checked={
-                                                userCellValue(r, c, value) ==
-                                                null
-                                                  ? "true"
-                                                  : undefined
-                                              }
-                                              onSelect={() =>
-                                                pickUser(r, c, null)
-                                              }
-                                            >
-                                              Unassigned
-                                            </CommandItem>
-                                            {(
-                                              cell.column.columnDef.meta
-                                                ?.users ?? []
-                                            ).map((u) => (
-                                              <CommandItem
-                                                key={u.id}
-                                                value={u.name}
-                                                data-checked={
-                                                  userCellValue(r, c, value) ===
-                                                  u.id
-                                                    ? "true"
-                                                    : undefined
-                                                }
-                                                onSelect={() =>
-                                                  pickUser(r, c, u.id)
-                                                }
-                                              >
-                                                <Avatar size="sm">
-                                                  {u.avatarUrl && (
-                                                    <AvatarImage
-                                                      src={u.avatarUrl}
-                                                      alt=""
-                                                    />
-                                                  )}
-                                                  <AvatarFallback>
-                                                    {initials(u.name)}
-                                                  </AvatarFallback>
-                                                </Avatar>
-                                                {u.name}
-                                              </CommandItem>
-                                            ))}
-                                          </CommandGroup>
-                                        </CommandList>
-                                      </Command>
-                                    </PopoverContent>
-                                  </Popover>
-                                  {showError && (
-                                    <span
-                                      id={cellErrorId}
-                                      className="block px-2 pb-1.5 text-xs text-destructive"
-                                    >
-                                      {displayError}
-                                    </span>
-                                  )}
-                                </>
-                              ) : (
-                                <div className="px-2 py-2">
-                                  {flexRender(
-                                    cell.column.columnDef.cell,
-                                    cell.getContext()
-                                  )}
-                                </div>
-                              )}
-                              {isLastCell && insertAfterButton}
-                            </TableCell>
-                          )
-                        })}
-                        {hasDeleteColumn && (
-                          <TableCell className="w-10 min-w-10 p-0 text-center align-top">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger
-                                render={
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    aria-label={`Row ${r + 1} actions`}
-                                    className="size-7 opacity-0 group-hover/row:opacity-100 focus-visible:opacity-100 data-[popup-open]:opacity-100"
-                                  >
-                                    <HugeiconsIcon
-                                      icon={MoreHorizontalIcon}
-                                      strokeWidth={2}
-                                      className="size-3.5"
-                                    />
-                                  </Button>
-                                }
-                              />
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem
-                                  variant="destructive"
-                                  onClick={() => setDeleteTarget(row.id)}
-                                >
-                                  Delete row
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                            {insertAfterButton}
-                          </TableCell>
-                        )}
-                      </TableRow>
-                    )
-                  })
-                )}
-                {onRowAdd && (
-                  <TableRow className="border-none">
-                    <TableCell colSpan={totalColCount} className="p-0">
-                      <button
-                        type="button"
-                        onClick={() => handleRowAdd()}
-                        className="flex w-full items-center gap-1.5 px-2 py-2 text-sm text-muted-foreground hover:bg-accent/30 hover:text-foreground"
-                      >
-                        <HugeiconsIcon
-                          icon={PlusSignIcon}
-                          strokeWidth={2}
-                          className="size-3.5"
-                        />
-                        New row
-                      </button>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </>
-      )}
-      {canPaginate && <DataPagination table={table} />}
+  return (
+    <>
       {showCards && displayRow && (
         <Drawer
           open={openRow != null}
@@ -2669,7 +1991,10 @@ export function DataGrid<TData>({
         <AlertDialog
           open={deleteTarget != null}
           onOpenChange={(open) => {
-            if (!open) setDeleteTarget(null)
+            // Can't dismiss mid-delete: the result still has to be reported.
+            if (open || deleting) return
+            setDeleteTarget(null)
+            setDeleteError(null)
           }}
         >
           <AlertDialogContent>
@@ -2678,13 +2003,27 @@ export function DataGrid<TData>({
               <AlertDialogDescription>
                 This action can&apos;t be undone.
               </AlertDialogDescription>
+              {deleteError && (
+                <p role="alert" className="text-sm text-destructive">
+                  {deleteError}
+                </p>
+              )}
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 variant="destructive"
+                disabled={deleting}
+                aria-busy={deleting}
                 onClick={confirmRowDelete}
               >
+                {deleting && (
+                  <Spinner
+                    role="presentation"
+                    aria-hidden
+                    data-icon="inline-start"
+                  />
+                )}
                 Delete
               </AlertDialogAction>
             </AlertDialogFooter>
@@ -2695,6 +2034,1149 @@ export function DataGrid<TData>({
       <div aria-live="polite" className="sr-only">
         {liveMessage}
       </div>
-    </div>
+    </>
   )
+}
+
+// ── Toolbar ──────────────────────────────────────────────────────────────
+
+function DataGridToolbar({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="data-grid-toolbar"
+      className={cn("flex items-center gap-2", className)}
+      {...props}
+    />
+  )
+}
+
+/** Groups the toolbar's controls and pushes them to the end. */
+function DataGridToolbarActions({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="data-grid-toolbar-actions"
+      className={cn("ms-auto flex shrink-0 items-center gap-1.5", className)}
+      {...props}
+    />
+  )
+}
+
+/** Global search. Rendered only when the table has a filtered row model. */
+function DataGridSearch() {
+  const { canFilter, table } = useDataGridConfig()
+  return canFilter ? <DataSearch table={table} /> : null
+}
+
+/** The filter popover trigger (wide layout). Needs at least one typed column. */
+function DataGridFilter() {
+  const { canFilterColumns, showCards, table } = useDataGridConfig()
+  if (showCards) return null
+  return (
+    canFilterColumns && (
+      <DataFilterPopover
+        table={table}
+        trigger={
+          <Button variant="outline" size="icon" aria-label="Filter">
+            <HugeiconsIcon
+              icon={FilterIcon}
+              strokeWidth={2}
+              className="size-4"
+            />
+          </Button>
+        }
+      />
+    )
+  )
+}
+
+/** The column visibility and order menu (wide layout). */
+function DataGridColumns() {
+  const {
+    columnDragSensors,
+    handleColumnDragCancel,
+    handleColumnDragEnd,
+    handleColumnDragOver,
+    handleColumnDragStart,
+    hiddenMenuColumns,
+    renderColumnMenuRow,
+    showCards,
+    table,
+  } = useDataGrid()
+  if (showCards) return null
+  return (
+    <Popover>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <PopoverTrigger
+                render={
+                  <Button variant="outline" size="icon" aria-label="Columns">
+                    <HugeiconsIcon
+                      icon={LayoutThreeColumnIcon}
+                      strokeWidth={2}
+                      className="size-4"
+                    />
+                  </Button>
+                }
+              />
+            }
+          />
+          <TooltipContent>Column</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <PopoverContent align="end" className="w-64 p-1">
+        <DndContext
+          sensors={columnDragSensors}
+          collisionDetection={closestCenter}
+          measuring={columnDragMeasuring}
+          onDragStart={handleColumnDragStart}
+          onDragOver={handleColumnDragOver}
+          onDragEnd={handleColumnDragEnd}
+          onDragCancel={handleColumnDragCancel}
+        >
+          <div className="px-1.5 py-1 text-xs font-medium text-muted-foreground">
+            Shown in table
+          </div>
+          <SortableContext
+            items={table.getVisibleLeafColumns().map((c) => c.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <ul className="flex list-none flex-col gap-0.5 ps-0">
+              {table
+                .getVisibleLeafColumns()
+                .map((column) => renderColumnMenuRow(column, false))}
+            </ul>
+          </SortableContext>
+          {hiddenMenuColumns.length > 0 && (
+            <>
+              <div className="px-1.5 py-1 text-xs font-medium text-muted-foreground">
+                Hidden in table
+              </div>
+              <SortableContext
+                items={hiddenMenuColumns.map((c) => c.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <ul className="flex list-none flex-col gap-0.5 ps-0">
+                  {hiddenMenuColumns.map((column) =>
+                    renderColumnMenuRow(column, true)
+                  )}
+                </ul>
+              </SortableContext>
+            </>
+          )}
+        </DndContext>
+      </PopoverContent>
+    </Popover>
+  )
+}
+
+/** The narrow layout's single options sheet: sort, filters and columns. */
+function DataGridOptions() {
+  const {
+    canFilterColumns,
+    canSort,
+    optionsCount,
+    optionsOpen,
+    renderFieldRow,
+    renderSortRow,
+    setOptionsOpen,
+    showCards,
+    table,
+  } = useDataGrid()
+  if (!showCards) return null
+  return (
+    <Drawer open={optionsOpen} onOpenChange={setOptionsOpen} showSwipeHandle>
+      <DrawerTrigger
+        render={
+          <Button
+            variant="outline"
+            size="icon"
+            aria-label="Options"
+            className="relative ms-auto shrink-0"
+          >
+            <HugeiconsIcon
+              icon={SlidersHorizontalIcon}
+              strokeWidth={2}
+              className="size-4"
+            />
+            {optionsCount > 0 && (
+              <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                {optionsCount}
+              </span>
+            )}
+          </Button>
+        }
+      />
+      <DrawerContent className="h-[80vh]">
+        <DrawerHeader>
+          <DrawerTitle>Options</DrawerTitle>
+        </DrawerHeader>
+        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pb-6">
+          {canSort && (
+            <section>
+              <h3 className="px-4 py-1 text-xs font-medium text-muted-foreground">
+                Sort
+              </h3>
+              <div className="flex flex-col gap-0.5 px-4">
+                {table.getAllLeafColumns().map(renderSortRow)}
+              </div>
+            </section>
+          )}
+          {canFilterColumns && (
+            <section>
+              <h3 className="px-4 py-1 text-xs font-medium text-muted-foreground">
+                Filters
+              </h3>
+              <DataFilterChain table={table} open={optionsOpen} />
+            </section>
+          )}
+          <section>
+            <h3 className="px-4 py-1 text-xs font-medium text-muted-foreground">
+              Visible fields
+            </h3>
+            <div className="flex flex-col gap-0.5 px-4">
+              {table.getAllLeafColumns().map(renderFieldRow)}
+            </div>
+            <p className="px-4 py-2 text-xs text-muted-foreground">
+              The first visible field titles each card; the next two are its
+              subtitle.
+            </p>
+          </section>
+        </div>
+      </DrawerContent>
+    </Drawer>
+  )
+}
+
+/** The row of active filter chips (wide layout). */
+function DataGridFilterChips() {
+  const { canFilterColumns, showCards, table } = useDataGridConfig()
+  if (showCards) return null
+  return canFilterColumns && <DataFilterChips table={table} />
+}
+
+// ── Table ────────────────────────────────────────────────────────────────
+
+export interface DataGridTableProps {
+  /** Rendered in place of rows when `table.getRowModel().rows` is empty, in both layouts. Defaults to plain "No results." text. */
+  emptyState?: React.ReactNode
+}
+
+/**
+ * The rows. Below a 448px measured container width it renders a card list
+ * (see `narrowFallback`); otherwise the editable grid.
+ */
+function DataGridTable({ emptyState = "No results." }: DataGridTableProps) {
+  const {
+    addError,
+    addPending,
+    beginEdit,
+    booleanCellValue,
+    buffer,
+    cellRefs,
+    closePopoverEditAt,
+    colCount,
+    commits,
+    editCoord,
+    error,
+    errorId,
+    firstVisibleColumnId,
+    focusCoord,
+    forceStickyFirstColumn,
+    getColumnLabel,
+    handleRowAdd,
+    hasDeleteColumn,
+    hasSelectionColumn,
+    headerGroups,
+    inputRefs,
+    moveColumn,
+    multiSelectCellValue,
+    onCellClick,
+    onEditInputBlur,
+    onEditInputChange,
+    onEditInputKeyDown,
+    onGridCellKeyDown,
+    onRowAdd,
+    onRowCheckboxChange,
+    openCardSheet,
+    pickUser,
+    rowCount,
+    rows,
+    selectRefs,
+    setBuffer,
+    setDeleteTarget,
+    setFocusCoord,
+    showCards,
+    subtitleColumns,
+    table,
+    titleColumn,
+    toggleBooleanCell,
+    toggleMultiSelectValue,
+    totalColCount,
+    userCellValue,
+  } = useDataGrid()
+  if (showCards) {
+    return (
+      <ul className="flex list-none flex-col divide-y rounded-md border ps-0">
+        {rowCount === 0 ? (
+          <li className="p-4 text-center text-sm text-muted-foreground">
+            {emptyState}
+          </li>
+        ) : (
+          rows.map((row) => {
+            const cells = row.getVisibleCells()
+            const titleCell = cells.find((c) => c.column.id === titleColumn?.id)
+            const subtitleCells = subtitleColumns
+              .map((col) => cells.find((c) => c.column.id === col.id))
+              .filter((c): c is NonNullable<typeof c> => c != null)
+            const subtitleText = subtitleCells
+              .map((c) => formatCardValue(c))
+              .filter(Boolean)
+              .join(" · ")
+            return (
+              <li key={row.id}>
+                <button
+                  type="button"
+                  onClick={() => openCardSheet(row.id)}
+                  className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left hover:bg-accent/30"
+                >
+                  <span className="flex min-w-0 flex-col">
+                    <span className="truncate font-medium">
+                      {titleCell ? formatCardValue(titleCell) || "—" : "—"}
+                    </span>
+                    {subtitleText && (
+                      <span className="truncate text-sm text-muted-foreground">
+                        {subtitleText}
+                      </span>
+                    )}
+                  </span>
+                  <HugeiconsIcon
+                    icon={ArrowRight01Icon}
+                    strokeWidth={2}
+                    aria-hidden="true"
+                    className="size-4 shrink-0 text-muted-foreground"
+                  />
+                </button>
+              </li>
+            )
+          })
+        )}
+        {onRowAdd && (
+          <li>
+            <button
+              type="button"
+              disabled={addPending}
+              aria-busy={addPending}
+              onClick={() => handleRowAdd()}
+              className="flex w-full items-center gap-1.5 px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent/30 hover:text-foreground disabled:pointer-events-none disabled:opacity-60"
+            >
+              {addPending ? (
+                <Spinner role="presentation" aria-hidden className="size-3.5" />
+              ) : (
+                <HugeiconsIcon
+                  icon={PlusSignIcon}
+                  strokeWidth={2}
+                  className="size-3.5"
+                />
+              )}
+              New row
+            </button>
+            {addError && (
+              <p role="alert" className="px-3 pb-2 text-xs text-destructive">
+                {addError}
+              </p>
+            )}
+          </li>
+        )}
+      </ul>
+    )
+  }
+  return (
+    <>
+      {/* aria-rowcount includes the header row, per the grid pattern's own convention. */}
+      {/* Gridlines come from a trailing border on every cell (last column
+              excluded) rather than a class on each TableHead/TableCell call
+              site — there are six of those, and they'd drift. */}
+      <div className="overflow-hidden rounded-md border">
+        <Table
+          role="grid"
+          aria-rowcount={rowCount + 1}
+          aria-colcount={totalColCount}
+          className="w-auto min-w-full table-fixed [&_td]:border-e [&_td:last-child]:border-e-0 [&_th]:border-e [&_th:last-child]:border-e-0"
+        >
+          <TableHeader>
+            {headerGroups.map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {hasSelectionColumn && (
+                  <TableHead className="w-10 min-w-10 p-0 text-center">
+                    <div className="flex items-center justify-center px-2 py-2.5">
+                      <SelectAllCheckbox
+                        checked={table.getIsAllRowsSelected()}
+                        indeterminate={
+                          !table.getIsAllRowsSelected() &&
+                          table.getIsSomeRowsSelected()
+                        }
+                        onCheckedChange={(checked) =>
+                          table.toggleAllRowsSelected(checked)
+                        }
+                      />
+                    </div>
+                  </TableHead>
+                )}
+                {headerGroup.headers.map((header, headerIndex) => {
+                  const pinned = header.column.getIsPinned()
+                  const pin = columnPin(
+                    header.column,
+                    forceStickyFirstColumn &&
+                      header.column.id === firstVisibleColumnId,
+                    table.getTotalSize()
+                  )
+                  // getCanSort() is true for any accessor column; only expose
+                  // the affordance when the consumer actually wired a sorted
+                  // row model, so a click can't be a no-op.
+                  const canSort =
+                    header.column.getCanSort() &&
+                    table.options.getSortedRowModel != null
+                  const sortDirection = header.column.getIsSorted()
+                  const isNumericHeader = isNumericType(
+                    header.column.columnDef.meta?.type
+                  )
+                  const canMoveLeft = headerIndex > 0
+                  const canMoveRight =
+                    headerIndex < headerGroup.headers.length - 1
+                  const stickyHeader =
+                    pinned ||
+                    (forceStickyFirstColumn &&
+                      header.column.id === firstVisibleColumnId)
+                  return (
+                    <TableHead
+                      key={header.id}
+                      className={cn(
+                        "group relative w-(--col-width)",
+                        (pin.stickyLeft || pin.stickyRight) && "sticky z-1",
+                        pin.stickyLeft && "left-(--pin-left)",
+                        pin.stickyRight && "right-(--pin-right)",
+                        stickyHeader && "bg-background"
+                      )}
+                      style={
+                        {
+                          "--col-width": pin.width,
+                          "--pin-left": pin.left,
+                          "--pin-right": pin.right,
+                        } as React.CSSProperties
+                      }
+                    >
+                      {!header.isPlaceholder && (
+                        <div className="flex items-center justify-between gap-1 pe-2">
+                          {canSort ? (
+                            <button
+                              type="button"
+                              onClick={header.column.getToggleSortingHandler()}
+                              aria-label={`Sort by ${getColumnLabel(header.column)}`}
+                              className={cn(
+                                "flex min-w-0 flex-1 items-center gap-1 text-left",
+                                isNumericHeader && "flex-row-reverse text-right"
+                              )}
+                            >
+                              <span className="truncate">
+                                {flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext()
+                                )}
+                              </span>
+                              {sortIcon(sortDirection)}
+                            </button>
+                          ) : (
+                            <span
+                              className={cn(
+                                "truncate",
+                                isNumericHeader && "flex-1 text-right"
+                              )}
+                            >
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                            </span>
+                          )}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger
+                              render={
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon-xs"
+                                  aria-label={`${getColumnLabel(header.column)} column options`}
+                                  className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 data-[popup-open]:opacity-100"
+                                >
+                                  <HugeiconsIcon
+                                    icon={MoreVerticalIcon}
+                                    strokeWidth={2}
+                                  />
+                                </Button>
+                              }
+                            />
+                            <DropdownMenuContent align="start">
+                              <DropdownMenuItem
+                                disabled={!canMoveLeft}
+                                onClick={() => moveColumn(header.column.id, -1)}
+                              >
+                                Move left
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                disabled={!canMoveRight}
+                                onClick={() => moveColumn(header.column.id, 1)}
+                              >
+                                Move right
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              {header.column.getCanHide() && (
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    header.column.toggleVisibility(false)
+                                  }
+                                >
+                                  Hide column
+                                </DropdownMenuItem>
+                              )}
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  header.column.pin(nextPinPosition(pinned))
+                                }
+                              >
+                                {pinActionLabel(pinned)}
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      )}
+                      {header.column.getCanResize() && (
+                        <div
+                          role="separator"
+                          aria-orientation="vertical"
+                          aria-label={`Resize ${getColumnLabel(header.column)} column`}
+                          onMouseDown={header.getResizeHandler()}
+                          onTouchStart={header.getResizeHandler()}
+                          onDoubleClick={() => header.column.resetSize()}
+                          className="absolute top-0 right-0 h-full w-1 cursor-col-resize touch-none select-none hover:bg-accent"
+                          style={
+                            header.column.getIsResizing()
+                              ? {
+                                  transform: `translateX(${table.getState().columnSizingInfo.deltaOffset ?? 0}px)`,
+                                }
+                              : undefined
+                          }
+                        />
+                      )}
+                    </TableHead>
+                  )
+                })}
+                {hasDeleteColumn && (
+                  <TableHead aria-hidden="true" className="w-10 min-w-10" />
+                )}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {rowCount === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={totalColCount}
+                  className="h-24 text-center text-muted-foreground"
+                >
+                  {emptyState}
+                </TableCell>
+              </TableRow>
+            ) : (
+              rows.map((row, r) => {
+                // Absolutely positioned against the row, not its own <tr> — a table row/cell can't render at height:0 (browsers floor it ~1px), which would show as a second hairline.
+                const showInsertAfter = onRowAdd && r < rowCount - 1
+                const insertAfterButton = showInsertAfter && (
+                  <button
+                    type="button"
+                    aria-label={`Insert row after row ${r + 1}`}
+                    disabled={addPending}
+                    onClick={() => handleRowAdd(row.id)}
+                    className="absolute inset-x-0 bottom-0 z-10 flex h-4 translate-y-1/2 items-center justify-center opacity-0 transition-opacity group-hover/row:opacity-100 focus-visible:opacity-100"
+                  >
+                    <span className="flex size-5 items-center justify-center rounded-full border bg-background shadow-sm">
+                      <HugeiconsIcon
+                        icon={PlusSignIcon}
+                        strokeWidth={2}
+                        className="size-3"
+                      />
+                    </span>
+                  </button>
+                )
+
+                return (
+                  <TableRow key={row.id} className="group/row relative">
+                    {hasSelectionColumn && (
+                      <TableCell className="w-10 min-w-10 p-0 text-center align-top">
+                        <div className="flex items-center justify-center px-2 py-2.5">
+                          <Checkbox
+                            checked={row.getIsSelected()}
+                            aria-label={`Select row ${r + 1}`}
+                            onCheckedChange={(_checked, eventDetails) =>
+                              onRowCheckboxChange(r, eventDetails.event)
+                            }
+                          />
+                        </div>
+                      </TableCell>
+                    )}
+                    {row.getVisibleCells().map((cell, c) => {
+                      const key = cellKey(r, c)
+                      const isFocused = focusCoord.r === r && focusCoord.c === c
+                      const isEditing = editCoord?.r === r && editCoord?.c === c
+                      const commit = commits.get(key)
+                      const isPending = commit?.pending ?? false
+                      const columnType = cell.column.columnDef.meta?.type
+                      const isPlainInputColumn =
+                        columnType === "text" ||
+                        columnType === "number" ||
+                        columnType === "currency" ||
+                        columnType === "date"
+                      const isSelectColumn = columnType === "select"
+                      const isBooleanColumn = columnType === "boolean"
+                      const isMultiSelectColumn = columnType === "multiSelect"
+                      const isUserColumn = columnType === "user"
+                      // multiSelect's popover can stay open through a rejected toggle-commit, so it always reads the commit's error, not the buffer-editor's live `error`.
+                      const displayError =
+                        isEditing && !isMultiSelectColumn
+                          ? error
+                          : (commit?.error ?? null)
+                      const showError = displayError != null
+                      const value = cell.getValue()
+                      const cellErrorId = `${errorId}-${key}`
+                      const isLastCell = !hasDeleteColumn && c === colCount - 1
+                      const forceSticky =
+                        forceStickyFirstColumn &&
+                        cell.column.id === firstVisibleColumnId
+                      const isPinned = cell.column.getIsPinned() || forceSticky
+                      const pin = columnPin(
+                        cell.column,
+                        forceSticky,
+                        table.getTotalSize()
+                      )
+
+                      return (
+                        <TableCell
+                          key={cell.id}
+                          ref={setMapRef(cellRefs, key)}
+                          role="gridcell"
+                          tabIndex={isFocused ? 0 : -1}
+                          onFocus={() => setFocusCoord({ r, c })}
+                          onClick={() => onCellClick(r, c)}
+                          onKeyDown={(e) => onGridCellKeyDown(e, r, c)}
+                          style={
+                            {
+                              "--col-width": pin.width,
+                              "--pin-left": pin.left,
+                              "--pin-right": pin.right,
+                            } as React.CSSProperties
+                          }
+                          className={cn(
+                            "w-(--col-width) p-0 align-top whitespace-normal outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
+                            (pin.stickyLeft || pin.stickyRight) && "sticky z-1",
+                            pin.stickyLeft && "left-(--pin-left)",
+                            pin.stickyRight && "right-(--pin-right)",
+                            isPinned && "bg-background"
+                          )}
+                        >
+                          {isPlainInputColumn ? (
+                            <>
+                              <div className="relative">
+                                {columnType === "currency" && isEditing && (
+                                  <span
+                                    aria-hidden="true"
+                                    className="pointer-events-none absolute top-1/2 left-2 -translate-y-1/2 text-muted-foreground"
+                                  >
+                                    $
+                                  </span>
+                                )}
+                                <Input
+                                  ref={setMapRef(inputRefs, key)}
+                                  type={
+                                    columnType === "date"
+                                      ? "date"
+                                      : columnType === "number"
+                                        ? "number"
+                                        : "text"
+                                  }
+                                  value={
+                                    isEditing
+                                      ? buffer
+                                      : formatReadValue(
+                                          columnType,
+                                          commit?.value ?? value
+                                        )
+                                  }
+                                  readOnly={!isEditing}
+                                  disabled={isPending}
+                                  tabIndex={-1}
+                                  aria-invalid={showError || undefined}
+                                  aria-describedby={
+                                    showError ? cellErrorId : undefined
+                                  }
+                                  onMouseDown={(e) => {
+                                    if (!isEditing) e.preventDefault()
+                                  }}
+                                  onChange={
+                                    isEditing ? onEditInputChange : undefined
+                                  }
+                                  onKeyDown={
+                                    isEditing ? onEditInputKeyDown : undefined
+                                  }
+                                  onBlur={
+                                    isEditing ? onEditInputBlur : undefined
+                                  }
+                                  className={cn(
+                                    "h-auto rounded-none border-none bg-transparent px-2 py-2 shadow-none hover:bg-accent/30 focus-visible:bg-background focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset dark:bg-transparent",
+                                    isNumericType(columnType) &&
+                                      "text-right tabular-nums",
+                                    columnType === "currency" &&
+                                      isEditing &&
+                                      "pl-5",
+                                    isPending && "pr-7"
+                                  )}
+                                />
+                                {isPending && (
+                                  <Spinner
+                                    role="presentation"
+                                    aria-hidden="true"
+                                    aria-label={undefined}
+                                    className="absolute top-1/2 right-2 size-3.5 -translate-y-1/2"
+                                  />
+                                )}
+                              </div>
+                              {showError && (
+                                <span
+                                  id={cellErrorId}
+                                  className="block px-2 pb-1.5 text-xs text-destructive"
+                                >
+                                  {displayError}
+                                </span>
+                              )}
+                            </>
+                          ) : isSelectColumn ? (
+                            <>
+                              <div className="relative">
+                                <select
+                                  ref={setMapRef(selectRefs, key)}
+                                  value={
+                                    isEditing
+                                      ? buffer
+                                      : cellDisplayValue(commit?.value ?? value)
+                                  }
+                                  disabled={!isEditing || isPending}
+                                  tabIndex={-1}
+                                  aria-invalid={showError || undefined}
+                                  aria-describedby={
+                                    showError ? cellErrorId : undefined
+                                  }
+                                  onMouseDown={(e) => {
+                                    if (!isEditing) e.preventDefault()
+                                  }}
+                                  onChange={
+                                    isEditing ? onEditInputChange : undefined
+                                  }
+                                  onKeyDown={
+                                    isEditing ? onEditInputKeyDown : undefined
+                                  }
+                                  onBlur={
+                                    isEditing ? onEditInputBlur : undefined
+                                  }
+                                  className={cn(
+                                    "h-auto w-full appearance-none rounded-none border-none bg-transparent px-2 py-2 text-sm shadow-none hover:bg-accent/30 focus-visible:bg-background focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset disabled:cursor-default disabled:opacity-100 dark:bg-transparent",
+                                    isPending && "pr-7"
+                                  )}
+                                >
+                                  {cell.column.columnDef.meta?.options?.map(
+                                    (opt) => (
+                                      <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                      </option>
+                                    )
+                                  )}
+                                </select>
+                                {isPending && (
+                                  <Spinner
+                                    role="presentation"
+                                    aria-hidden="true"
+                                    aria-label={undefined}
+                                    className="absolute top-1/2 right-2 size-3.5 -translate-y-1/2"
+                                  />
+                                )}
+                              </div>
+                              {showError && (
+                                <span
+                                  id={cellErrorId}
+                                  className="block px-2 pb-1.5 text-xs text-destructive"
+                                >
+                                  {displayError}
+                                </span>
+                              )}
+                            </>
+                          ) : isBooleanColumn ? (
+                            <>
+                              <div className="flex items-center px-2 py-2 hover:bg-accent/30">
+                                <Checkbox
+                                  checked={booleanCellValue(r, c, value)}
+                                  disabled={isPending}
+                                  tabIndex={-1}
+                                  aria-invalid={showError || undefined}
+                                  aria-describedby={
+                                    showError ? cellErrorId : undefined
+                                  }
+                                  aria-label={`${getColumnLabel(cell.column)}, row ${r + 1}`}
+                                  onCheckedChange={() =>
+                                    toggleBooleanCell(r, c)
+                                  }
+                                />
+                                {isPending && (
+                                  <Spinner
+                                    role="presentation"
+                                    aria-hidden="true"
+                                    aria-label={undefined}
+                                    className="ml-2 size-3.5"
+                                  />
+                                )}
+                              </div>
+                              {showError && (
+                                <span
+                                  id={cellErrorId}
+                                  className="block px-2 pb-1.5 text-xs text-destructive"
+                                >
+                                  {displayError}
+                                </span>
+                              )}
+                            </>
+                          ) : isMultiSelectColumn ? (
+                            <>
+                              <Popover
+                                open={isEditing}
+                                onOpenChange={(next) =>
+                                  next
+                                    ? beginEdit(r, c)
+                                    : closePopoverEditAt(r, c)
+                                }
+                              >
+                                <PopoverTrigger
+                                  render={
+                                    <button
+                                      type="button"
+                                      tabIndex={-1}
+                                      disabled={isPending}
+                                      aria-invalid={showError || undefined}
+                                      aria-describedby={
+                                        showError ? cellErrorId : undefined
+                                      }
+                                      aria-label={`${getColumnLabel(cell.column)}, row ${r + 1}`}
+                                      className="flex w-full items-center gap-1 overflow-hidden px-2 py-2 hover:bg-accent/30 focus-visible:bg-background disabled:cursor-default"
+                                    >
+                                      {renderMultiSelectTrigger(
+                                        multiSelectCellValue(r, c, value),
+                                        cell.column.columnDef.meta?.options ??
+                                          [],
+                                        cell.column.columnDef.meta?.maxChips ??
+                                          2
+                                      )}
+                                      {isPending && (
+                                        <Spinner
+                                          role="presentation"
+                                          aria-hidden="true"
+                                          aria-label={undefined}
+                                          className="ml-auto size-3.5 shrink-0"
+                                        />
+                                      )}
+                                    </button>
+                                  }
+                                />
+                                <PopoverContent
+                                  align="start"
+                                  className="w-64 p-0"
+                                >
+                                  <Command>
+                                    <CommandInput
+                                      placeholder="Search options..."
+                                      value={buffer}
+                                      onValueChange={setBuffer}
+                                    />
+                                    <CommandList>
+                                      <CommandEmpty>No options.</CommandEmpty>
+                                      <CommandGroup>
+                                        {(
+                                          cell.column.columnDef.meta?.options ??
+                                          []
+                                        ).map((opt) => (
+                                          <CommandItem
+                                            key={opt.value}
+                                            value={opt.label}
+                                            data-checked={
+                                              multiSelectCellValue(
+                                                r,
+                                                c,
+                                                value
+                                              ).includes(opt.value)
+                                                ? "true"
+                                                : undefined
+                                            }
+                                            onSelect={() =>
+                                              toggleMultiSelectValue(
+                                                r,
+                                                c,
+                                                opt.value
+                                              )
+                                            }
+                                          >
+                                            {opt.label}
+                                          </CommandItem>
+                                        ))}
+                                      </CommandGroup>
+                                    </CommandList>
+                                  </Command>
+                                </PopoverContent>
+                              </Popover>
+                              {showError && (
+                                <span
+                                  id={cellErrorId}
+                                  className="block px-2 pb-1.5 text-xs text-destructive"
+                                >
+                                  {displayError}
+                                </span>
+                              )}
+                            </>
+                          ) : isUserColumn ? (
+                            <>
+                              <Popover
+                                open={isEditing}
+                                onOpenChange={(next) =>
+                                  next
+                                    ? beginEdit(r, c)
+                                    : closePopoverEditAt(r, c)
+                                }
+                              >
+                                <PopoverTrigger
+                                  render={
+                                    <button
+                                      type="button"
+                                      tabIndex={-1}
+                                      disabled={isPending}
+                                      aria-invalid={showError || undefined}
+                                      aria-describedby={
+                                        showError ? cellErrorId : undefined
+                                      }
+                                      aria-label={`${getColumnLabel(cell.column)}, row ${r + 1}`}
+                                      className="flex w-full items-center gap-2 overflow-hidden px-2 py-1.5 hover:bg-accent/30 focus-visible:bg-background disabled:cursor-default"
+                                    >
+                                      {renderUserTrigger(
+                                        userCellValue(r, c, value),
+                                        cell.column.columnDef.meta?.users ?? []
+                                      )}
+                                      {isPending && (
+                                        <Spinner
+                                          role="presentation"
+                                          aria-hidden="true"
+                                          aria-label={undefined}
+                                          className="ml-auto size-3.5 shrink-0"
+                                        />
+                                      )}
+                                    </button>
+                                  }
+                                />
+                                <PopoverContent
+                                  align="start"
+                                  className="w-64 p-0"
+                                >
+                                  <Command>
+                                    <CommandInput
+                                      placeholder="Search people..."
+                                      value={buffer}
+                                      onValueChange={setBuffer}
+                                    />
+                                    <CommandList>
+                                      <CommandEmpty>No people.</CommandEmpty>
+                                      <CommandGroup>
+                                        <CommandItem
+                                          value="Unassigned"
+                                          data-checked={
+                                            userCellValue(r, c, value) == null
+                                              ? "true"
+                                              : undefined
+                                          }
+                                          onSelect={() => pickUser(r, c, null)}
+                                        >
+                                          Unassigned
+                                        </CommandItem>
+                                        {(
+                                          cell.column.columnDef.meta?.users ??
+                                          []
+                                        ).map((u) => (
+                                          <CommandItem
+                                            key={u.id}
+                                            value={u.name}
+                                            data-checked={
+                                              userCellValue(r, c, value) ===
+                                              u.id
+                                                ? "true"
+                                                : undefined
+                                            }
+                                            onSelect={() =>
+                                              pickUser(r, c, u.id)
+                                            }
+                                          >
+                                            <Avatar size="sm">
+                                              {u.avatarUrl && (
+                                                <AvatarImage
+                                                  src={u.avatarUrl}
+                                                  alt=""
+                                                />
+                                              )}
+                                              <AvatarFallback>
+                                                {initials(u.name)}
+                                              </AvatarFallback>
+                                            </Avatar>
+                                            {u.name}
+                                          </CommandItem>
+                                        ))}
+                                      </CommandGroup>
+                                    </CommandList>
+                                  </Command>
+                                </PopoverContent>
+                              </Popover>
+                              {showError && (
+                                <span
+                                  id={cellErrorId}
+                                  className="block px-2 pb-1.5 text-xs text-destructive"
+                                >
+                                  {displayError}
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            <div className="px-2 py-2">
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </div>
+                          )}
+                          {isLastCell && insertAfterButton}
+                        </TableCell>
+                      )
+                    })}
+                    {hasDeleteColumn && (
+                      <TableCell className="w-10 min-w-10 p-0 text-center align-top">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger
+                            render={
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                aria-label={`Row ${r + 1} actions`}
+                                className="size-7 opacity-0 group-hover/row:opacity-100 focus-visible:opacity-100 data-[popup-open]:opacity-100"
+                              >
+                                <HugeiconsIcon
+                                  icon={MoreHorizontalIcon}
+                                  strokeWidth={2}
+                                  className="size-3.5"
+                                />
+                              </Button>
+                            }
+                          />
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              variant="destructive"
+                              onClick={() => setDeleteTarget(row.id)}
+                            >
+                              Delete row
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                        {insertAfterButton}
+                      </TableCell>
+                    )}
+                  </TableRow>
+                )
+              })
+            )}
+            {onRowAdd && (
+              <TableRow className="border-none">
+                <TableCell colSpan={totalColCount} className="p-0">
+                  <button
+                    type="button"
+                    disabled={addPending}
+                    aria-busy={addPending}
+                    onClick={() => handleRowAdd()}
+                    className="flex w-full items-center gap-1.5 px-2 py-2 text-sm text-muted-foreground hover:bg-accent/30 hover:text-foreground disabled:pointer-events-none disabled:opacity-60"
+                  >
+                    {addPending ? (
+                      <Spinner
+                        role="presentation"
+                        aria-hidden
+                        className="size-3.5"
+                      />
+                    ) : (
+                      <HugeiconsIcon
+                        icon={PlusSignIcon}
+                        strokeWidth={2}
+                        className="size-3.5"
+                      />
+                    )}
+                    New row
+                  </button>
+                  {addError && (
+                    <p
+                      role="alert"
+                      className="px-2 pb-2 text-xs text-destructive"
+                    >
+                      {addError}
+                    </p>
+                  )}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </>
+  )
+}
+
+function DataGridPagination() {
+  const { canPaginate, table } = useDataGridConfig()
+  return canPaginate ? <DataPagination table={table} /> : null
+}
+
+// ── Namespace ────────────────────────────────────────────────────────────
+
+const DataGrid = {
+  Root: DataGridRoot,
+  Toolbar: DataGridToolbar,
+  ToolbarActions: DataGridToolbarActions,
+  Search: DataGridSearch,
+  Filter: DataGridFilter,
+  Columns: DataGridColumns,
+  Options: DataGridOptions,
+  FilterChips: DataGridFilterChips,
+  Table: DataGridTable,
+  Pagination: DataGridPagination,
+}
+
+export {
+  DataGrid,
+  DataGridRoot,
+  DataGridToolbar,
+  DataGridToolbarActions,
+  DataGridSearch,
+  DataGridFilter,
+  DataGridColumns,
+  DataGridOptions,
+  DataGridFilterChips,
+  DataGridTable,
+  DataGridPagination,
 }

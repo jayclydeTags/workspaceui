@@ -80,7 +80,7 @@ export function DataGridSelectionDemo() {
             Delete
           </Button>
         </BulkToolbar>
-        <DataGrid
+        <DataGrid.Root
           table={table}
           onCellEdit={(rowId, columnId, value) => {
             setData((prev) =>
@@ -89,7 +89,19 @@ export function DataGridSelectionDemo() {
               )
             )
           }}
-        />
+        >
+          <DataGrid.Toolbar>
+            <DataGrid.Search />
+            <DataGrid.ToolbarActions>
+              <DataGrid.Filter />
+              <DataGrid.Columns />
+              <DataGrid.Options />
+            </DataGrid.ToolbarActions>
+          </DataGrid.Toolbar>
+          <DataGrid.FilterChips />
+          <DataGrid.Table />
+          <DataGrid.Pagination />
+        </DataGrid.Root>
         <AlertDialog
           open={confirmBulkDelete}
           onOpenChange={setConfirmBulkDelete}

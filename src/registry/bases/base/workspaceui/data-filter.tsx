@@ -4,6 +4,7 @@ import * as React from "react"
 import type {
   Column,
   FilterFn,
+  RowData,
   Table as TanstackTable,
 } from "@tanstack/react-table"
 import { HugeiconsIcon } from "@hugeicons/react"
@@ -40,10 +41,57 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-// Side-effect import: pulls in the column.meta type augmentation this
-// component reads (column.columnDef.meta?.type / .options).
-import "@/registry/bases/base/workspaceui/data-grid-types"
-import type { DataGridColumnType } from "@/registry/bases/base/workspaceui/data-grid-types"
+
+// ── Column type contract ─────────────────────────────────────────────────
+// Declared once, here, so data-filter, data-search and data-grid share one
+// `column.meta` shape. Every type has a cell editor in data-grid;
+// "multiSelect" and "user" open a searchable popover instead of an inline
+// control. Add the data-filter file to your project and `meta` is typed
+// everywhere, with no import needed.
+
+export type DataGridColumnType =
+  | "text"
+  | "number"
+  | "currency"
+  | "select"
+  | "boolean"
+  | "date"
+  | "multiSelect"
+  | "user"
+
+export interface DataGridSelectOption {
+  value: string
+  label: string
+}
+
+export interface DataGridUser {
+  id: string
+  name: string
+  avatarUrl?: string
+}
+
+declare module "@tanstack/react-table" {
+  // TData/TValue must match the original declaration's type parameters for
+  // module augmentation to merge.
+  interface ColumnMeta<TData extends RowData, TValue> {
+    type?: DataGridColumnType
+    /** select and multiSelect */
+    options?: DataGridSelectOption[]
+    /** user — a static list; the grid never fetches */
+    users?: DataGridUser[]
+    /** multiSelect — chips shown before collapsing into "+N". Default 2. */
+    maxChips?: number
+    /** Marks this column as card title/subtitle material for the narrow branch. */
+    summary?: boolean
+    /**
+     * Extra validation, run after the built-in checks (required, numeric). Return
+     * an error message to block the edit and show it on the cell, or
+     * `null`/`undefined` if the value is fine. `value` is already coerced to the
+     * column's type (a number for number/currency).
+     */
+    validate?: (value: TValue, row: TData) => string | null | undefined
+  }
+}
 
 export interface DataFilterProps<TData> {
   table: TanstackTable<TData>

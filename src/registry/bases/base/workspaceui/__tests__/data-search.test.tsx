@@ -13,7 +13,6 @@ import {
   dataGridGetColumnCanGlobalFilter,
   dataGridGlobalFilterFn,
 } from "../data-search"
-import "../data-grid-types"
 
 interface Item {
   id: string

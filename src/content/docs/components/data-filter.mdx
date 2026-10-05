@@ -8,8 +8,9 @@ description: A composable filter builder over a consumer-owned useReactTable() i
 `DataFilter` is a headless-composition component over the same
 `useReactTable()` instance you'd pass to [Data Grid](/components/data-grid)
 — they aren't coupled, and a consumer can use either alone. They share only
-the `table` instance and the `column.meta` type contract from
-[Data Grid Types](/components/data-grid-types). All eight column types
+the `table` instance and the `column.meta` type contract, which is declared
+in `data-filter` itself and documented under "Column meta" on the
+[Data Grid](/components/data-grid) page. All eight column types
 have a working operator set here — `text`, `number`, `currency`, `date`,
 `select`, `boolean`, `multiSelect`, and `user`. `user` shares `select`'s
 operators verbatim, with "Unassigned" as a pickable null value rather than a
@@ -43,9 +44,9 @@ npx shadcn@latest add popover command drawer badge button-group
 
 ### Copy the files into your project
 
-`data-filter` depends on `data-grid-types` for the `column.meta` contract:
+`data-filter` declares the `column.meta` type contract that `data-search`
+and `data-grid` share:
 
-<ComponentSource name="data-grid-types" />
 <ComponentSource name="data-filter" />
 
 </TabsContent>

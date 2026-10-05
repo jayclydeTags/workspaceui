@@ -55,7 +55,7 @@ export function DataGridEmptyStateDemo() {
 
   return (
     <div className="w-full min-w-0">
-      <DataGrid
+      <DataGrid.Root
         table={table}
         onCellEdit={(rowId, columnId, value) => {
           setData((prev) =>
@@ -68,25 +68,38 @@ export function DataGridEmptyStateDemo() {
         onRowDelete={(rowId) => {
           setData((prev) => prev.filter((row) => row.id !== rowId))
         }}
-        emptyState={
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <HugeiconsIcon icon={ListPlusIcon} strokeWidth={2} />
-              </EmptyMedia>
-              <EmptyTitle>No tasks yet</EmptyTitle>
-              <EmptyDescription>
-                Add your first task to start tracking estimates.
-              </EmptyDescription>
-            </EmptyHeader>
-            <EmptyContent>
-              <Button size="sm" onClick={addTask}>
-                Add task
-              </Button>
-            </EmptyContent>
-          </Empty>
-        }
-      />
+      >
+        <DataGrid.Toolbar>
+          <DataGrid.Search />
+          <DataGrid.ToolbarActions>
+            <DataGrid.Filter />
+            <DataGrid.Columns />
+            <DataGrid.Options />
+          </DataGrid.ToolbarActions>
+        </DataGrid.Toolbar>
+        <DataGrid.FilterChips />
+        <DataGrid.Table
+          emptyState={
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <HugeiconsIcon icon={ListPlusIcon} strokeWidth={2} />
+                </EmptyMedia>
+                <EmptyTitle>No tasks yet</EmptyTitle>
+                <EmptyDescription>
+                  Add your first task to start tracking estimates.
+                </EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <Button size="sm" onClick={addTask}>
+                  Add task
+                </Button>
+              </EmptyContent>
+            </Empty>
+          }
+        />
+        <DataGrid.Pagination />
+      </DataGrid.Root>
     </div>
   )
 }

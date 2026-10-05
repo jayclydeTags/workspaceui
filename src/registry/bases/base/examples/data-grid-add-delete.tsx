@@ -40,7 +40,7 @@ export function DataGridAddDeleteDemo() {
 
   return (
     <div className="w-full min-w-0">
-      <DataGrid
+      <DataGrid.Root
         table={table}
         onCellEdit={(rowId, columnId, value) => {
           setData((prev) =>
@@ -63,7 +63,19 @@ export function DataGridAddDeleteDemo() {
         onRowDelete={(rowId) => {
           setData((prev) => prev.filter((row) => row.id !== rowId))
         }}
-      />
+      >
+        <DataGrid.Toolbar>
+          <DataGrid.Search />
+          <DataGrid.ToolbarActions>
+            <DataGrid.Filter />
+            <DataGrid.Columns />
+            <DataGrid.Options />
+          </DataGrid.ToolbarActions>
+        </DataGrid.Toolbar>
+        <DataGrid.FilterChips />
+        <DataGrid.Table />
+        <DataGrid.Pagination />
+      </DataGrid.Root>
     </div>
   )
 }

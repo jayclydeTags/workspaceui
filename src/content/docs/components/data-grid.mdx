@@ -3,10 +3,12 @@ title: Data Grid
 description: An editable grid over a consumer-owned useReactTable() instance — every cell renders its live control, borderless at rest, with a full spreadsheet keyboard model over role="grid".
 ---
 
-`DataGrid` renders a [TanStack Table](https://tanstack.com/table) instance
-you create and own. It never holds `data` itself — it reads from your
-`table`, and reports every edit, add, and delete back to you through
-callbacks. You decide how (and whether) to persist them.
+`DataGrid` is a compound component: a `DataGrid.Root` that owns the grid's
+state, and parts (`Toolbar`, `Table`, `Pagination`, …) that you compose inside
+it. It renders a [TanStack Table](https://tanstack.com/table) instance you
+create and own. It never holds `data` itself — it reads from your `table`, and
+reports every edit, add, and delete back to you through callbacks. You decide
+how (and whether) to persist them.
 
 <ComponentPreview name="data-grid" />
 
@@ -37,9 +39,12 @@ npm install @tanstack/react-table
 
 ### Copy the files into your project
 
-`data-grid` depends on `data-grid-types` for the `column.meta` contract:
+`data-grid` also uses `data-filter` (which declares the `column.meta` type
+contract), `data-search`, and `data-pagination`:
 
-<ComponentSource name="data-grid-types" />
+<ComponentSource name="data-filter" />
+<ComponentSource name="data-search" />
+<ComponentSource name="data-pagination" />
 <ComponentSource name="data-grid" />
 
 </TabsContent>
@@ -48,7 +53,8 @@ npm install @tanstack/react-table
 ## Quick start
 
 The smallest working grid: two columns, one `meta.type` each, and an
-`onCellEdit` that writes the new value back into state.
+`onCellEdit` that writes the new value back into state. `DataGrid.Root` holds
+the state; `DataGrid.Table` renders the rows.
 
 ```tsx
 "use client"
@@ -60,8 +66,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { DataGrid } from "@/components/ui/data-grid"
-// side-effect import — augments ColumnMeta so `meta: { type: "text" }` typechecks
-import "@/components/ui/data-grid-types"
 
 interface Contact {
   id: string
@@ -88,7 +92,7 @@ export function ContactsGrid() {
   })
 
   return (
-    <DataGrid
+    <DataGrid.Root
       table={table}
       onCellEdit={(rowId, columnId, value) => {
         setData((prev) =>
@@ -97,11 +101,44 @@ export function ContactsGrid() {
           )
         )
       }}
-    />
+    >
+      <DataGrid.Table />
+    </DataGrid.Root>
   )
 }
 ```
 
+## Composition
+
+Everything else is a part you opt into. Each part reads the grid's state from
+context, so it can sit anywhere inside `DataGrid.Root`, and each one hides
+itself when it doesn't apply (no filtered row model, no pagination model, or
+the wrong layout). The full set, in the usual order:
+
+```tsx
+<DataGrid.Root table={table} onCellEdit={onCellEdit}>
+  <DataGrid.Toolbar>
+    <DataGrid.Search />
+    <DataGrid.ToolbarActions>
+      <DataGrid.Filter />
+      <DataGrid.Columns />
+      <DataGrid.Options />
+    </DataGrid.ToolbarActions>
+  </DataGrid.Toolbar>
+  <DataGrid.FilterChips />
+  <DataGrid.Table emptyState={<p>Nothing here yet</p>} />
+  <DataGrid.Pagination />
+</DataGrid.Root>
+```
+
+Leave a part out and it's gone — a read-only-looking grid with no toolbar is
+just `Root` + `Table`; a screen that only needs search drops `Columns` and
+`Filter`. Using a part outside `DataGrid.Root` throws.
+
+`Filter` and `Columns` render in the wide layout, `Options` in the narrow
+(card) layout, so composing all three covers both. Each part is also exported
+by name (`DataGridRoot`, `DataGridTable`, …) if you'd rather not use the
+namespace.
 Two things to get right before the grid does anything useful:
 
 - **`getRowId: (row) => row.id`** — without it, TanStack falls back to the
@@ -123,10 +160,10 @@ avatar, opening a searchable list); the rest are plain inline controls.
 included, so decimal points line up down the column and the label sits over
 its values. Every other type stays left-aligned.
 
-Full field reference (`options`, `users`, `maxChips`, `summary`) lives in
-[Data Grid Types](/components/data-grid-types) — install it once as a
-`registryDependencies` entry, no separate import needed beyond the
-side-effect one shown above.
+The `column.meta` fields (`type`, `options`, `users`, `maxChips`, `summary`)
+are typed for you once the grid is installed — there is nothing extra to
+import. The full field reference is under "Column meta" in the API Reference
+below.
 
 ## Editing behavior
 
@@ -139,9 +176,12 @@ side-effect one shown above.
   in-progress value and returns focus to the cell.
 - **Validation** — runs on every keystroke, shown as red text under the cell
   and wired through `aria-invalid`/`aria-describedby`. An invalid value is
-  never sent to `onCellEdit`. Out of the box this only checks "required" and
-  "must be a number" for `number`/`currency` — swap in your own rules by
-  validating inside `onCellEdit` and throwing.
+  never sent to `onCellEdit`. Out of the box this checks "required" and
+  "must be a number" for `number`/`currency`. Add your own rules per column
+  with `meta.validate(value, row)`: it runs after those checks and returns an
+  error message (or `null`/`undefined` if the value is fine). `value` is
+  already coerced to the column's type, and the hook never sees an empty
+  value, since "Required" wins first.
 - **Async commits** — `onCellEdit` is always awaited, and a synchronous throw
   is treated the same as a rejected promise. While pending, the control shows
   a spinner and disables. On rejection the typed value stays on screen (it
@@ -177,10 +217,17 @@ grid renders the affordances for you:
   the new row yourself with the exported `getDataGridRowDefaults(table)`,
   which seeds a value per column from its `meta.type` (`""` for text/date,
   `0` for number/currency, `false` for boolean, the first option for select,
-  `[]` for multiSelect, `null` for user).
+  `[]` for multiSelect, `null` for user). While your promise is pending the
+  add controls disable (and "New row" shows a spinner), so a second click
+  can't queue a duplicate row. If it rejects, the error's message appears
+  under "New row" until the next attempt; throw an `Error` with a
+  user-facing message, or the grid says "Couldn't add the row."
 - `onRowDelete` renders a hover kebab menu with a "Delete row" item that
   fires only after a built-in confirmation dialog is accepted — no
-  optimistic removal, no undo.
+  optimistic removal, no undo. The dialog stays open while your promise is
+  pending (buttons disabled, Escape ignored) and closes when it resolves. If
+  it rejects, the dialog stays open with the error's message (or "Couldn't
+  delete the row. Try again.") so the user can retry or cancel.
 
 **Row selection** is on by default — TanStack's own row-selection feature is
 enabled unless you set `enableRowSelection: false`. Pass
@@ -311,16 +358,65 @@ mount `DataGrid` once data arrives.
 
 ## API Reference
 
-| Prop                    | Type                                                                         | Default         | Description                                                                                                                                                                                                                                                 |
-| ----------------------- | ---------------------------------------------------------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `table`                 | `Table<TData>`                                                               | -               | A `useReactTable()` instance you create and own. The grid renders from it and never mutates it directly.                                                                                                                                                    |
-| `onCellEdit`            | `(rowId: string, columnId: string, value: unknown) => void \| Promise<void>` | -               | Called with a valid, committed edit. `rowId` matches TanStack's own `Row.id`; narrow `value` using `columnId` and that column's `meta.type`.                                                                                                                |
-| `onRowAdd?`             | `(afterRowId?: string) => void \| Promise<void>`                             | -               | Renders the "+ New row" and between-row "+" affordances. Omit `afterRowId` to append; pass it to insert after that row. Both entry points autofocus the new row's first cell once it appears — build the row itself with `getDataGridRowDefaults()`.        |
-| `onRowDelete?`          | `(rowId: string) => void \| Promise<void>`                                   | -               | Renders a hover kebab menu in a trailing column with a destructive "Delete row" item. Fires only after the built-in confirmation dialog is accepted — there's no optimistic removal or undo.                                                                |
-| `onColumnLayoutChange?` | `(layout: DataGridColumnLayout) => void`                                     | -               | Fires after a resize, pin, or reorder change with the table's current `{ columnOrder, columnSizing, columnPinning }`. Purely a reporting side-channel — resize/pin/reorder mutate the table instance's own state directly and work with no callback at all. |
-| `narrowFallback?`       | `"cards" \| "none"`                                                          | `"cards"`       | Below a 448px _measured container_ width (never the viewport), `"cards"` swaps the grid for a card list with a swipeable bottom-drawer editor. `"none"` is the escape hatch: keeps the real grid at any width, with the first column stuck sticky-left.     |
-| `emptyState?`           | `React.ReactNode`                                                            | `"No results."` | Rendered in place of rows when `table.getRowModel().rows` is empty, in both the table and card layouts. Pass a composed shadcn `Empty` for an icon/title/action instead of plain text.                                                                      |
-| `className?`            | `string`                                                                     | -               | Additional CSS classes applied to the root element.                                                                                                                                                                                                         |
+### DataGrid.Root
+
+Owns the grid's state and provides it to the parts. Renders the wrapper `div`.
+
+| Prop                    | Type                                                                         | Default   | Description                                                                                                                                                                                                                                                                                                                         |
+| ----------------------- | ---------------------------------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `table`                 | `Table<TData>`                                                               | -         | A `useReactTable()` instance you create and own. The grid renders from it and never mutates it directly.                                                                                                                                                                                                                            |
+| `onCellEdit`            | `(rowId: string, columnId: string, value: unknown) => void \| Promise<void>` | -         | Called with a valid, committed edit. `rowId` matches TanStack's own `Row.id`; narrow `value` using `columnId` and that column's `meta.type`.                                                                                                                                                                                        |
+| `onRowAdd?`             | `(afterRowId?: string) => void \| Promise<void>`                             | -         | Renders the "+ New row" and between-row "+" affordances. Omit `afterRowId` to append; pass it to insert after that row. Both entry points autofocus the new row's first cell once it appears — build the row itself with `getDataGridRowDefaults()`. Controls disable while pending; a rejection shows its message under "New row". |
+| `onRowDelete?`          | `(rowId: string) => void \| Promise<void>`                                   | -         | Renders a hover kebab menu in a trailing column with a destructive "Delete row" item. Fires only after the built-in confirmation dialog is accepted — there's no optimistic removal or undo. The dialog shows a pending state and, on rejection, the error with a retry.                                                            |
+| `onColumnLayoutChange?` | `(layout: DataGridColumnLayout) => void`                                     | -         | Fires after a resize, pin, or reorder change with the table's current `{ columnOrder, columnSizing, columnPinning }`. Purely a reporting side-channel — resize/pin/reorder mutate the table instance's own state directly and work with no callback at all.                                                                         |
+| `narrowFallback?`       | `"cards" \| "none"`                                                          | `"cards"` | Below a 448px _measured container_ width (never the viewport), `"cards"` swaps the grid for a card list with a swipeable bottom-drawer editor. `"none"` is the escape hatch: keeps the real grid at any width, with the first column stuck sticky-left.                                                                             |
+| `className?`            | `string`                                                                     | -         | Additional CSS classes applied to the root element.                                                                                                                                                                                                                                                                                 |
+| `children?`             | `React.ReactNode`                                                            | -         | The parts to render: `DataGrid.Toolbar`, `DataGrid.Table`, `DataGrid.Pagination`, …                                                                                                                                                                                                                                                 |
+
+### Parts
+
+Every part reads from `DataGrid.Root` and throws if rendered outside it.
+
+| Part                      | Renders                                                                                            |
+| ------------------------- | -------------------------------------------------------------------------------------------------- |
+| `DataGrid.Toolbar`        | A `div` laid out as a toolbar row. Accepts `div` props.                                            |
+| `DataGrid.ToolbarActions` | A `div` that groups controls and pushes them to the end of the toolbar. Accepts `div` props.       |
+| `DataGrid.Search`         | The global search box. Rendered only when the table has a filtered row model.                      |
+| `DataGrid.Filter`         | The filter popover trigger. Wide layout only, and only when a typed column can be filtered.        |
+| `DataGrid.Columns`        | The column visibility and order menu. Wide layout only.                                            |
+| `DataGrid.Options`        | The options sheet (sort, filters, columns) that replaces the above in the narrow card layout.      |
+| `DataGrid.FilterChips`    | The row of active filter chips with a clear action. Wide layout only.                              |
+| `DataGrid.Table`          | The rows: the editable grid, or a card list below 448px of container width (see `narrowFallback`). |
+| `DataGrid.Pagination`     | The page controls. Rendered only when the table has a pagination row model.                        |
+
+### DataGrid.Table
+
+| Prop          | Type              | Default         | Description                                                                                                                                                         |
+| ------------- | ----------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `emptyState?` | `React.ReactNode` | `"No results."` | Rendered in place of rows when `table.getRowModel().rows` is empty, in both layouts. Pass a composed shadcn `Empty` for an icon/title/action instead of plain text. |
+
+### Column meta
+
+The `column.meta` contract, declared once in `data-filter.tsx` through TanStack's own module augmentation. Every `columnDef.meta` you write is typed against it.
+
+| Prop       | Type                                          | Default | Description                                                                                                                                             |
+| ---------- | --------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`     | `DataGridColumnType`                          | -       | One of the eight column types. Omit on columns that aren't user-editable (e.g. a selection or actions column).                                          |
+| `options`  | `DataGridSelectOption[]`                      | -       | Shared by select and multiSelect — the allowed `{ value, label }` choices.                                                                              |
+| `users`    | `DataGridUser[]`                              | -       | user columns only — a static list of `{ id, name, avatarUrl? }`. The grid never fetches; async/remote user lists are out of scope.                      |
+| `maxChips` | `number`                                      | `2`     | multiSelect only — chips shown before the rest collapse into "+N".                                                                                      |
+| `summary`  | `boolean`                                     | `false` | Marks this column as card title/subtitle material for the narrow-container branch.                                                                      |
+| `validate` | `(value, row) => string \| null \| undefined` | -       | Extra validation after the built-in checks. Return an error message to block the edit and show it on the cell. `value` is coerced to the column's type. |
+
+### Exported types
+
+Re-exported from `data-grid` so you import every grid type from one place.
+
+| Type                   | Shape                                                                                            | Description                            |
+| ---------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------- |
+| `DataGridColumnType`   | `"text" \| "number" \| "currency" \| "select" \| "boolean" \| "date" \| "multiSelect" \| "user"` | string union of the eight column types |
+| `DataGridSelectOption` | `{ value: string; label: string }`                                                               | A single select/multiSelect option.    |
+| `DataGridUser`         | `{ id: string; name: string; avatarUrl?: string }`                                               | A single user-column entry.            |
 
 ## Troubleshooting
 
@@ -328,11 +424,12 @@ mount `DataGrid` once data arrives.
   `meta: { type: ... }`. Columns without a `meta.type` render read-only
   through their normal TanStack `cell` definition — this is by design (e.g.
   for a computed or actions column), not a bug.
-- **`meta: { type: "text" }` fails to typecheck.** `data-grid-types`'s
-  `declare module` augmentation has to be part of your TypeScript program.
-  Installing the file (CLI or manual) is enough — but if you `git rm` it or
-  exclude it from `include` in `tsconfig.json`, the augmentation stops
-  applying.
+- **`meta: { type: "text" }` fails to typecheck.** The `declare module`
+  augmentation of TanStack's `ColumnMeta` lives in `data-filter.tsx`, which
+  the grid depends on, so that file has to be part of your TypeScript program.
+  Installing the grid (CLI or manual) is enough — but if you delete
+  `data-filter.tsx` or exclude it from `include` in `tsconfig.json`, the
+  augmentation stops applying.
 - **Deleting or editing a row updates the wrong record.** You didn't pass
   `getRowId` to `useReactTable()`. TanStack defaults row ids to array index,
   so any add/delete/reorder shifts which row an id points to. Always pass a

@@ -62,7 +62,8 @@ workspaceui/
 │   ├── lib/
 │   │   ├── source.ts         # fumadocs loader() over .source — component page frontmatter
 │   │   ├── nav.ts            # NavSection/NavItem types for the sidebars
-│   │   ├── component-pages.ts    # Server-only: component pages/sidebar generated from the mdx via `source`
+│   │   ├── component-pages.ts    # Server-only: sidebar + page list — WorkspaceUI's (from the mdx via `source`) then shadcn/ui's
+│   │   ├── shadcn-components.ts  # Pure: the shadcn/ui primitives shown on /components (slug/title/description, docs + install helpers)
 │   │   ├── component-examples.ts # Pure: <ComponentPreview> examples parsed from an mdx, and pageHref()
 │   │   ├── story-registry.tsx    # Maps slug → story studio (dynamic import of src/stories/<slug>.tsx)
 │   │   ├── blocks.ts         # /blocks preview data (slug→Component)
@@ -124,6 +125,15 @@ inspector as one resizable pair (stacked below `lg`).
   per prop (`text`/`number`/`numbers`/`boolean`/`select`). Mark a variation
   (size, variant, a state like `disabled`) with `group: "style"` and make it a
   `select` or `boolean`.
+- **shadcn/ui pages**: the primitives installed in `src/components/ui` are listed
+  in `lib/shadcn-components.ts` and appear under a second "shadcn/ui" sidebar
+  section after WorkspaceUI's own (prev/next walks both). Each has a story like
+  any other, an install command (`npx shadcn@latest add <name>`, the default
+  registry, not this one) and, instead of an API table, a "View on
+  ui.shadcn.com" link (`docsUrl`). There is no mdx for them, so descriptions live
+  in that list. Installing a new primitive means adding it to the list and
+  writing its story; `shadcn-components.test.ts` fails if the list and the ui
+  directory disagree or a story is missing.
 - **No story** (currently `data-filter` and `data-grid-types`): there's no
   playground, so the mdx's `<ComponentPreview>` examples go on the canvas as
   labelled sections, and the inspector has no controls.

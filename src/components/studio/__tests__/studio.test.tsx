@@ -177,6 +177,36 @@ describe("Studio", () => {
     })
   })
 
+  describe("external docs", () => {
+    it("links to the official docs when the slots give a docsUrl", () => {
+      render(
+        <Studio
+          {...slots}
+          api={[]}
+          docsUrl="https://ui.shadcn.com/docs/components/base/thing"
+        />
+      )
+
+      const panel = screen.getByRole("complementary", {
+        name: "Component details",
+      })
+      const link = within(panel).getByRole("link", {
+        name: /View on ui\.shadcn\.com/,
+      })
+      expect(link).toHaveAttribute(
+        "href",
+        "https://ui.shadcn.com/docs/components/base/thing"
+      )
+      expect(link).toHaveAttribute("target", "_blank")
+      expect(link).toHaveAttribute("rel", expect.stringContaining("noreferrer"))
+    })
+
+    it("shows no docs link for a component with its own API table", () => {
+      render(<Studio {...slots} />)
+      expect(screen.queryByRole("link", { name: /ui\.shadcn\.com/ })).toBeNull()
+    })
+  })
+
   describe("component info toggle", () => {
     const panel = () =>
       screen.queryByRole("complementary", { name: "Component details" })

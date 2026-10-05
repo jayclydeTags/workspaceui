@@ -1,23 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { getComponentExamples, pageHref } from "@/lib/component-examples"
-
-describe("pageHref", () => {
-  it("rewrites component pages and leaves prose pages alone", () => {
-    expect(
-      pageHref({
-        url: "/docs/components/status-badge",
-        slugs: ["components", "status-badge"],
-      })
-    ).toBe("/components/status-badge")
-    expect(
-      pageHref({
-        url: "/docs/getting-started/introduction",
-        slugs: ["getting-started", "introduction"],
-      })
-    ).toBe("/docs/getting-started/introduction")
-  })
-})
+import { getComponentExamples } from "@/lib/component-examples"
 
 describe("getComponentExamples", () => {
   it("labels the page-level preview Overview", () => {

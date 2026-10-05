@@ -40,6 +40,7 @@ export function Studio({
   prev,
   next,
   install,
+  docsUrl,
   api,
 }: StudioSlots & { story?: Story }) {
   const [args, setArgs] = useState<Args>(() => story?.args ?? {})
@@ -56,7 +57,17 @@ export function Studio({
   const value = useMemo<StudioContextValue>(
     () => ({
       story,
-      slots: { slug, title, description, examples, prev, next, install, api },
+      slots: {
+        slug,
+        title,
+        description,
+        examples,
+        prev,
+        next,
+        install,
+        docsUrl,
+        api,
+      },
       examples,
       args,
       setArg,
@@ -77,6 +88,7 @@ export function Studio({
       prev,
       next,
       install,
+      docsUrl,
       api,
       args,
       inspectorOpen,

@@ -61,6 +61,8 @@ export interface StudioSlots {
   next?: StudioLink
   /** CLI command that installs the component. */
   install: string
+  /** External documentation, for components whose API tables aren't ours to host. */
+  docsUrl?: string
   /** The component's "## API Reference" section, as data. */
   api: ApiBlock[]
 }

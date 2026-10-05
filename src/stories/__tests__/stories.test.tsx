@@ -2,9 +2,10 @@
 import { existsSync } from "fs"
 import { resolve } from "path"
 import { render } from "@testing-library/react"
-import { describe, expect, it } from "vitest"
+import { beforeAll, describe, expect, it, vi } from "vitest"
 
 import type { ControlDef, Story } from "@/components/studio/types"
+import { SHADCN_COMPONENTS } from "@/lib/shadcn-components"
 
 const modules = import.meta.glob("../*.tsx", {
   eager: true,
@@ -18,6 +19,18 @@ const stories = (
 }))
 
 describe("component stories", () => {
+  // jsdom has no matchMedia; some primitives (the sidebar's mobile hook) read it.
+  beforeAll(() => {
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn().mockReturnValue({
+        matches: false,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      })
+    )
+  })
+
   it.each(stories)("$slug: variations are selects or toggles", ({ story }) => {
     for (const def of Object.values(story.controls) as (
       ControlDef | undefined
@@ -32,11 +45,13 @@ describe("component stories", () => {
     expect(stories.length).toBeGreaterThan(0)
   })
 
-  it.each(stories)("$slug: belongs to a documented component", ({ slug }) => {
+  it.each(stories)("$slug: belongs to a listed component", ({ slug }) => {
+    const hasMdx = existsSync(
+      resolve(process.cwd(), `src/content/docs/components/${slug}.mdx`)
+    )
     expect(
-      existsSync(
-        resolve(process.cwd(), `src/content/docs/components/${slug}.mdx`)
-      )
+      hasMdx || SHADCN_COMPONENTS.some((c) => c.slug === slug),
+      `no docs page or shadcn entry for "${slug}"`
     ).toBe(true)
   })
 

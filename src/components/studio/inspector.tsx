@@ -2,7 +2,11 @@
 
 import type { ReactNode } from "react"
 
-import { Button } from "@/components/ui/button"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowUpRight01Icon } from "@hugeicons/core-free-icons"
+
+import { cn } from "@/lib/utils"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { CopyButton } from "@/components/docs/copy-button"
 import { Control } from "@/components/studio/controls"
 import { ApiReference } from "@/components/studio/api-reference"
@@ -72,6 +76,28 @@ export function Inspector() {
           <CopyButton value={slots.install} />
         </div>
       </Section>
+
+      {slots.docsUrl && (
+        <Section title="Documentation">
+          <p className="text-sm text-muted-foreground">
+            The full API, examples and accessibility notes live in the shadcn/ui
+            docs.
+          </p>
+          <a
+            href={slots.docsUrl}
+            target="_blank"
+            rel="noreferrer"
+            className={cn(buttonVariants({ variant: "outline" }), "w-fit")}
+          >
+            View on ui.shadcn.com
+            <HugeiconsIcon
+              icon={ArrowUpRight01Icon}
+              strokeWidth={2}
+              data-icon="inline-end"
+            />
+          </a>
+        </Section>
+      )}
 
       {slots.api.length > 0 && (
         <Section title="API reference">

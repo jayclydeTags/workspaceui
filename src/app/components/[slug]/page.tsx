@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
-import { source } from "@/lib/source"
 import { getComponentExamples } from "@/lib/component-examples"
 import { getComponentPages } from "@/lib/component-pages"
 import { getApiReference } from "@/lib/api-reference"
+import { shadcnDocsUrl, shadcnInstallCommand } from "@/lib/shadcn-components"
 import { hasStory, renderStudio } from "@/lib/story-registry"
 import { ExampleDemo, hasExample } from "@/components/docs/component-preview"
 
@@ -20,15 +20,39 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params
-  const page = source.getPage(["components", slug])
+  const page = getComponentPages().find((p) => p.slug === slug)
   if (!page) return {}
-  return { title: page.data.title, description: page.data.description }
+  return { title: page.title, description: page.description }
 }
 
 export default async function ComponentPage({ params }: PageProps) {
   const { slug } = await params
-  const page = source.getPage(["components", slug])
+  const pages = getComponentPages()
+  const index = pages.findIndex((p) => p.slug === slug)
+  const page = pages[index]
   if (!page) notFound()
+
+  const link = (p?: { title: string; href: string }) =>
+    p && { title: p.title, href: p.href }
+  const shared = {
+    slug,
+    title: page.title,
+    description: page.description,
+    prev: link(pages[index - 1]),
+    next: link(pages[index + 1]),
+  }
+
+  // shadcn/ui primitives: a playground, the install command and a link to the
+  // official docs. Their API tables live on ui.shadcn.com, not here.
+  if (page.origin === "shadcn") {
+    return renderStudio(slug, {
+      ...shared,
+      examples: [],
+      install: shadcnInstallCommand(slug),
+      docsUrl: shadcnDocsUrl(slug),
+      api: [],
+    })
+  }
 
   // With a story the canvas is the playground (plus its variants) and nothing
   // else. Without one, the mdx's examples are all there is to put on it.
@@ -42,18 +66,9 @@ export default async function ComponentPage({ params }: PageProps) {
           node: <ExampleDemo name={name} />,
         }))
 
-  const pages = getComponentPages()
-  const index = pages.findIndex((p) => p.slug === slug)
-  const link = (p?: { title: string; href: string }) =>
-    p && { title: p.title, href: p.href }
-
   return renderStudio(slug, {
-    slug,
-    title: page.data.title,
-    description: page.data.description,
+    ...shared,
     examples,
-    prev: link(pages[index - 1]),
-    next: link(pages[index + 1]),
     install: `npx shadcn@latest add jayclydeTags/workspaceui/${slug}`,
     api: getApiReference(slug),
   })

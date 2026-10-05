@@ -7,13 +7,6 @@ export interface ComponentExample {
   label: string
 }
 
-// The URL a fumadocs page is actually served from.
-export function pageHref(page: { url: string; slugs: string[] }): string {
-  return page.slugs[0] === "components" && page.slugs.length > 1
-    ? `/components/${page.slugs.slice(1).join("/")}`
-    : page.url
-}
-
 const PREVIEW_RE = /<ComponentPreview\s+name="([^"]+)"/
 const HEADING_RE = /^#{2,4}\s+(.+?)\s*$/
 
